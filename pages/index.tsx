@@ -1,12 +1,13 @@
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import i18nConfig from '../next-i18next.config'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
-  const { t } = useTranslation('index');
+  const { t } = useTranslation('index')
 
   return (
     <div className={styles.container}>
@@ -75,10 +76,10 @@ const Home: NextPage = () => {
   )
 }
 
-export async function getStaticProps({ locale }) {
+export const getStaticProps: GetServerSideProps = async function ({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['index'])),
+      ...(await serverSideTranslations(locale || i18nConfig.i18n.defaultLocale, ['index'])),
     },
   };
 }
