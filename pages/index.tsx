@@ -5,19 +5,19 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import i18nConfig from '../next-i18next.config';
 
 const Home: NextPage = function Home() {
-  const { t } = useTranslation('index');
+  const { t, i18n } = useTranslation();
 
   return (
     <main>
       <p>
         <Trans
-          t={t}
+          ns={'index'}
           i18nKey={'default.language.is'}
-          values={{ language: '123' }}
+          values={{ language: `"${i18n.language}"` }}
           components={{ 1: <strong /> }}
         />
       </p>
-      <p>{t('greetings')}</p>
+      <p>{t('greetings', { ns: 'index' })}</p>
     </main>
   );
 };
