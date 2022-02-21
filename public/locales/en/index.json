@@ -1,3 +1,4 @@
 {
-  "title": "Hello my friends!"
+  "default.language.is": "Idioma predeterminado is <1>{{language}}</1>",
+  "greetings": "Hello my friends!"
 }
