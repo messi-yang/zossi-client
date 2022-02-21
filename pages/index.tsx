@@ -1,13 +1,13 @@
-import type { NextPage, GetServerSideProps } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import type { NextPage, GetServerSideProps } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import i18nConfig from '../next-i18next.config'
-import styles from '../styles/Home.module.css'
+import i18nConfig from '../next-i18next.config';
+import styles from '../styles/Home.module.css';
 
-const Home: NextPage = () => {
-  const { t } = useTranslation('index')
+const Home: NextPage = function Home() {
+  const { t } = useTranslation('index');
 
   return (
     <div className={styles.container}>
@@ -73,15 +73,19 @@ const Home: NextPage = () => {
         </a>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export const getStaticProps: GetServerSideProps = async function ({ locale }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale || i18nConfig.i18n.defaultLocale, ['index'])),
-    },
+export const getStaticProps: GetServerSideProps =
+  async function getStaticProps({ locale }) {
+    return {
+      props: {
+        ...(await serverSideTranslations(
+          locale || i18nConfig.i18n.defaultLocale,
+          ['index']
+        )),
+      },
+    };
   };
-}
 
-export default Home
+export default Home;
