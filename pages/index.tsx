@@ -1,6 +1,5 @@
 import type { NextPage, GetServerSideProps } from 'next';
-import { Trans } from 'react-i18next';
-import { useTranslation } from 'next-i18next';
+import { useTranslation, Trans } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import i18nConfig from '@/next-i18next.config';
 
