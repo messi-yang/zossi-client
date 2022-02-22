@@ -10,8 +10,8 @@ const Home: NextPage = function Home() {
     <main>
       <p>
         <Trans
-          ns={'index'}
-          i18nKey={'default.language.is'}
+          ns="index"
+          i18nKey="default.language.is"
           values={{ language: `"${i18n.language}"` }}
           components={{ 1: <strong /> }}
         />
