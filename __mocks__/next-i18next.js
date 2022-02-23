@@ -4,7 +4,7 @@ module.exports = {
     return {
       t: (i18nKey, { ns }) => (ns ? `${ns}.` : '') + i18nKey,
       i18n: {
-        language: 'es',
+        language: 'en',
       },
     };
   },
