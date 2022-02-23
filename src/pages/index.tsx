@@ -8,15 +8,17 @@ const Home: NextPage = function Home() {
 
   return (
     <main>
-      <p>
-        <Trans
-          ns="index"
-          i18nKey="default.language.is"
-          values={{ language: `"${i18n.language}"` }}
-          components={{ 1: <strong /> }}
-        />
-      </p>
-      <p>{t('greetings', { ns: 'index' })}</p>
+      <section className="m-5 p-5 border-2 rounded-xl">
+        <p className="text-xl font-bold">
+          <Trans
+            ns="index"
+            i18nKey="default.language.is"
+            values={{ language: `"${i18n.language}"` }}
+            components={{ 1: <strong /> }}
+          />
+        </p>
+        <p>{t('greetings', { ns: 'index' })}</p>
+      </section>
     </main>
   );
 };
