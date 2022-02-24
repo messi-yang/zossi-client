@@ -9,6 +9,7 @@ This [Next.js](https://nextjs.org/) boilerplate allows you to kick off your new 
 5. Lint-staged
 6. i18next
 7. TailwindCSS
+8. React Redux
 
 ## Getting Started
 
@@ -52,11 +53,11 @@ yarn lint
 
 ## Pre Commit Hook
 
-Husky & Lint-staged
+Please make .husky/pre-commit executable
 
-Make sure all the code pass lint checking and tests before commitment.
-
-Check this out `.husky/pre-commit`.
+```bash
+chmod +x .husky/pre-commit
+```
 
 ## Storybook
 

@@ -4,6 +4,9 @@ const { i18n } = require('./next-i18next.config');
 const nextConfig = {
   reactStrictMode: true,
   i18n,
+  eslint: {
+    dirs: ['src/pages', 'src/stores', 'src/utils'],
+  },
   dir: './src',
 };
 
