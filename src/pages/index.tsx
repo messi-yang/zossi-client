@@ -2,7 +2,7 @@ import type { NextPage, GetStaticProps } from 'next';
 import { useTranslation, Trans } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useSelector } from 'react-redux';
-import { getInitialLocale } from '@/lib/i18n';
+import { getInitialLocale } from '@/utils/i18n';
 import { State, wrapper } from '@/stores';
 
 const Home: NextPage = function Home() {
