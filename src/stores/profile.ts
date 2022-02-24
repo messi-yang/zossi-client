@@ -8,12 +8,9 @@ export const createInitialState = (): State => ({
   nickname: 'Anonymous',
 });
 
-// TO-DO - Make this action work
-// type Action =
-//   | { type: 'SET_NICKNAME'; payload: string }
-//   | { type: typeof HYDRATE; payload: any };
+// TO-DO - Make this action type work :(
+// export type Action = { type: 'SET_NICKNAME'; payload: string };
 
-// create your reducer
 export default function reducer(
   state: State = createInitialState(),
   action: AnyAction

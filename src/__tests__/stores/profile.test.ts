@@ -1,3 +1,4 @@
+import { AnyAction } from 'redux';
 import reducer, { State } from '@/stores/profile';
 
 describe('Profile Reducer', () => {
@@ -6,7 +7,7 @@ describe('Profile Reducer', () => {
       const previousState: State = {
         nickname: 'Your name',
       };
-      const action = {
+      const action: AnyAction = {
         type: 'SET_NICKNAME',
         payload: 'My name',
       };
