@@ -7,7 +7,9 @@ import { State, wrapper } from '@/stores';
 
 const Home: NextPage = function Home() {
   const { t, i18n } = useTranslation();
-  const { name } = useSelector<State, State>((state) => state);
+  const {
+    profile: { nickname },
+  } = useSelector<State, State>((state) => state);
 
   return (
     <main>
@@ -21,7 +23,7 @@ const Home: NextPage = function Home() {
           />
         </p>
         <p>{t('greetings', { ns: 'index' })}</p>
-        <p>{name}</p>
+        <p>{nickname}</p>
       </section>
     </main>
   );
@@ -31,7 +33,7 @@ export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
   (store) =>
     async ({ locale }) => {
       store.dispatch({
-        type: 'CHANGE_NAME',
+        type: 'SET_NICKNAME',
         payload: 'Shohei Ohtani',
       });
       return {

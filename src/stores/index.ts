@@ -1,28 +1,30 @@
-import { createStore, AnyAction, Store } from 'redux';
+import { createStore, AnyAction, Store, combineReducers } from 'redux';
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
+import profileReducer, {
+  createInitialState as createProfileInitialState,
+} from './profile';
 
-export interface State {
-  name: string;
-}
-
-const initialState: State = {
-  name: 'Michael Jackson',
+const initState = {
+  profile: createProfileInitialState(),
 };
 
-// create your reducer
-export const reducer = (state: State = initialState, action: AnyAction) => {
-  switch (action.type) {
-    case HYDRATE:
-      // Attention! This will overwrite client state! Real apps should use proper reconciliation.
-      return { ...state, ...action.payload };
-    case 'CHANGE_NAME':
-      return { ...state, name: action.payload };
-    default:
-      return state;
+const subReducers = combineReducers({
+  profile: profileReducer,
+});
+
+export type State = ReturnType<typeof subReducers>;
+
+export const reducer = (state: State = initState, action: AnyAction) => {
+  if (action.type === HYDRATE) {
+    const nextState: State = {
+      ...state,
+      ...action.payload,
+    };
+    return nextState;
   }
+  return subReducers(state, action);
 };
 
-// create a makeStore function
 const makeStore = () => createStore(reducer);
 
 // export an assembled wrapper
