@@ -5,7 +5,13 @@ const nextConfig = {
   reactStrictMode: true,
   i18n,
   eslint: {
-    dirs: ['src/__tests__', 'src/pages', 'src/stores', 'src/utils'],
+    dirs: [
+      'src/__mocks__',
+      'src/__tests__',
+      'src/pages',
+      'src/stores',
+      'src/utils',
+    ],
   },
   dir: './src',
 };
