@@ -1,31 +1,27 @@
-import { createStore, AnyAction, Store, combineReducers } from 'redux';
-import { createWrapper, HYDRATE } from 'next-redux-wrapper';
-import profileReducer, {
-  createInitialState as createProfileInitialState,
-} from './profile';
+import { createWrapper } from 'next-redux-wrapper';
+import { Action } from 'redux';
+import { configureStore, ThunkAction } from '@reduxjs/toolkit';
 
-const initState = {
-  profile: createProfileInitialState(),
-};
+import profileReducer from './profile';
 
-const subReducers = combineReducers({
+export const reducer = {
   profile: profileReducer,
-});
-
-export type State = ReturnType<typeof subReducers>;
-
-export const reducer = (state: State = initState, action: AnyAction) => {
-  if (action.type === HYDRATE) {
-    const nextState: State = {
-      ...state,
-      ...action.payload,
-    };
-    return nextState;
-  }
-  return subReducers(state, action);
 };
 
-const makeStore = () => createStore(reducer);
+export const makeStore = () =>
+  configureStore({
+    reducer,
+    devTools: true,
+  });
+
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppState = ReturnType<AppStore['getState']>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  AppState,
+  unknown,
+  Action
+>;
 
 // export an assembled wrapper
-export const wrapper = createWrapper<Store<State>>(makeStore, { debug: true });
+export const wrapper = createWrapper<AppStore>(makeStore);

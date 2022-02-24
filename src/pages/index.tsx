@@ -1,15 +1,18 @@
 import type { NextPage, GetStaticProps } from 'next';
 import { useTranslation, Trans } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { getInitialLocale } from '@/utils/i18n';
-import { State, wrapper } from '@/stores';
+import { AppState, wrapper } from '@/stores';
+import { setNickname, fetchNickname } from '@/stores/profile';
 
 const Home: NextPage = function Home() {
   const { t, i18n } = useTranslation();
   const {
     profile: { nickname },
-  } = useSelector<State, State>((state) => state);
+  } = useSelector<AppState, AppState>((state) => state);
+  const dispatch = useDispatch();
+  dispatch(fetchNickname('New Shohei Ohtani'));
 
   return (
     <main>
@@ -32,10 +35,8 @@ const Home: NextPage = function Home() {
 export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
   (store) =>
     async ({ locale }) => {
-      store.dispatch({
-        type: 'SET_NICKNAME',
-        payload: 'Shohei Ohtani',
-      });
+      store.dispatch(setNickname('Shohei Ohtani'));
+
       return {
         props: {
           ...(await serverSideTranslations(getInitialLocale(locale), [

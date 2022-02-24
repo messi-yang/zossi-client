@@ -1,13 +1,12 @@
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 import { render, screen } from '@testing-library/react';
 import Home from '@/pages/index';
-import { reducer } from '@/stores';
+import { makeStore } from '@/stores';
 
 describe('Home', () => {
   it('Has greetings', () => {
     render(
-      <Provider store={createStore(reducer)}>
+      <Provider store={makeStore()}>
         <Home />
       </Provider>
     );

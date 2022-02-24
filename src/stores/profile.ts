@@ -1,24 +1,41 @@
-import { AnyAction } from 'redux';
+import { HYDRATE } from 'next-redux-wrapper';
+import { createSlice } from '@reduxjs/toolkit';
+import { AppThunk } from '@/stores';
+import { pause } from '@/utils/tests';
 
 export type State = {
   nickname: string;
 };
 
-export const createInitialState = (): State => ({
-  nickname: 'Anonymous',
+const slice = createSlice({
+  name: 'profile',
+  initialState: {
+    nickname: 'Anonymous',
+  } as State,
+  reducers: {
+    setNickname(state, action: { type: string; payload: string }): State {
+      return {
+        ...state,
+        nickname: action.payload,
+      };
+    },
+  },
+  extraReducers: {
+    [HYDRATE]: (state, action) => ({
+      ...state,
+      ...action.payload.profile,
+    }),
+  },
 });
 
-// TO-DO - Make this action type work :(
-// export type Action = { type: 'SET_NICKNAME'; payload: string };
+export default slice.reducer;
 
-export default function reducer(
-  state: State = createInitialState(),
-  action: AnyAction
-): State {
-  switch (action.type) {
-    case 'SET_NICKNAME':
-      return { ...state, nickname: action.payload };
-    default:
-      return state;
-  }
+export const { setNickname } = slice.actions;
+
+export function fetchNickname(name: string): AppThunk {
+  return async (dispatch) => {
+    await pause(1000);
+
+    dispatch(slice.actions.setNickname(name));
+  };
 }
