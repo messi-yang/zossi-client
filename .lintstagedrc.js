@@ -11,5 +11,5 @@ const buildJestCommand = (filenames) =>
     .join(' ')}`;
 
 module.exports = {
-  './src/**/*.{js,jsx,ts,tsx}': [buildEslintCommand, buildJestCommand],
+  './src/**/*.{js,jsx,ts,tsx}': ['prettier --check ./src', buildEslintCommand, buildJestCommand],
 };
