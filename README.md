@@ -53,11 +53,11 @@ yarn lint
 
 ## Pre Commit Hook
 
-Husky & Lint-staged
+Please make .husky/pre-commit executable
 
-Make sure all the code pass lint checking and tests before commitment.
-
-Check this out `.husky/pre-commit`.
+```bash
+chmod +x .husky/pre-commit
+```
 
 ## Storybook
 
