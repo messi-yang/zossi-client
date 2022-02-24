@@ -9,6 +9,7 @@ This [Next.js](https://nextjs.org/) boilerplate allows you to kick off your new 
 5. Lint-staged
 6. i18next
 7. TailwindCSS
+8. React Redux
 
 ## Getting Started
 
