@@ -1,5 +1,5 @@
 import { makeStore } from '@/stores';
-import { pause } from '@/utils/tests';
+import { pause } from '@/utils/common';
 import reducer, { setNickname, fetchNickname, State } from './index';
 
 describe('Profile Reducer', () => {

@@ -1,7 +1,7 @@
 import { HYDRATE } from 'next-redux-wrapper';
 import { createSlice } from '@reduxjs/toolkit';
 import { AppThunk } from '@/stores';
-import { pause } from '@/utils/tests/';
+import { pause } from '@/utils/common/';
 
 export type State = {
   nickname: string;
