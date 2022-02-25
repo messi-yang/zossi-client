@@ -2,6 +2,8 @@
 
 This [Next.js](https://nextjs.org/) boilerplate 2022 allows you to kick off your new project with all necessary tools for building a large-scale client-side web app.
 
+![Vercel](https://vercelbadge.vercel.app/api/DumDumGeniuss/dumdum-next-boilerplate-2022)
+
 ## Built-in Tools
 
 1. Eslint, AirBnB, Prettier
