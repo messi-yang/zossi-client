@@ -1,4 +1,4 @@
-import i18nConfig from '../../next-i18next.config';
+import i18nConfig from '../../../next-i18next.config';
 
 /**
  * Help you get defaultLocale from i18nConfig
