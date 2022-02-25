@@ -1,4 +1,6 @@
-This [Next.js](https://nextjs.org/) boilerplate allows you to kick off your new project with all necessary tools in a blink.
+# Next Boilerplate 2022
+
+This [Next.js](https://nextjs.org/) boilerplate 2022 allows you to kick off your new project with all necessary tools for building a large-scale client-side web app.
 
 ## Built-in Tools
 
@@ -9,23 +11,21 @@ This [Next.js](https://nextjs.org/) boilerplate allows you to kick off your new 
 5. Lint-staged
 6. i18next
 7. TailwindCSS
-8. React Redux
+8. React Redux + Thunk + @reduxjs/toolkit
 
-## Getting Started
-
-Install everything
+## Install Packages
 
 ```bash
 yarn
 ```
 
-## Development
+## Develope
 
 ```bash
 yarn dev
 ```
 
-## Build
+## Build Assets
 
 Run this command to build bundles.
 
@@ -33,13 +33,13 @@ Run this command to build bundles.
 yarn build
 ```
 
-Test bundles by running:
+## Start Server (SSR)
 
 ```bash
 yarn start
 ```
 
-## Unit Tests
+## Build Unit Tests
 
 ```bash
 yarn test:watch
@@ -61,8 +61,8 @@ chmod +x .husky/pre-commit
 
 ## Storybook
 
-Coming soon
+Still concerning the necessarity of this tool.
 
 ## E2E Tests
 
-Coming soon
+Not yet decided which tool to go with.
