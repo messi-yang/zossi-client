@@ -11,13 +11,7 @@ const nextConfig = {
    */
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   eslint: {
-    dirs: [
-      'src/__mocks__',
-      'src/__tests__',
-      'src/pages',
-      'src/stores',
-      'src/utils',
-    ],
+    dirs: ['src'],
   },
   dir: './src',
 };
