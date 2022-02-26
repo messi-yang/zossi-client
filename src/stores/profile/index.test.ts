@@ -1,16 +1,14 @@
 import { makeStore } from '@/stores';
 import { pause } from '@/utils/common';
-import reducer, { setNickname, fetchNickname, State } from './index';
+import { setNickname, fetchNickname } from './index';
 
 describe('Profile Reducer', () => {
   describe('setNickname', () => {
     it('Should correctly set nickname', () => {
-      const previousState: State = {
-        nickname: 'Your name',
-      };
-      const newState = reducer(previousState, setNickname('My name'));
+      const store = makeStore();
+      store.dispatch(setNickname('My name'));
 
-      expect(newState.nickname).toBe('My name');
+      expect(store.getState().profile.nickname).toBe('My name');
     });
   });
   describe('fetchNickname', () => {

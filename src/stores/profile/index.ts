@@ -13,18 +13,14 @@ const slice = createSlice({
     nickname: 'Anonymous',
   } as State,
   reducers: {
-    setNickname(state, action: { type: string; payload: string }): State {
-      return {
-        ...state,
-        nickname: action.payload,
-      };
+    setNickname(state: State, action: { type: string; payload: string }) {
+      state.nickname = action.payload;
     },
   },
   extraReducers: {
-    [HYDRATE]: (state, action) => ({
-      ...state,
-      ...action.payload.profile,
-    }),
+    [HYDRATE]: (state: State, action) => {
+      state.nickname = action.payload.profile.nickname;
+    },
   },
 });
 

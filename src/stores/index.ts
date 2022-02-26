@@ -11,7 +11,7 @@ export const reducer = {
 export const makeStore = () =>
   configureStore({
     reducer,
-    devTools: true,
+    devTools: process.env.NODE_ENV === 'development',
   });
 
 export type AppStore = ReturnType<typeof makeStore>;
