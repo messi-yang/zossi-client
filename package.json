@@ -1,6 +1,7 @@
 {
   "name": "my-new-next-project",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
