@@ -1,4 +1,8 @@
-import type { NextPage, GetStaticProps } from 'next';
+import type {
+  NextPage,
+  GetStaticProps,
+  // GetServerSideProps,
+} from 'next';
 import { useTranslation, Trans } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useSelector, useDispatch } from 'react-redux';
@@ -31,6 +35,18 @@ const Home: NextPage = function Home() {
     </main>
   );
 };
+
+// If you prefer server side rendering, uncomment this section and remove "getStaticProps".
+// export const getServerSideProps: GetServerSideProps =
+//   wrapper.getServerSideProps((store) => async ({ locale }) => {
+//     store.dispatch(setNickname('Shohei Ohtani'));
+//
+//     return {
+//       props: {
+//         ...(await serverSideTranslations(getInitialLocale(locale), ['index'])),
+//       },
+//     };
+//   });
 
 export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
   (store) =>
