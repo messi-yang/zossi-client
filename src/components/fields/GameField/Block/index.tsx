@@ -5,10 +5,11 @@ import type { Unit, Coordinate } from '../types';
 
 type Props = {
   unit: Unit;
+  size: number;
   onClick: (coordinate: Coordinate) => any;
 };
 
-export default function Block({ unit, onClick }: Props) {
+export default function Block({ unit, size, onClick }: Props) {
   const nodeRef = useRef<HTMLButtonElement>(null);
   const [hovered] = useHover(nodeRef);
 
@@ -24,7 +25,7 @@ export default function Block({ unit, onClick }: Props) {
       ref={nodeRef}
       type="button"
       aria-label="game block"
-      style={{ width: '20px', height: '20px', backgroundColor }}
+      style={{ width: `${size}px`, height: `${size}px`, backgroundColor }}
       onClick={() => onClick(unit.coordinate)}
     />
   );

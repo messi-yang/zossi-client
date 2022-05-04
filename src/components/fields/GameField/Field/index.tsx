@@ -4,13 +4,14 @@ import { Units } from '../types';
 
 type Props = {
   units: Units;
+  unitSize: number;
 };
 
-function Field({ units }: Props) {
+function Field({ units, unitSize }: Props) {
   const onBlockClick = useCallback(() => {}, []);
 
   return (
-    <section style={{ display: 'inline-flex' }}>
+    <section style={{ display: 'flex' }}>
       {units.map((unitsRow) => (
         <section
           key={unitsRow[0].coordinate.x}
@@ -20,6 +21,7 @@ function Field({ units }: Props) {
             <Block
               key={`${unit.coordinate.x},${unit.coordinate.y}`}
               unit={unit}
+              size={unitSize}
               onClick={onBlockClick}
             />
           ))}

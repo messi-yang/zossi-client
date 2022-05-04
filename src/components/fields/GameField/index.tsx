@@ -3,12 +3,13 @@ import { Units } from './types';
 
 type Props = {
   units: Units;
+  unitSize: number;
 };
 
-function GameField({ units }: Props) {
+function GameField({ units, unitSize }: Props) {
   return (
     <section>
-      <Field units={units} />
+      <Field units={units} unitSize={unitSize} />
     </section>
   );
 }
