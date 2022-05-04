@@ -15,6 +15,6 @@ type Unit = {
 
 type Units = Unit[][];
 
-type Status = 'NOT_ESTABLISHED' | 'ESTABLISHED';
+type Status = 'OFFLINE' | 'ONLINE';
 
 export type { Coordinate, Area, Units, Status };

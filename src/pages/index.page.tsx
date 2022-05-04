@@ -4,17 +4,17 @@ import { useContext, useEffect } from 'react';
 
 import { wrapper } from '@/stores';
 import { getInitialLocale } from '@/utils/i18n';
-import GameSocketContext from '@/contexts/GameSocket';
+import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import type {
-  Area as GameSocketArea,
-  Units as GameSocketUnits,
-} from '@/contexts/GameSocket';
+  Area as GameOfLibertyArea,
+  Units as GameOfLibertyUnits,
+} from '@/contexts/GameOfLiberty';
 import GameField from '@/components/fields/GameField';
 import type { Units as GameFieldUnits } from '@/components/fields/GameField';
 
-function convertGameSocketUnitsToGameFieldUnits(
-  area: GameSocketArea,
-  units: GameSocketUnits
+function convertGameOfLibertyUnitsToGameFieldUnits(
+  area: GameOfLibertyArea,
+  units: GameOfLibertyUnits
 ): GameFieldUnits {
   const { from } = area;
   return units.map((rowUnits, rowIdx) =>
@@ -27,21 +27,12 @@ function convertGameSocketUnitsToGameFieldUnits(
 }
 
 const Home: NextPage = function Home() {
-  const { status, area, units, joinGame, watchGameBlock } =
-    useContext(GameSocketContext);
+  const { area, units, joinGame } = useContext(GameOfLibertyContext);
   useEffect(() => {
     joinGame();
   }, []);
-  useEffect(() => {
-    if (status === 'ESTABLISHED') {
-      watchGameBlock({
-        from: { x: 30, y: 30 },
-        to: { x: 60, y: 60 },
-      });
-    }
-  }, [status]);
 
-  const gameFieldUnits = convertGameSocketUnitsToGameFieldUnits(area, units);
+  const gameFieldUnits = convertGameOfLibertyUnitsToGameFieldUnits(area, units);
   return (
     <main>
       <GameField units={gameFieldUnits} />

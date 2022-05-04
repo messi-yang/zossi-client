@@ -1,33 +1,34 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import type { Status, Area, Units } from './types';
-import type { GameBlockUpdatedEvent } from './eventTypes';
-import type { WatchGameBlockAction } from './actionTypes';
+import { EventType } from './eventTypes';
+import type { Event } from './eventTypes';
+import type { WatchUnitsAction } from './actionTypes';
 
-type GameSocketContextValue = {
+type GameOfLibertyContextValue = {
   status: Status;
   area: Area;
   units: Units;
   joinGame: () => void;
-  watchGameBlock: (area: Area) => void;
+  watchUnits: (area: Area) => void;
   leaveGame: () => void;
 };
 
-function createInitialGameSocketContextValue(): GameSocketContextValue {
+function createInitialGameOfLibertyContextValue(): GameOfLibertyContextValue {
   return {
-    status: 'NOT_ESTABLISHED',
+    status: 'OFFLINE',
     area: {
       from: { x: 0, y: 0 },
       to: { x: 0, y: 0 },
     },
     units: [],
     joinGame: () => {},
-    watchGameBlock: () => {},
+    watchUnits: () => {},
     leaveGame: () => {},
   };
 }
 
-const GameSocketContext = createContext<GameSocketContextValue>(
-  createInitialGameSocketContextValue()
+const GameOfLibertyContext = createContext<GameOfLibertyContextValue>(
+  createInitialGameOfLibertyContextValue()
 );
 
 type Props = {
@@ -35,14 +36,15 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const initialGameSocketContextValue = createInitialGameSocketContextValue();
+  const initialGameOfLibertyContextValue =
+    createInitialGameOfLibertyContextValue();
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [area, setArea] = useState<Area>(initialGameSocketContextValue.area);
+  const [area, setArea] = useState<Area>(initialGameOfLibertyContextValue.area);
   const [units, setUnits] = useState<Units>(
-    initialGameSocketContextValue.units
+    initialGameOfLibertyContextValue.units
   );
   const [status, setStatus] = useState<Status>(
-    initialGameSocketContextValue.status
+    initialGameOfLibertyContextValue.status
   );
 
   const joinGame = useCallback(() => {
@@ -50,30 +52,30 @@ export function Provider({ children }: Props) {
     setSocket(newSocket);
 
     newSocket.onopen = () => {
-      setStatus('ESTABLISHED');
+      setStatus('ONLINE');
     };
 
     newSocket.onmessage = (evt: any) => {
-      const event: GameBlockUpdatedEvent = JSON.parse(evt.data);
-      if (event.type === 'GAME_BLOCK_UPDATED') {
+      const event: Event = JSON.parse(evt.data);
+      if (event.type === EventType.UnitsUpdated) {
         setArea(event.payload.area);
         setUnits(event.payload.units);
       }
     };
 
     newSocket.onclose = () => {
-      setStatus('NOT_ESTABLISHED');
+      setStatus('OFFLINE');
     };
   }, []);
 
-  const watchGameBlock = useCallback(
+  const watchUnits = useCallback(
     async (targetArea: Area) => {
       if (!socket) {
         return;
       }
 
-      const action: WatchGameBlockAction = {
-        type: 'WATCH_GAME_BLOCK',
+      const action: WatchUnitsAction = {
+        type: 'WATCH_UNITS',
         payload: {
           area: targetArea,
         },
@@ -88,28 +90,28 @@ export function Provider({ children }: Props) {
       return;
     }
 
-    setStatus('NOT_ESTABLISHED');
+    setStatus('OFFLINE');
     socket.close();
   }, [socket]);
 
-  const gameSocketContextValue = useMemo<GameSocketContextValue>(
+  const gameOfLibertyContextValue = useMemo<GameOfLibertyContextValue>(
     () => ({
       status,
       area,
       units,
       joinGame,
-      watchGameBlock,
+      watchUnits,
       leaveGame,
     }),
-    [status, units, joinGame, watchGameBlock, leaveGame]
+    [status, units, joinGame, watchUnits, leaveGame]
   );
 
   return (
-    <GameSocketContext.Provider value={gameSocketContextValue}>
+    <GameOfLibertyContext.Provider value={gameOfLibertyContextValue}>
       {children}
-    </GameSocketContext.Provider>
+    </GameOfLibertyContext.Provider>
   );
 }
 
-export default GameSocketContext;
+export default GameOfLibertyContext;
 export type { Area, Units };

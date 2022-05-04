@@ -6,7 +6,7 @@ export type Unit = {
   age: number;
 };
 
-export type Status = 'NOT_ESTABLISHED' | 'ESTABLISHED';
+export type Status = 'OFFLINE' | 'ONLINE';
 
 export type State = {
   status: Status;
@@ -16,7 +16,7 @@ export type State = {
 const slice = createSlice({
   name: 'gameOfLife',
   initialState: {
-    status: 'NOT_ESTABLISHED',
+    status: 'OFFLINE',
     units: [],
   } as State,
   reducers: {
