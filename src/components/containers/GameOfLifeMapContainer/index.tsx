@@ -1,4 +1,6 @@
 import { useRef, useContext, useEffect } from 'react';
+import debounce from 'lodash/debounce';
+
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import useElementResolutionCalculator from '@/hooks/useElementResolutionCalculator';
 import type {
@@ -28,27 +30,33 @@ type Props = {
 
 function GameOfLifeMapContainer({ unitSize }: Props) {
   const wrapperRef = useRef<HTMLElement>(null);
-  const [gameWidth, gameHeight] = useElementResolutionCalculator(
+  const [mapWidth, mapHeight] = useElementResolutionCalculator(
     wrapperRef,
     unitSize
   );
 
   const { area, units, status, watchUnits } = useContext(GameOfLibertyContext);
 
+  const debounceWatchUnits = debounce(watchUnits, 200);
+
   useEffect(() => {
     if (status === 'ONLINE') {
-      watchUnits({
+      debounceWatchUnits({
         from: {
           x: 0,
           y: 0,
         },
         to: {
-          x: gameWidth - 1,
-          y: gameHeight - 1,
+          x: mapWidth - 1,
+          y: mapHeight - 1,
         },
       });
     }
-  }, [status, gameWidth, gameHeight]);
+
+    return () => {
+      debounceWatchUnits.cancel();
+    };
+  }, [status, mapWidth, mapHeight]);
 
   const gameFieldUnits = convertGameOfLibertyUnitsToGameOfLifeMapUnits(
     area,
