@@ -3,6 +3,11 @@ type Coordinate = {
   y: number;
 };
 
+type MapSize = {
+  width: number;
+  height: number;
+};
+
 type Area = {
   from: Coordinate;
   to: Coordinate;
@@ -17,4 +22,4 @@ type Units = Unit[][];
 
 type Status = 'OFFLINE' | 'ONLINE';
 
-export type { Coordinate, Area, Units, Status };
+export type { Coordinate, Area, Units, Status, MapSize };
