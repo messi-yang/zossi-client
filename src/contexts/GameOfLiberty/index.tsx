@@ -1,4 +1,12 @@
-import { createContext, useCallback, useState, useMemo, useRef } from 'react';
+import {
+  createContext,
+  useCallback,
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+} from 'react';
+import cloneDeep from 'lodash/cloneDeep';
 import type { Status, MapSize, Coordinate, Area, Units } from './types';
 import { EventType } from './eventTypes';
 import type { Event } from './eventTypes';
@@ -114,20 +122,31 @@ export function Provider({ children }: Props) {
       setStatus('ONLINE');
     };
 
-    newSocket.onmessage = (evt: any) => {
-      const event: Event = JSON.parse(evt.data);
-      if (event.type === EventType.AreaUpdated) {
-        setArea(event.payload.area);
-        setUnits(event.payload.units);
-      } else if (event.type === EventType.InformationUpdated) {
-        setMapSize(event.payload.mapSize);
-      }
-    };
-
     newSocket.onclose = () => {
       setStatus('OFFLINE');
     };
   }, []);
+
+  useEffect(() => {
+    if (socketRef.current) {
+      socketRef.current.onmessage = (evt: any) => {
+        const event: Event = JSON.parse(evt.data);
+        if (event.type === EventType.UnitsUpdated) {
+          const newUnits = cloneDeep(units);
+          event.payload.items.forEach((item) => {
+            newUnits[item.coordinate.x][item.coordinate.y] = item.unit;
+          });
+
+          setUnits(newUnits);
+        } else if (event.type === EventType.AreaUpdated) {
+          setArea(event.payload.area);
+          setUnits(event.payload.units);
+        } else if (event.type === EventType.InformationUpdated) {
+          setMapSize(event.payload.mapSize);
+        }
+      };
+    }
+  }, [socketRef.current, units]);
 
   const gameOfLibertyContextValue = useMemo<GameOfLibertyContextValue>(
     () => ({

@@ -22,4 +22,4 @@ type Units = Unit[][];
 
 type Status = 'OFFLINE' | 'ONLINE';
 
-export type { Coordinate, Area, Units, Status, MapSize };
+export type { Coordinate, Area, Unit, Units, Status, MapSize };

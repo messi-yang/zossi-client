@@ -1,7 +1,8 @@
-import { Units, Area, MapSize } from './types';
+import { Unit, Units, Area, MapSize, Coordinate } from './types';
 
 enum EventType {
   InformationUpdated = 'INFORMATION_UPDATED',
+  UnitsUpdated = 'UNITS_UPDATED',
   AreaUpdated = 'AREA_UPDATED',
   PlayerJoined = 'PLAYER_JOINED',
 }
@@ -11,6 +12,16 @@ type InformationUpdatedEvent = {
   payload: {
     mapSize: MapSize;
     playersCount: number;
+  };
+};
+
+type UnitsUpdatedEvent = {
+  type: EventType.UnitsUpdated;
+  payload: {
+    items: {
+      coordinate: Coordinate;
+      unit: Unit;
+    }[];
   };
 };
 
@@ -27,12 +38,17 @@ type PlayerJoinedEvent = {
   payload: any;
 };
 
-type Event = InformationUpdatedEvent | AreaUpdatedEvent | PlayerJoinedEvent;
+type Event =
+  | InformationUpdatedEvent
+  | UnitsUpdatedEvent
+  | AreaUpdatedEvent
+  | PlayerJoinedEvent;
 
 export { EventType };
 export type {
   Event,
   InformationUpdatedEvent,
+  UnitsUpdatedEvent,
   AreaUpdatedEvent,
   PlayerJoinedEvent,
 };
