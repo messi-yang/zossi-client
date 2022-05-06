@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 
 import useHover from '@/hooks/useHover';
 import type { Unit, Coordinate } from '../types';
@@ -6,17 +6,22 @@ import styles from '../styles';
 
 type Props = {
   unit: Unit;
+  toBeRevived: boolean;
   hasBorder: boolean;
   onClick: (coordinate: Coordinate) => any;
   onHover: (coordinate: Coordinate) => any;
 };
 
-export default function UnitBox({ unit, hasBorder, onClick, onHover }: Props) {
+export default function UnitBox({
+  unit,
+  toBeRevived,
+  hasBorder,
+  onClick,
+  onHover,
+}: Props) {
   const nodeRef = useRef<HTMLButtonElement>(null);
-  const [hovered, setHovered] = useState<boolean>(false);
   const onHoverStateChange = useCallback(
     (newHovered) => {
-      setHovered(newHovered);
       if (newHovered) {
         onHover(unit.coordinate);
       }
@@ -26,7 +31,7 @@ export default function UnitBox({ unit, hasBorder, onClick, onHover }: Props) {
   useHover(nodeRef, onHoverStateChange);
 
   let backgroundColor;
-  if (hovered) {
+  if (toBeRevived) {
     backgroundColor = unit.alive
       ? styles.aliveUnitBoxHoverColor
       : styles.deadUnitBoxHoverColor;

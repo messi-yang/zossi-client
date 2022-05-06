@@ -74,9 +74,19 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     [reviveUnits]
   );
 
+  const relatCoordsForRevival = [
+    { x: 0, y: 0 },
+    { x: -1, y: -1 },
+    { x: 1, y: 1 },
+  ];
+
   return (
     <section ref={wrapperRef} style={{ width: '100%', height: '100%' }}>
-      <GameOfLifeMap units={gameFieldUnits} onUnitsRevive={onUnitsRevive} />
+      <GameOfLifeMap
+        units={gameFieldUnits}
+        relatCoordsForRevival={relatCoordsForRevival}
+        onUnitsRevive={onUnitsRevive}
+      />
     </section>
   );
 }
