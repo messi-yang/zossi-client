@@ -23,7 +23,7 @@ const Home: NextPage = function Home() {
   }, [status]);
 
   return (
-    <main style={{ width: '90vw', height: '90vh', margin: '5vh 5vw' }}>
+    <main style={{ width: '100vw', height: '100vh' }}>
       <GameOfLifeMapContainer unitSize={20} />
     </main>
   );

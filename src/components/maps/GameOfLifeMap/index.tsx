@@ -1,5 +1,6 @@
 import { Units, Coordinate } from './types';
 import UnitBox from './UnitBox';
+import styles from './styles';
 
 type WrapperProps = {
   children: JSX.Element;
@@ -15,15 +16,17 @@ function Wrapper({ children }: WrapperProps) {
 
 type UnitBoxesProps = {
   children: JSX.Element;
+  hasBorder: boolean;
 };
 
-function UnitBoxes({ children }: UnitBoxesProps) {
+function UnitBoxes({ children, hasBorder }: UnitBoxesProps) {
   return (
     <section
       style={{
         flexGrow: '1',
         display: 'flex',
         flexFlow: 'column',
+        borderRight: hasBorder ? `1px solid ${styles.unitBoxBorderColor}` : '',
       }}
     >
       {children}
@@ -43,13 +46,17 @@ function GameOfLifeMap({ units, onUnitsRevive }: Props) {
   return (
     <Wrapper>
       <>
-        {units.map((unitsRow) => (
-          <UnitBoxes key={unitsRow[0].coordinate.x}>
+        {units.map((unitsRow, unitsRowIndex) => (
+          <UnitBoxes
+            key={unitsRow[0].coordinate.x}
+            hasBorder={unitsRowIndex !== units.length - 1}
+          >
             <>
-              {unitsRow.map((unit) => (
+              {unitsRow.map((unit, unitIndex) => (
                 <UnitBox
                   key={`${unit.coordinate.x},${unit.coordinate.y}`}
                   unit={unit}
+                  hasBorder={unitIndex !== unitsRow.length - 1}
                   onClick={onUnitBoxClick}
                 />
               ))}
