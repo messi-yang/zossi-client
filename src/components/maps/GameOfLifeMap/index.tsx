@@ -42,6 +42,9 @@ type Props = {
 function GameOfLifeMap({ units, onUnitsRevive }: Props) {
   const onUnitBoxClick = (coordinate: Coordinate) =>
     onUnitsRevive([coordinate]);
+  const onUnitBoxHover = () => {
+    // console.log(coordinate);
+  };
 
   return (
     <Wrapper>
@@ -58,6 +61,7 @@ function GameOfLifeMap({ units, onUnitsRevive }: Props) {
                   unit={unit}
                   hasBorder={unitIndex !== unitsRow.length - 1}
                   onClick={onUnitBoxClick}
+                  onHover={onUnitBoxHover}
                 />
               ))}
             </>

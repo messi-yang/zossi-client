@@ -1,10 +1,15 @@
-import { useState, useCallback, RefObject, useEffect } from 'react';
+import { useCallback, RefObject, useEffect } from 'react';
 
-export default function useHover(ref: RefObject<HTMLElement>) {
-  const [hovered, setHovered] = useState<boolean>(false);
-
-  const handleMouseOver = useCallback(() => setHovered(true), []);
-  const handleMouseOut = useCallback(() => setHovered(false), []);
+export default function useHover(
+  ref: RefObject<HTMLElement>,
+  onHoverStateChange: (hovered: boolean) => any
+) {
+  const handleMouseOver = useCallback(() => {
+    onHoverStateChange(true);
+  }, [onHoverStateChange]);
+  const handleMouseOut = useCallback(() => {
+    onHoverStateChange(false);
+  }, [onHoverStateChange]);
 
   useEffect(() => {
     if (ref.current) {
@@ -19,6 +24,4 @@ export default function useHover(ref: RefObject<HTMLElement>) {
       }
     };
   }, [ref.current]);
-
-  return [hovered];
 }
