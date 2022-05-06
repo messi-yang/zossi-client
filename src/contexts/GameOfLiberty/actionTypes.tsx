@@ -1,15 +1,15 @@
 import { Area } from './types';
 
-type WatchUnitsAction = {
-  type: 'WATCH_UNITS';
+type WatchAreaAction = {
+  type: 'WATCH_AREA';
   payload: {
     area: Area;
   };
 };
 
-type MockAction = {
-  type: 'MOCK_ACTION';
+type ReviveUnitsAction = {
+  type: 'REVIVE_UNITS';
   payload: {};
 };
 
-export type { WatchUnitsAction, MockAction };
+export type { WatchAreaAction, ReviveUnitsAction };

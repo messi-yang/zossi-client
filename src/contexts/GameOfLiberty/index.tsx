@@ -1,8 +1,8 @@
-import { createContext, useCallback, useState, useMemo } from 'react';
-import type { Status, MapSize, Area, Units } from './types';
+import { createContext, useCallback, useState, useMemo, useRef } from 'react';
+import type { Status, MapSize, Coordinate, Area, Units } from './types';
 import { EventType } from './eventTypes';
 import type { Event } from './eventTypes';
-import type { WatchUnitsAction } from './actionTypes';
+import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type GameOfLibertyContextValue = {
   status: Status;
@@ -10,7 +10,8 @@ type GameOfLibertyContextValue = {
   area: Area;
   units: Units;
   joinGame: () => void;
-  watchUnits: (area: Area) => void;
+  reviveUnits: (coordinates: Coordinate[]) => void;
+  watchArea: (area: Area) => void;
   leaveGame: () => void;
 };
 
@@ -27,7 +28,8 @@ function createInitialGameOfLibertyContextValue(): GameOfLibertyContextValue {
     },
     units: [],
     joinGame: () => {},
-    watchUnits: () => {},
+    reviveUnits: () => {},
+    watchArea: () => {},
     leaveGame: () => {},
   };
 }
@@ -43,7 +45,7 @@ type Props = {
 export function Provider({ children }: Props) {
   const initialGameOfLibertyContextValue =
     createInitialGameOfLibertyContextValue();
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
   const [mapSize, setMapSize] = useState<MapSize>(
     initialGameOfLibertyContextValue.mapSize
   );
@@ -55,38 +57,58 @@ export function Provider({ children }: Props) {
     initialGameOfLibertyContextValue.status
   );
 
-  const watchUnits = useCallback(
-    async (targetArea: Area) => {
-      if (!socket) {
+  const reviveUnits = useCallback(
+    (coordinates: Coordinate[]) => {
+      if (!socketRef.current) {
         return;
       }
       if (status !== 'ONLINE') {
         return;
       }
 
-      const action: WatchUnitsAction = {
-        type: 'WATCH_UNITS',
+      const action: ReviveUnitsAction = {
+        type: 'REVIVE_UNITS',
+        payload: {
+          coordinates,
+        },
+      };
+      socketRef.current.send(JSON.stringify(action));
+    },
+    [socketRef.current, status]
+  );
+
+  const watchArea = useCallback(
+    (targetArea: Area) => {
+      if (!socketRef.current) {
+        return;
+      }
+      if (status !== 'ONLINE') {
+        return;
+      }
+
+      const action: WatchAreaAction = {
+        type: 'WATCH_AREA',
         payload: {
           area: targetArea,
         },
       };
-      socket.send(JSON.stringify(action));
+      socketRef.current.send(JSON.stringify(action));
     },
-    [socket, status]
+    [socketRef.current, status]
   );
 
   const leaveGame = useCallback(() => {
-    if (!socket) {
+    if (!socketRef.current) {
       return;
     }
 
     setStatus('OFFLINE');
-    socket.close();
-  }, [socket]);
+    socketRef.current.close();
+  }, [socketRef.current]);
 
   const joinGame = useCallback(() => {
     const newSocket = new WebSocket('ws://localhost:8080/ws/game/');
-    setSocket(newSocket);
+    socketRef.current = newSocket;
 
     newSocket.onopen = () => {
       setStatus('ONLINE');
@@ -94,7 +116,7 @@ export function Provider({ children }: Props) {
 
     newSocket.onmessage = (evt: any) => {
       const event: Event = JSON.parse(evt.data);
-      if (event.type === EventType.UnitsUpdated) {
+      if (event.type === EventType.AreaUpdated) {
         setArea(event.payload.area);
         setUnits(event.payload.units);
       } else if (event.type === EventType.InformationUpdated) {
@@ -114,10 +136,11 @@ export function Provider({ children }: Props) {
       area,
       units,
       joinGame,
-      watchUnits,
+      reviveUnits,
+      watchArea,
       leaveGame,
     }),
-    [status, units, joinGame, watchUnits, leaveGame]
+    [status, units, joinGame, watchArea, leaveGame]
   );
 
   return (

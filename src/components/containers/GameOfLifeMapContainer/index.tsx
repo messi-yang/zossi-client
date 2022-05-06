@@ -1,4 +1,4 @@
-import { useRef, useContext, useEffect } from 'react';
+import { useRef, useContext, useEffect, useCallback } from 'react';
 import debounce from 'lodash/debounce';
 
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
@@ -8,7 +8,10 @@ import type {
   Units as GameOfLibertyUnits,
 } from '@/contexts/GameOfLiberty';
 import GameOfLifeMap from '@/components/maps/GameOfLifeMap';
-import type { Units as GameOfLifeMapUnits } from '@/components/maps/GameOfLifeMap';
+import type {
+  Units as GameOfLifeMapUnits,
+  Coordinate as GameOfLifeCoordinate,
+} from '@/components/maps/GameOfLifeMap';
 
 function convertGameOfLibertyUnitsToGameOfLifeMapUnits(
   area: GameOfLibertyArea,
@@ -35,13 +38,14 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     unitSize
   );
 
-  const { area, units, status, watchUnits } = useContext(GameOfLibertyContext);
+  const { area, units, status, reviveUnits, watchArea } =
+    useContext(GameOfLibertyContext);
 
-  const debounceWatchUnits = debounce(watchUnits, 200);
+  const debounceWatchArea = debounce(watchArea, 200);
 
   useEffect(() => {
     if (status === 'ONLINE') {
-      debounceWatchUnits({
+      debounceWatchArea({
         from: {
           x: 0,
           y: 0,
@@ -54,7 +58,7 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     }
 
     return () => {
-      debounceWatchUnits.cancel();
+      debounceWatchArea.cancel();
     };
   }, [status, mapWidth, mapHeight]);
 
@@ -63,9 +67,16 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     units
   );
 
+  const onUnitsRevive = useCallback(
+    (coordinates: GameOfLifeCoordinate[]) => {
+      reviveUnits(coordinates);
+    },
+    [reviveUnits]
+  );
+
   return (
     <section ref={wrapperRef} style={{ width: '100%', height: '100%' }}>
-      <GameOfLifeMap units={gameFieldUnits} />
+      <GameOfLifeMap units={gameFieldUnits} onUnitsRevive={onUnitsRevive} />
     </section>
   );
 }

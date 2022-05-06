@@ -1,5 +1,4 @@
-import { useCallback } from 'react';
-import { Units } from './types';
+import { Units, Coordinate } from './types';
 import UnitBox from './UnitBox';
 
 type WrapperProps = {
@@ -34,12 +33,12 @@ function UnitBoxes({ children }: UnitBoxesProps) {
 
 type Props = {
   units: Units;
+  onUnitsRevive: (coordinates: Coordinate[]) => any;
 };
 
-function GameOfLifeMap({ units }: Props) {
-  const onUnitBoxClick = useCallback(() => {
-    // console.log(coord);
-  }, []);
+function GameOfLifeMap({ units, onUnitsRevive }: Props) {
+  const onUnitBoxClick = (coordinate: Coordinate) =>
+    onUnitsRevive([coordinate]);
 
   return (
     <Wrapper>
@@ -63,4 +62,4 @@ function GameOfLifeMap({ units }: Props) {
 }
 
 export default GameOfLifeMap;
-export type { Units };
+export type { Units, Coordinate };
