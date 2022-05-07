@@ -2,7 +2,7 @@ import { useRef, useContext, useEffect, useCallback } from 'react';
 import debounce from 'lodash/debounce';
 
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
-import useElementResolutionCalculator from '@/hooks/useElementResolutionCalculator';
+import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import type {
   Area as GameOfLibertyArea,
   Units as GameOfLibertyUnits,
@@ -12,6 +12,7 @@ import type {
   Units as GameOfLifeMapUnits,
   Coordinate as GameOfLifeCoordinate,
 } from '@/components/maps/GameOfLifeMap';
+import useDomRect from '@/hooks/useDomRect';
 
 function convertGameOfLibertyUnitsToGameOfLifeMapUnits(
   area: GameOfLibertyArea,
@@ -33,8 +34,9 @@ type Props = {
 
 function GameOfLifeMapContainer({ unitSize }: Props) {
   const wrapperRef = useRef<HTMLElement>(null);
-  const [mapWidth, mapHeight] = useElementResolutionCalculator(
-    wrapperRef,
+  const wrapperRect = useDomRect(wrapperRef);
+  const [mapWidth, mapHeight] = useResolutionCalculator(
+    { width: wrapperRect.width, height: wrapperRect.height },
     unitSize
   );
 
