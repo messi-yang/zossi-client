@@ -3,6 +3,7 @@ import { useRef, useCallback } from 'react';
 import useHover from '@/hooks/useHover';
 import type { Unit, Coordinate } from '../types';
 import styles from '../styles';
+import dataTestidMap from '../dataTestid';
 
 type Props = {
   unit: Unit;
@@ -42,7 +43,10 @@ export default function UnitBox({
   }
 
   return (
-    <section style={{ flexGrow: '1', display: 'flex' }}>
+    <section
+      data-testid={dataTestidMap.unitBox}
+      style={{ flexGrow: '1', display: 'flex' }}
+    >
       <button
         ref={nodeRef}
         type="button"

@@ -2,6 +2,7 @@ import { useState, useCallback, memo } from 'react';
 import { Units, Coordinate } from './types';
 import UnitBox from './UnitBox';
 import styles from './styles';
+import dataTestidMap from './dataTestid';
 
 type WrapperProps = {
   children: JSX.Element;
@@ -9,7 +10,10 @@ type WrapperProps = {
 
 function Wrapper({ children }: WrapperProps) {
   return (
-    <section style={{ width: '100%', height: '100%', display: 'flex' }}>
+    <section
+      data-testid={dataTestidMap.wrapper}
+      style={{ width: '100%', height: '100%', display: 'flex' }}
+    >
       {children}
     </section>
   );
@@ -87,7 +91,7 @@ function GameOfLifeMap({ units, relatCoordsForRevival, onUnitsRevive }: Props) {
     setHoveredCoordinate(coordinate);
   }, []);
   function isUnitToBeRevived(coordinate: Coordinate): boolean {
-    if (!hoveredCoordinate || !relatCoordsForRevival) {
+    if (!hoveredCoordinate || relatCoordsForRevival.length === 0) {
       return false;
     }
 
