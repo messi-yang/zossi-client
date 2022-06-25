@@ -18,10 +18,8 @@ type InformationUpdatedEvent = {
 type UnitsUpdatedEvent = {
   type: EventType.UnitsUpdated;
   payload: {
-    items: {
-      coordinate: Coordinate;
-      unit: Unit;
-    }[];
+    coordinates: Coordinate[];
+    units: Unit[];
   };
 };
 
