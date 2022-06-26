@@ -8,8 +8,9 @@ import {
 } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import type { AreaDTO, CoordinateDTO, MapSizeDTO, UnitDTO } from '@/dto';
-import { EventType } from './eventTypes';
+import { EventTypeEnum } from './eventTypes';
 import type { Event } from './eventTypes';
+import { ActionTypeEnum } from './actionTypes';
 import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
@@ -79,7 +80,7 @@ export function Provider({ children }: Props) {
       }
 
       const action: ReviveUnitsAction = {
-        type: 'REVIVE_UNITS',
+        type: ActionTypeEnum.ReviveUnits,
         payload: {
           coordinates,
         },
@@ -99,7 +100,7 @@ export function Provider({ children }: Props) {
       }
 
       const action: WatchAreaAction = {
-        type: 'WATCH_AREA',
+        type: ActionTypeEnum.WatchArea,
         payload: {
           area: targetArea,
         },
@@ -135,17 +136,17 @@ export function Provider({ children }: Props) {
     if (socketRef.current) {
       socketRef.current.onmessage = (evt: any) => {
         const event: Event = JSON.parse(evt.data);
-        if (event.type === EventType.UnitsUpdated) {
+        if (event.type === EventTypeEnum.CoordinatesUpdated) {
           const newUnits = cloneDeep(units);
           event.payload.coordinates.forEach((coord, idx) => {
             newUnits[coord.x][coord.y] = event.payload.units[idx];
           });
 
           setUnits(newUnits);
-        } else if (event.type === EventType.AreaUpdated) {
+        } else if (event.type === EventTypeEnum.AreaUpdated) {
           setArea(event.payload.area);
           setUnits(event.payload.units);
-        } else if (event.type === EventType.InformationUpdated) {
+        } else if (event.type === EventTypeEnum.InformationUpdated) {
           setMapSize(event.payload.mapSize);
         }
       };
