@@ -137,7 +137,6 @@ export function Provider({ children }: Props) {
         const event: Event = JSON.parse(evt.data);
         if (event.type === EventType.UnitsUpdated) {
           const newUnits = cloneDeep(units);
-          console.log(event);
           event.payload.coordinates.forEach((coord, idx) => {
             newUnits[coord.x][coord.y] = event.payload.units[idx];
           });

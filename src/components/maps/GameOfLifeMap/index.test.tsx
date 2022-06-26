@@ -1,9 +1,9 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameOfLifeMap from '.';
 import dataTestidMap from './dataTestid';
-import { Units } from './types';
+import { Unit } from './types';
 
-function renderGameOfLifeMap(units: Units): RenderResult {
+function renderGameOfLifeMap(units: Unit[][]): RenderResult {
   return render(
     <GameOfLifeMap
       units={units}
@@ -13,8 +13,8 @@ function renderGameOfLifeMap(units: Units): RenderResult {
   );
 }
 
-function generateLiveUnits(width: number, height: number): Units {
-  const units: Units = [];
+function generateLiveUnits(width: number, height: number): Unit[][] {
+  const units: Unit[][] = [];
 
   for (let x = 0; x < width; x += 1) {
     units.push([]);
@@ -37,18 +37,16 @@ describe('GameOfLifeMap', () => {
       const wrapper = screen.getByTestId(dataTestidMap.wrapper);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {
-      console.error(e);
       expect(true).toBe(false);
     }
   });
   it('Should render 3x3 unit boxes.', () => {
     try {
-      const units: Units = generateLiveUnits(3, 3);
+      const units: Unit[][] = generateLiveUnits(3, 3);
       renderGameOfLifeMap(units);
       const unitBoxes = screen.getAllByTestId(dataTestidMap.unitBox);
       expect(unitBoxes.length).toBe(9);
     } catch (e) {
-      console.error(e);
       expect(true).toBe(false);
     }
   });
