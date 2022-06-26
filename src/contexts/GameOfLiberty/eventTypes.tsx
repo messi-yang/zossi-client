@@ -10,7 +10,6 @@ type InformationUpdatedEvent = {
   type: EventType.InformationUpdated;
   payload: {
     mapSize: MapSizeDTO;
-    playersCount: number;
   };
 };
 
