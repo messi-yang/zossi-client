@@ -4,7 +4,6 @@ enum EventType {
   InformationUpdated = 'INFORMATION_UPDATED',
   UnitsUpdated = 'UNITS_UPDATED',
   AreaUpdated = 'AREA_UPDATED',
-  PlayerJoined = 'PLAYER_JOINED',
 }
 
 type InformationUpdatedEvent = {
@@ -31,16 +30,7 @@ type AreaUpdatedEvent = {
   };
 };
 
-type PlayerJoinedEvent = {
-  type: EventType.PlayerJoined;
-  payload: any;
-};
-
-type Event =
-  | InformationUpdatedEvent
-  | UnitsUpdatedEvent
-  | AreaUpdatedEvent
-  | PlayerJoinedEvent;
+type Event = InformationUpdatedEvent | UnitsUpdatedEvent | AreaUpdatedEvent;
 
 export { EventType };
 export type {
@@ -48,5 +38,4 @@ export type {
   InformationUpdatedEvent,
   UnitsUpdatedEvent,
   AreaUpdatedEvent,
-  PlayerJoinedEvent,
 };
