@@ -1,9 +1,9 @@
-import { Area } from './types';
+import { AreaDTO } from '@/dto';
 
 type WatchAreaAction = {
   type: 'WATCH_AREA';
   payload: {
-    area: Area;
+    area: AreaDTO;
   };
 };
 

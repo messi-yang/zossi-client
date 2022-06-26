@@ -1,5 +1,5 @@
 import { useState, useCallback, memo } from 'react';
-import { Units, Coordinate } from './types';
+import type { Unit, Coordinate } from './types';
 import UnitBox from './UnitBox';
 import styles from './styles';
 import dataTestidMap from './dataTestid';
@@ -40,7 +40,7 @@ function UnitBoxes({ children, hasBorder }: UnitBoxesProps) {
 }
 
 type Props = {
-  units: Units;
+  units: Unit[][];
   relatCoordsForRevival: Coordinate[];
   onUnitsRevive: (coordinates: Coordinate[]) => any;
 };
@@ -130,4 +130,3 @@ function GameOfLifeMap({ units, relatCoordsForRevival, onUnitsRevive }: Props) {
 }
 
 export default GameOfLifeMap;
-export type { Units, Coordinate };

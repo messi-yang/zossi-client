@@ -1,4 +1,4 @@
-import { Unit, Units, Area, MapSize, Coordinate } from './types';
+import type { AreaDTO, CoordinateDTO, MapSizeDTO, UnitDTO } from '@/dto';
 
 enum EventType {
   InformationUpdated = 'INFORMATION_UPDATED',
@@ -10,7 +10,7 @@ enum EventType {
 type InformationUpdatedEvent = {
   type: EventType.InformationUpdated;
   payload: {
-    mapSize: MapSize;
+    mapSize: MapSizeDTO;
     playersCount: number;
   };
 };
@@ -18,16 +18,16 @@ type InformationUpdatedEvent = {
 type UnitsUpdatedEvent = {
   type: EventType.UnitsUpdated;
   payload: {
-    coordinates: Coordinate[];
-    units: Unit[];
+    coordinates: CoordinateDTO[];
+    units: UnitDTO[];
   };
 };
 
 type AreaUpdatedEvent = {
   type: EventType.AreaUpdated;
   payload: {
-    area: Area;
-    units: Units;
+    area: AreaDTO;
+    units: UnitDTO[][];
   };
 };
 

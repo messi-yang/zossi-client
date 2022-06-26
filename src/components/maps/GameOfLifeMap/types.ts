@@ -8,5 +8,3 @@ export type Unit = {
   alive: boolean;
   age: number;
 };
-
-export type Units = Unit[][];

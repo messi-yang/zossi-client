@@ -3,21 +3,15 @@ import debounce from 'lodash/debounce';
 
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import type {
-  Area as GameOfLibertyArea,
-  Units as GameOfLibertyUnits,
-} from '@/contexts/GameOfLiberty';
+import type { AreaDTO, UnitDTO } from '@/dto';
 import GameOfLifeMap from '@/components/maps/GameOfLifeMap';
-import type {
-  Units as GameOfLifeMapUnits,
-  Coordinate as GameOfLifeCoordinate,
-} from '@/components/maps/GameOfLifeMap';
+import type { Unit, Coordinate } from '@/components/maps/GameOfLifeMap/types';
 import useDomRect from '@/hooks/useDomRect';
 
 function convertGameOfLibertyUnitsToGameOfLifeMapUnits(
-  area: GameOfLibertyArea,
-  units: GameOfLibertyUnits
-): GameOfLifeMapUnits {
+  area: AreaDTO,
+  units: UnitDTO[][]
+): Unit[][] {
   const { from } = area;
   return units.map((rowUnits, rowIdx) =>
     rowUnits.map((unit, colIdx) => ({
@@ -70,7 +64,7 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
   );
 
   const onUnitsRevive = useCallback(
-    (coordinates: GameOfLifeCoordinate[]) => {
+    (coordinates: Coordinate[]) => {
       reviveUnits(coordinates);
     },
     [reviveUnits]

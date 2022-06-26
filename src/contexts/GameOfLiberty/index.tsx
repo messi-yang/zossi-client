@@ -7,19 +7,21 @@ import {
   useEffect,
 } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import type { Status, MapSize, Coordinate, Area, Units } from './types';
+import type { AreaDTO, CoordinateDTO, MapSizeDTO, UnitDTO } from '@/dto';
 import { EventType } from './eventTypes';
 import type { Event } from './eventTypes';
 import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
+type Status = 'OFFLINE' | 'ONLINE';
+
 type GameOfLibertyContextValue = {
   status: Status;
-  mapSize: MapSize;
-  area: Area;
-  units: Units;
+  mapSize: MapSizeDTO;
+  area: AreaDTO;
+  units: UnitDTO[][];
   joinGame: () => void;
-  reviveUnits: (coordinates: Coordinate[]) => void;
-  watchArea: (area: Area) => void;
+  reviveUnits: (coordinates: CoordinateDTO[]) => void;
+  watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
 };
 
@@ -54,11 +56,13 @@ export function Provider({ children }: Props) {
   const initialGameOfLibertyContextValue =
     createInitialGameOfLibertyContextValue();
   const socketRef = useRef<WebSocket | null>(null);
-  const [mapSize, setMapSize] = useState<MapSize>(
+  const [mapSize, setMapSize] = useState<MapSizeDTO>(
     initialGameOfLibertyContextValue.mapSize
   );
-  const [area, setArea] = useState<Area>(initialGameOfLibertyContextValue.area);
-  const [units, setUnits] = useState<Units>(
+  const [area, setArea] = useState<AreaDTO>(
+    initialGameOfLibertyContextValue.area
+  );
+  const [units, setUnits] = useState<UnitDTO[][]>(
     initialGameOfLibertyContextValue.units
   );
   const [status, setStatus] = useState<Status>(
@@ -66,7 +70,7 @@ export function Provider({ children }: Props) {
   );
 
   const reviveUnits = useCallback(
-    (coordinates: Coordinate[]) => {
+    (coordinates: CoordinateDTO[]) => {
       if (!socketRef.current) {
         return;
       }
@@ -86,7 +90,7 @@ export function Provider({ children }: Props) {
   );
 
   const watchArea = useCallback(
-    (targetArea: Area) => {
+    (targetArea: AreaDTO) => {
       if (!socketRef.current) {
         return;
       }
@@ -171,4 +175,3 @@ export function Provider({ children }: Props) {
 }
 
 export default GameOfLibertyContext;
-export type { Area, Units };
