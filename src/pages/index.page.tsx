@@ -5,6 +5,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { wrapper } from '@/stores';
 import { getInitialLocale } from '@/utils/i18n';
 import GameOfLifeMapContainer from '@/components/containers/GameOfLifeMapContainer';
+import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 
 const Home: NextPage = function Home() {
@@ -23,8 +24,13 @@ const Home: NextPage = function Home() {
   }, [status]);
 
   return (
-    <main style={{ width: '100vw', height: '100vh' }}>
-      <GameOfLifeMapContainer unitSize={20} />
+    <main style={{ width: '100vw', height: '100vh', display: 'flex' }}>
+      <section style={{ flexShrink: '0', height: '100%' }}>
+        <GameRoomSideBar />
+      </section>
+      <section style={{ flexGrow: '1' }}>
+        <GameOfLifeMapContainer unitSize={20} />
+      </section>
     </main>
   );
 };
