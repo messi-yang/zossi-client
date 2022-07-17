@@ -1,19 +1,23 @@
 import { useRef, useCallback } from 'react';
 
 import useHover from '@/hooks/useHover';
-import type { Unit, Coordinate } from '../types';
+import type { Unit } from '../types';
 import styles from '../styles';
 import dataTestidMap from '../dataTestid';
 
 type Props = {
+  coordinateX: number;
+  coordinateY: number;
   unit: Unit;
   toBeRevived: boolean;
   hasBorder: boolean;
-  onClick: (coordinate: Coordinate) => any;
-  onHover: (coordinate: Coordinate) => any;
+  onClick: (coordinateX: number, coordinateY: number) => any;
+  onHover: (coordinateX: number, coordinateY: number) => any;
 };
 
 export default function UnitBox({
+  coordinateX,
+  coordinateY,
   unit,
   toBeRevived,
   hasBorder,
@@ -24,7 +28,7 @@ export default function UnitBox({
   const onHoverStateChange = useCallback(
     (newHovered) => {
       if (newHovered) {
-        onHover(unit.coordinate);
+        onHover(coordinateX, coordinateY);
       }
     },
     [unit]
@@ -58,7 +62,7 @@ export default function UnitBox({
             ? `1px solid ${styles.unitBoxBorderColor}`
             : '',
         }}
-        onClick={() => onClick(unit.coordinate)}
+        onClick={() => onClick(coordinateX, coordinateY)}
       />
     </section>
   );

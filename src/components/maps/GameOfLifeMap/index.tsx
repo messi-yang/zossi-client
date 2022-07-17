@@ -1,11 +1,12 @@
 import { useState, useCallback, memo } from 'react';
-import type { Unit, Coordinate } from './types';
+import type { Area, Unit, Coordinate } from './types';
 import UnitBox from './UnitBox';
 import UnitBoxeWrapper from './UnitBoxWrapper';
 import Wrapper from './Wrapper';
 import { getRelativeCoordinate, isCoordInRelatCoordsForRevival } from './utils';
 
 type Props = {
+  area: Area;
   units: Unit[][];
   relatCoordsForRevival: Coordinate[];
   onUnitsRevive: (coordinates: Coordinate[]) => any;
@@ -13,12 +14,18 @@ type Props = {
 
 const UnitBoxMemo = memo(UnitBox);
 
-function GameOfLifeMap({ units, relatCoordsForRevival, onUnitsRevive }: Props) {
+function GameOfLifeMap({
+  area,
+  units,
+  relatCoordsForRevival,
+  onUnitsRevive,
+}: Props) {
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
     null
   );
   const onUnitBoxClick = useCallback(
-    (coordinate: Coordinate) => {
+    (coordinateX: number, coordinateY: number) => {
+      const coordinate = { x: coordinateX, y: coordinateY };
       const coordinatesToRevive = relatCoordsForRevival.map((relatCoord) =>
         getRelativeCoordinate(coordinate, relatCoord)
       );
@@ -27,9 +34,13 @@ function GameOfLifeMap({ units, relatCoordsForRevival, onUnitsRevive }: Props) {
     },
     [relatCoordsForRevival]
   );
-  const onUnitBoxHover = useCallback((coordinate: Coordinate) => {
-    setHoveredCoordinate(coordinate);
-  }, []);
+  const onUnitBoxHover = useCallback(
+    (coordinateX: number, coordinateY: number) => {
+      const coordinate = { x: coordinateX, y: coordinateY };
+      setHoveredCoordinate(coordinate);
+    },
+    []
+  );
   function isUnitToBeRevived(coordinate: Coordinate): boolean {
     if (!hoveredCoordinate || relatCoordsForRevival.length === 0) {
       return false;
@@ -47,20 +58,28 @@ function GameOfLifeMap({ units, relatCoordsForRevival, onUnitsRevive }: Props) {
       <>
         {units.map((unitsRow, unitsRowIndex) => (
           <UnitBoxeWrapper
-            key={unitsRow[0].coordinate.x}
+            key={`${area.from.x + unitsRowIndex}`}
             hasBorder={unitsRowIndex !== units.length - 1}
           >
             <>
-              {unitsRow.map((unit, unitIndex) => (
-                <UnitBoxMemo
-                  key={`${unit.coordinate.x},${unit.coordinate.y}`}
-                  unit={unit}
-                  toBeRevived={isUnitToBeRevived(unit.coordinate)}
-                  hasBorder={unitIndex !== unitsRow.length - 1}
-                  onClick={onUnitBoxClick}
-                  onHover={onUnitBoxHover}
-                />
-              ))}
+              {unitsRow.map((unit, unitIndex) => {
+                const coordinate = {
+                  x: area.from.x + unitsRowIndex,
+                  y: area.from.y + unitIndex,
+                };
+                return (
+                  <UnitBoxMemo
+                    key={`${coordinate.x},${coordinate.y}`}
+                    coordinateX={coordinate.x}
+                    coordinateY={coordinate.y}
+                    unit={unit}
+                    toBeRevived={isUnitToBeRevived(coordinate)}
+                    hasBorder={unitIndex !== unitsRow.length - 1}
+                    onClick={onUnitBoxClick}
+                    onHover={onUnitBoxHover}
+                  />
+                );
+              })}
             </>
           </UnitBoxeWrapper>
         ))}

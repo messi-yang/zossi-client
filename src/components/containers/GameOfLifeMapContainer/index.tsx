@@ -79,6 +79,7 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
   return (
     <section ref={wrapperRef} style={{ width: '100%', height: '100%' }}>
       <GameOfLifeMap
+        area={area}
         units={gameFieldUnits}
         relatCoordsForRevival={relatCoordsForRevival}
         onUnitsRevive={onUnitsRevive}

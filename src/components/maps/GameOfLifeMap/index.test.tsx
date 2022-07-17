@@ -6,6 +6,10 @@ import { Unit } from './types';
 function renderGameOfLifeMap(units: Unit[][]): RenderResult {
   return render(
     <GameOfLifeMap
+      area={{
+        from: { x: 0, y: 0 },
+        to: { x: units.length - 1, y: units.length - 1 },
+      }}
       units={units}
       relatCoordsForRevival={[]}
       onUnitsRevive={() => {}}
@@ -20,7 +24,6 @@ function generateLiveUnits(width: number, height: number): Unit[][] {
     units.push([]);
     for (let y = 0; y < height; y += 1) {
       units[x].push({
-        coordinate: { x, y },
         alive: true,
         age: 0,
       });

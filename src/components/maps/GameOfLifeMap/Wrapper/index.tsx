@@ -1,4 +1,4 @@
-import dataTestidMap from './dataTestid';
+import dataTestidMap from '../dataTestid';
 
 type WrapperProps = {
   children: JSX.Element;

@@ -3,8 +3,12 @@ export type Coordinate = {
   y: number;
 };
 
+export type Area = {
+  from: Coordinate;
+  to: Coordinate;
+};
+
 export type Unit = {
-  coordinate: Coordinate;
   alive: boolean;
   age: number;
 };
