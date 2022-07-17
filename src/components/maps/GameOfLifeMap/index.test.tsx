@@ -1,6 +1,6 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameOfLifeMap from '.';
-import dataTestidMap from './dataTestid';
+import dataTestidMap from './dataTestidMap';
 import { Unit } from './types';
 
 function renderGameOfLifeMap(units: Unit[][]): RenderResult {

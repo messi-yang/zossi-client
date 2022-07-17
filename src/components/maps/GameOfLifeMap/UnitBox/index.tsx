@@ -2,7 +2,7 @@ import { useRef, useCallback } from 'react';
 
 import useHover from '@/hooks/useHover';
 import styles from '../styles';
-import dataTestidMap from '../dataTestid';
+import dataTestidMap from '../dataTestidMap';
 
 type Props = {
   coordinateX: number;
