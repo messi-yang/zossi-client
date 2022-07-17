@@ -1,14 +1,13 @@
 import { useRef, useCallback } from 'react';
 
 import useHover from '@/hooks/useHover';
-import type { Unit } from '../types';
 import styles from '../styles';
 import dataTestidMap from '../dataTestid';
 
 type Props = {
   coordinateX: number;
   coordinateY: number;
-  unit: Unit;
+  alive: boolean;
   toBeRevived: boolean;
   hasBorder: boolean;
   onClick: (coordinateX: number, coordinateY: number) => any;
@@ -18,7 +17,7 @@ type Props = {
 export default function UnitBox({
   coordinateX,
   coordinateY,
-  unit,
+  alive,
   toBeRevived,
   hasBorder,
   onClick,
@@ -31,17 +30,17 @@ export default function UnitBox({
         onHover(coordinateX, coordinateY);
       }
     },
-    [unit]
+    [alive]
   );
   useHover(nodeRef, onHoverStateChange);
 
   let backgroundColor;
   if (toBeRevived) {
-    backgroundColor = unit.alive
+    backgroundColor = alive
       ? styles.aliveUnitBoxHoverColor
       : styles.deadUnitBoxHoverColor;
   } else {
-    backgroundColor = unit.alive
+    backgroundColor = alive
       ? styles.aliveUnitBoxColor
       : styles.deadUnitBoxColor;
   }

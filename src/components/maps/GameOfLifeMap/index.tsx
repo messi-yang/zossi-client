@@ -72,7 +72,7 @@ function GameOfLifeMap({
                     key={`${coordinate.x},${coordinate.y}`}
                     coordinateX={coordinate.x}
                     coordinateY={coordinate.y}
-                    unit={unit}
+                    alive={unit.alive}
                     toBeRevived={isUnitToBeRevived(coordinate)}
                     hasBorder={unitIndex !== unitsRow.length - 1}
                     onClick={onUnitBoxClick}
