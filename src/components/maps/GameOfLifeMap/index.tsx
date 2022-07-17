@@ -1,43 +1,9 @@
 import { useState, useCallback, memo } from 'react';
 import type { Unit, Coordinate } from './types';
 import UnitBox from './UnitBox';
-import styles from './styles';
-import dataTestidMap from './dataTestid';
-
-type WrapperProps = {
-  children: JSX.Element;
-};
-
-function Wrapper({ children }: WrapperProps) {
-  return (
-    <section
-      data-testid={dataTestidMap.wrapper}
-      style={{ width: '100%', height: '100%', display: 'flex' }}
-    >
-      {children}
-    </section>
-  );
-}
-
-type UnitBoxesProps = {
-  children: JSX.Element;
-  hasBorder: boolean;
-};
-
-function UnitBoxes({ children, hasBorder }: UnitBoxesProps) {
-  return (
-    <section
-      style={{
-        flexGrow: '1',
-        display: 'flex',
-        flexFlow: 'column',
-        borderRight: hasBorder ? `1px solid ${styles.unitBoxBorderColor}` : '',
-      }}
-    >
-      {children}
-    </section>
-  );
-}
+import UnitBoxeWrapper from './UnitBoxWrapper';
+import Wrapper from './Wrapper';
+import { getRelativeCoordinate, isCoordInRelatCoordsForRevival } from './utils';
 
 type Props = {
   units: Unit[][];
@@ -46,32 +12,6 @@ type Props = {
 };
 
 const UnitBoxMemo = memo(UnitBox);
-
-function getRelativeCoordinate(
-  originCoord: Coordinate,
-  relativeCoord: Coordinate
-): Coordinate {
-  return {
-    x: originCoord.x + relativeCoord.x,
-    y: originCoord.y + relativeCoord.y,
-  };
-}
-
-function isCoordInRelatCoordsForRevival(
-  coord: Coordinate,
-  originCoord: Coordinate,
-  relatCoords: Coordinate[]
-): boolean {
-  let isUnitToBeRevived = false;
-  for (let i = 0; i < relatCoords.length; i += 1) {
-    const targetCoordiante = getRelativeCoordinate(originCoord, relatCoords[i]);
-    if (coord.x === targetCoordiante.x && coord.y === targetCoordiante.y) {
-      isUnitToBeRevived = true;
-      break;
-    }
-  }
-  return isUnitToBeRevived;
-}
 
 function GameOfLifeMap({ units, relatCoordsForRevival, onUnitsRevive }: Props) {
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
@@ -106,7 +46,7 @@ function GameOfLifeMap({ units, relatCoordsForRevival, onUnitsRevive }: Props) {
     <Wrapper>
       <>
         {units.map((unitsRow, unitsRowIndex) => (
-          <UnitBoxes
+          <UnitBoxeWrapper
             key={unitsRow[0].coordinate.x}
             hasBorder={unitsRowIndex !== units.length - 1}
           >
@@ -122,7 +62,7 @@ function GameOfLifeMap({ units, relatCoordsForRevival, onUnitsRevive }: Props) {
                 />
               ))}
             </>
-          </UnitBoxes>
+          </UnitBoxeWrapper>
         ))}
       </>
     </Wrapper>
