@@ -4,7 +4,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import UnitMapIcon from '.';
 
 export default {
-  title: 'UnitMapIcon',
+  title: 'Icon/UnitMapIcon',
   component: UnitMapIcon,
   argTypes: {
     hovered: {

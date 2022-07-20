@@ -4,7 +4,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import UnitSquare from '.';
 
 export default {
-  title: 'UnitSquare',
+  title: 'Square/UnitSquare',
   component: UnitSquare,
   argTypes: {
     coordinateX: {
