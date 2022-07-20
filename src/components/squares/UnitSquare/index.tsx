@@ -5,17 +5,21 @@ import styles from './styles';
 import dataTestids from './dataTestids';
 
 type Props = {
+  coordinateX: number;
+  coordinateY: number;
   alive: boolean;
   hovered: boolean;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
-  onClick: () => any;
-  onHover: () => any;
+  onClick: (coordinateX: number, coordinateY: number) => any;
+  onHover: (coordinateX: number, coordinateY: number) => any;
 };
 
 export default function UnitSquare({
+  coordinateX,
+  coordinateY,
   alive,
   hovered,
   hasTopBorder,
@@ -31,9 +35,9 @@ export default function UnitSquare({
       if (!newHovered) {
         return;
       }
-      onHover();
+      onHover(coordinateX, coordinateY);
     },
-    [alive]
+    [alive, coordinateX, coordinateY]
   );
   useHover(nodeRef, onHoverStateChange);
 
@@ -64,8 +68,8 @@ export default function UnitSquare({
         borderBottom: hasBottomBorder ? `1px solid ${styles.borderColor}` : '',
         borderLeft: hasLeftBorder ? `1px solid ${styles.borderColor}` : '',
       }}
-      onClick={onClick}
-      onKeyDown={onClick}
+      onClick={() => onClick(coordinateX, coordinateY)}
+      onKeyDown={() => onClick(coordinateX, coordinateY)}
     />
   );
 }

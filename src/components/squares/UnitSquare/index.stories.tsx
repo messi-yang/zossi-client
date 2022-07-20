@@ -7,6 +7,12 @@ export default {
   title: 'UnitSquare',
   component: UnitSquare,
   argTypes: {
+    coordinateX: {
+      control: 'number',
+    },
+    coordinateY: {
+      control: 'number',
+    },
     alive: {
       control: 'boolean',
     },
