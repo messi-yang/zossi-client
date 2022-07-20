@@ -1,7 +1,7 @@
 import { useState, useCallback, memo } from 'react';
+import UnitSquare from '@/components/squares/UnitSquare';
 import type { Area, Unit, Coordinate } from './types';
-import UnitBox from './UnitBox';
-import UnitBoxeWrapper from './UnitBoxWrapper';
+import UnitSquareColumn from './UnitSquareColumn';
 import Wrapper from './Wrapper';
 import { getRelativeCoordinate, isCoordInRelatCoordsForRevival } from './utils';
 
@@ -12,7 +12,7 @@ type Props = {
   onUnitsRevive: (coordinates: Coordinate[]) => any;
 };
 
-const UnitBoxMemo = memo(UnitBox);
+const UnitSquareMemo = memo(UnitSquare);
 
 function GameOfLifeMap({
   area,
@@ -56,32 +56,32 @@ function GameOfLifeMap({
   return (
     <Wrapper>
       <>
-        {units.map((unitsRow, unitsRowIndex) => (
-          <UnitBoxeWrapper
-            key={`${area.from.x + unitsRowIndex}`}
-            hasBorder={unitsRowIndex !== units.length - 1}
-          >
+        {units.map((unitsColumn, unitsColumnIndex) => (
+          <UnitSquareColumn key={`${area.from.x + unitsColumnIndex}`}>
             <>
-              {unitsRow.map((unit, unitIndex) => {
+              {unitsColumn.map((unit, unitIndex) => {
                 const coordinate = {
-                  x: area.from.x + unitsRowIndex,
+                  x: area.from.x + unitsColumnIndex,
                   y: area.from.y + unitIndex,
                 };
                 return (
-                  <UnitBoxMemo
+                  <UnitSquareMemo
                     key={`${coordinate.x},${coordinate.y}`}
                     coordinateX={coordinate.x}
                     coordinateY={coordinate.y}
                     alive={unit.alive}
-                    toBeRevived={isUnitToBeRevived(coordinate)}
-                    hasBorder={unitIndex !== unitsRow.length - 1}
+                    hovered={isUnitToBeRevived(coordinate)}
+                    hasTopBorder
+                    hasRightBorder={unitsColumnIndex === units.length - 1}
+                    hasBottomBorder={unitIndex === unitsColumn.length - 1}
+                    hasLeftBorder
                     onClick={onUnitBoxClick}
                     onHover={onUnitBoxHover}
                   />
                 );
               })}
             </>
-          </UnitBoxeWrapper>
+          </UnitSquareColumn>
         ))}
       </>
     </Wrapper>
