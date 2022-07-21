@@ -9,14 +9,16 @@ export default {
   argTypes: {
     coordinateX: {
       control: 'number',
+      defaultValue: 10,
     },
     coordinateY: {
       control: 'number',
+      defaultValue: 10,
     },
     alive: {
       control: 'boolean',
     },
-    hovered: {
+    highlighted: {
       control: 'boolean',
     },
     hasTopBorder: {

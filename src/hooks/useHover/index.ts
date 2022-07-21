@@ -23,5 +23,5 @@ export default function useHover(
         ref.current.removeEventListener('mouseout', handleMouseOut);
       }
     };
-  }, [ref.current]);
+  }, [ref.current, handleMouseOver, handleMouseOut]);
 }

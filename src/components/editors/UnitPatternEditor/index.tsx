@@ -25,13 +25,11 @@ export default function UnitPatternEditor({ booleanMatrix }: Props) {
                 coordinateX={x}
                 coordinateY={y}
                 alive={boolean}
-                hovered={false}
+                highlighted={false}
                 hasTopBorder
                 hasRightBorder={x === booleanMatrix.length - 1}
                 hasBottomBorder={y === booleanRow.length - 1}
                 hasLeftBorder
-                onClick={() => {}}
-                onHover={() => {}}
               />
             </div>
           ))}

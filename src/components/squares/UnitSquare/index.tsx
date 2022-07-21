@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useState, useCallback } from 'react';
 
 import useHover from '@/hooks/useHover';
 import styles from './styles';
@@ -8,20 +8,20 @@ type Props = {
   coordinateX: number;
   coordinateY: number;
   alive: boolean;
-  hovered: boolean;
+  highlighted: boolean;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
-  onClick: (coordinateX: number, coordinateY: number) => any;
-  onHover: (coordinateX: number, coordinateY: number) => any;
+  onClick?: (coordinateX: number, coordinateY: number) => any;
+  onHover?: (coordinateX: number, coordinateY: number) => any;
 };
 
 export default function UnitSquare({
   coordinateX,
   coordinateY,
   alive,
-  hovered,
+  highlighted,
   hasTopBorder,
   hasRightBorder,
   hasBottomBorder,
@@ -29,9 +29,11 @@ export default function UnitSquare({
   onClick = () => {},
   onHover = () => {},
 }: Props) {
+  const [hovered, setHovered] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
   const onHoverStateChange = useCallback(
     (newHovered) => {
+      setHovered(newHovered);
       if (!newHovered) {
         return;
       }
@@ -42,7 +44,7 @@ export default function UnitSquare({
   useHover(nodeRef, onHoverStateChange);
 
   let backgroundColor;
-  if (hovered) {
+  if (highlighted || hovered) {
     backgroundColor = alive ? styles.aliveHoverColor : styles.deadHoverColor;
   } else {
     backgroundColor = alive
