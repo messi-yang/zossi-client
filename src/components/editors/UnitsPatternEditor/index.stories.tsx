@@ -1,20 +1,20 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import UnitPatternEditor from '.';
+import UnitsPatternEditor from '.';
 
 export default {
-  title: 'Editor/UnitPatternEditor',
-  component: UnitPatternEditor,
+  title: 'Editor/UnitsPatternEditor',
+  component: UnitsPatternEditor,
   argTypes: {},
-} as ComponentMeta<typeof UnitPatternEditor>;
+} as ComponentMeta<typeof UnitsPatternEditor>;
 
-const Template: ComponentStory<typeof UnitPatternEditor> = function Template(
+const Template: ComponentStory<typeof UnitsPatternEditor> = function Template(
   args
 ) {
   return (
     <div style={{ display: 'inline-flex' }}>
-      <UnitPatternEditor {...args} />
+      <UnitsPatternEditor {...args} />
     </div>
   );
 };

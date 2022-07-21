@@ -4,7 +4,7 @@ type Props = {
   booleanMatrix: boolean[][];
 };
 
-export default function UnitPatternEditor({ booleanMatrix }: Props) {
+export default function UnitsPatternEditor({ booleanMatrix }: Props) {
   return (
     <div style={{ display: 'flex', flexFlow: 'row' }}>
       {booleanMatrix.map((booleanRow, x) => (
