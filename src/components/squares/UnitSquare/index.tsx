@@ -9,6 +9,7 @@ type Props = {
   coordinateY: number;
   alive: boolean;
   highlighted: boolean;
+  borderColor?: string;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
@@ -22,6 +23,7 @@ export default function UnitSquare({
   coordinateY,
   alive,
   highlighted,
+  borderColor = 'rgb(20, 20, 20)',
   hasTopBorder,
   hasRightBorder,
   hasBottomBorder,
@@ -63,12 +65,13 @@ export default function UnitSquare({
         width: '100%',
         height: '100%',
         boxSizing: 'border-box',
+        cursor: 'pointer',
         backgroundColor,
         border: `1px solid ${styles.deadHoverColor}`,
-        borderTop: hasTopBorder ? `1px solid ${styles.borderColor}` : '',
-        borderRight: hasRightBorder ? `1px solid ${styles.borderColor}` : '',
-        borderBottom: hasBottomBorder ? `1px solid ${styles.borderColor}` : '',
-        borderLeft: hasLeftBorder ? `1px solid ${styles.borderColor}` : '',
+        borderTop: hasTopBorder ? `1px solid ${borderColor}` : '',
+        borderRight: hasRightBorder ? `1px solid ${borderColor}` : '',
+        borderBottom: hasBottomBorder ? `1px solid ${borderColor}` : '',
+        borderLeft: hasLeftBorder ? `1px solid ${borderColor}` : '',
       }}
       onClick={() => onClick(coordinateX, coordinateY)}
       onKeyDown={() => onClick(coordinateX, coordinateY)}
