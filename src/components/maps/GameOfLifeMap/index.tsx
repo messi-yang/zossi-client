@@ -70,7 +70,7 @@ function GameOfLifeMap({
                     coordinateX={coordinate.x}
                     coordinateY={coordinate.y}
                     alive={unit.alive}
-                    hovered={isUnitToBeRevived(coordinate)}
+                    highlighted={isUnitToBeRevived(coordinate)}
                     hasTopBorder
                     hasRightBorder={unitsColumnIndex === units.length - 1}
                     hasBottomBorder={unitIndex === unitsColumn.length - 1}
