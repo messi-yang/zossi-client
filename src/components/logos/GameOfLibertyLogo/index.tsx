@@ -1,23 +1,23 @@
 function GameOfLibertyLogo() {
   return (
     <svg
-      width="34"
-      height="34"
-      viewBox="0 0 34 34"
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M28.3333 0H8.5V4.25H4.25V8.5H0V25.5H4.25V29.75H8.5V34H29.75V29.75H34V21.25H29.75V17H21.25V21.25H29.75V29.75H8.5V25.5H4.25V8.5H8.5V4.25H28.3333V8.5H32.5833V4.25H28.3333V0Z"
-        fill="url(#paint0_linear_32_77)"
+        d="M27 27.5H27.5V27V11.4V10.9H27H14H13.5V11.4V16.6V17.1H14H16.1V21.3H11.9V6.7H27H27.5V6.2V1V0.5H27H3.6H3.1V1V3.1H1H0.5V3.6V24.4V24.9H1H3.1V27V27.5H3.6H27Z"
+        stroke="url(#paint0_linear_78_37)"
       />
       <defs>
         <linearGradient
-          id="paint0_linear_32_77"
-          x1="17"
-          y1="-7.4633"
-          x2="17"
-          y2="39.4798"
+          id="paint0_linear_78_37"
+          x1="14"
+          y1="1"
+          x2="14"
+          y2="27"
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor="#FF3434" />
