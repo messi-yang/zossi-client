@@ -44,7 +44,7 @@ function GameRoomSideBar() {
           handleHoverStateChange('unitMap', hovered);
         }}
       >
-        <UnitMapIcon hovered={hoverStateFlags.unitMap} active={false} />
+        <UnitMapIcon highlighted={hoverStateFlags.unitMap} active={false} />
       </ItemWrapper>
     </section>
   );

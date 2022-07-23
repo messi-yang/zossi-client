@@ -1,9 +1,9 @@
 function GameOfLibertyLogo() {
   return (
     <svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
+      width="28"
+      height="28"
+      viewBox="0 0 28 28"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >

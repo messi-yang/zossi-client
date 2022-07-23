@@ -1,25 +1,28 @@
 type Props = {
-  hovered: boolean;
+  highlighted: boolean;
   active: boolean;
 };
 
-function UnitMapIcon({ hovered, active }: Props) {
+function UnitMapIcon({ highlighted, active }: Props) {
   return (
     <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M7.75 8.75H1V15.625H7.75V8.75ZM7.75 7.75H1V1.6C1 1.26863 1.26863 1 1.6 1H7.75V7.75ZM8.75 8.75V15.625H15.625V8.75H8.75ZM15.625 7.75H8.75V1H15.625V7.75ZM16.625 8.75V15.625H23V8.75H16.625ZM23 7.75H16.625V1H22.4C22.7314 1 23 1.26863 23 1.6V7.75ZM24 22.4C24 23.2837 23.2837 24 22.4 24H1.6C0.716344 24 0 23.2837 0 22.4V1.6C0 0.716344 0.716344 0 1.6 0H22.4C23.2837 0 24 0.716344 24 1.6V22.4ZM1 16.625V22.4C1 22.7314 1.26863 23 1.6 23H7.75V16.625H1ZM8.75 16.625V23H15.625V16.625H8.75ZM16.625 16.625V23H22.4C22.7314 23 23 22.7314 23 22.4V16.625H16.625Z"
-        fill={hovered ? '#01D6C9' : '#EFEFEF'}
+        d="M3.19995 3.19995H28.7999V28.7999H3.19995V3.19995ZM20.8 4.26662H27.7333V11.7333H20.8V4.26662ZM19.7333 4.26662H12.2666V11.7333H19.7333V4.26662ZM11.2 4.26662H4.26662V11.7333H11.2V4.26662ZM4.26662 12.8V19.7333H11.2V12.8H4.26662ZM4.26662 20.8V27.7333H11.2V20.8H4.26662ZM12.2666 27.7333H19.7333V20.8H12.2666V27.7333ZM20.8 27.7333H27.7333V20.8H20.8V27.7333ZM27.7333 19.7333V12.8H20.8V19.7333H27.7333ZM19.7333 19.7333H12.2666V12.8H19.7333V19.7333Z"
+        fill={active || highlighted ? '#01D6C9' : 'white'}
       />
       {active && (
-        <path d="M8.75 15.625V8.75H15.625V15.625H8.75Z" fill="#01D6C9" />
+        <path
+          d="M12.2666 19.7333H19.7333V12.8H12.2666V19.7333Z"
+          fill="#01D6C9"
+        />
       )}
     </svg>
   );

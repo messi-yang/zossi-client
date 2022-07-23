@@ -7,7 +7,7 @@ export default {
   title: 'Icon/UnitMapIcon',
   component: UnitMapIcon,
   argTypes: {
-    hovered: {
+    highlighted: {
       control: 'boolean',
     },
     active: {
