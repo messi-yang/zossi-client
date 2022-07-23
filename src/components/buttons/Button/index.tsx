@@ -6,10 +6,10 @@ import ContentWrapper from './ContentWrapper';
 
 type Props = {
   text: string;
-  onClick: () => any;
+  onClick?: () => any;
 };
 
-function Button({ text, onClick }: Props) {
+function Button({ text, onClick = () => {} }: Props) {
   const [hovered, setHovered] = useState(false);
   const nodeRef = useRef<HTMLButtonElement>(null);
   useHover(nodeRef, setHovered);

@@ -1,4 +1,4 @@
-function GameOfLibertyLogo() {
+function SmallLogo() {
   return (
     <svg
       width="28"
@@ -28,4 +28,4 @@ function GameOfLibertyLogo() {
   );
 }
 
-export default GameOfLibertyLogo;
+export default SmallLogo;

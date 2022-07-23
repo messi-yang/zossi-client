@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import GameOfLibertyLogo from '@/components/logos/GameOfLibertyLogo';
+import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitMapIcon from '@/components/icons/UnitMapIcon';
 import ItemWrapper from './ItemWrapper';
 
@@ -34,7 +34,7 @@ function GameRoomSideBar() {
         height="70px"
         onHoverStateChange={() => {}}
       >
-        <GameOfLibertyLogo />
+        <SmallLogo />
       </ItemWrapper>
       <ItemWrapper
         width="100%"
