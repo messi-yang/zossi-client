@@ -17,10 +17,7 @@ function ItemWrapper({
   onHoverStateChange,
 }: Props) {
   const nodeRef = useRef<HTMLButtonElement>(null);
-  function handleHoverStateChange(newHoverState: boolean) {
-    onHoverStateChange(newHoverState);
-  }
-  useHover(nodeRef, handleHoverStateChange);
+  useHover(nodeRef, onHoverStateChange);
 
   return (
     <section
