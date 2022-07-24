@@ -1,6 +1,5 @@
 import { useState, useCallback, memo } from 'react';
 import UnitSquare from '@/components/squares/UnitSquare';
-import { traverseMatrix } from '@/utils/common';
 import type { Area, Unit, Coordinate, Pattern } from './types';
 import UnitSquareColumn from './UnitSquareColumn';
 import Wrapper from './Wrapper';
@@ -10,7 +9,7 @@ type Props = {
   units: Unit[][];
   pattern: Pattern;
   patternOffset?: { x: number; y: number };
-  onPatternDrop: (coordinates: Coordinate[]) => any;
+  onPatternDrop: (coordinate: Coordinate, pattern: Pattern) => any;
 };
 
 const UnitSquareMemo = memo(UnitSquare);
@@ -27,17 +26,13 @@ function GameOfLifeMap({
   );
   const onUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
-      const coordinates: Coordinate[] = [];
-      traverseMatrix<boolean>(pattern, (x, y, unit) => {
-        if (unit) {
-          coordinates.push({
-            x: coordinateX + x + patternOffset.x,
-            y: coordinateY + y + patternOffset.y,
-          });
-        }
-      });
-
-      onPatternDrop(coordinates);
+      onPatternDrop(
+        {
+          x: coordinateX + patternOffset.x,
+          y: coordinateY + patternOffset.y,
+        },
+        pattern
+      );
     },
     [pattern]
   );

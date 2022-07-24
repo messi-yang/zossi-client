@@ -7,7 +7,13 @@ import {
   useEffect,
 } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import type { AreaDTO, CoordinateDTO, MapSizeDTO, UnitDTO } from '@/dto';
+import type {
+  AreaDTO,
+  CoordinateDTO,
+  MapSizeDTO,
+  UnitDTO,
+  PatternDTO,
+} from '@/dto';
 import { EventTypeEnum } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -21,7 +27,7 @@ type GameOfLibertyContextValue = {
   area: AreaDTO;
   units: UnitDTO[][];
   joinGame: () => void;
-  reviveUnits: (coordinates: CoordinateDTO[]) => void;
+  reviveUnits: (coordinate: CoordinateDTO, pattern: PatternDTO) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
 };
@@ -71,7 +77,7 @@ export function Provider({ children }: Props) {
   );
 
   const reviveUnits = useCallback(
-    (coordinates: CoordinateDTO[]) => {
+    (coordinate: CoordinateDTO, pattern: PatternDTO) => {
       if (!socketRef.current) {
         return;
       }
@@ -82,7 +88,8 @@ export function Provider({ children }: Props) {
       const action: ReviveUnitsAction = {
         type: ActionTypeEnum.ReviveUnits,
         payload: {
-          coordinates,
+          coordinate,
+          pattern,
         },
       };
       socketRef.current.send(JSON.stringify(action));
