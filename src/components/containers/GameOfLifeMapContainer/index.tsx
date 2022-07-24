@@ -63,17 +63,17 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     units
   );
 
-  const onUnitsRevive = useCallback(
+  const onPatternDrop = useCallback(
     (coordinates: Coordinate[]) => {
       reviveUnits(coordinates);
     },
     [reviveUnits]
   );
 
-  const relatCoordsForRevival = [
-    { x: 0, y: 0 },
-    { x: -1, y: -1 },
-    { x: 1, y: 1 },
+  const pattern = [
+    [true, false, true],
+    [true, true, true],
+    [true, true, true],
   ];
 
   return (
@@ -81,8 +81,9 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
       <GameOfLifeMap
         area={area}
         units={gameFieldUnits}
-        relatCoordsForRevival={relatCoordsForRevival}
-        onUnitsRevive={onUnitsRevive}
+        pattern={pattern}
+        patternOffset={{ x: -1, y: -1 }}
+        onPatternDrop={onPatternDrop}
       />
     </section>
   );

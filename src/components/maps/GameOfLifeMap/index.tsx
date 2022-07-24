@@ -1,15 +1,16 @@
 import { useState, useCallback, memo } from 'react';
 import UnitSquare from '@/components/squares/UnitSquare';
-import type { Area, Unit, Coordinate } from './types';
+import { traverseMatrix } from '@/utils/common';
+import type { Area, Unit, Coordinate, Pattern } from './types';
 import UnitSquareColumn from './UnitSquareColumn';
 import Wrapper from './Wrapper';
-import { getRelativeCoordinate, isCoordInRelatCoordsForRevival } from './utils';
 
 type Props = {
   area: Area;
   units: Unit[][];
-  relatCoordsForRevival: Coordinate[];
-  onUnitsRevive: (coordinates: Coordinate[]) => any;
+  pattern: Pattern;
+  patternOffset?: { x: number; y: number };
+  onPatternDrop: (coordinates: Coordinate[]) => any;
 };
 
 const UnitSquareMemo = memo(UnitSquare);
@@ -17,41 +18,50 @@ const UnitSquareMemo = memo(UnitSquare);
 function GameOfLifeMap({
   area,
   units,
-  relatCoordsForRevival,
-  onUnitsRevive,
+  pattern,
+  patternOffset = { x: 0, y: 0 },
+  onPatternDrop,
 }: Props) {
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
     null
   );
-  const onUnitBoxClick = useCallback(
+  const onUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
-      const coordinate = { x: coordinateX, y: coordinateY };
-      const coordinatesToRevive = relatCoordsForRevival.map((relatCoord) =>
-        getRelativeCoordinate(coordinate, relatCoord)
-      );
+      const coordinates: Coordinate[] = [];
+      traverseMatrix<boolean>(pattern, (x, y, unit) => {
+        if (unit) {
+          coordinates.push({
+            x: coordinateX + x + patternOffset.x,
+            y: coordinateY + y + patternOffset.y,
+          });
+        }
+      });
 
-      onUnitsRevive(coordinatesToRevive);
+      onPatternDrop(coordinates);
     },
-    [relatCoordsForRevival]
+    [pattern]
   );
-  const onUnitBoxHover = useCallback(
+  const onUnitSquareHover = useCallback(
     (coordinateX: number, coordinateY: number) => {
       const coordinate = { x: coordinateX, y: coordinateY };
       setHoveredCoordinate(coordinate);
     },
     []
   );
-  function isUnitToBeRevived(coordinate: Coordinate): boolean {
-    if (!hoveredCoordinate || relatCoordsForRevival.length === 0) {
-      return false;
-    }
+  const isUnitToBeHighlighted = useCallback(
+    (coordinate: Coordinate): boolean => {
+      if (!hoveredCoordinate || pattern.length === 0) {
+        return false;
+      }
+      const relativeX = coordinate.x - hoveredCoordinate.x - patternOffset.x;
+      const relativeY = coordinate.y - hoveredCoordinate.y - patternOffset.y;
 
-    return isCoordInRelatCoordsForRevival(
-      coordinate,
-      hoveredCoordinate,
-      relatCoordsForRevival
-    );
-  }
+      const isRelativeCoordinateInPatternPresentAndTruthy =
+        pattern?.[relativeX]?.[relativeY] || false;
+      return isRelativeCoordinateInPatternPresentAndTruthy;
+    },
+    [pattern, hoveredCoordinate]
+  );
 
   return (
     <Wrapper>
@@ -70,13 +80,13 @@ function GameOfLifeMap({
                     coordinateX={coordinate.x}
                     coordinateY={coordinate.y}
                     alive={unit.alive}
-                    highlighted={isUnitToBeRevived(coordinate)}
+                    highlighted={isUnitToBeHighlighted(coordinate)}
                     hasTopBorder
                     hasRightBorder={unitsColumnIndex === units.length - 1}
                     hasBottomBorder={unitIndex === unitsColumn.length - 1}
                     hasLeftBorder
-                    onClick={onUnitBoxClick}
-                    onHover={onUnitBoxHover}
+                    onClick={onUnitSquareClick}
+                    onHover={onUnitSquareHover}
                   />
                 );
               })}

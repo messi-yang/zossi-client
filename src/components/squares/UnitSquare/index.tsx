@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 
 import useHover from '@/hooks/useHover';
 import styles from './styles';
@@ -31,11 +31,9 @@ export default function UnitSquare({
   onClick = () => {},
   onHover = () => {},
 }: Props) {
-  const [hovered, setHovered] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
   const onHoverStateChange = useCallback(
     (newHovered) => {
-      setHovered(newHovered);
       if (!newHovered) {
         return;
       }
@@ -46,7 +44,7 @@ export default function UnitSquare({
   useHover(nodeRef, onHoverStateChange);
 
   let backgroundColor;
-  if (highlighted || hovered) {
+  if (highlighted) {
     backgroundColor = alive ? styles.aliveHoverColor : styles.deadHoverColor;
   } else {
     backgroundColor = alive

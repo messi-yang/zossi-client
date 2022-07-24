@@ -11,8 +11,8 @@ function renderGameOfLifeMap(units: Unit[][]): RenderResult {
         to: { x: units.length - 1, y: units.length - 1 },
       }}
       units={units}
-      relatCoordsForRevival={[]}
-      onUnitsRevive={() => {}}
+      pattern={[]}
+      onPatternDrop={() => {}}
     />
   );
 }
