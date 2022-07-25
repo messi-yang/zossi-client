@@ -1,15 +1,15 @@
 import { useState, useCallback, memo } from 'react';
 import UnitSquare from '@/components/squares/UnitSquare';
-import type { Area, Unit, Coordinate, Pattern } from './types';
+import type { Area, Unit, Coordinate, UnitsPattern } from './types';
 import UnitSquareColumn from './UnitSquareColumn';
 import Wrapper from './Wrapper';
 
 type Props = {
   area: Area;
   units: Unit[][];
-  pattern: Pattern;
-  patternOffset?: { x: number; y: number };
-  onPatternDrop: (coordinate: Coordinate, pattern: Pattern) => any;
+  unitsPattern: UnitsPattern;
+  unitsPatternOffset: { x: number; y: number };
+  onUnitsPatternDrop: (coordinate: Coordinate, pattern: UnitsPattern) => any;
 };
 
 const UnitSquareMemo = memo(UnitSquare);
@@ -17,24 +17,24 @@ const UnitSquareMemo = memo(UnitSquare);
 function GameOfLifeMap({
   area,
   units,
-  pattern,
-  patternOffset = { x: 0, y: 0 },
-  onPatternDrop,
+  unitsPattern,
+  unitsPatternOffset,
+  onUnitsPatternDrop,
 }: Props) {
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
     null
   );
   const onUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
-      onPatternDrop(
+      onUnitsPatternDrop(
         {
-          x: coordinateX + patternOffset.x,
-          y: coordinateY + patternOffset.y,
+          x: coordinateX + unitsPatternOffset.x,
+          y: coordinateY + unitsPatternOffset.y,
         },
-        pattern
+        unitsPattern
       );
     },
-    [pattern, patternOffset]
+    [unitsPattern, unitsPatternOffset, onUnitsPatternDrop]
   );
   const onUnitSquareHover = useCallback(
     (coordinateX: number, coordinateY: number) => {
@@ -45,17 +45,19 @@ function GameOfLifeMap({
   );
   const isUnitToBeHighlighted = useCallback(
     (coordinate: Coordinate): boolean => {
-      if (!hoveredCoordinate || pattern.length === 0) {
+      if (!hoveredCoordinate || unitsPattern.length === 0) {
         return false;
       }
-      const relativeX = coordinate.x - hoveredCoordinate.x - patternOffset.x;
-      const relativeY = coordinate.y - hoveredCoordinate.y - patternOffset.y;
+      const relativeX =
+        coordinate.x - hoveredCoordinate.x - unitsPatternOffset.x;
+      const relativeY =
+        coordinate.y - hoveredCoordinate.y - unitsPatternOffset.y;
 
       const isRelativeCoordinateInPatternPresentAndTruthy =
-        pattern?.[relativeX]?.[relativeY] || false;
+        unitsPattern?.[relativeX]?.[relativeY] || false;
       return isRelativeCoordinateInPatternPresentAndTruthy;
     },
-    [pattern, hoveredCoordinate]
+    [unitsPattern, hoveredCoordinate]
   );
 
   return (

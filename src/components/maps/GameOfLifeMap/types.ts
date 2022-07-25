@@ -21,4 +21,4 @@ export type Unit = {
  *  [false, true, true], // (2, 0), (2, 1), (2, 2)
  * ]
  */
-export type Pattern = boolean[][];
+export type UnitsPattern = boolean[][];

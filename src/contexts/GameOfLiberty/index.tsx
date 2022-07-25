@@ -12,7 +12,7 @@ import type {
   CoordinateDTO,
   MapSizeDTO,
   UnitDTO,
-  PatternDTO,
+  UnitsPatternDTO,
 } from '@/dto';
 import { EventTypeEnum } from './eventTypes';
 import type { Event } from './eventTypes';
@@ -21,15 +21,18 @@ import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
 
+type UnitsPatternOffset = { x: number; y: number };
+
 type GameOfLibertyContextValue = {
   status: Status;
   mapSize: MapSizeDTO;
   area: AreaDTO;
   units: UnitDTO[][];
-  unitsPattern: PatternDTO;
+  unitsPattern: UnitsPatternDTO;
+  unitsPatternOffset: UnitsPatternOffset;
   joinGame: () => void;
-  updateUnitsPattern: (pattern: PatternDTO) => void;
-  reviveUnits: (coordinate: CoordinateDTO, pattern: PatternDTO) => void;
+  updateUnitsPattern: (pattern: UnitsPatternDTO) => void;
+  reviveUnits: (coordinate: CoordinateDTO, pattern: UnitsPatternDTO) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
 };
@@ -53,6 +56,7 @@ function createInitialGameOfLibertyContextValue(): GameOfLibertyContextValue {
       [false, true, true, true, false],
       [false, false, false, false, false],
     ],
+    unitsPatternOffset: { x: -2, y: -2 },
     joinGame: () => {},
     updateUnitsPattern: () => {},
     reviveUnits: () => {},
@@ -82,22 +86,25 @@ export function Provider({ children }: Props) {
   const [units, setUnits] = useState<UnitDTO[][]>(
     initialGameOfLibertyContextValue.units
   );
-  const [unitsPattern, setUnitsPattern] = useState<PatternDTO>(
+  const [unitsPattern, setUnitsPattern] = useState<UnitsPatternDTO>(
     initialGameOfLibertyContextValue.unitsPattern
+  );
+  const [unitsPatternOffset] = useState<UnitsPatternOffset>(
+    initialGameOfLibertyContextValue.unitsPatternOffset
   );
   const [status, setStatus] = useState<Status>(
     initialGameOfLibertyContextValue.status
   );
 
   const updateUnitsPattern = useCallback(
-    (pattern: PatternDTO) => {
-      setUnitsPattern(pattern);
+    (newUnitsPattern: UnitsPatternDTO) => {
+      setUnitsPattern(newUnitsPattern);
     },
     [socketRef.current, status]
   );
 
   const reviveUnits = useCallback(
-    (coordinate: CoordinateDTO, pattern: PatternDTO) => {
+    (coordinate: CoordinateDTO, unitsPatternToRevive: UnitsPatternDTO) => {
       if (!socketRef.current) {
         return;
       }
@@ -109,7 +116,7 @@ export function Provider({ children }: Props) {
         type: ActionTypeEnum.ReviveUnits,
         payload: {
           coordinate,
-          pattern,
+          pattern: unitsPatternToRevive,
         },
       };
       socketRef.current.send(JSON.stringify(action));
@@ -187,6 +194,7 @@ export function Provider({ children }: Props) {
       area,
       units,
       unitsPattern,
+      unitsPatternOffset,
       joinGame,
       updateUnitsPattern,
       reviveUnits,

@@ -8,7 +8,7 @@ import GameOfLifeMap from '@/components/maps/GameOfLifeMap';
 import type {
   Unit,
   Coordinate,
-  Pattern,
+  UnitsPattern,
 } from '@/components/maps/GameOfLifeMap/types';
 import useDomRect from '@/hooks/useDomRect';
 
@@ -38,8 +38,15 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     unitSize
   );
 
-  const { area, units, unitsPattern, status, reviveUnits, watchArea } =
-    useContext(GameOfLibertyContext);
+  const {
+    area,
+    units,
+    unitsPattern,
+    unitsPatternOffset,
+    status,
+    reviveUnits,
+    watchArea,
+  } = useContext(GameOfLibertyContext);
 
   const debounceWatchArea = debounce(watchArea, 200);
 
@@ -68,8 +75,8 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
   );
 
   const onPatternDrop = useCallback(
-    (coordinate: Coordinate, pattern: Pattern) => {
-      reviveUnits(coordinate, pattern);
+    (coordinate: Coordinate, droppedUnitsPattern: UnitsPattern) => {
+      reviveUnits(coordinate, droppedUnitsPattern);
     },
     [reviveUnits]
   );
@@ -79,9 +86,9 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
       <GameOfLifeMap
         area={area}
         units={gameFieldUnits}
-        pattern={unitsPattern}
-        patternOffset={{ x: -2, y: -2 }}
-        onPatternDrop={onPatternDrop}
+        unitsPattern={unitsPattern}
+        unitsPatternOffset={unitsPatternOffset}
+        onUnitsPatternDrop={onPatternDrop}
       />
     </section>
   );

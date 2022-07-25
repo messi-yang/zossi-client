@@ -88,12 +88,12 @@ Primary.args = {
       { alive: false, age: 0 },
     ],
   ],
-  pattern: [
+  unitsPattern: [
     [true, true, false],
     [false, true, false],
     [false, true, false],
   ],
-  patternOffset: {
+  unitsPatternOffset: {
     x: -1,
     y: -1,
   },
