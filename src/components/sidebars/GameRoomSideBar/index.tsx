@@ -2,8 +2,7 @@ import { useState, useContext } from 'react';
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitMapIcon from '@/components/icons/UnitMapIcon';
-import BaseModal from '@/components/modals/BaseModal';
-import UnitsPatternEditor from '@/components/editors/UnitsPatternEditor';
+import UnitsPatternModal from '@/components/modals/UnitsPatternModal';
 import ItemWrapper from './ItemWrapper';
 
 type HoverStateFlags = {
@@ -28,7 +27,8 @@ function GameRoomSideBar() {
   const handleUnitsPatternItemClick = () => {
     setIsUnitsPatternVisible(true);
   };
-  const handleUnitsPatternModalBackgroundClick = () => {
+  const handleUnitsPatternUpdate = (pattern: boolean[][]) => {
+    updateUnitsPattern(pattern);
     setIsUnitsPatternVisible(false);
   };
 
@@ -56,15 +56,11 @@ function GameRoomSideBar() {
       >
         <UnitMapIcon highlighted={hoverStateFlags.unitMap} active={false} />
       </ItemWrapper>
-      <BaseModal
+      <UnitsPatternModal
         opened={isUnitsPatternVisible}
-        onBackgroundClick={handleUnitsPatternModalBackgroundClick}
-      >
-        <UnitsPatternEditor
-          pattern={unitsPattern}
-          onUpdate={updateUnitsPattern}
-        />
-      </BaseModal>
+        pattern={unitsPattern}
+        onPatternUpdate={handleUnitsPatternUpdate}
+      />
     </section>
   );
 }
