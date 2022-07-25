@@ -1,20 +1,29 @@
+import cloneDeep from 'lodash/cloneDeep';
 import UnitSquare from '@/components/squares/UnitSquare';
 
 type Props = {
-  booleanMatrix: boolean[][];
+  pattern: boolean[][];
+  onUpdate: (newPattern: boolean[][]) => any;
 };
 
-export default function UnitsPatternEditor({ booleanMatrix }: Props) {
+export default function UnitsPatternEditor({ pattern, onUpdate }: Props) {
+  const onUnitClick = (coordinateX: number, coordinateY: number) => {
+    const newPattern = cloneDeep(pattern);
+    newPattern[coordinateX][coordinateY] =
+      !newPattern[coordinateX][coordinateY];
+    onUpdate(newPattern);
+  };
+
   return (
     <div style={{ display: 'flex', flexFlow: 'row' }}>
-      {booleanMatrix.map((booleanRow, x) => (
+      {pattern.map((rowInPattern, x) => (
         <div
           style={{
             display: 'flex',
             flexFlow: 'column',
           }}
         >
-          {booleanRow.map((boolean, y) => (
+          {rowInPattern.map((truthy, y) => (
             <div
               style={{
                 width: '40px',
@@ -24,12 +33,13 @@ export default function UnitsPatternEditor({ booleanMatrix }: Props) {
               <UnitSquare
                 coordinateX={x}
                 coordinateY={y}
-                alive={boolean}
+                alive={truthy}
                 highlighted={false}
                 hasTopBorder
-                hasRightBorder={x === booleanMatrix.length - 1}
-                hasBottomBorder={y === booleanRow.length - 1}
+                hasRightBorder={x === pattern.length - 1}
+                hasBottomBorder={y === rowInPattern.length - 1}
                 hasLeftBorder
+                onClick={onUnitClick}
               />
             </div>
           ))}

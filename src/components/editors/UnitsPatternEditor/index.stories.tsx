@@ -21,7 +21,7 @@ const Template: ComponentStory<typeof UnitsPatternEditor> = function Template(
 
 export const Primary = Template.bind({});
 Primary.args = {
-  booleanMatrix: [
+  pattern: [
     [false, false, false],
     [false, false, false],
     [false, false, false],
