@@ -26,7 +26,9 @@ type GameOfLibertyContextValue = {
   mapSize: MapSizeDTO;
   area: AreaDTO;
   units: UnitDTO[][];
+  unitsPattern: PatternDTO;
   joinGame: () => void;
+  updateUnitsPattern: (pattern: PatternDTO) => void;
   reviveUnits: (coordinate: CoordinateDTO, pattern: PatternDTO) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
@@ -44,7 +46,15 @@ function createInitialGameOfLibertyContextValue(): GameOfLibertyContextValue {
       to: { x: 0, y: 0 },
     },
     units: [],
+    unitsPattern: [
+      [false, false, false, false, false],
+      [false, true, true, true, false],
+      [false, true, false, true, false],
+      [false, true, true, true, false],
+      [false, false, false, false, false],
+    ],
     joinGame: () => {},
+    updateUnitsPattern: () => {},
     reviveUnits: () => {},
     watchArea: () => {},
     leaveGame: () => {},
@@ -72,8 +82,18 @@ export function Provider({ children }: Props) {
   const [units, setUnits] = useState<UnitDTO[][]>(
     initialGameOfLibertyContextValue.units
   );
+  const [unitsPattern, setUnitsPattern] = useState<PatternDTO>(
+    initialGameOfLibertyContextValue.unitsPattern
+  );
   const [status, setStatus] = useState<Status>(
     initialGameOfLibertyContextValue.status
+  );
+
+  const updateUnitsPattern = useCallback(
+    (pattern: PatternDTO) => {
+      setUnitsPattern(pattern);
+    },
+    [socketRef.current, status]
   );
 
   const reviveUnits = useCallback(
@@ -166,7 +186,9 @@ export function Provider({ children }: Props) {
       mapSize,
       area,
       units,
+      unitsPattern,
       joinGame,
+      updateUnitsPattern,
       reviveUnits,
       watchArea,
       leaveGame,

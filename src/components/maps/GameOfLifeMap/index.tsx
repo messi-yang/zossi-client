@@ -34,7 +34,7 @@ function GameOfLifeMap({
         pattern
       );
     },
-    [pattern]
+    [pattern, patternOffset]
   );
   const onUnitSquareHover = useCallback(
     (coordinateX: number, coordinateY: number) => {

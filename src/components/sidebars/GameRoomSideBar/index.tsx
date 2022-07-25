@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitMapIcon from '@/components/icons/UnitMapIcon';
+import BaseModal from '@/components/modals/BaseModal';
+import UnitsPatternEditor from '@/components/editors/UnitsPatternEditor';
 import ItemWrapper from './ItemWrapper';
 
 type HoverStateFlags = {
@@ -8,6 +11,8 @@ type HoverStateFlags = {
 };
 
 function GameRoomSideBar() {
+  const { unitsPattern, updateUnitsPattern } = useContext(GameOfLibertyContext);
+
   const [hoverStateFlags, setHoverStateFlags] = useState<HoverStateFlags>({
     unitMap: false,
   });
@@ -17,6 +22,15 @@ function GameRoomSideBar() {
     newFlags[key] = hovered;
     setHoverStateFlags(newFlags);
   }
+
+  const [isUnitsPatternVisible, setIsUnitsPatternVisible] =
+    useState<boolean>(false);
+  const handleUnitsPatternItemClick = () => {
+    setIsUnitsPatternVisible(true);
+  };
+  const handleUnitsPatternModalBackgroundClick = () => {
+    setIsUnitsPatternVisible(false);
+  };
 
   return (
     <section
@@ -28,12 +42,7 @@ function GameRoomSideBar() {
         backgroundColor: '#1C1C1C',
       }}
     >
-      <ItemWrapper
-        hovered={false}
-        width="100%"
-        height="70px"
-        onHoverStateChange={() => {}}
-      >
+      <ItemWrapper hovered={false} width="100%" height="70px">
         <SmallLogo />
       </ItemWrapper>
       <ItemWrapper
@@ -43,9 +52,19 @@ function GameRoomSideBar() {
         onHoverStateChange={(hovered) => {
           handleHoverStateChange('unitMap', hovered);
         }}
+        onClick={handleUnitsPatternItemClick}
       >
         <UnitMapIcon highlighted={hoverStateFlags.unitMap} active={false} />
       </ItemWrapper>
+      <BaseModal
+        opened={isUnitsPatternVisible}
+        onBackgroundClick={handleUnitsPatternModalBackgroundClick}
+      >
+        <UnitsPatternEditor
+          pattern={unitsPattern}
+          onUpdate={updateUnitsPattern}
+        />
+      </BaseModal>
     </section>
   );
 }

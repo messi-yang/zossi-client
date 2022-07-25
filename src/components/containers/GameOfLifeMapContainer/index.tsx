@@ -38,7 +38,7 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     unitSize
   );
 
-  const { area, units, status, reviveUnits, watchArea } =
+  const { area, units, unitsPattern, status, reviveUnits, watchArea } =
     useContext(GameOfLibertyContext);
 
   const debounceWatchArea = debounce(watchArea, 200);
@@ -74,19 +74,13 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     [reviveUnits]
   );
 
-  const pattern = [
-    [true, false, true],
-    [true, true, true],
-    [true, true, true],
-  ];
-
   return (
     <section ref={wrapperRef} style={{ width: '100%', height: '100%' }}>
       <GameOfLifeMap
         area={area}
         units={gameFieldUnits}
-        pattern={pattern}
-        patternOffset={{ x: -1, y: -1 }}
+        pattern={unitsPattern}
+        patternOffset={{ x: -2, y: -2 }}
         onPatternDrop={onPatternDrop}
       />
     </section>

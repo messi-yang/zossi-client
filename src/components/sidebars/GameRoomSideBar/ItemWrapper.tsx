@@ -6,7 +6,8 @@ type Props = {
   height: string;
   hovered: boolean;
   children: JSX.Element;
-  onHoverStateChange: (hovered: boolean) => any;
+  onHoverStateChange?: (hovered: boolean) => any;
+  onClick?: () => any;
 };
 
 function ItemWrapper({
@@ -14,7 +15,8 @@ function ItemWrapper({
   height,
   hovered,
   children,
-  onHoverStateChange,
+  onHoverStateChange = () => {},
+  onClick = () => {},
 }: Props) {
   const nodeRef = useRef<HTMLButtonElement>(null);
   useHover(nodeRef, onHoverStateChange);
@@ -31,6 +33,10 @@ function ItemWrapper({
         cursor: 'pointer',
         backgroundColor: hovered ? '#575757' : 'unset',
       }}
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={onClick}
     >
       {children}
     </section>
