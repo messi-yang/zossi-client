@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import cloneDeep from 'lodash/cloneDeep';
 import BaseModal from '@/components/modals/BaseModal';
 import UnitsPatternEditor from '@/components/editors/UnitsPatternEditor';
 
@@ -15,7 +16,10 @@ export default function UnitsPatternModal({
   pattern,
   onPatternUpdate = () => {},
 }: UnitsPatternModalProp) {
-  const [tmpPattern, setTmpPattern] = useState<Pattern>(pattern);
+  const [tmpPattern, setTmpPattern] = useState<Pattern>(cloneDeep(pattern));
+  useEffect(() => {
+    setTmpPattern(cloneDeep(pattern));
+  }, [pattern]);
   const handleUnitsPatternModalBackgroundClick = () => {
     onPatternUpdate(tmpPattern);
   };
