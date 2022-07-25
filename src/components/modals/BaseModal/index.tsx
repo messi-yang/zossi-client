@@ -5,13 +5,13 @@ import Modal from './Modal';
 type BaseModalProps = {
   opened: boolean;
   children: JSX.Element;
-  onBackgroundClick: () => any;
+  onBackgroundClick?: () => any;
 };
 
 export default function BaseModal({
   opened,
   children,
-  onBackgroundClick,
+  onBackgroundClick = () => {},
 }: BaseModalProps) {
   return (
     <Wrapper visible={opened}>
