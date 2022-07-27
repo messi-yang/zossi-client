@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { useArgs } from '@storybook/client-api';
 
 import UnitSquare from '.';
 
@@ -39,9 +40,16 @@ export default {
 } as ComponentMeta<typeof UnitSquare>;
 
 const Template: ComponentStory<typeof UnitSquare> = function Template(args) {
+  const [, updateArgs] = useArgs();
+  const { alive } = args;
+
+  const handleClick = () => {
+    updateArgs({ alive: !alive });
+  };
+
   return (
     <div style={{ display: 'inline-flex', width: '50px', height: '50px' }}>
-      <UnitSquare {...args} />
+      <UnitSquare {...args} onClick={handleClick} />
     </div>
   );
 };
