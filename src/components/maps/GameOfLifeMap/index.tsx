@@ -17,22 +17,20 @@ function adjustCoordinateAndUnitsPattern(
   unitsPattern: UnitsPattern,
   area: Area
 ) {
-  let adjustedUnitsPattern: UnitsPattern = unitsPattern.filter(
-    (unitsRow, x) => {
-      const isRowWithinArea = isXInArea(originCoordinate.x + x, area);
-      return isRowWithinArea;
-    }
-  );
+  let adjustedUnitsPattern: UnitsPattern = unitsPattern.filter((_, x) => {
+    const isRowWithinArea = isXInArea(originCoordinate.x + x, area);
+    return isRowWithinArea;
+  });
 
   adjustedUnitsPattern = adjustedUnitsPattern.map((unitsRow) => {
-    const rowWithUnitsInArea = unitsRow.filter((unit, y) =>
+    const rowWithUnitsInArea = unitsRow.filter((_, y) =>
       isYInArea(originCoordinate.y + y, area)
     );
     return rowWithUnitsInArea;
   });
   const adjustedCoordinate = {
-    x: originCoordinate.x > 0 ? originCoordinate.x : 0,
-    y: originCoordinate.y > 0 ? originCoordinate.y : 0,
+    x: originCoordinate.x >= area.from.x ? originCoordinate.x : area.from.x,
+    y: originCoordinate.y >= area.from.y ? originCoordinate.y : area.from.y,
   };
 
   return {

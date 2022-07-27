@@ -20,8 +20,8 @@ const Template: ComponentStory<typeof GameOfLifeMap> = function Template(args) {
 export const Primary = Template.bind({});
 Primary.args = {
   area: {
-    from: { x: 0, y: 0 },
-    to: { x: 6, y: 6 },
+    from: { x: 3, y: 3 },
+    to: { x: 9, y: 9 },
   },
   units: [
     [
