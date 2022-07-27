@@ -71,7 +71,7 @@ function GameOfLifeMap({
         adjustCoordinateAndUnitsPattern(originCoordinate, unitsPattern, area);
       onUnitsPatternDrop(adjustedCoordinate, adjustedUnitsPattern);
     },
-    [unitsPattern, unitsPatternOffset, onUnitsPatternDrop]
+    [unitsPattern, unitsPatternOffset, onUnitsPatternDrop, area]
   );
   const onUnitSquareHover = useCallback(
     (coordinateX: number, coordinateY: number) => {
