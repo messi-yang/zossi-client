@@ -21,7 +21,7 @@ export const Primary = Template.bind({});
 Primary.args = {
   area: {
     from: { x: 0, y: 0 },
-    to: { x: 2, y: 2 },
+    to: { x: 6, y: 6 },
   },
   units: [
     [
@@ -89,9 +89,9 @@ Primary.args = {
     ],
   ],
   unitsPattern: [
-    [true, true, false],
+    [true, false, false],
     [false, true, false],
-    [false, true, false],
+    [false, false, true],
   ],
   unitsPatternOffset: {
     x: -1,

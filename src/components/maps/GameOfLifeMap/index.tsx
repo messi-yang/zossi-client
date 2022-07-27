@@ -4,6 +4,43 @@ import type { Area, Unit, Coordinate, UnitsPattern } from './types';
 import UnitSquareColumn from './UnitSquareColumn';
 import Wrapper from './Wrapper';
 
+function isXInArea(x: number, area: Area) {
+  return x >= area.from.x && x <= area.to.x;
+}
+
+function isYInArea(y: number, area: Area) {
+  return y >= area.from.y && y <= area.to.y;
+}
+
+function adjustCoordinateAndUnitsPattern(
+  originCoordinate: Coordinate,
+  unitsPattern: UnitsPattern,
+  area: Area
+) {
+  let adjustedUnitsPattern: UnitsPattern = unitsPattern.filter(
+    (unitsRow, x) => {
+      const isRowWithinArea = isXInArea(originCoordinate.x + x, area);
+      return isRowWithinArea;
+    }
+  );
+
+  adjustedUnitsPattern = adjustedUnitsPattern.map((unitsRow) => {
+    const rowWithUnitsInArea = unitsRow.filter((unit, y) =>
+      isYInArea(originCoordinate.y + y, area)
+    );
+    return rowWithUnitsInArea;
+  });
+  const adjustedCoordinate = {
+    x: originCoordinate.x > 0 ? originCoordinate.x : 0,
+    y: originCoordinate.y > 0 ? originCoordinate.y : 0,
+  };
+
+  return {
+    adjustedCoordinate,
+    adjustedUnitsPattern,
+  };
+}
+
 type Props = {
   area: Area;
   units: Unit[][];
@@ -26,13 +63,13 @@ function GameOfLifeMap({
   );
   const onUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
-      onUnitsPatternDrop(
-        {
-          x: coordinateX + unitsPatternOffset.x,
-          y: coordinateY + unitsPatternOffset.y,
-        },
-        unitsPattern
-      );
+      const originCoordinate = {
+        x: coordinateX + unitsPatternOffset.x,
+        y: coordinateY + unitsPatternOffset.y,
+      };
+      const { adjustedCoordinate, adjustedUnitsPattern } =
+        adjustCoordinateAndUnitsPattern(originCoordinate, unitsPattern, area);
+      onUnitsPatternDrop(adjustedCoordinate, adjustedUnitsPattern);
     },
     [unitsPattern, unitsPatternOffset, onUnitsPatternDrop]
   );
