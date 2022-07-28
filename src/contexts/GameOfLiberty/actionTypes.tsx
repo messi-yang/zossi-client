@@ -1,4 +1,4 @@
-import { AreaDTO, CoordinateDTO, UnitsPatternDTO } from '@/dto';
+import { AreaDTO, CoordinateDTO } from '@/dto';
 
 enum ActionTypeEnum {
   WatchArea = 'WATCH_AREA',
@@ -15,8 +15,7 @@ type WatchAreaAction = {
 type ReviveUnitsAction = {
   type: ActionTypeEnum.ReviveUnits;
   payload: {
-    coordinate: CoordinateDTO;
-    pattern: UnitsPatternDTO;
+    coordinates: CoordinateDTO[];
   };
 };
 
