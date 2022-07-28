@@ -5,11 +5,7 @@ import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import type { AreaDTO, UnitDTO } from '@/dto';
 import GameOfLifeMap from '@/components/maps/GameOfLifeMap';
-import type {
-  Unit,
-  Coordinate,
-  UnitsPattern,
-} from '@/components/maps/GameOfLifeMap/types';
+import type { Unit, Coordinate } from '@/components/maps/GameOfLifeMap/types';
 import useDomRect from '@/hooks/useDomRect';
 
 function convertGameOfLibertyUnitsToGameOfLifeMapUnits(
@@ -75,8 +71,8 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
   );
 
   const onPatternDrop = useCallback(
-    (coordinate: Coordinate, droppedUnitsPattern: UnitsPattern) => {
-      reviveUnits(coordinate, droppedUnitsPattern);
+    (coordinates: Coordinate[]) => {
+      reviveUnits(coordinates);
     },
     [reviveUnits]
   );

@@ -32,7 +32,7 @@ type GameOfLibertyContextValue = {
   unitsPatternOffset: UnitsPatternOffset;
   joinGame: () => void;
   updateUnitsPattern: (pattern: UnitsPatternDTO) => void;
-  reviveUnits: (coordinate: CoordinateDTO, pattern: UnitsPatternDTO) => void;
+  reviveUnits: (coordinates: CoordinateDTO[]) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
 };
@@ -104,7 +104,7 @@ export function Provider({ children }: Props) {
   );
 
   const reviveUnits = useCallback(
-    (coordinate: CoordinateDTO, unitsPatternToRevive: UnitsPatternDTO) => {
+    (coordinates: CoordinateDTO[]) => {
       if (!socketRef.current) {
         return;
       }
@@ -112,22 +112,10 @@ export function Provider({ children }: Props) {
         return;
       }
 
-      const coordinatesForRevival: CoordinateDTO[] = [];
-      unitsPatternToRevive.forEach((row, x) => {
-        row.forEach((isToRevive, y) => {
-          if (isToRevive) {
-            coordinatesForRevival.push({
-              x: coordinate.x + x,
-              y: coordinate.y + y,
-            });
-          }
-        });
-      });
-
       const action: ReviveUnitsAction = {
         type: ActionTypeEnum.ReviveUnits,
         payload: {
-          coordinates: coordinatesForRevival,
+          coordinates,
         },
       };
       socketRef.current.send(JSON.stringify(action));

@@ -44,7 +44,7 @@ type Props = {
   units: Unit[][];
   unitsPattern: UnitsPattern;
   unitsPatternOffset: { x: number; y: number };
-  onUnitsPatternDrop: (coordinate: Coordinate, pattern: UnitsPattern) => any;
+  onUnitsPatternDrop: (coordinates: Coordinate[]) => any;
 };
 
 const UnitSquareMemo = memo(UnitSquare);
@@ -67,7 +67,18 @@ function GameOfLifeMap({
       };
       const { adjustedCoordinate, adjustedUnitsPattern } =
         adjustCoordinateAndUnitsPattern(originCoordinate, unitsPattern, area);
-      onUnitsPatternDrop(adjustedCoordinate, adjustedUnitsPattern);
+      const coordinates: Coordinate[] = [];
+      adjustedUnitsPattern.forEach((row, x) => {
+        row.forEach((truthy, y) => {
+          if (truthy) {
+            coordinates.push({
+              x: adjustedCoordinate.x + x,
+              y: adjustedCoordinate.y + y,
+            });
+          }
+        });
+      });
+      onUnitsPatternDrop(coordinates);
     },
     [unitsPattern, unitsPatternOffset, onUnitsPatternDrop, area]
   );
