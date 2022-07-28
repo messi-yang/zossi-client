@@ -3,6 +3,7 @@ import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitMapIcon from '@/components/icons/UnitMapIcon';
 import UnitsPatternModal from '@/components/modals/UnitsPatternModal';
+import CoordinateDTO from '@/dto/CoordinateDTO';
 import ItemWrapper from './ItemWrapper';
 
 type HoverStateFlags = {
@@ -10,7 +11,7 @@ type HoverStateFlags = {
 };
 
 function GameRoomSideBar() {
-  const { unitsPattern, updateUnitsPattern } = useContext(GameOfLibertyContext);
+  const { updateRelativeCoordinates } = useContext(GameOfLibertyContext);
 
   const [hoverStateFlags, setHoverStateFlags] = useState<HoverStateFlags>({
     unitMap: false,
@@ -28,7 +29,18 @@ function GameRoomSideBar() {
     setIsUnitsPatternVisible(true);
   };
   const handleUnitsPatternUpdate = (pattern: boolean[][]) => {
-    updateUnitsPattern(pattern);
+    const coordinates: CoordinateDTO[] = [];
+    pattern.forEach((row, x) => {
+      row.forEach((truthy, y) => {
+        if (truthy) {
+          coordinates.push({
+            x,
+            y,
+          });
+        }
+      });
+    });
+    updateRelativeCoordinates(coordinates);
     setIsUnitsPatternVisible(false);
   };
 
@@ -58,7 +70,7 @@ function GameRoomSideBar() {
       </ItemWrapper>
       <UnitsPatternModal
         opened={isUnitsPatternVisible}
-        pattern={unitsPattern}
+        pattern={[]}
         onPatternUpdate={handleUnitsPatternUpdate}
       />
     </section>

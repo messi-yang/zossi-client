@@ -1,49 +1,14 @@
 import { useState, useCallback, memo } from 'react';
 import UnitSquare from '@/components/squares/UnitSquare';
-import type { Area, Unit, Coordinate, UnitsPattern } from './types';
+import type { Area, Unit, Coordinate } from './types';
 import UnitSquareColumn from './UnitSquareColumn';
 import Wrapper from './Wrapper';
-
-function isXInArea(x: number, area: Area) {
-  return x >= area.from.x && x <= area.to.x;
-}
-
-function isYInArea(y: number, area: Area) {
-  return y >= area.from.y && y <= area.to.y;
-}
-
-function adjustCoordinateAndUnitsPattern(
-  originCoordinate: Coordinate,
-  unitsPattern: UnitsPattern,
-  area: Area
-) {
-  let adjustedUnitsPattern: UnitsPattern = unitsPattern.filter((_, x) => {
-    const isRowWithinArea = isXInArea(originCoordinate.x + x, area);
-    return isRowWithinArea;
-  });
-
-  adjustedUnitsPattern = adjustedUnitsPattern.map((unitsRow) => {
-    const rowWithUnitsInArea = unitsRow.filter((_, y) =>
-      isYInArea(originCoordinate.y + y, area)
-    );
-    return rowWithUnitsInArea;
-  });
-  const adjustedCoordinate = {
-    x: originCoordinate.x >= area.from.x ? originCoordinate.x : area.from.x,
-    y: originCoordinate.y >= area.from.y ? originCoordinate.y : area.from.y,
-  };
-
-  return {
-    adjustedCoordinate,
-    adjustedUnitsPattern,
-  };
-}
 
 type Props = {
   area: Area;
   units: Unit[][];
-  unitsPattern: UnitsPattern;
-  onUnitsPatternDrop: (coordinates: Coordinate[]) => any;
+  relativeCoordinates: Coordinate[];
+  onUnitsRevive: (coordinates: Coordinate[]) => any;
 };
 
 const UnitSquareMemo = memo(UnitSquare);
@@ -51,34 +16,21 @@ const UnitSquareMemo = memo(UnitSquare);
 function GameOfLifeMap({
   area,
   units,
-  unitsPattern,
-  onUnitsPatternDrop,
+  relativeCoordinates,
+  onUnitsRevive,
 }: Props) {
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
     null
   );
   const onUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
-      const originCoordinate = {
-        x: coordinateX,
-        y: coordinateY,
-      };
-      const { adjustedCoordinate, adjustedUnitsPattern } =
-        adjustCoordinateAndUnitsPattern(originCoordinate, unitsPattern, area);
-      const coordinates: Coordinate[] = [];
-      adjustedUnitsPattern.forEach((row, x) => {
-        row.forEach((truthy, y) => {
-          if (truthy) {
-            coordinates.push({
-              x: adjustedCoordinate.x + x,
-              y: adjustedCoordinate.y + y,
-            });
-          }
-        });
-      });
-      onUnitsPatternDrop(coordinates);
+      const finalCoordinates = relativeCoordinates.map(({ x, y }) => ({
+        x: coordinateX + x,
+        y: coordinateY + y,
+      }));
+      onUnitsRevive(finalCoordinates);
     },
-    [unitsPattern, onUnitsPatternDrop, area]
+    [relativeCoordinates, onUnitsRevive, area]
   );
   const onUnitSquareHover = useCallback(
     (coordinateX: number, coordinateY: number) => {
@@ -89,17 +41,19 @@ function GameOfLifeMap({
   );
   const isUnitToBeHighlighted = useCallback(
     (coordinate: Coordinate): boolean => {
-      if (!hoveredCoordinate || unitsPattern.length === 0) {
+      if (!hoveredCoordinate || relativeCoordinates.length === 0) {
         return false;
       }
       const relativeX = coordinate.x - hoveredCoordinate.x;
       const relativeY = coordinate.y - hoveredCoordinate.y;
 
-      const isRelativeCoordinateInPatternPresentAndTruthy =
-        unitsPattern?.[relativeX]?.[relativeY] || false;
-      return isRelativeCoordinateInPatternPresentAndTruthy;
+      return (
+        relativeCoordinates.findIndex(
+          ({ x, y }) => x === relativeX && y === relativeY
+        ) > -1
+      );
     },
-    [unitsPattern, hoveredCoordinate]
+    [relativeCoordinates, hoveredCoordinate]
   );
 
   return (

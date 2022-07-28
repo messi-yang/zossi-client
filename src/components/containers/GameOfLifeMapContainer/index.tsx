@@ -34,7 +34,7 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     unitSize
   );
 
-  const { area, units, unitsPattern, status, reviveUnits, watchArea } =
+  const { area, units, relativeCoordinates, status, reviveUnits, watchArea } =
     useContext(GameOfLibertyContext);
 
   const debounceWatchArea = debounce(watchArea, 200);
@@ -63,7 +63,7 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
     units
   );
 
-  const onPatternDrop = useCallback(
+  const handleUnitsRevive = useCallback(
     (coordinates: Coordinate[]) => {
       reviveUnits(coordinates);
     },
@@ -75,8 +75,8 @@ function GameOfLifeMapContainer({ unitSize }: Props) {
       <GameOfLifeMap
         area={area}
         units={gameFieldUnits}
-        unitsPattern={unitsPattern}
-        onUnitsPatternDrop={onPatternDrop}
+        relativeCoordinates={relativeCoordinates}
+        onUnitsRevive={handleUnitsRevive}
       />
     </section>
   );

@@ -88,9 +88,5 @@ Primary.args = {
       { alive: false, age: 0 },
     ],
   ],
-  unitsPattern: [
-    [true, false, false],
-    [false, true, false],
-    [false, false, true],
-  ],
+  relativeCoordinates: [{ x: 0, y: 0 }],
 };

@@ -7,13 +7,7 @@ import {
   useEffect,
 } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import type {
-  AreaDTO,
-  CoordinateDTO,
-  MapSizeDTO,
-  UnitDTO,
-  UnitsPatternDTO,
-} from '@/dto';
+import type { AreaDTO, CoordinateDTO, MapSizeDTO, UnitDTO } from '@/dto';
 import { EventTypeEnum } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -26,9 +20,9 @@ type GameOfLibertyContextValue = {
   mapSize: MapSizeDTO;
   area: AreaDTO;
   units: UnitDTO[][];
-  unitsPattern: UnitsPatternDTO;
+  relativeCoordinates: CoordinateDTO[];
   joinGame: () => void;
-  updateUnitsPattern: (pattern: UnitsPatternDTO) => void;
+  updateRelativeCoordinates: (coordinates: CoordinateDTO[]) => void;
   reviveUnits: (coordinates: CoordinateDTO[]) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
@@ -46,15 +40,18 @@ function createInitialGameOfLibertyContextValue(): GameOfLibertyContextValue {
       to: { x: 0, y: 0 },
     },
     units: [],
-    unitsPattern: [
-      [false, false, false, false, false],
-      [false, true, true, true, false],
-      [false, true, false, true, false],
-      [false, true, true, true, false],
-      [false, false, false, false, false],
+    relativeCoordinates: [
+      { x: -1, y: -1 },
+      { x: 0, y: -1 },
+      { x: 1, y: -1 },
+      { x: -1, y: 0 },
+      { x: 1, y: 0 },
+      { x: -1, y: 1 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
     ],
     joinGame: () => {},
-    updateUnitsPattern: () => {},
+    updateRelativeCoordinates: () => {},
     reviveUnits: () => {},
     watchArea: () => {},
     leaveGame: () => {},
@@ -82,16 +79,16 @@ export function Provider({ children }: Props) {
   const [units, setUnits] = useState<UnitDTO[][]>(
     initialGameOfLibertyContextValue.units
   );
-  const [unitsPattern, setUnitsPattern] = useState<UnitsPatternDTO>(
-    initialGameOfLibertyContextValue.unitsPattern
-  );
+  const [relativeCoordinates, setRelativeCoordinates] = useState<
+    CoordinateDTO[]
+  >(initialGameOfLibertyContextValue.relativeCoordinates);
   const [status, setStatus] = useState<Status>(
     initialGameOfLibertyContextValue.status
   );
 
-  const updateUnitsPattern = useCallback(
-    (newUnitsPattern: UnitsPatternDTO) => {
-      setUnitsPattern(newUnitsPattern);
+  const updateRelativeCoordinates = useCallback(
+    (coordinates: CoordinateDTO[]) => {
+      setRelativeCoordinates(coordinates);
     },
     [socketRef.current, status]
   );
@@ -185,9 +182,9 @@ export function Provider({ children }: Props) {
       mapSize,
       area,
       units,
-      unitsPattern,
+      relativeCoordinates,
       joinGame,
-      updateUnitsPattern,
+      updateRelativeCoordinates,
       reviveUnits,
       watchArea,
       leaveGame,
