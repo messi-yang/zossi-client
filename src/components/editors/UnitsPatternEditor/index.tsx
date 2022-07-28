@@ -1,17 +1,92 @@
+import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import UnitSquare from '@/components/squares/UnitSquare';
 
-type Props = {
-  pattern: boolean[][];
-  onUpdate: (newPattern: boolean[][]) => any;
+type Pattern = boolean[][];
+export type Coordinate = {
+  x: number;
+  y: number;
 };
 
-export default function UnitsPatternEditor({ pattern, onUpdate }: Props) {
+type Props = {
+  width: number;
+  height: number;
+  relativeCoordinates: Coordinate[];
+  relativeCoordinateOffset: Coordinate;
+  onUpdate: (coordinates: Coordinate[]) => any;
+};
+
+function createInitialPattern(width: number, height: number): Pattern {
+  const pattern: Pattern = [];
+  for (let i = 0; i < width; i += 1) {
+    pattern.push([]);
+    for (let j = 0; j < height; j += 1) {
+      pattern[i].push(false);
+    }
+  }
+  return pattern;
+}
+
+function convertCoordinatesToPattern(
+  coordinates: Coordinate[],
+  coordinateOffset: Coordinate,
+  width: number,
+  height: number
+): Pattern {
+  const newPattern: Pattern = createInitialPattern(width, height);
+  coordinates.forEach(({ x, y }) => {
+    const adjustedX = x - coordinateOffset.x;
+    const adjustedY = y - coordinateOffset.y;
+    if (newPattern?.[adjustedX]?.[adjustedY] !== undefined) {
+      newPattern[adjustedX][adjustedY] = true;
+    }
+  });
+
+  return newPattern;
+}
+
+export default function UnitsPatternEditor({
+  relativeCoordinates,
+  relativeCoordinateOffset,
+  width,
+  height,
+  onUpdate,
+}: Props) {
+  const [pattern, setPattern] = useState<Pattern>(
+    convertCoordinatesToPattern(
+      relativeCoordinates,
+      relativeCoordinateOffset,
+      width,
+      height
+    )
+  );
+  useEffect(() => {
+    setPattern(
+      convertCoordinatesToPattern(
+        relativeCoordinates,
+        relativeCoordinateOffset,
+        width,
+        height
+      )
+    );
+  }, [relativeCoordinates, relativeCoordinateOffset, width, height]);
   const onUnitClick = (coordinateX: number, coordinateY: number) => {
     const newPattern = cloneDeep(pattern);
     newPattern[coordinateX][coordinateY] =
       !newPattern[coordinateX][coordinateY];
-    onUpdate(newPattern);
+
+    const newCoordinates: Coordinate[] = [];
+    newPattern.forEach((row, x) => {
+      row.forEach((truthy, y) => {
+        if (truthy) {
+          newCoordinates.push({
+            x: x + relativeCoordinateOffset.x,
+            y: y + relativeCoordinateOffset.y,
+          });
+        }
+      });
+    });
+    onUpdate(newCoordinates);
   };
 
   return (

@@ -3,28 +3,33 @@ import cloneDeep from 'lodash/cloneDeep';
 import BaseModal from '@/components/modals/BaseModal';
 import UnitsPatternEditor from '@/components/editors/UnitsPatternEditor';
 
-type Pattern = boolean[][];
+type Coordinate = {
+  x: number;
+  y: number;
+};
 
 type UnitsPatternModalProp = {
   opened: boolean;
-  pattern: Pattern;
-  onPatternUpdate?: (pattern: Pattern) => any;
+  relativeCoordinates: Coordinate[];
+  onPatternUpdate?: (coordinates: Coordinate[]) => any;
 };
 
 export default function UnitsPatternModal({
   opened,
-  pattern,
+  relativeCoordinates,
   onPatternUpdate = () => {},
 }: UnitsPatternModalProp) {
-  const [tmpPattern, setTmpPattern] = useState<Pattern>(cloneDeep(pattern));
+  const [tmpRelativeCoords, setTmpRelativeCoords] = useState<Coordinate[]>(
+    cloneDeep(relativeCoordinates)
+  );
   useEffect(() => {
-    setTmpPattern(cloneDeep(pattern));
-  }, [pattern]);
+    setTmpRelativeCoords(cloneDeep(relativeCoordinates));
+  }, [relativeCoordinates]);
   const handleUnitsPatternModalBackgroundClick = () => {
-    onPatternUpdate(tmpPattern);
+    onPatternUpdate(tmpRelativeCoords);
   };
-  const handlePatternUpdate = (newPattern: Pattern) => {
-    setTmpPattern(newPattern);
+  const handlePatternUpdate = (newPattern: Coordinate[]) => {
+    setTmpRelativeCoords(newPattern);
   };
 
   return (
@@ -32,7 +37,13 @@ export default function UnitsPatternModal({
       opened={opened}
       onBackgroundClick={handleUnitsPatternModalBackgroundClick}
     >
-      <UnitsPatternEditor pattern={tmpPattern} onUpdate={handlePatternUpdate} />
+      <UnitsPatternEditor
+        relativeCoordinates={tmpRelativeCoords}
+        relativeCoordinateOffset={{ x: -2, y: -2 }}
+        width={5}
+        height={5}
+        onUpdate={handlePatternUpdate}
+      />
     </BaseModal>
   );
 }
