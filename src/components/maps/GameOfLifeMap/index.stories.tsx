@@ -93,8 +93,4 @@ Primary.args = {
     [false, true, false],
     [false, false, true],
   ],
-  unitsPatternOffset: {
-    x: -1,
-    y: -1,
-  },
 };

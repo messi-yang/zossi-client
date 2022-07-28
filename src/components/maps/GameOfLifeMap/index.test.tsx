@@ -12,7 +12,6 @@ function renderGameOfLifeMap(units: Unit[][]): RenderResult {
       }}
       units={units}
       unitsPattern={[]}
-      unitsPatternOffset={{ x: 0, y: 0 }}
       onUnitsPatternDrop={() => {}}
     />
   );

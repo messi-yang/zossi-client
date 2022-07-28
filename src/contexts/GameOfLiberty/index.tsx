@@ -21,15 +21,12 @@ import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
 
-type UnitsPatternOffset = { x: number; y: number };
-
 type GameOfLibertyContextValue = {
   status: Status;
   mapSize: MapSizeDTO;
   area: AreaDTO;
   units: UnitDTO[][];
   unitsPattern: UnitsPatternDTO;
-  unitsPatternOffset: UnitsPatternOffset;
   joinGame: () => void;
   updateUnitsPattern: (pattern: UnitsPatternDTO) => void;
   reviveUnits: (coordinates: CoordinateDTO[]) => void;
@@ -56,7 +53,6 @@ function createInitialGameOfLibertyContextValue(): GameOfLibertyContextValue {
       [false, true, true, true, false],
       [false, false, false, false, false],
     ],
-    unitsPatternOffset: { x: -2, y: -2 },
     joinGame: () => {},
     updateUnitsPattern: () => {},
     reviveUnits: () => {},
@@ -88,9 +84,6 @@ export function Provider({ children }: Props) {
   );
   const [unitsPattern, setUnitsPattern] = useState<UnitsPatternDTO>(
     initialGameOfLibertyContextValue.unitsPattern
-  );
-  const [unitsPatternOffset] = useState<UnitsPatternOffset>(
-    initialGameOfLibertyContextValue.unitsPatternOffset
   );
   const [status, setStatus] = useState<Status>(
     initialGameOfLibertyContextValue.status
@@ -193,7 +186,6 @@ export function Provider({ children }: Props) {
       area,
       units,
       unitsPattern,
-      unitsPatternOffset,
       joinGame,
       updateUnitsPattern,
       reviveUnits,

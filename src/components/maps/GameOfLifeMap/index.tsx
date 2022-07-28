@@ -43,7 +43,6 @@ type Props = {
   area: Area;
   units: Unit[][];
   unitsPattern: UnitsPattern;
-  unitsPatternOffset: { x: number; y: number };
   onUnitsPatternDrop: (coordinates: Coordinate[]) => any;
 };
 
@@ -53,7 +52,6 @@ function GameOfLifeMap({
   area,
   units,
   unitsPattern,
-  unitsPatternOffset,
   onUnitsPatternDrop,
 }: Props) {
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
@@ -62,8 +60,8 @@ function GameOfLifeMap({
   const onUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
       const originCoordinate = {
-        x: coordinateX + unitsPatternOffset.x,
-        y: coordinateY + unitsPatternOffset.y,
+        x: coordinateX,
+        y: coordinateY,
       };
       const { adjustedCoordinate, adjustedUnitsPattern } =
         adjustCoordinateAndUnitsPattern(originCoordinate, unitsPattern, area);
@@ -80,7 +78,7 @@ function GameOfLifeMap({
       });
       onUnitsPatternDrop(coordinates);
     },
-    [unitsPattern, unitsPatternOffset, onUnitsPatternDrop, area]
+    [unitsPattern, onUnitsPatternDrop, area]
   );
   const onUnitSquareHover = useCallback(
     (coordinateX: number, coordinateY: number) => {
@@ -94,10 +92,8 @@ function GameOfLifeMap({
       if (!hoveredCoordinate || unitsPattern.length === 0) {
         return false;
       }
-      const relativeX =
-        coordinate.x - hoveredCoordinate.x - unitsPatternOffset.x;
-      const relativeY =
-        coordinate.y - hoveredCoordinate.y - unitsPatternOffset.y;
+      const relativeX = coordinate.x - hoveredCoordinate.x;
+      const relativeY = coordinate.y - hoveredCoordinate.y;
 
       const isRelativeCoordinateInPatternPresentAndTruthy =
         unitsPattern?.[relativeX]?.[relativeY] || false;
