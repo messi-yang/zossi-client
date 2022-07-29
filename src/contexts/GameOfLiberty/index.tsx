@@ -143,7 +143,7 @@ export function Provider({ children }: Props) {
   }, [socketRef.current]);
 
   const joinGame = useCallback(() => {
-    const newSocket = new WebSocket('ws://34.80.145.144/ws/game/');
+    const newSocket = new WebSocket(`ws://${process.env.API_DOMAIN}/ws/game/`);
     socketRef.current = newSocket;
 
     newSocket.onopen = () => {

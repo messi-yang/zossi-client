@@ -13,6 +13,9 @@ const nextConfig = {
   eslint: {
     dirs: ['src'],
   },
+  env: {
+    API_DOMAIN: process.env.API_DOMAIN || 'localhost:8080',
+  },
   dir: './src',
 };
 
