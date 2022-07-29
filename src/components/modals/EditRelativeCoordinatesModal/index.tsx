@@ -1,31 +1,31 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import BaseModal from '@/components/modals/BaseModal';
-import UnitsPatternEditor from '@/components/editors/UnitsPatternEditor';
+import RelativeCoordinatesEditor from '@/components/editors/RelativeCoordinatesEditor';
 
 type Coordinate = {
   x: number;
   y: number;
 };
 
-type UnitsPatternModalProp = {
+type Props = {
   opened: boolean;
   relativeCoordinates: Coordinate[];
   onPatternUpdate?: (coordinates: Coordinate[]) => any;
 };
 
-export default function UnitsPatternModal({
+export default function EditRelativeCoordinatesModal({
   opened,
   relativeCoordinates,
   onPatternUpdate = () => {},
-}: UnitsPatternModalProp) {
+}: Props) {
   const [tmpRelativeCoords, setTmpRelativeCoords] = useState<Coordinate[]>(
     cloneDeep(relativeCoordinates)
   );
   useEffect(() => {
     setTmpRelativeCoords(cloneDeep(relativeCoordinates));
   }, [relativeCoordinates]);
-  const handleUnitsPatternModalBackgroundClick = () => {
+  const handleEditRelativeCoordinatesModalBackgroundClick = () => {
     onPatternUpdate(tmpRelativeCoords);
   };
   const handlePatternUpdate = (newPattern: Coordinate[]) => {
@@ -35,9 +35,9 @@ export default function UnitsPatternModal({
   return (
     <BaseModal
       opened={opened}
-      onBackgroundClick={handleUnitsPatternModalBackgroundClick}
+      onBackgroundClick={handleEditRelativeCoordinatesModalBackgroundClick}
     >
-      <UnitsPatternEditor
+      <RelativeCoordinatesEditor
         relativeCoordinates={tmpRelativeCoords}
         relativeCoordinateOffset={{ x: -2, y: -2 }}
         width={5}

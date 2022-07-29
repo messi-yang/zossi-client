@@ -45,7 +45,7 @@ function convertCoordinatesToPattern(
   return newPattern;
 }
 
-export default function UnitsPatternEditor({
+export default function RelativeCoordinatesEditor({
   relativeCoordinates,
   relativeCoordinateOffset,
   width,

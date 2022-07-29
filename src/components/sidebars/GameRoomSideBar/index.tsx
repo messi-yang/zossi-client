@@ -2,7 +2,7 @@ import { useState, useContext } from 'react';
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitMapIcon from '@/components/icons/UnitMapIcon';
-import UnitsPatternModal from '@/components/modals/UnitsPatternModal';
+import EditRelativeCoordinatesModal from '@/components/modals/EditRelativeCoordinatesModal';
 import ItemWrapper from './ItemWrapper';
 
 type Coordinate = {
@@ -62,7 +62,7 @@ function GameRoomSideBar() {
       >
         <UnitMapIcon highlighted={hoverStateFlags.unitMap} active={false} />
       </ItemWrapper>
-      <UnitsPatternModal
+      <EditRelativeCoordinatesModal
         opened={isUnitsPatternVisible}
         relativeCoordinates={relativeCoordinates}
         onPatternUpdate={handleUnitsPatternUpdate}
