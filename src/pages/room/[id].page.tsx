@@ -38,7 +38,7 @@ const Room: NextPage = function Room() {
         />
       </section>
       <section style={{ flexGrow: '1' }}>
-        <GameOfLifeMapContainer unitSize={20} />
+        <GameOfLifeMapContainer />
       </section>
     </main>
   );

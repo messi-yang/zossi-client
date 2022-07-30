@@ -13,6 +13,7 @@ function renderGameOfLifeMap(units: Unit[][]): RenderResult {
       units={units}
       relativeCoordinates={[]}
       onUnitsRevive={() => {}}
+      onAreaUpdate={() => {}}
     />
   );
 }

@@ -1,8 +1,11 @@
-import { useState, useCallback, memo } from 'react';
+import { useRef, useState, useCallback, memo, useEffect } from 'react';
+import cloneDeep from 'lodash/cloneDeep';
+import useDomRect from '@/hooks/useDomRect';
+import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import UnitSquare from '@/components/squares/UnitSquare';
 import type { Area, Unit, Coordinate } from './types';
 import UnitSquareColumn from './UnitSquareColumn';
-import Wrapper from './Wrapper';
+import dataTestids from './dataTestids';
 
 function isCoordinateInArea(coordinate: Coordinate, area: Area): boolean {
   if (coordinate.x < area.from.x || coordinate.x > area.to.x) {
@@ -19,6 +22,7 @@ type Props = {
   units: Unit[][];
   relativeCoordinates: Coordinate[];
   onUnitsRevive: (coordinates: Coordinate[]) => any;
+  onAreaUpdate: (newArea: Area) => any;
 };
 
 const UnitSquareMemo = memo(UnitSquare);
@@ -28,7 +32,14 @@ function GameOfLifeMap({
   units,
   relativeCoordinates,
   onUnitsRevive,
+  onAreaUpdate,
 }: Props) {
+  const rootRef = useRef<HTMLElement>(null);
+  const rootElemRect = useDomRect(rootRef);
+  const [mapWidth, mapHeight] = useResolutionCalculator(
+    { width: rootElemRect.width, height: rootElemRect.height },
+    20
+  );
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
     null
   );
@@ -69,38 +80,52 @@ function GameOfLifeMap({
     [relativeCoordinates, hoveredCoordinate]
   );
 
+  useEffect(() => {
+    const newFrom = cloneDeep(area.from);
+    const newTo = {
+      x: newFrom.x + mapWidth - 1,
+      y: newFrom.x + mapHeight - 1,
+    };
+    onAreaUpdate({
+      from: newFrom,
+      to: newTo,
+    });
+  }, [area, mapWidth, mapHeight]);
+
   return (
-    <Wrapper>
-      <>
-        {units.map((unitsColumn, unitsColumnIndex) => (
-          <UnitSquareColumn key={`${area.from.x + unitsColumnIndex}`}>
-            <>
-              {unitsColumn.map((unit, unitIndex) => {
-                const coordinate = {
-                  x: area.from.x + unitsColumnIndex,
-                  y: area.from.y + unitIndex,
-                };
-                return (
-                  <UnitSquareMemo
-                    key={`${coordinate.x},${coordinate.y}`}
-                    coordinateX={coordinate.x}
-                    coordinateY={coordinate.y}
-                    alive={unit.alive}
-                    highlighted={isUnitToBeHighlighted(coordinate)}
-                    hasTopBorder
-                    hasRightBorder={unitsColumnIndex === units.length - 1}
-                    hasBottomBorder={unitIndex === unitsColumn.length - 1}
-                    hasLeftBorder
-                    onClick={onUnitSquareClick}
-                    onHover={onUnitSquareHover}
-                  />
-                );
-              })}
-            </>
-          </UnitSquareColumn>
-        ))}
-      </>
-    </Wrapper>
+    <section
+      ref={rootRef}
+      data-testid={dataTestids.wrapper}
+      style={{ width: '100%', height: '100%', display: 'flex' }}
+    >
+      {units.map((unitsColumn, unitsColumnIndex) => (
+        <UnitSquareColumn key={`${area.from.x + unitsColumnIndex}`}>
+          <>
+            {unitsColumn.map((unit, unitIndex) => {
+              const coordinate = {
+                x: area.from.x + unitsColumnIndex,
+                y: area.from.y + unitIndex,
+              };
+              return (
+                <UnitSquareMemo
+                  key={`${coordinate.x},${coordinate.y}`}
+                  coordinateX={coordinate.x}
+                  coordinateY={coordinate.y}
+                  alive={unit.alive}
+                  highlighted={isUnitToBeHighlighted(coordinate)}
+                  hasTopBorder
+                  hasRightBorder={unitsColumnIndex === units.length - 1}
+                  hasBottomBorder={unitIndex === unitsColumn.length - 1}
+                  hasLeftBorder
+                  onClick={onUnitSquareClick}
+                  onHover={onUnitSquareHover}
+                />
+              );
+            })}
+          </>
+        </UnitSquareColumn>
+      ))}
+    </section>
   );
 }
 
