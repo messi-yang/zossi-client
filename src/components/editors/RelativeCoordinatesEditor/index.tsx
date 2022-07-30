@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import UnitSquare from '@/components/squares/UnitSquare';
+import dataTestids from './dataTestids';
 
 type Pattern = boolean[][];
 export type Coordinate = {
@@ -90,7 +91,10 @@ export default function RelativeCoordinatesEditor({
   };
 
   return (
-    <div style={{ display: 'flex', flexFlow: 'row' }}>
+    <div
+      data-testid={dataTestids.root}
+      style={{ display: 'flex', flexFlow: 'row' }}
+    >
       {pattern.map((rowInPattern, x) => (
         <div
           style={{

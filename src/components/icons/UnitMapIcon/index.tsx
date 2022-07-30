@@ -1,3 +1,5 @@
+import dataTestids from './dataTestids';
+
 type Props = {
   highlighted: boolean;
   active: boolean;
@@ -6,6 +8,7 @@ type Props = {
 function UnitMapIcon({ highlighted, active }: Props) {
   return (
     <svg
+      data-testid={dataTestids.root}
       width="32"
       height="32"
       viewBox="0 0 32 32"

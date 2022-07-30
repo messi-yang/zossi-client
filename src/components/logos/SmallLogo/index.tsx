@@ -1,6 +1,9 @@
+import dataTestids from './dataTestids';
+
 function SmallLogo() {
   return (
     <svg
+      data-testid={dataTestids.root}
       width="28"
       height="28"
       viewBox="0 0 28 28"
