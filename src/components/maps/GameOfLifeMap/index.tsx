@@ -90,7 +90,7 @@ function GameOfLifeMap({
       from: newFrom,
       to: newTo,
     });
-  }, [area, mapWidth, mapHeight]);
+  }, [mapWidth, mapHeight]);
 
   return (
     <section
