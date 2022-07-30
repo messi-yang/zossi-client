@@ -119,9 +119,11 @@ function GameOfLifeMap({
               y: area.from.y + unitIndex,
             };
             return (
-              <section style={{ width: '100%', height: squareSize }}>
+              <section
+                key={`${coordinate.x},${coordinate.y}`}
+                style={{ width: '100%', height: squareSize }}
+              >
                 <UnitSquareMemo
-                  key={`${coordinate.x},${coordinate.y}`}
                   coordinateX={coordinate.x}
                   coordinateY={coordinate.y}
                   alive={unit.alive}

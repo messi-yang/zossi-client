@@ -3,6 +3,7 @@ import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitMapIcon from '@/components/icons/UnitMapIcon';
 import EditRelativeCoordinatesModal from '@/components/modals/EditRelativeCoordinatesModal';
 import ItemWrapper from './ItemWrapper';
+import dataTestids from './dataTestids';
 
 export type Coordinate = {
   x: number;
@@ -44,6 +45,7 @@ function GameRoomSideBar({
 
   return (
     <section
+      data-testid={dataTestids.root}
       style={{
         width: '90px',
         height: '100%',
