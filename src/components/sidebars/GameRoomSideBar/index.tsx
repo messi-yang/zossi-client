@@ -1,11 +1,10 @@
-import { useState, useContext } from 'react';
-import GameOfLibertyContext from '@/contexts/GameOfLiberty';
+import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitMapIcon from '@/components/icons/UnitMapIcon';
 import EditRelativeCoordinatesModal from '@/components/modals/EditRelativeCoordinatesModal';
 import ItemWrapper from './ItemWrapper';
 
-type Coordinate = {
+export type Coordinate = {
   x: number;
   y: number;
 };
@@ -14,10 +13,15 @@ type HoverStateFlags = {
   unitMap: boolean;
 };
 
-function GameRoomSideBar() {
-  const { relativeCoordinates, updateRelativeCoordinates } =
-    useContext(GameOfLibertyContext);
+type Props = {
+  relativeCoordinates: Coordinate[];
+  onRelativeCoordinatesUpdate: (coordinates: Coordinate[]) => void;
+};
 
+function GameRoomSideBar({
+  relativeCoordinates,
+  onRelativeCoordinatesUpdate,
+}: Props) {
   const [hoverStateFlags, setHoverStateFlags] = useState<HoverStateFlags>({
     unitMap: false,
   });
@@ -34,7 +38,7 @@ function GameRoomSideBar() {
     setIsUnitsPatternVisible(true);
   };
   const handleUnitsPatternUpdate = (coordinates: Coordinate[]) => {
-    updateRelativeCoordinates(coordinates);
+    onRelativeCoordinatesUpdate(coordinates);
     setIsUnitsPatternVisible(false);
   };
 

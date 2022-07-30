@@ -9,7 +9,13 @@ import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 
 const Room: NextPage = function Room() {
-  const { status, joinGame, leaveGame } = useContext(GameOfLibertyContext);
+  const {
+    status,
+    relativeCoordinates,
+    joinGame,
+    leaveGame,
+    updateRelativeCoordinates,
+  } = useContext(GameOfLibertyContext);
 
   useEffect(() => {
     if (status !== 'ONLINE') {
@@ -26,7 +32,10 @@ const Room: NextPage = function Room() {
   return (
     <main style={{ width: '100vw', height: '100vh', display: 'flex' }}>
       <section style={{ flexShrink: '0', height: '100%' }}>
-        <GameRoomSideBar />
+        <GameRoomSideBar
+          relativeCoordinates={relativeCoordinates}
+          onRelativeCoordinatesUpdate={updateRelativeCoordinates}
+        />
       </section>
       <section style={{ flexGrow: '1' }}>
         <GameOfLifeMapContainer unitSize={20} />
