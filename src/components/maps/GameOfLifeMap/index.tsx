@@ -4,6 +4,16 @@ import type { Area, Unit, Coordinate } from './types';
 import UnitSquareColumn from './UnitSquareColumn';
 import Wrapper from './Wrapper';
 
+function isCoordinateInArea(coordinate: Coordinate, area: Area): boolean {
+  if (coordinate.x < area.from.x || coordinate.x > area.to.x) {
+    return false;
+  }
+  if (coordinate.y < area.from.y || coordinate.y > area.to.y) {
+    return false;
+  }
+  return true;
+}
+
 type Props = {
   area: Area;
   units: Unit[][];
@@ -24,10 +34,13 @@ function GameOfLifeMap({
   );
   const onUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
-      const finalCoordinates = relativeCoordinates.map(({ x, y }) => ({
-        x: coordinateX + x,
-        y: coordinateY + y,
-      }));
+      const finalCoordinates = relativeCoordinates
+        .map(({ x, y }) => ({
+          x: coordinateX + x,
+          y: coordinateY + y,
+        }))
+        .filter((coordinate) => isCoordinateInArea(coordinate, area));
+
       onUnitsRevive(finalCoordinates);
     },
     [relativeCoordinates, onUnitsRevive, area]
@@ -92,3 +105,4 @@ function GameOfLifeMap({
 }
 
 export default GameOfLifeMap;
+export type { Area, Unit, Coordinate };

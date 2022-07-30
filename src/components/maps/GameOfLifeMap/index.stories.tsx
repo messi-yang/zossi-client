@@ -1,7 +1,10 @@
 import React from 'react';
+import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { useArgs } from '@storybook/client-api';
 
 import GameOfLifeMap from '.';
+import type { Coordinate } from '.';
 
 export default {
   title: 'Map/GameOfLifeMap',
@@ -10,9 +13,30 @@ export default {
 } as ComponentMeta<typeof GameOfLifeMap>;
 
 const Template: ComponentStory<typeof GameOfLifeMap> = function Template(args) {
+  const [, updateArgs] = useArgs();
+  const { area, units } = args;
+  const handleUnitsRevive = (coordinates: Coordinate[]) => {
+    const coordinateOffset = area.from;
+    const newUnits = cloneDeep(units);
+    coordinates.forEach(({ x, y }) => {
+      const adjustedX = x - coordinateOffset.x;
+      const adjustedY = y - coordinateOffset.y;
+
+      if (newUnits?.[adjustedX]?.[adjustedY] === undefined) {
+        return;
+      }
+
+      newUnits[adjustedX][adjustedY].alive = true;
+    });
+
+    updateArgs({
+      units: newUnits,
+    });
+  };
+
   return (
     <div style={{ display: 'inline-flex', width: '300px', height: '300px' }}>
-      <GameOfLifeMap {...args} />
+      <GameOfLifeMap {...args} onUnitsRevive={handleUnitsRevive} />
     </div>
   );
 };
