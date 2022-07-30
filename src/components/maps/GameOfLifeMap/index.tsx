@@ -16,6 +16,8 @@ function isCoordinateInArea(coordinate: Coordinate, area: Area): boolean {
   return true;
 }
 
+const squareSize = 20;
+
 type Props = {
   area: Area;
   units: Unit[][];
@@ -37,7 +39,7 @@ function GameOfLifeMap({
   const rootElemRect = useDomRect(rootRef);
   const [mapWidth, mapHeight] = useResolutionCalculator(
     { width: rootElemRect.width, height: rootElemRect.height },
-    20
+    squareSize
   );
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
     null
@@ -95,12 +97,18 @@ function GameOfLifeMap({
     <section
       ref={rootRef}
       data-testid={dataTestids.wrapper}
-      style={{ width: '100%', height: '100%', display: 'flex' }}
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        overflow: 'hidden',
+      }}
     >
       {units.map((unitsColumn, unitsColumnIndex) => (
         <section
           style={{
-            flexGrow: '1',
+            width: squareSize,
+            flexShrink: '0',
             display: 'flex',
             flexFlow: 'column',
           }}
@@ -111,19 +119,21 @@ function GameOfLifeMap({
               y: area.from.y + unitIndex,
             };
             return (
-              <UnitSquareMemo
-                key={`${coordinate.x},${coordinate.y}`}
-                coordinateX={coordinate.x}
-                coordinateY={coordinate.y}
-                alive={unit.alive}
-                highlighted={isUnitToBeHighlighted(coordinate)}
-                hasTopBorder
-                hasRightBorder={unitsColumnIndex === units.length - 1}
-                hasBottomBorder={unitIndex === unitsColumn.length - 1}
-                hasLeftBorder
-                onClick={onUnitSquareClick}
-                onHover={onUnitSquareHover}
-              />
+              <section style={{ width: '100%', height: squareSize }}>
+                <UnitSquareMemo
+                  key={`${coordinate.x},${coordinate.y}`}
+                  coordinateX={coordinate.x}
+                  coordinateY={coordinate.y}
+                  alive={unit.alive}
+                  highlighted={isUnitToBeHighlighted(coordinate)}
+                  hasTopBorder
+                  hasRightBorder={unitsColumnIndex === units.length - 1}
+                  hasBottomBorder={unitIndex === unitsColumn.length - 1}
+                  hasLeftBorder
+                  onClick={onUnitSquareClick}
+                  onHover={onUnitSquareHover}
+                />
+              </section>
             );
           })}
         </section>

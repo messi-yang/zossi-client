@@ -7,6 +7,6 @@ describe('useResolutionCalculator', () => {
       useResolutionCalculator({ width: 111, height: 111 }, 10)
     );
 
-    expect(result.current).toEqual([11, 11]);
+    expect(result.current).toEqual([12, 12]);
   });
 });

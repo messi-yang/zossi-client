@@ -65,7 +65,7 @@ const Room: NextPage = function Room() {
           onRelativeCoordinatesUpdate={updateRelativeCoordinates}
         />
       </section>
-      <section style={{ flexGrow: '1' }}>
+      <section style={{ flexGrow: '1', overflow: 'hidden' }}>
         <section style={{ width: '100%', height: '100%' }}>
           {status === 'ONLINE' && (
             <GameOfLifeMap

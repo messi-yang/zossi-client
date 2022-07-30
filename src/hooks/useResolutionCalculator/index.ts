@@ -11,8 +11,8 @@ export default function useResolutionCalculator(
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    setWidth(Math.floor(size.width / unitSize) || 1);
-    setHeight(Math.floor(size.height / unitSize) || 1);
+    setWidth(Math.ceil(size.width / unitSize) || 1);
+    setHeight(Math.ceil(size.height / unitSize) || 1);
   }, [size]);
 
   return [width, height];
