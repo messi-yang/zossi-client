@@ -4,7 +4,6 @@ import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import UnitSquare from '@/components/squares/UnitSquare';
 import type { Area, Unit, Coordinate } from './types';
-import UnitSquareColumn from './UnitSquareColumn';
 import dataTestids from './dataTestids';
 
 function isCoordinateInArea(coordinate: Coordinate, area: Area): boolean {
@@ -99,31 +98,35 @@ function GameOfLifeMap({
       style={{ width: '100%', height: '100%', display: 'flex' }}
     >
       {units.map((unitsColumn, unitsColumnIndex) => (
-        <UnitSquareColumn key={`${area.from.x + unitsColumnIndex}`}>
-          <>
-            {unitsColumn.map((unit, unitIndex) => {
-              const coordinate = {
-                x: area.from.x + unitsColumnIndex,
-                y: area.from.y + unitIndex,
-              };
-              return (
-                <UnitSquareMemo
-                  key={`${coordinate.x},${coordinate.y}`}
-                  coordinateX={coordinate.x}
-                  coordinateY={coordinate.y}
-                  alive={unit.alive}
-                  highlighted={isUnitToBeHighlighted(coordinate)}
-                  hasTopBorder
-                  hasRightBorder={unitsColumnIndex === units.length - 1}
-                  hasBottomBorder={unitIndex === unitsColumn.length - 1}
-                  hasLeftBorder
-                  onClick={onUnitSquareClick}
-                  onHover={onUnitSquareHover}
-                />
-              );
-            })}
-          </>
-        </UnitSquareColumn>
+        <section
+          style={{
+            flexGrow: '1',
+            display: 'flex',
+            flexFlow: 'column',
+          }}
+        >
+          {unitsColumn.map((unit, unitIndex) => {
+            const coordinate = {
+              x: area.from.x + unitsColumnIndex,
+              y: area.from.y + unitIndex,
+            };
+            return (
+              <UnitSquareMemo
+                key={`${coordinate.x},${coordinate.y}`}
+                coordinateX={coordinate.x}
+                coordinateY={coordinate.y}
+                alive={unit.alive}
+                highlighted={isUnitToBeHighlighted(coordinate)}
+                hasTopBorder
+                hasRightBorder={unitsColumnIndex === units.length - 1}
+                hasBottomBorder={unitIndex === unitsColumn.length - 1}
+                hasLeftBorder
+                onClick={onUnitSquareClick}
+                onHover={onUnitSquareHover}
+              />
+            );
+          })}
+        </section>
       ))}
     </section>
   );
