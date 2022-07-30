@@ -12,7 +12,7 @@
     "prepare": "husky install",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "chromatic": "chromatic --project-token 4bfaa5105772 --auto-accept-changes"
+    "chromatic": "chromatic --project-token ${PROJECT_TOKEN} --auto-accept-changes"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.2",
