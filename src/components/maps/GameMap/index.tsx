@@ -44,7 +44,7 @@ function GameMap({
   const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
     null
   );
-  const onUnitSquareClick = useCallback(
+  const handleUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
       const finalCoordinates = relativeCoordinates
         .map(({ x, y }) => ({
@@ -57,7 +57,7 @@ function GameMap({
     },
     [relativeCoordinates, onUnitsRevive, area]
   );
-  const onUnitSquareHover = useCallback(
+  const handleUnitSquareHover = useCallback(
     (coordinateX: number, coordinateY: number) => {
       const coordinate = { x: coordinateX, y: coordinateY };
       setHoveredCoordinate(coordinate);
@@ -132,8 +132,8 @@ function GameMap({
                   hasRightBorder={unitsColumnIndex === units.length - 1}
                   hasBottomBorder={unitIndex === unitsColumn.length - 1}
                   hasLeftBorder
-                  onClick={onUnitSquareClick}
-                  onHover={onUnitSquareHover}
+                  onClick={handleUnitSquareClick}
+                  onHover={handleUnitSquareHover}
                 />
               </section>
             );
