@@ -49,7 +49,6 @@ function generateMockupUnits(area: Area) {
     units.push([]);
     for (let y = 0; y < height; y += 1) {
       units[x].push({
-        key: `${area.from.x + x},${area.from.y + y}`,
         coordinate: { x: area.from.x + x, y: area.from.y + y },
         alive: false,
         age: 0,

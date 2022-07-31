@@ -9,7 +9,6 @@ export type Area = {
 };
 
 export type Unit = {
-  key: string;
   coordinate: Coordinate;
   alive: boolean;
   age: number;
