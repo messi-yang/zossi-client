@@ -1,8 +1,14 @@
 import { useRef, useCallback } from 'react';
 
 import useHover from '@/hooks/useHover';
-import styles from './styles';
 import dataTestids from './dataTestids';
+
+const styles = {
+  aliveBackgroundColor: 'white',
+  deadBackgroundColor: 'black',
+  aliveHoverColor: 'rgb(200, 200, 200)',
+  deadHoverColor: 'rgb(77, 77, 77)',
+};
 
 type Props = {
   coordinateX: number;

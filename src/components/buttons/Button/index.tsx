@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 
 import useHover from '@/hooks/useHover';
 
-import ContentWrapper from './ContentWrapper';
+import ContentWrapper from './subComponents/ContentWrapper';
 import dataTestids from './dataTestids';
 
 type Props = {
