@@ -1,6 +1,6 @@
-import Wrapper from './Wrapper';
-import Background from './Background';
-import Modal from './Modal';
+import Wrapper from './subComponents/Wrapper';
+import Background from './subComponents/Background';
+import Modal from './subComponents/Modal';
 
 type BaseModalProps = {
   opened: boolean;

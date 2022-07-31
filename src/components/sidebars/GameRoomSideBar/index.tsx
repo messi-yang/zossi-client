@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import EditRelativeCoordinatesModal from '@/components/modals/EditRelativeCoordinatesModal';
-import ItemWrapper from './ItemWrapper';
+import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
 export type Coordinate = {
