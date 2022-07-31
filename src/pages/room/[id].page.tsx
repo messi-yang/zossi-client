@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
 import type { NextPage, GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import debounce from 'lodash/debounce';
 
@@ -27,6 +28,7 @@ function convertGameOfLibertyUnitsToGameMapUnits(
 }
 
 const Room: NextPage = function Room() {
+  const router = useRouter();
   const {
     area,
     units,
@@ -55,10 +57,15 @@ const Room: NextPage = function Room() {
     };
   }, [status]);
 
+  const handleLogoClick = () => {
+    router.push('/');
+  };
+
   return (
     <main style={{ width: '100vw', height: '100vh', display: 'flex' }}>
       <section style={{ flexShrink: '0', height: '100%' }}>
         <GameRoomSideBar
+          onLogoClick={handleLogoClick}
           relativeCoordinates={relativeCoordinates}
           onRelativeCoordinatesUpdate={updateRelativeCoordinates}
         />

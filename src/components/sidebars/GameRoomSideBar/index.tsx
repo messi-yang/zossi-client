@@ -15,11 +15,13 @@ type HoverStateFlags = {
 };
 
 type Props = {
+  onLogoClick: () => void;
   relativeCoordinates: Coordinate[];
   onRelativeCoordinatesUpdate: (coordinates: Coordinate[]) => void;
 };
 
 function GameRoomSideBar({
+  onLogoClick,
   relativeCoordinates,
   onRelativeCoordinatesUpdate,
 }: Props) {
@@ -54,7 +56,12 @@ function GameRoomSideBar({
         backgroundColor: '#1C1C1C',
       }}
     >
-      <ItemWrapper hovered={false} width="100%" height="70px">
+      <ItemWrapper
+        hovered={false}
+        width="100%"
+        height="70px"
+        onClick={onLogoClick}
+      >
         <SmallLogo />
       </ItemWrapper>
       <ItemWrapper
