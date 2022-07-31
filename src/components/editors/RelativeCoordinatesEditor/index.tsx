@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
+import { generateKeyFromIndex } from '@/utils/component/';
 import UnitSquare from '@/components/squares/UnitSquare';
 import dataTestids from './dataTestids';
 
@@ -99,6 +100,7 @@ function RelativeCoordinatesEditor({
     >
       {pattern.map((colInPattern, x) => (
         <div
+          key={generateKeyFromIndex(x)}
           style={{
             display: 'flex',
             flexFlow: 'column',
@@ -106,6 +108,7 @@ function RelativeCoordinatesEditor({
         >
           {colInPattern.map((isTurnedOn, y) => (
             <div
+              key={generateKeyFromIndex(y)}
               style={{
                 width: '40px',
                 height: '40px',
