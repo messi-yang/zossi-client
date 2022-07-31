@@ -1,6 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import SmallLogo from '.';
-import dataTestids from './dataTestids';
+import SmallLogo, { dataTestids } from '.';
 
 function renderSmallLogo(): RenderResult {
   return render(<SmallLogo />);

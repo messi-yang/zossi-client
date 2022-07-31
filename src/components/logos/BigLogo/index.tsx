@@ -225,3 +225,4 @@ function SmallLogo() {
 }
 
 export default SmallLogo;
+export { dataTestids };

@@ -145,4 +145,5 @@ function GameMap({
 }
 
 export default GameMap;
+export { dataTestids };
 export type { Area, Unit, Coordinate };

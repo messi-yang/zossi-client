@@ -1,6 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import UnitPatternIcon from '.';
-import dataTestids from './dataTestids';
+import UnitPatternIcon, { dataTestids } from '.';
 
 function renderUnitPatternIcon(): RenderResult {
   return render(<UnitPatternIcon active highlighted={false} />);

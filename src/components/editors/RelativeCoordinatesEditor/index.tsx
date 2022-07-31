@@ -46,7 +46,7 @@ function convertCoordinatesToPattern(
   return newPattern;
 }
 
-export default function RelativeCoordinatesEditor({
+function RelativeCoordinatesEditor({
   relativeCoordinates,
   relativeCoordinateOffset,
   width,
@@ -127,3 +127,6 @@ export default function RelativeCoordinatesEditor({
     </div>
   );
 }
+
+export default RelativeCoordinatesEditor;
+export { dataTestids };

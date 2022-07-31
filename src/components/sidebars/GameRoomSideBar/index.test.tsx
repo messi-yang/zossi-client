@@ -1,6 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import GameRoomSideBar from '.';
-import dataTestids from './dataTestids';
+import GameRoomSideBar, { dataTestids } from '.';
 
 function renderGameRoomSideBar(): RenderResult {
   return render(

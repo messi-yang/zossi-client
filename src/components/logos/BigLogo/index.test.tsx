@@ -1,6 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import BigLogo from '.';
-import dataTestids from './dataTestids';
+import BigLogo, { dataTestids } from '.';
 
 function renderBigLogo(): RenderResult {
   return render(<BigLogo />);

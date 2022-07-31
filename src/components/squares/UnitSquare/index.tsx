@@ -18,7 +18,7 @@ type Props = {
   onHover?: (coordinateX: number, coordinateY: number) => any;
 };
 
-export default function UnitSquare({
+function UnitSquare({
   coordinateX,
   coordinateY,
   alive,
@@ -76,3 +76,6 @@ export default function UnitSquare({
     />
   );
 }
+
+export default UnitSquare;
+export { dataTestids };

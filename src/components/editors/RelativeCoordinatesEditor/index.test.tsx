@@ -1,6 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import RelativeCoordinatesEditor from '.';
-import dataTestids from './dataTestids';
+import RelativeCoordinatesEditor, { dataTestids } from '.';
 
 function renderRelativeCoordinatesEditor(): RenderResult {
   return render(

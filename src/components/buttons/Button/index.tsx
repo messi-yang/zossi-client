@@ -55,3 +55,4 @@ function Button({ text, onClick = () => {} }: Props) {
 }
 
 export default Button;
+export { dataTestids };

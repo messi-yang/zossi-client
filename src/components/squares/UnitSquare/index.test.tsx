@@ -1,6 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import UnitSquare from '.';
-import dataTestids from './dataTestids';
+import UnitSquare, { dataTestids } from '.';
 
 function renderUnitSquare(): RenderResult {
   return render(

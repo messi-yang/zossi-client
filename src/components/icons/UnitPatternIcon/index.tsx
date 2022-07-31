@@ -32,3 +32,4 @@ function UnitPatternIcon({ highlighted, active }: Props) {
 }
 
 export default UnitPatternIcon;
+export { dataTestids };

@@ -78,3 +78,4 @@ function GameRoomSideBar({
 }
 
 export default GameRoomSideBar;
+export { dataTestids };
