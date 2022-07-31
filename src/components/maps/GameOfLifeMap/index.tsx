@@ -107,7 +107,7 @@ function GameOfLifeMap({
       {units.map((unitsColumn, unitsColumnIndex) => (
         <section
           style={{
-            width: squareSize,
+            flexBasis: squareSize,
             flexShrink: '0',
             display: 'flex',
             flexFlow: 'column',
@@ -121,7 +121,7 @@ function GameOfLifeMap({
             return (
               <section
                 key={`${coordinate.x},${coordinate.y}`}
-                style={{ width: '100%', height: squareSize }}
+                style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
               >
                 <UnitSquareMemo
                   coordinateX={coordinate.x}
