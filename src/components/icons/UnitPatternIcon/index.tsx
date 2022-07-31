@@ -5,7 +5,7 @@ type Props = {
   active: boolean;
 };
 
-function UnitMapIcon({ highlighted, active }: Props) {
+function UnitPatternIcon({ highlighted, active }: Props) {
   return (
     <svg
       data-testid={dataTestids.root}
@@ -31,4 +31,4 @@ function UnitMapIcon({ highlighted, active }: Props) {
   );
 }
 
-export default UnitMapIcon;
+export default UnitPatternIcon;

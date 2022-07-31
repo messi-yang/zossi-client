@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
-import UnitMapIcon from '@/components/icons/UnitMapIcon';
+import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import EditRelativeCoordinatesModal from '@/components/modals/EditRelativeCoordinatesModal';
 import ItemWrapper from './ItemWrapper';
 import dataTestids from './dataTestids';
@@ -66,7 +66,7 @@ function GameRoomSideBar({
         }}
         onClick={handleUnitsPatternItemClick}
       >
-        <UnitMapIcon highlighted={hoverStateFlags.unitMap} active={false} />
+        <UnitPatternIcon highlighted={hoverStateFlags.unitMap} active={false} />
       </ItemWrapper>
       <EditRelativeCoordinatesModal
         opened={isUnitsPatternVisible}
