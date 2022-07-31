@@ -32,7 +32,7 @@ function UnitSquare({
   onHover = () => {},
 }: Props) {
   const nodeRef = useRef<HTMLDivElement>(null);
-  const onHoverStateChange = useCallback(
+  const handleHoverStateChange = useCallback(
     (newHovered) => {
       if (!newHovered) {
         return;
@@ -41,7 +41,10 @@ function UnitSquare({
     },
     [alive, coordinateX, coordinateY]
   );
-  useHover(nodeRef, onHoverStateChange);
+  useHover(nodeRef, handleHoverStateChange);
+
+  const handleSquareClick = () => onClick(coordinateX, coordinateY);
+  const handleSquareKeyDown = handleSquareClick;
 
   let backgroundColor;
   if (highlighted) {
@@ -71,8 +74,8 @@ function UnitSquare({
         borderBottom: hasBottomBorder ? `1px solid ${borderColor}` : '',
         borderLeft: hasLeftBorder ? `1px solid ${borderColor}` : '',
       }}
-      onClick={() => onClick(coordinateX, coordinateY)}
-      onKeyDown={() => onClick(coordinateX, coordinateY)}
+      onClick={handleSquareClick}
+      onKeyDown={handleSquareKeyDown}
     />
   );
 }
