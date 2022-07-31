@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
+import { generateDataTestid } from '@/utils/test';
 
 export default {
-  root: uuidv4(),
+  root: generateDataTestid(),
 };

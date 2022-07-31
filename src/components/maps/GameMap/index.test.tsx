@@ -21,7 +21,7 @@ describe('GameMap', () => {
   it('Should render component successfully.', () => {
     try {
       renderGameMap([]);
-      const wrapper = screen.getByTestId(dataTestids.wrapper);
+      const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {
       expect(true).toBe(false);

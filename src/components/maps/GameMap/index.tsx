@@ -97,7 +97,7 @@ function GameMap({
   return (
     <section
       ref={rootRef}
-      data-testid={dataTestids.wrapper}
+      data-testid={dataTestids.root}
       style={{
         width: '100%',
         height: '100%',
