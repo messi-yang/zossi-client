@@ -3,16 +3,16 @@ import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 
-import GameOfLifeMap from '.';
+import GameMap from '.';
 import type { Coordinate } from '.';
 
 export default {
-  title: 'Map/GameOfLifeMap',
-  component: GameOfLifeMap,
+  title: 'Map/GameMap',
+  component: GameMap,
   argTypes: {},
-} as ComponentMeta<typeof GameOfLifeMap>;
+} as ComponentMeta<typeof GameMap>;
 
-const Template: ComponentStory<typeof GameOfLifeMap> = function Template(args) {
+const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { area, units } = args;
   const handleUnitsRevive = (coordinates: Coordinate[]) => {
@@ -36,7 +36,7 @@ const Template: ComponentStory<typeof GameOfLifeMap> = function Template(args) {
 
   return (
     <div style={{ display: 'inline-flex', width: '300px', height: '300px' }}>
-      <GameOfLifeMap {...args} onUnitsRevive={handleUnitsRevive} />
+      <GameMap {...args} onUnitsRevive={handleUnitsRevive} />
     </div>
   );
 };

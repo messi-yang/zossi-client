@@ -8,10 +8,10 @@ import { getInitialLocale } from '@/utils/i18n';
 import type { AreaDTO, UnitDTO } from '@/dto';
 import GameOfLibertyContext from '@/contexts/GameOfLiberty';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
-import GameOfLifeMap from '@/components/maps/GameOfLifeMap';
-import type { Unit } from '@/components/maps/GameOfLifeMap/types';
+import GameMap from '@/components/maps/GameMap';
+import type { Unit } from '@/components/maps/GameMap';
 
-function convertGameOfLibertyUnitsToGameOfLifeMapUnits(
+function convertGameOfLibertyUnitsToGameMapUnits(
   area: AreaDTO,
   units: UnitDTO[][]
 ): Unit[][] {
@@ -40,10 +40,7 @@ const Room: NextPage = function Room() {
 
   const debounceWatchArea = debounce(watchArea, 200);
 
-  const gameFieldUnits = convertGameOfLibertyUnitsToGameOfLifeMapUnits(
-    area,
-    units
-  );
+  const gameFieldUnits = convertGameOfLibertyUnitsToGameMapUnits(area, units);
 
   useEffect(() => {
     if (status !== 'ONLINE') {
@@ -68,7 +65,7 @@ const Room: NextPage = function Room() {
       <section style={{ flexGrow: '1', overflow: 'hidden' }}>
         <section style={{ width: '100%', height: '100%' }}>
           {status === 'ONLINE' && (
-            <GameOfLifeMap
+            <GameMap
               area={area}
               units={gameFieldUnits}
               relativeCoordinates={relativeCoordinates}

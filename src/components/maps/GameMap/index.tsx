@@ -28,7 +28,7 @@ type Props = {
 
 const UnitSquareMemo = memo(UnitSquare);
 
-function GameOfLifeMap({
+function GameMap({
   area,
   units,
   relativeCoordinates,
@@ -144,5 +144,5 @@ function GameOfLifeMap({
   );
 }
 
-export default GameOfLifeMap;
+export default GameMap;
 export type { Area, Unit, Coordinate };
