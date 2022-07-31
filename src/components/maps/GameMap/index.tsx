@@ -106,6 +106,7 @@ function GameMap({
     >
       {units.map((unitsColumn, unitsColumnIndex) => (
         <section
+          key={unitsColumn[0].key}
           style={{
             flexBasis: squareSize,
             flexShrink: '0',
@@ -120,7 +121,7 @@ function GameMap({
             };
             return (
               <section
-                key={`${coordinate.x},${coordinate.y}`}
+                key={unit.key}
                 style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
               >
                 <UnitSquareMemo

@@ -4,7 +4,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 
 import GameMap from '.';
-import type { Coordinate } from '.';
+import type { Coordinate, Area, Unit } from '.';
 
 export default {
   title: 'Map/GameMap',
@@ -35,11 +35,29 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
   };
 
   return (
-    <div style={{ display: 'inline-flex', width: '300px', height: '300px' }}>
+    <div style={{ display: 'inline-flex', width: '140px', height: '140px' }}>
       <GameMap {...args} onUnitsRevive={handleUnitsRevive} />
     </div>
   );
 };
+
+function generateMockupUnits(area: Area) {
+  const units: Unit[][] = [];
+  const width = area.to.x - area.from.x + 1;
+  const height = area.to.y - area.from.y + 1;
+  for (let x = 0; x < width; x += 1) {
+    units.push([]);
+    for (let y = 0; y < height; y += 1) {
+      units[x].push({
+        key: `${area.from.x + x},${area.from.y + y}`,
+        coordinate: { x: area.from.x + x, y: area.from.y + y },
+        alive: false,
+        age: 0,
+      });
+    }
+  }
+  return units;
+}
 
 export const Primary = Template.bind({});
 Primary.args = {
@@ -47,70 +65,9 @@ Primary.args = {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
   },
-  units: [
-    [
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-    ],
-    [
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-    ],
-    [
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-    ],
-    [
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-    ],
-    [
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-    ],
-    [
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-    ],
-    [
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-      { alive: false, age: 0 },
-    ],
-  ],
+  units: generateMockupUnits({
+    from: { x: 3, y: 3 },
+    to: { x: 9, y: 9 },
+  }),
   relativeCoordinates: [{ x: 0, y: 0 }],
 };

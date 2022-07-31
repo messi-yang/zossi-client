@@ -16,9 +16,10 @@ function convertGameOfLibertyUnitsToGameMapUnits(
   units: UnitDTO[][]
 ): Unit[][] {
   const { from } = area;
-  return units.map((rowUnits, rowIdx) =>
-    rowUnits.map((unit, colIdx) => ({
-      coordinate: { x: from.x + rowIdx, y: from.y + colIdx },
+  return units.map((rowUnits, x) =>
+    rowUnits.map((unit, y) => ({
+      key: `${x},${y}`,
+      coordinate: { x: from.x + x, y: from.y + y },
       alive: unit.alive,
       age: unit.age,
     }))
