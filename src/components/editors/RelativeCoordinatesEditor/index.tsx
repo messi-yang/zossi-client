@@ -61,6 +61,7 @@ function RelativeCoordinatesEditor({
       height
     )
   );
+
   useEffect(() => {
     setPattern(
       convertCoordinatesToPattern(
@@ -71,15 +72,16 @@ function RelativeCoordinatesEditor({
       )
     );
   }, [relativeCoordinates, relativeCoordinateOffset, width, height]);
-  const onUnitClick = (coordinateX: number, coordinateY: number) => {
+
+  const handleSquareClick = (coordinateX: number, coordinateY: number) => {
     const newPattern = cloneDeep(pattern);
     newPattern[coordinateX][coordinateY] =
       !newPattern[coordinateX][coordinateY];
 
     const newCoordinates: Coordinate[] = [];
     newPattern.forEach((row, x) => {
-      row.forEach((truthy, y) => {
-        if (truthy) {
+      row.forEach((isTurnedOn, y) => {
+        if (isTurnedOn) {
           newCoordinates.push({
             x: x + relativeCoordinateOffset.x,
             y: y + relativeCoordinateOffset.y,
@@ -95,14 +97,14 @@ function RelativeCoordinatesEditor({
       data-testid={dataTestids.root}
       style={{ display: 'flex', flexFlow: 'row' }}
     >
-      {pattern.map((rowInPattern, x) => (
+      {pattern.map((colInPattern, x) => (
         <div
           style={{
             display: 'flex',
             flexFlow: 'column',
           }}
         >
-          {rowInPattern.map((truthy, y) => (
+          {colInPattern.map((isTurnedOn, y) => (
             <div
               style={{
                 width: '40px',
@@ -112,13 +114,13 @@ function RelativeCoordinatesEditor({
               <UnitSquare
                 coordinateX={x}
                 coordinateY={y}
-                alive={truthy}
+                alive={isTurnedOn}
                 highlighted={false}
                 hasTopBorder
                 hasRightBorder={x === pattern.length - 1}
-                hasBottomBorder={y === rowInPattern.length - 1}
+                hasBottomBorder={y === colInPattern.length - 1}
                 hasLeftBorder
-                onClick={onUnitClick}
+                onClick={handleSquareClick}
               />
             </div>
           ))}
