@@ -7,16 +7,6 @@ import UnitSquare from '@/components/squares/UnitSquare';
 import type { Area, Unit, Coordinate } from './types';
 import dataTestids from './dataTestids';
 
-function isCoordinateInArea(coordinate: Coordinate, area: Area): boolean {
-  if (coordinate.x < area.from.x || coordinate.x > area.to.x) {
-    return false;
-  }
-  if (coordinate.y < area.from.y || coordinate.y > area.to.y) {
-    return false;
-  }
-  return true;
-}
-
 const squareSize = 20;
 
 type Props = {
@@ -47,12 +37,10 @@ function GameMap({
   );
   const handleUnitSquareClick = useCallback(
     (coordinateX: number, coordinateY: number) => {
-      const finalCoordinates = relativeCoordinates
-        .map(({ x, y }) => ({
-          x: coordinateX + x,
-          y: coordinateY + y,
-        }))
-        .filter((coordinate) => isCoordinateInArea(coordinate, area));
+      const finalCoordinates = relativeCoordinates.map(({ x, y }) => ({
+        x: coordinateX + x,
+        y: coordinateY + y,
+      }));
 
       onUnitsRevive(finalCoordinates);
     },
