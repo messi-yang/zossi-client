@@ -143,7 +143,10 @@ export function Provider({ children }: Props) {
   }, [socketRef.current]);
 
   const joinGame = useCallback(() => {
-    const newSocket = new WebSocket(`ws://${process.env.API_DOMAIN}/ws/game/`);
+    const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
+    const newSocket = new WebSocket(
+      `${schema}://${process.env.API_DOMAIN}/ws/game/`
+    );
     socketRef.current = newSocket;
 
     newSocket.onopen = () => {
