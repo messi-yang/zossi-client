@@ -1,6 +1,5 @@
 import { useRef, useState, useCallback, memo, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import { generateKeyFromIndex } from '@/utils/component';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import UnitSquare from '@/components/squares/UnitSquare';
@@ -95,7 +94,7 @@ function GameMap({
     >
       {units.map((unitsColumn, unitsColumnIndex) => (
         <section
-          key={generateKeyFromIndex(unitsColumnIndex)}
+          key={unitsColumn[0].coordinate.x}
           style={{
             flexBasis: squareSize,
             flexShrink: '0',
@@ -110,7 +109,7 @@ function GameMap({
             };
             return (
               <section
-                key={generateKeyFromIndex(unitIndex)}
+                key={unit.coordinate.y}
                 style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
               >
                 <UnitSquareMemo
