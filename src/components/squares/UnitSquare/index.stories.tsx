@@ -8,11 +8,11 @@ export default {
   title: 'Square/UnitSquare',
   component: UnitSquare,
   argTypes: {
-    coordinateX: {
+    x: {
       control: 'number',
       defaultValue: 10,
     },
-    coordinateY: {
+    y: {
       control: 'number',
       defaultValue: 10,
     },

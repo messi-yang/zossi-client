@@ -8,6 +8,7 @@ const styles = {
   deadBackgroundColor: 'black',
   aliveHoverColor: 'rgb(200, 200, 200)',
   deadHoverColor: 'rgb(77, 77, 77)',
+  borderColor: 'rgb(20, 20, 20)',
 };
 
 const generateBackgroundColor = (
@@ -21,25 +22,23 @@ const generateBackgroundColor = (
 };
 
 type Props = {
-  coordinateX: number;
-  coordinateY: number;
+  x: number;
+  y: number;
   alive: boolean;
   highlighted: boolean;
-  borderColor?: string;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
-  onClick?: (coordinateX: number, coordinateY: number) => any;
-  onHover?: (coordinateX: number, coordinateY: number) => any;
+  onClick?: (x: number, y: number) => any;
+  onHover?: (x: number, y: number) => any;
 };
 
 function UnitSquare({
-  coordinateX,
-  coordinateY,
+  x,
+  y,
   alive,
   highlighted,
-  borderColor = 'rgb(20, 20, 20)',
   hasTopBorder,
   hasRightBorder,
   hasBottomBorder,
@@ -53,13 +52,13 @@ function UnitSquare({
       if (!newHovered) {
         return;
       }
-      onHover(coordinateX, coordinateY);
+      onHover(x, y);
     },
-    [alive, coordinateX, coordinateY]
+    [alive, x, y]
   );
   useHover(nodeRef, handleHoverStateChange);
 
-  const handleSquareClick = () => onClick(coordinateX, coordinateY);
+  const handleSquareClick = () => onClick(x, y);
   const handleSquareKeyDown = handleSquareClick;
 
   const backgroundColor = generateBackgroundColor(highlighted, alive);
@@ -78,10 +77,10 @@ function UnitSquare({
         cursor: 'pointer',
         backgroundColor,
         border: `1px solid ${styles.deadHoverColor}`,
-        borderTop: hasTopBorder ? `1px solid ${borderColor}` : '',
-        borderRight: hasRightBorder ? `1px solid ${borderColor}` : '',
-        borderBottom: hasBottomBorder ? `1px solid ${borderColor}` : '',
-        borderLeft: hasLeftBorder ? `1px solid ${borderColor}` : '',
+        borderTop: hasTopBorder ? `1px solid ${styles.borderColor}` : '',
+        borderRight: hasRightBorder ? `1px solid ${styles.borderColor}` : '',
+        borderBottom: hasBottomBorder ? `1px solid ${styles.borderColor}` : '',
+        borderLeft: hasLeftBorder ? `1px solid ${styles.borderColor}` : '',
       }}
       onClick={handleSquareClick}
       onKeyDown={handleSquareKeyDown}

@@ -115,8 +115,8 @@ function RelativeCoordinatesEditor({
               }}
             >
               <UnitSquare
-                coordinateX={x}
-                coordinateY={y}
+                x={x}
+                y={y}
                 alive={isTurnedOn}
                 highlighted={false}
                 hasTopBorder

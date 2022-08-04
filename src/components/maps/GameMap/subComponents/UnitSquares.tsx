@@ -56,8 +56,8 @@ function UnitSquares({
               style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
             >
               <UnitSquareMemo
-                coordinateX={unit.coordinate.x}
-                coordinateY={unit.coordinate.y}
+                x={unit.coordinate.x}
+                y={unit.coordinate.y}
                 alive={unit.alive}
                 highlighted={isUnitToBeHighlighted(unit.coordinate)}
                 hasTopBorder
