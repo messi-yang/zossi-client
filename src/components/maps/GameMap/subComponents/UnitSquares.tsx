@@ -1,11 +1,10 @@
 import { useCallback, memo } from 'react';
 import UnitSquare from '@/components/squares/UnitSquare';
-import type { Area, Unit, Coordinate } from '../types';
+import type { Unit, Coordinate } from '../types';
 
 const squareSize = 20;
 
 type Props = {
-  area: Area;
   units: Unit[][];
   hoveredCoordinate: Coordinate | null;
   relativeCoordinates: Coordinate[];
@@ -16,7 +15,6 @@ type Props = {
 const UnitSquareMemo = memo(UnitSquare);
 
 function UnitSquares({
-  area,
   units,
   hoveredCoordinate,
   relativeCoordinates,
@@ -52,31 +50,25 @@ function UnitSquares({
             flexFlow: 'column',
           }}
         >
-          {unitsColumn.map((unit, unitIndex) => {
-            const coordinate = {
-              x: area.from.x + unitsColumnIndex,
-              y: area.from.y + unitIndex,
-            };
-            return (
-              <section
-                key={unit.coordinate.y}
-                style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
-              >
-                <UnitSquareMemo
-                  coordinateX={coordinate.x}
-                  coordinateY={coordinate.y}
-                  alive={unit.alive}
-                  highlighted={isUnitToBeHighlighted(coordinate)}
-                  hasTopBorder
-                  hasRightBorder={unitsColumnIndex === units.length - 1}
-                  hasBottomBorder={unitIndex === unitsColumn.length - 1}
-                  hasLeftBorder
-                  onClick={onUnitSquareClick}
-                  onHover={onUnitSquareHover}
-                />
-              </section>
-            );
-          })}
+          {unitsColumn.map((unit, unitIndex) => (
+            <section
+              key={unit.coordinate.y}
+              style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
+            >
+              <UnitSquareMemo
+                coordinateX={unit.coordinate.x}
+                coordinateY={unit.coordinate.y}
+                alive={unit.alive}
+                highlighted={isUnitToBeHighlighted(unit.coordinate)}
+                hasTopBorder
+                hasRightBorder={unitsColumnIndex === units.length - 1}
+                hasBottomBorder={unitIndex === unitsColumn.length - 1}
+                hasLeftBorder
+                onClick={onUnitSquareClick}
+                onHover={onUnitSquareHover}
+              />
+            </section>
+          ))}
         </section>
       ))}
     </>

@@ -75,7 +75,6 @@ function GameMap({
       }}
     >
       <UnitSquares
-        area={area}
         units={units}
         hoveredCoordinate={hoveredCoordinate}
         relativeCoordinates={relativeCoordinates}
