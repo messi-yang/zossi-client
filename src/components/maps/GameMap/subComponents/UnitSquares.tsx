@@ -1,6 +1,6 @@
 import { useCallback, memo } from 'react';
-import UnitSquare from '@/components/squares/UnitSquare';
 import type { Unit, Coordinate } from '../types';
+import CommandableUnitSquare from './CommandableUnitSquare';
 
 const squareSize = 20;
 
@@ -12,7 +12,7 @@ type Props = {
   onUnitSquareHover: (x: number, y: number) => void;
 };
 
-const UnitSquareMemo = memo(UnitSquare);
+const CommandableUnitSquareMemo = memo(CommandableUnitSquare);
 
 function UnitSquares({
   units,
@@ -55,7 +55,7 @@ function UnitSquares({
               key={unit.coordinate.y}
               style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
             >
-              <UnitSquareMemo
+              <CommandableUnitSquareMemo
                 x={x}
                 y={y}
                 alive={unit.alive}
