@@ -38,7 +38,7 @@ function UnitSquares(
     const newRefs: RefObject<CommandableUnitSquareCommands>[][] = [];
     for (let x = 0; x < width; x += 1) {
       newRefs.push([]);
-      for (let y = 0; y < width; y += 1) {
+      for (let y = 0; y < height; y += 1) {
         newRefs[x].push(createRef());
       }
     }
@@ -49,7 +49,9 @@ function UnitSquares(
     ref,
     () => ({
       setUnitHighlighted: (x: number, y: number, highlighted: boolean) => {
-        unitCompRefs[x][y].current?.setHighlighted(highlighted);
+        if (unitCompRefs?.[x]?.[y].current) {
+          unitCompRefs[x][y].current?.setHighlighted(highlighted);
+        }
       },
     }),
     [unitCompRefs]
