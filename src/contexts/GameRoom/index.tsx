@@ -16,7 +16,7 @@ import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
 
-type GameOfLibertyContextValue = {
+type GameRoomContextValue = {
   status: Status;
   mapSize: MapSizeDTO;
   area: AreaDTO;
@@ -29,7 +29,7 @@ type GameOfLibertyContextValue = {
   leaveGame: () => void;
 };
 
-function createInitialGameOfLibertyContextValue(): GameOfLibertyContextValue {
+function createInitialGameRoomContextValue(): GameRoomContextValue {
   return {
     status: 'OFFLINE',
     mapSize: {
@@ -59,8 +59,8 @@ function createInitialGameOfLibertyContextValue(): GameOfLibertyContextValue {
   };
 }
 
-const GameOfLibertyContext = createContext<GameOfLibertyContextValue>(
-  createInitialGameOfLibertyContextValue()
+const GameRoomContext = createContext<GameRoomContextValue>(
+  createInitialGameRoomContextValue()
 );
 
 type Props = {
@@ -68,23 +68,20 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const initialGameOfLibertyContextValue =
-    createInitialGameOfLibertyContextValue();
+  const initialGameRoomContextValue = createInitialGameRoomContextValue();
   const socketRef = useRef<WebSocket | null>(null);
   const [mapSize, setMapSize] = useState<MapSizeDTO>(
-    initialGameOfLibertyContextValue.mapSize
+    initialGameRoomContextValue.mapSize
   );
-  const [area, setArea] = useState<AreaDTO>(
-    initialGameOfLibertyContextValue.area
-  );
+  const [area, setArea] = useState<AreaDTO>(initialGameRoomContextValue.area);
   const [units, setUnits] = useState<UnitDTO[][]>(
-    initialGameOfLibertyContextValue.units
+    initialGameRoomContextValue.units
   );
   const [relativeCoordinates, setRelativeCoordinates] = useState<
     CoordinateDTO[]
-  >(initialGameOfLibertyContextValue.relativeCoordinates);
+  >(initialGameRoomContextValue.relativeCoordinates);
   const [status, setStatus] = useState<Status>(
-    initialGameOfLibertyContextValue.status
+    initialGameRoomContextValue.status
   );
 
   const updateRelativeCoordinates = useCallback(
@@ -181,7 +178,7 @@ export function Provider({ children }: Props) {
     }
   }, [socketRef.current, units]);
 
-  const gameOfLibertyContextValue = useMemo<GameOfLibertyContextValue>(
+  const gameRoomContextValue = useMemo<GameRoomContextValue>(
     () => ({
       status,
       mapSize,
@@ -198,10 +195,10 @@ export function Provider({ children }: Props) {
   );
 
   return (
-    <GameOfLibertyContext.Provider value={gameOfLibertyContextValue}>
+    <GameRoomContext.Provider value={gameRoomContextValue}>
       {children}
-    </GameOfLibertyContext.Provider>
+    </GameRoomContext.Provider>
   );
 }
 
-export default GameOfLibertyContext;
+export default GameRoomContext;

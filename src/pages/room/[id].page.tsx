@@ -6,12 +6,12 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { wrapper } from '@/stores';
 import { getInitialLocale } from '@/utils/i18n';
 import type { AreaDTO, UnitDTO } from '@/dto';
-import GameOfLibertyContext from '@/contexts/GameOfLiberty';
+import GameRoomContext from '@/contexts/GameRoom';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 import type { Unit } from '@/components/maps/GameMap';
 
-function convertGameOfLibertyUnitsToGameMapUnits(
+function convertGameRoomContextUnitsToGameMapUnits(
   area: AreaDTO,
   units: UnitDTO[][]
 ): Unit[][] {
@@ -38,9 +38,9 @@ const Room: NextPage = function Room() {
     reviveUnits,
     watchArea,
     updateRelativeCoordinates,
-  } = useContext(GameOfLibertyContext);
+  } = useContext(GameRoomContext);
 
-  const gameFieldUnits = convertGameOfLibertyUnitsToGameMapUnits(area, units);
+  const gameFieldUnits = convertGameRoomContextUnitsToGameMapUnits(area, units);
 
   useEffect(() => {
     if (status !== 'ONLINE') {
