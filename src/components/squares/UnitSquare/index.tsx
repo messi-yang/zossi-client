@@ -10,6 +10,16 @@ const styles = {
   deadHoverColor: 'rgb(77, 77, 77)',
 };
 
+const generateBackgroundColor = (
+  highlighted: boolean,
+  alive: boolean
+): string => {
+  if (highlighted) {
+    return alive ? styles.aliveHoverColor : styles.deadHoverColor;
+  }
+  return alive ? styles.aliveBackgroundColor : styles.deadBackgroundColor;
+};
+
 type Props = {
   coordinateX: number;
   coordinateY: number;
@@ -52,14 +62,7 @@ function UnitSquare({
   const handleSquareClick = () => onClick(coordinateX, coordinateY);
   const handleSquareKeyDown = handleSquareClick;
 
-  let backgroundColor;
-  if (highlighted) {
-    backgroundColor = alive ? styles.aliveHoverColor : styles.deadHoverColor;
-  } else {
-    backgroundColor = alive
-      ? styles.aliveBackgroundColor
-      : styles.deadBackgroundColor;
-  }
+  const backgroundColor = generateBackgroundColor(highlighted, alive);
 
   return (
     <div
