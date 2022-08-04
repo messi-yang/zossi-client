@@ -7,6 +7,7 @@ import {
   useEffect,
 } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 import type { AreaDTO, CoordinateDTO, MapSizeDTO, UnitDTO } from '@/dto';
 import { EventTypeEnum } from './eventTypes';
 import type { Event } from './eventTypes';
@@ -132,6 +133,7 @@ export function Provider({ children }: Props) {
     },
     [socketRef.current, status]
   );
+  const watchAreaDebouncer = useCallback(debounce(watchArea, 200), [watchArea]);
 
   const leaveGame = useCallback(() => {
     if (!socketRef.current) {
@@ -189,7 +191,7 @@ export function Provider({ children }: Props) {
       joinGame,
       updateRelativeCoordinates,
       reviveUnits,
-      watchArea,
+      watchArea: watchAreaDebouncer,
       leaveGame,
     }),
     [status, units, joinGame, watchArea, leaveGame]

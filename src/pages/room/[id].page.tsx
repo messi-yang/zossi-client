@@ -2,7 +2,6 @@ import { useContext, useEffect } from 'react';
 import type { NextPage, GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import debounce from 'lodash/debounce';
 
 import { wrapper } from '@/stores';
 import { getInitialLocale } from '@/utils/i18n';
@@ -41,8 +40,6 @@ const Room: NextPage = function Room() {
     updateRelativeCoordinates,
   } = useContext(GameOfLibertyContext);
 
-  const debounceWatchArea = debounce(watchArea, 200);
-
   const gameFieldUnits = convertGameOfLibertyUnitsToGameMapUnits(area, units);
 
   useEffect(() => {
@@ -78,7 +75,7 @@ const Room: NextPage = function Room() {
               units={gameFieldUnits}
               relativeCoordinates={relativeCoordinates}
               onUnitsRevive={reviveUnits}
-              onAreaUpdate={debounceWatchArea}
+              onAreaUpdate={watchArea}
             />
           )}
         </section>
