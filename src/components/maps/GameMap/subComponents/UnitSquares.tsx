@@ -1,41 +1,58 @@
-import { useCallback, memo } from 'react';
-import type { Unit, Coordinate } from '../types';
+import {
+  memo,
+  useState,
+  useEffect,
+  RefObject,
+  createRef,
+  forwardRef,
+  ForwardedRef,
+  useImperativeHandle,
+} from 'react';
+import type { Unit } from '../types';
 import CommandableUnitSquare from './CommandableUnitSquare';
+import type { Commands as CommandableUnitSquareCommands } from './CommandableUnitSquare';
 
 const squareSize = 20;
 
+export type Commands = {
+  setUnitHighlighted: (x: number, y: number, highlighted: boolean) => void;
+};
+
 type Props = {
+  width: number;
+  height: number;
   units: Unit[][];
-  hoveredCoordinate: Coordinate | null;
-  relativeCoordinates: Coordinate[];
   onUnitSquareClick: (x: number, y: number) => void;
   onUnitSquareHover: (x: number, y: number) => void;
 };
 
-const CommandableUnitSquareMemo = memo(CommandableUnitSquare);
+function UnitSquares(
+  { width, height, units, onUnitSquareClick, onUnitSquareHover }: Props,
+  ref: ForwardedRef<Commands>
+) {
+  const [unitCompRefs, setUnitCompRefs] = useState<
+    RefObject<CommandableUnitSquareCommands>[][]
+  >([]);
 
-function UnitSquares({
-  units,
-  hoveredCoordinate,
-  relativeCoordinates,
-  onUnitSquareClick,
-  onUnitSquareHover,
-}: Props) {
-  const isUnitToBeHighlighted = useCallback(
-    (coordinate: Coordinate): boolean => {
-      if (!hoveredCoordinate || relativeCoordinates.length === 0) {
-        return false;
+  useEffect(() => {
+    const newRefs: RefObject<CommandableUnitSquareCommands>[][] = [];
+    for (let x = 0; x < width; x += 1) {
+      newRefs.push([]);
+      for (let y = 0; y < width; y += 1) {
+        newRefs[x].push(createRef());
       }
-      const relativeX = coordinate.x - hoveredCoordinate.x;
-      const relativeY = coordinate.y - hoveredCoordinate.y;
+    }
+    setUnitCompRefs(newRefs);
+  }, [width, height]);
 
-      return (
-        relativeCoordinates.findIndex(
-          ({ x, y }) => x === relativeX && y === relativeY
-        ) > -1
-      );
-    },
-    [relativeCoordinates, hoveredCoordinate]
+  useImperativeHandle(
+    ref,
+    () => ({
+      setUnitHighlighted: (x: number, y: number, highlighted: boolean) => {
+        unitCompRefs[x][y].current?.setHighlighted(highlighted);
+      },
+    }),
+    [unitCompRefs]
   );
 
   return (
@@ -55,18 +72,20 @@ function UnitSquares({
               key={unit.coordinate.y}
               style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
             >
-              <CommandableUnitSquareMemo
-                x={x}
-                y={y}
-                alive={unit.alive}
-                highlighted={isUnitToBeHighlighted(unit.coordinate)}
-                hasTopBorder
-                hasRightBorder={x === units.length - 1}
-                hasBottomBorder={y === columnOfUnits.length - 1}
-                hasLeftBorder
-                onClick={onUnitSquareClick}
-                onHover={onUnitSquareHover}
-              />
+              {unitCompRefs?.[x]?.[y] && (
+                <CommandableUnitSquare
+                  ref={unitCompRefs[x][y]}
+                  x={x}
+                  y={y}
+                  alive={unit.alive}
+                  hasTopBorder
+                  hasRightBorder={x === units.length - 1}
+                  hasBottomBorder={y === columnOfUnits.length - 1}
+                  hasLeftBorder
+                  onClick={onUnitSquareClick}
+                  onHover={onUnitSquareHover}
+                />
+              )}
             </section>
           ))}
         </section>
@@ -75,4 +94,4 @@ function UnitSquares({
   );
 }
 
-export default UnitSquares;
+export default memo(forwardRef(UnitSquares));
