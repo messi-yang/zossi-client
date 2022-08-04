@@ -8,8 +8,8 @@ type Props = {
   units: Unit[][];
   hoveredCoordinate: Coordinate | null;
   relativeCoordinates: Coordinate[];
-  onUnitSquareClick: (coordinateX: number, coordinateY: number) => void;
-  onUnitSquareHover: (coordinateX: number, coordinateY: number) => void;
+  onUnitSquareClick: (x: number, y: number) => void;
+  onUnitSquareHover: (x: number, y: number) => void;
 };
 
 const UnitSquareMemo = memo(UnitSquare);
@@ -40,9 +40,9 @@ function UnitSquares({
 
   return (
     <>
-      {units.map((unitsColumn, unitsColumnIndex) => (
+      {units.map((columnOfUnits, x) => (
         <section
-          key={unitsColumn[0].coordinate.x}
+          key={columnOfUnits[0].coordinate.x}
           style={{
             flexBasis: squareSize,
             flexShrink: '0',
@@ -50,19 +50,19 @@ function UnitSquares({
             flexFlow: 'column',
           }}
         >
-          {unitsColumn.map((unit, unitIndex) => (
+          {columnOfUnits.map((unit, y) => (
             <section
               key={unit.coordinate.y}
               style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
             >
               <UnitSquareMemo
-                x={unit.coordinate.x}
-                y={unit.coordinate.y}
+                x={x}
+                y={y}
                 alive={unit.alive}
                 highlighted={isUnitToBeHighlighted(unit.coordinate)}
                 hasTopBorder
-                hasRightBorder={unitsColumnIndex === units.length - 1}
-                hasBottomBorder={unitIndex === unitsColumn.length - 1}
+                hasRightBorder={x === units.length - 1}
+                hasBottomBorder={y === columnOfUnits.length - 1}
                 hasLeftBorder
                 onClick={onUnitSquareClick}
                 onHover={onUnitSquareHover}

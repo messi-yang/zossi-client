@@ -33,22 +33,24 @@ function GameMap({
     null
   );
   const handleUnitSquareClick = useCallback(
-    (coordinateX: number, coordinateY: number) => {
-      const finalCoordinates = relativeCoordinates.map(({ x, y }) => ({
-        x: coordinateX + x,
-        y: coordinateY + y,
-      }));
+    (x: number, y: number) => {
+      const finalCoordinates = relativeCoordinates.map(
+        (relativeCoordinate) => ({
+          x: area.from.x + relativeCoordinate.x + x,
+          y: area.from.y + relativeCoordinate.y + y,
+        })
+      );
 
       onUnitsRevive(finalCoordinates);
     },
     [relativeCoordinates, onUnitsRevive, area]
   );
   const handleUnitSquareHover = useCallback(
-    (coordinateX: number, coordinateY: number) => {
-      const coordinate = { x: coordinateX, y: coordinateY };
+    (x: number, y: number) => {
+      const coordinate = { x: area.from.x + x, y: area.from.y + y };
       setHoveredCoordinate(coordinate);
     },
-    []
+    [area]
   );
 
   useEffect(() => {
