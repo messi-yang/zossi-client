@@ -12,13 +12,12 @@ const squareSize = 20;
 const isOutsideMap = (
   mapWidth: number,
   mapHeight: number,
-  x: number,
-  y: number
+  coordinate: CoordinateEntity
 ): boolean => {
-  if (x < 0 || x >= mapWidth) {
+  if (coordinate.x < 0 || coordinate.x >= mapWidth) {
     return true;
   }
-  if (y < 0 || y >= mapHeight) {
+  if (coordinate.y < 0 || coordinate.y >= mapHeight) {
     return true;
   }
   return false;
@@ -46,11 +45,11 @@ function GameMap({
     squareSize
   );
   const handleUnitSquareClick = useCallback(
-    (x: number, y: number) => {
+    (coordinate: CoordinateEntity) => {
       const finalCoordinates = relativeCoordinates.map(
         (relativeCoordinate) => ({
-          x: area.from.x + relativeCoordinate.x + x,
-          y: area.from.y + relativeCoordinate.y + y,
+          x: area.from.x + relativeCoordinate.x + coordinate.x,
+          y: area.from.y + relativeCoordinate.y + coordinate.y,
         })
       );
 
@@ -62,8 +61,8 @@ function GameMap({
   const unitSquaresRef = useRef<UnitSquaresCommands>(null);
   const [hoveredCoordinate, setHoveredCoordinate] =
     useState<CoordinateEntity | null>(null);
-  const handleUnitSquareHover = useCallback((x: number, y: number) => {
-    setHoveredCoordinate({ x, y });
+  const handleUnitSquareHover = useCallback((coordinate: CoordinateEntity) => {
+    setHoveredCoordinate({ x: coordinate.x, y: coordinate.y });
   }, []);
 
   useEffect(() => {
@@ -72,14 +71,15 @@ function GameMap({
         if (!unitSquaresRef.current || !hoveredCoordinate) {
           return;
         }
-        const targetX = relativeCoordinate.x + hoveredCoordinate.x;
-        const targetY = relativeCoordinate.y + hoveredCoordinate.y;
-        if (isOutsideMap(mapWidth, mapHeight, targetX, targetY)) {
+        const targetCoordinate = {
+          x: relativeCoordinate.x + hoveredCoordinate.x,
+          y: relativeCoordinate.y + hoveredCoordinate.y,
+        };
+        if (isOutsideMap(mapWidth, mapHeight, targetCoordinate)) {
           return;
         }
         unitSquaresRef.current.setUnitHighlighted(
-          targetX,
-          targetY,
+          targetCoordinate,
           highlighted
         );
       });

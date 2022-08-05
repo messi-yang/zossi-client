@@ -71,10 +71,10 @@ function RelativeCoordinatesEditor({
     );
   }, [relativeCoordinates, relativeCoordinateOffset, width, height]);
 
-  const handleSquareClick = (coordinateX: number, coordinateY: number) => {
+  const handleSquareClick = (coordinate: CoordinateEntity) => {
     const newPattern = cloneDeep(pattern);
-    newPattern[coordinateX][coordinateY] =
-      !newPattern[coordinateX][coordinateY];
+    newPattern[coordinate.x][coordinate.y] =
+      !newPattern[coordinate.x][coordinate.y];
 
     const newCoordinates: CoordinateEntity[] = [];
     newPattern.forEach((row, x) => {
@@ -112,8 +112,7 @@ function RelativeCoordinatesEditor({
               }}
             >
               <UnitSquare
-                x={x}
-                y={y}
+                coordinate={{ x, y }}
                 alive={isTurnedOn}
                 highlighted={false}
                 hasTopBorder

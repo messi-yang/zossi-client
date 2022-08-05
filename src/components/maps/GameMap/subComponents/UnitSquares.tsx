@@ -8,22 +8,25 @@ import {
   ForwardedRef,
   useImperativeHandle,
 } from 'react';
-import type { UnitEntity } from '@/entities';
+import type { UnitEntity, CoordinateEntity } from '@/entities';
 import CommandableUnitSquare from './CommandableUnitSquare';
 import type { Commands as CommandableUnitSquareCommands } from './CommandableUnitSquare';
 
 const squareSize = 20;
 
 export type Commands = {
-  setUnitHighlighted: (x: number, y: number, highlighted: boolean) => void;
+  setUnitHighlighted: (
+    coordinate: CoordinateEntity,
+    highlighted: boolean
+  ) => void;
 };
 
 type Props = {
   width: number;
   height: number;
   units: UnitEntity[][];
-  onUnitSquareClick: (x: number, y: number) => void;
-  onUnitSquareHover: (x: number, y: number) => void;
+  onUnitSquareClick: (coordinate: CoordinateEntity) => void;
+  onUnitSquareHover: (coordinate: CoordinateEntity) => void;
 };
 
 function UnitSquares(
@@ -48,9 +51,14 @@ function UnitSquares(
   useImperativeHandle(
     ref,
     () => ({
-      setUnitHighlighted: (x: number, y: number, highlighted: boolean) => {
-        if (unitCompRefs?.[x]?.[y].current) {
-          unitCompRefs[x][y].current?.setHighlighted(highlighted);
+      setUnitHighlighted: (
+        coordinate: CoordinateEntity,
+        highlighted: boolean
+      ) => {
+        if (unitCompRefs?.[coordinate.x]?.[coordinate.y].current) {
+          unitCompRefs[coordinate.x][coordinate.y].current?.setHighlighted(
+            highlighted
+          );
         }
       },
     }),

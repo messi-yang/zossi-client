@@ -5,6 +5,7 @@ import {
   useState,
   memo,
 } from 'react';
+import { CoordinateEntity } from '@/entities';
 import UnitSquare from '@/components/squares/UnitSquare';
 
 type Commands = {
@@ -19,8 +20,8 @@ type Props = {
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
-  onClick: (x: number, y: number) => void;
-  onHover: (x: number, y: number) => void;
+  onClick: (coordinate: CoordinateEntity) => void;
+  onHover: (coordinate: CoordinateEntity) => void;
 };
 
 function CommandableUnitSquare(
@@ -47,8 +48,7 @@ function CommandableUnitSquare(
 
   return (
     <UnitSquare
-      x={x}
-      y={y}
+      coordinate={{ x, y }}
       alive={alive}
       highlighted={highlighted}
       hasTopBorder={hasTopBorder}

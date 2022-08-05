@@ -4,8 +4,7 @@ import UnitSquare, { dataTestids } from '.';
 function renderUnitSquare(): RenderResult {
   return render(
     <UnitSquare
-      x={0}
-      y={0}
+      coordinate={{ x: 0, y: 0 }}
       alive
       highlighted={false}
       hasTopBorder
