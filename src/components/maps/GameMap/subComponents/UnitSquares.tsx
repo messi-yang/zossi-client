@@ -33,7 +33,7 @@ function UnitSquares(
   { width, height, units, onUnitSquareClick, onUnitSquareHover }: Props,
   ref: ForwardedRef<Commands>
 ) {
-  const [unitCompRefs, setUnitCompRefs] = useState<
+  const [unitSquareCompRefs, setUnitSquareCompRefs] = useState<
     RefObject<CommandableUnitSquareCommands>[][]
   >([]);
 
@@ -45,7 +45,7 @@ function UnitSquares(
         newRefs[x].push(createRef());
       }
     }
-    setUnitCompRefs(newRefs);
+    setUnitSquareCompRefs(newRefs);
   }, [width, height]);
 
   useImperativeHandle(
@@ -55,19 +55,17 @@ function UnitSquares(
         localCoordinate: CoordinateEntity,
         highlighted: boolean
       ) => {
-        if (unitCompRefs?.[localCoordinate.x]?.[localCoordinate.y].current) {
-          unitCompRefs[localCoordinate.x][
-            localCoordinate.y
-          ].current?.setHighlighted(highlighted);
-        }
+        const localX = localCoordinate.x;
+        const localY = localCoordinate.y;
+        unitSquareCompRefs[localX][localY].current?.setHighlighted(highlighted);
       },
     }),
-    [unitCompRefs]
+    [unitSquareCompRefs]
   );
 
   return (
     <>
-      {units.map((columnOfUnits, x) => (
+      {units.map((columnOfUnits, localX) => (
         <section
           key={columnOfUnits[0].coordinate.x}
           style={{
@@ -77,21 +75,21 @@ function UnitSquares(
             flexFlow: 'column',
           }}
         >
-          {columnOfUnits.map((unit, y) => {
-            const localCoordinate = { x, y };
+          {columnOfUnits.map((unit, localY) => {
+            const localCoordinate = { x: localX, y: localY };
             return (
               <section
                 key={unit.coordinate.y}
                 style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
               >
-                {unitCompRefs?.[x]?.[y] && (
+                {unitSquareCompRefs?.[localX]?.[localY] && (
                   <CommandableUnitSquare
-                    ref={unitCompRefs[x][y]}
+                    ref={unitSquareCompRefs[localX][localY]}
                     coordinate={localCoordinate}
                     alive={unit.alive}
                     hasTopBorder
-                    hasRightBorder={x === units.length - 1}
-                    hasBottomBorder={y === columnOfUnits.length - 1}
+                    hasRightBorder={localX === units.length - 1}
+                    hasBottomBorder={localY === columnOfUnits.length - 1}
                     hasLeftBorder
                     onClick={onUnitSquareClick}
                     onHover={onUnitSquareHover}

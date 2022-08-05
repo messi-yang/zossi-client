@@ -59,13 +59,13 @@ function GameMap({
     [relativeCoordinates, onUnitsRevive, area]
   );
 
-  const unitSquaresRef = useRef<UnitSquaresCommands>(null);
+  const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
   const [hoveredLocalCoordinate, setHoveredLocalCoordinate] =
     useState<CoordinateEntity | null>(null);
 
   const handleUnitSquareHover = useCallback(
     (localCoordinate: CoordinateEntity) => {
-      setHoveredLocalCoordinate({ x: localCoordinate.x, y: localCoordinate.y });
+      setHoveredLocalCoordinate(localCoordinate);
     },
     []
   );
@@ -73,7 +73,7 @@ function GameMap({
   useEffect(() => {
     const highlightRelativeCoordinates = (highlighted: boolean) => {
       relativeCoordinates.forEach((relativeCoordinate) => {
-        if (!unitSquaresRef.current || !hoveredLocalCoordinate) {
+        if (!unitSquaresCompRef.current || !hoveredLocalCoordinate) {
           return;
         }
         const targetCoordinate = {
@@ -83,12 +83,13 @@ function GameMap({
         if (isOutsideMap(mapWidth, mapHeight, targetCoordinate)) {
           return;
         }
-        unitSquaresRef.current.setUnitHighlighted(
+        unitSquaresCompRef.current.setUnitHighlighted(
           targetCoordinate,
           highlighted
         );
       });
     };
+
     highlightRelativeCoordinates(true);
     return () => {
       highlightRelativeCoordinates(false);
@@ -98,10 +99,10 @@ function GameMap({
     mapHeight,
     hoveredLocalCoordinate,
     relativeCoordinates,
-    unitSquaresRef.current,
+    unitSquaresCompRef.current,
   ]);
 
-  const handleMapSizeUpdate = () => {
+  useEffect(() => {
     const newFrom = cloneDeep(area.from);
     const newTo = {
       x: newFrom.x + mapWidth - 1,
@@ -111,8 +112,7 @@ function GameMap({
       from: newFrom,
       to: newTo,
     });
-  };
-  useEffect(handleMapSizeUpdate, [mapWidth, mapHeight]);
+  }, [mapWidth, mapHeight]);
 
   return (
     <section
@@ -126,7 +126,7 @@ function GameMap({
       }}
     >
       <UnitSquares
-        ref={unitSquaresRef}
+        ref={unitSquaresCompRef}
         width={mapWidth}
         height={mapHeight}
         units={units}
