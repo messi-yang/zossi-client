@@ -13,8 +13,7 @@ type Commands = {
 };
 
 type Props = {
-  x: number;
-  y: number;
+  coordinate: CoordinateEntity;
   alive: boolean;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
@@ -26,8 +25,7 @@ type Props = {
 
 function CommandableUnitSquare(
   {
-    x,
-    y,
+    coordinate,
     alive,
     hasTopBorder,
     hasRightBorder,
@@ -48,7 +46,7 @@ function CommandableUnitSquare(
 
   return (
     <UnitSquare
-      coordinate={{ x, y }}
+      coordinate={coordinate}
       alive={alive}
       highlighted={highlighted}
       hasTopBorder={hasTopBorder}

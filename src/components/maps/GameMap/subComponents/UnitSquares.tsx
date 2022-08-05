@@ -85,8 +85,7 @@ function UnitSquares(
               {unitCompRefs?.[x]?.[y] && (
                 <CommandableUnitSquare
                   ref={unitCompRefs[x][y]}
-                  x={x}
-                  y={y}
+                  coordinate={{ x, y }}
                   alive={unit.alive}
                   hasTopBorder
                   hasRightBorder={x === units.length - 1}
