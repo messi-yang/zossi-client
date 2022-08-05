@@ -71,7 +71,7 @@ function GameMap({
   );
 
   useEffect(() => {
-    const setUnitsHighlighted = (highlighted: boolean) => {
+    const highlightRelativeCoordinates = (highlighted: boolean) => {
       relativeCoordinates.forEach((relativeCoordinate) => {
         if (!unitSquaresRef.current || !hoveredLocalCoordinate) {
           return;
@@ -89,9 +89,9 @@ function GameMap({
         );
       });
     };
-    setUnitsHighlighted(true);
+    highlightRelativeCoordinates(true);
     return () => {
-      setUnitsHighlighted(false);
+      highlightRelativeCoordinates(false);
     };
   }, [
     mapWidth,
