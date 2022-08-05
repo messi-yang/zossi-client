@@ -9,18 +9,21 @@ import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquare
 
 const squareSize = 20;
 
-const isOutsideMap = (
+type UnitIndexes = [rowIdx: number, colIdx: number];
+
+const isInsideMap = (
   mapWidth: number,
   mapHeight: number,
-  localCoordinate: CoordinateEntity
+  rowIdx: number,
+  colIdx: number
 ): boolean => {
-  if (localCoordinate.x < 0 || localCoordinate.x >= mapWidth) {
-    return true;
+  if (rowIdx < 0 || rowIdx >= mapWidth) {
+    return false;
   }
-  if (localCoordinate.y < 0 || localCoordinate.y >= mapHeight) {
-    return true;
+  if (colIdx < 0 || colIdx >= mapHeight) {
+    return false;
   }
-  return false;
+  return true;
 };
 
 type Props = {
@@ -46,11 +49,11 @@ function GameMap({
   );
 
   const handleUnitSquareClick = useCallback(
-    (localCoordinate: CoordinateEntity) => {
+    (rowIdx: number, colIdx: number) => {
       const finalCoordinates = relativeCoordinates.map(
         (relativeCoordinate) => ({
-          x: area.from.x + localCoordinate.x + relativeCoordinate.x,
-          y: area.from.y + localCoordinate.y + relativeCoordinate.y,
+          x: area.from.x + rowIdx + relativeCoordinate.x,
+          y: area.from.y + colIdx + relativeCoordinate.y,
         })
       );
 
@@ -60,12 +63,12 @@ function GameMap({
   );
 
   const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
-  const [hoveredLocalCoordinate, setHoveredLocalCoordinate] =
-    useState<CoordinateEntity | null>(null);
+  const [hoveredUnitIndexes, setHoveredUnitIndexes] =
+    useState<UnitIndexes | null>(null);
 
   const handleUnitSquareHover = useCallback(
-    (localCoordinate: CoordinateEntity) => {
-      setHoveredLocalCoordinate(localCoordinate);
+    (rowIdx: number, colIdx: number) => {
+      setHoveredUnitIndexes([rowIdx, colIdx]);
     },
     []
   );
@@ -73,20 +76,18 @@ function GameMap({
   useEffect(() => {
     const highlightRelativeCoordinates = (highlighted: boolean) => {
       relativeCoordinates.forEach((relativeCoordinate) => {
-        if (!unitSquaresCompRef.current || !hoveredLocalCoordinate) {
+        if (!unitSquaresCompRef.current || !hoveredUnitIndexes) {
           return;
         }
-        const targetCoordinate = {
-          x: hoveredLocalCoordinate.x + relativeCoordinate.x,
-          y: hoveredLocalCoordinate.y + relativeCoordinate.y,
-        };
-        if (isOutsideMap(mapWidth, mapHeight, targetCoordinate)) {
-          return;
+        const rowIdx = hoveredUnitIndexes[0] + relativeCoordinate.x;
+        const colIdx = hoveredUnitIndexes[1] + relativeCoordinate.y;
+        if (isInsideMap(mapWidth, mapHeight, rowIdx, colIdx)) {
+          unitSquaresCompRef.current.setUnitHighlighted(
+            rowIdx,
+            colIdx,
+            highlighted
+          );
         }
-        unitSquaresCompRef.current.setUnitHighlighted(
-          targetCoordinate,
-          highlighted
-        );
       });
     };
 
@@ -97,7 +98,7 @@ function GameMap({
   }, [
     mapWidth,
     mapHeight,
-    hoveredLocalCoordinate,
+    hoveredUnitIndexes,
     relativeCoordinates,
     unitSquaresCompRef.current,
   ]);

@@ -8,7 +8,7 @@ import {
   ForwardedRef,
   useImperativeHandle,
 } from 'react';
-import type { UnitEntity, CoordinateEntity } from '@/entities';
+import type { UnitEntity } from '@/entities';
 import CommandableUnitSquare from './CommandableUnitSquare';
 import type { Commands as CommandableUnitSquareCommands } from './CommandableUnitSquare';
 
@@ -16,7 +16,8 @@ const squareSize = 20;
 
 export type Commands = {
   setUnitHighlighted: (
-    localCoordinate: CoordinateEntity,
+    rowIdx: number,
+    colIdx: number,
     highlighted: boolean
   ) => void;
 };
@@ -25,8 +26,8 @@ type Props = {
   width: number;
   height: number;
   units: UnitEntity[][];
-  onUnitSquareClick: (localCoordinate: CoordinateEntity) => void;
-  onUnitSquareHover: (localCoordinate: CoordinateEntity) => void;
+  onUnitSquareClick: (rowIdx: number, colIdx: number) => void;
+  onUnitSquareHover: (rowIdx: number, colIdx: number) => void;
 };
 
 function UnitSquares(
@@ -52,12 +53,11 @@ function UnitSquares(
     ref,
     () => ({
       setUnitHighlighted: (
-        localCoordinate: CoordinateEntity,
+        rowIdx: number,
+        colIdx: number,
         highlighted: boolean
       ) => {
-        const localX = localCoordinate.x;
-        const localY = localCoordinate.y;
-        unitSquareCompRefs[localX][localY].current?.setHighlighted(highlighted);
+        unitSquareCompRefs[rowIdx][colIdx].current?.setHighlighted(highlighted);
       },
     }),
     [unitSquareCompRefs]
@@ -65,7 +65,7 @@ function UnitSquares(
 
   return (
     <>
-      {units.map((columnOfUnits, localX) => (
+      {units.map((columnOfUnits, rowIdx) => (
         <section
           key={columnOfUnits[0].coordinate.x}
           style={{
@@ -75,29 +75,27 @@ function UnitSquares(
             flexFlow: 'column',
           }}
         >
-          {columnOfUnits.map((unit, localY) => {
-            const localCoordinate = { x: localX, y: localY };
-            return (
-              <section
-                key={unit.coordinate.y}
-                style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
-              >
-                {unitSquareCompRefs?.[localX]?.[localY] && (
-                  <CommandableUnitSquare
-                    ref={unitSquareCompRefs[localX][localY]}
-                    coordinate={localCoordinate}
-                    alive={unit.alive}
-                    hasTopBorder
-                    hasRightBorder={localX === units.length - 1}
-                    hasBottomBorder={localY === columnOfUnits.length - 1}
-                    hasLeftBorder
-                    onClick={onUnitSquareClick}
-                    onHover={onUnitSquareHover}
-                  />
-                )}
-              </section>
-            );
-          })}
+          {columnOfUnits.map((unit, colIdx) => (
+            <section
+              key={unit.coordinate.y}
+              style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
+            >
+              {unitSquareCompRefs?.[rowIdx]?.[colIdx] && (
+                <CommandableUnitSquare
+                  ref={unitSquareCompRefs[rowIdx][colIdx]}
+                  rowIdx={rowIdx}
+                  colIdx={colIdx}
+                  alive={unit.alive}
+                  hasTopBorder
+                  hasRightBorder={rowIdx === units.length - 1}
+                  hasBottomBorder={colIdx === columnOfUnits.length - 1}
+                  hasLeftBorder
+                  onClick={onUnitSquareClick}
+                  onHover={onUnitSquareHover}
+                />
+              )}
+            </section>
+          ))}
         </section>
       ))}
     </>

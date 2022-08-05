@@ -6,7 +6,6 @@ import {
   useCallback,
   memo,
 } from 'react';
-import { CoordinateEntity } from '@/entities';
 import UnitSquare from '@/components/squares/UnitSquare';
 
 type Commands = {
@@ -14,19 +13,21 @@ type Commands = {
 };
 
 type Props = {
-  coordinate: CoordinateEntity;
+  rowIdx: number;
+  colIdx: number;
   alive: boolean;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
-  onClick: (localCoordinate: CoordinateEntity) => void;
-  onHover: (localCoordinate: CoordinateEntity) => void;
+  onClick: (rowIdx: number, colIdx: number) => void;
+  onHover: (rowIdx: number, colIdx: number) => void;
 };
 
 function CommandableUnitSquare(
   {
-    coordinate,
+    rowIdx,
+    colIdx,
     alive,
     hasTopBorder,
     hasRightBorder,
@@ -46,12 +47,12 @@ function CommandableUnitSquare(
   }));
 
   const handleUnitSquareClick = useCallback(() => {
-    onClick(coordinate);
-  }, [coordinate.x, coordinate.y]);
+    onClick(rowIdx, colIdx);
+  }, [rowIdx, colIdx]);
 
   const handleUnitSquareHover = useCallback(() => {
-    onHover(coordinate);
-  }, [coordinate.x, coordinate.y]);
+    onHover(rowIdx, colIdx);
+  }, [rowIdx, colIdx]);
 
   return (
     <UnitSquare
