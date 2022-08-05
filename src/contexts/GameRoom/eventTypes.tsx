@@ -21,12 +21,13 @@ type CoordinatesUpdatedEvent = {
   };
 };
 
+type AreaUpdatedEventPayload = {
+  area: AreaDTO;
+  units: UnitDTO[][];
+};
 type AreaUpdatedEvent = {
   type: EventTypeEnum.AreaUpdated;
-  payload: {
-    area: AreaDTO;
-    units: UnitDTO[][];
-  };
+  payload: AreaUpdatedEventPayload;
 };
 
 type Event =
@@ -40,4 +41,5 @@ export type {
   InformationUpdatedEvent,
   CoordinatesUpdatedEvent,
   AreaUpdatedEvent,
+  AreaUpdatedEventPayload,
 };

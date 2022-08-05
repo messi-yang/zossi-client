@@ -8,25 +8,19 @@ import {
 } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
-import type { AreaDTO, CoordinateDTO, MapSizeDTO, UnitDTO } from '@/dto';
+import type { AreaDTO, CoordinateDTO, MapSizeDTO } from '@/dto';
+import type { UnitEntity } from '@/entities';
 import { EventTypeEnum } from './eventTypes';
-import type { Event } from './eventTypes';
+import type { Event, AreaUpdatedEventPayload } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
 
-interface Unit extends UnitDTO {
-  coordinate: CoordinateDTO;
-}
-
-function convertAreaUpdatedEventPayloadToUnits({
+function convertAreaUpdatedEventPayloadToUnitEntities({
   area,
   units,
-}: {
-  area: AreaDTO;
-  units: UnitDTO[][];
-}): Unit[][] {
+}: AreaUpdatedEventPayload): UnitEntity[][] {
   const { from } = area;
   return units.map((rowUnits, x) =>
     rowUnits.map((unit, y) => ({
@@ -42,7 +36,7 @@ type GameRoomContextValue = {
   status: Status;
   mapSize: MapSizeDTO;
   area: AreaDTO;
-  units: Unit[][];
+  units: UnitEntity[][];
   relativeCoordinates: CoordinateDTO[];
   joinGame: () => void;
   updateRelativeCoordinates: (coordinates: CoordinateDTO[]) => void;
@@ -96,7 +90,7 @@ export function Provider({ children }: Props) {
     initialGameRoomContextValue.mapSize
   );
   const [area, setArea] = useState<AreaDTO>(initialGameRoomContextValue.area);
-  const [units, setUnits] = useState<Unit[][]>(
+  const [units, setUnits] = useState<UnitEntity[][]>(
     initialGameRoomContextValue.units
   );
   const [relativeCoordinates, setRelativeCoordinates] = useState<
@@ -195,7 +189,7 @@ export function Provider({ children }: Props) {
           setUnits(newUnits);
         } else if (event.type === EventTypeEnum.AreaUpdated) {
           setArea(event.payload.area);
-          setUnits(convertAreaUpdatedEventPayloadToUnits(event.payload));
+          setUnits(convertAreaUpdatedEventPayloadToUnitEntities(event.payload));
         } else if (event.type === EventTypeEnum.InformationUpdated) {
           setMapSize(event.payload.mapSize);
         }

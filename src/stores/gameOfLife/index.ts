@@ -1,16 +1,12 @@
 import { HYDRATE } from 'next-redux-wrapper';
 import { createSlice } from '@reduxjs/toolkit';
-
-export type Unit = {
-  alive: boolean;
-  age: number;
-};
+import type { UnitEntity } from '@/entities';
 
 export type Status = 'OFFLINE' | 'ONLINE';
 
 export type State = {
   status: Status;
-  units: Unit[][];
+  units: UnitEntity[][];
 };
 
 const slice = createSlice({
@@ -20,7 +16,7 @@ const slice = createSlice({
     units: [],
   } as State,
   reducers: {
-    setUnits(state: State, action: { type: string; payload: Unit[][] }) {
+    setUnits(state: State, action: { type: string; payload: UnitEntity[][] }) {
       state.units = action.payload;
     },
     setStatus(state: State, action: { type: string; payload: Status }) {

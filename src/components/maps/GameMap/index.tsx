@@ -2,7 +2,8 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import type { Area, Unit, Coordinate } from './types';
+import type { UnitEntity } from '@/entities';
+import type { Area, Coordinate } from './types';
 import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
@@ -26,7 +27,7 @@ const isOutsideMap = (
 
 type Props = {
   area: Area;
-  units: Unit[][];
+  units: UnitEntity[][];
   relativeCoordinates: Coordinate[];
   onUnitsRevive: (coordinates: Coordinate[]) => any;
   onAreaUpdate: (newArea: Area) => any;
@@ -134,4 +135,4 @@ function GameMap({
 
 export default GameMap;
 export { dataTestids };
-export type { Area, Unit, Coordinate };
+export type { Area, Coordinate };

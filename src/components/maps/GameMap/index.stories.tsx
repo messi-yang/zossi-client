@@ -2,9 +2,10 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
+import type { UnitEntity } from '@/entities';
 
 import GameMap from '.';
-import type { Coordinate, Area, Unit } from '.';
+import type { Coordinate, Area } from '.';
 
 export default {
   title: 'Map/GameMap',
@@ -42,7 +43,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
 };
 
 function generateMockupUnits(area: Area) {
-  const units: Unit[][] = [];
+  const units: UnitEntity[][] = [];
   const width = area.to.x - area.from.x + 1;
   const height = area.to.y - area.from.y + 1;
   for (let x = 0; x < width; x += 1) {
