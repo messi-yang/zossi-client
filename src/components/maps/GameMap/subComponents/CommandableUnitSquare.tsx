@@ -19,8 +19,8 @@ type Props = {
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
-  onClick: (coordinate: CoordinateEntity) => void;
-  onHover: (coordinate: CoordinateEntity) => void;
+  onClick: (localCoordinate: CoordinateEntity) => void;
+  onHover: (localCoordinate: CoordinateEntity) => void;
 };
 
 function CommandableUnitSquare(

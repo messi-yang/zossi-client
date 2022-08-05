@@ -16,7 +16,7 @@ const squareSize = 20;
 
 export type Commands = {
   setUnitHighlighted: (
-    coordinate: CoordinateEntity,
+    localCoordinate: CoordinateEntity,
     highlighted: boolean
   ) => void;
 };
@@ -25,8 +25,8 @@ type Props = {
   width: number;
   height: number;
   units: UnitEntity[][];
-  onUnitSquareClick: (coordinate: CoordinateEntity) => void;
-  onUnitSquareHover: (coordinate: CoordinateEntity) => void;
+  onUnitSquareClick: (localCoordinate: CoordinateEntity) => void;
+  onUnitSquareHover: (localCoordinate: CoordinateEntity) => void;
 };
 
 function UnitSquares(
@@ -52,13 +52,13 @@ function UnitSquares(
     ref,
     () => ({
       setUnitHighlighted: (
-        coordinate: CoordinateEntity,
+        localCoordinate: CoordinateEntity,
         highlighted: boolean
       ) => {
-        if (unitCompRefs?.[coordinate.x]?.[coordinate.y].current) {
-          unitCompRefs[coordinate.x][coordinate.y].current?.setHighlighted(
-            highlighted
-          );
+        if (unitCompRefs?.[localCoordinate.x]?.[localCoordinate.y].current) {
+          unitCompRefs[localCoordinate.x][
+            localCoordinate.y
+          ].current?.setHighlighted(highlighted);
         }
       },
     }),
@@ -77,26 +77,29 @@ function UnitSquares(
             flexFlow: 'column',
           }}
         >
-          {columnOfUnits.map((unit, y) => (
-            <section
-              key={unit.coordinate.y}
-              style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
-            >
-              {unitCompRefs?.[x]?.[y] && (
-                <CommandableUnitSquare
-                  ref={unitCompRefs[x][y]}
-                  coordinate={{ x, y }}
-                  alive={unit.alive}
-                  hasTopBorder
-                  hasRightBorder={x === units.length - 1}
-                  hasBottomBorder={y === columnOfUnits.length - 1}
-                  hasLeftBorder
-                  onClick={onUnitSquareClick}
-                  onHover={onUnitSquareHover}
-                />
-              )}
-            </section>
-          ))}
+          {columnOfUnits.map((unit, y) => {
+            const localCoordinate = { x, y };
+            return (
+              <section
+                key={unit.coordinate.y}
+                style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
+              >
+                {unitCompRefs?.[x]?.[y] && (
+                  <CommandableUnitSquare
+                    ref={unitCompRefs[x][y]}
+                    coordinate={localCoordinate}
+                    alive={unit.alive}
+                    hasTopBorder
+                    hasRightBorder={x === units.length - 1}
+                    hasBottomBorder={y === columnOfUnits.length - 1}
+                    hasLeftBorder
+                    onClick={onUnitSquareClick}
+                    onHover={onUnitSquareHover}
+                  />
+                )}
+              </section>
+            );
+          })}
         </section>
       ))}
     </>

@@ -12,12 +12,12 @@ const squareSize = 20;
 const isOutsideMap = (
   mapWidth: number,
   mapHeight: number,
-  coordinate: CoordinateEntity
+  localCoordinate: CoordinateEntity
 ): boolean => {
-  if (coordinate.x < 0 || coordinate.x >= mapWidth) {
+  if (localCoordinate.x < 0 || localCoordinate.x >= mapWidth) {
     return true;
   }
-  if (coordinate.y < 0 || coordinate.y >= mapHeight) {
+  if (localCoordinate.y < 0 || localCoordinate.y >= mapHeight) {
     return true;
   }
   return false;
@@ -44,12 +44,13 @@ function GameMap({
     { width: rootElemRect.width, height: rootElemRect.height },
     squareSize
   );
+
   const handleUnitSquareClick = useCallback(
-    (coordinate: CoordinateEntity) => {
+    (localCoordinate: CoordinateEntity) => {
       const finalCoordinates = relativeCoordinates.map(
         (relativeCoordinate) => ({
-          x: area.from.x + relativeCoordinate.x + coordinate.x,
-          y: area.from.y + relativeCoordinate.y + coordinate.y,
+          x: area.from.x + localCoordinate.x + relativeCoordinate.x,
+          y: area.from.y + localCoordinate.y + relativeCoordinate.y,
         })
       );
 
@@ -59,21 +60,25 @@ function GameMap({
   );
 
   const unitSquaresRef = useRef<UnitSquaresCommands>(null);
-  const [hoveredCoordinate, setHoveredCoordinate] =
+  const [hoveredLocalCoordinate, setHoveredLocalCoordinate] =
     useState<CoordinateEntity | null>(null);
-  const handleUnitSquareHover = useCallback((coordinate: CoordinateEntity) => {
-    setHoveredCoordinate({ x: coordinate.x, y: coordinate.y });
-  }, []);
+
+  const handleUnitSquareHover = useCallback(
+    (localCoordinate: CoordinateEntity) => {
+      setHoveredLocalCoordinate({ x: localCoordinate.x, y: localCoordinate.y });
+    },
+    []
+  );
 
   useEffect(() => {
     const setUnitsHighlighted = (highlighted: boolean) => {
       relativeCoordinates.forEach((relativeCoordinate) => {
-        if (!unitSquaresRef.current || !hoveredCoordinate) {
+        if (!unitSquaresRef.current || !hoveredLocalCoordinate) {
           return;
         }
         const targetCoordinate = {
-          x: relativeCoordinate.x + hoveredCoordinate.x,
-          y: relativeCoordinate.y + hoveredCoordinate.y,
+          x: hoveredLocalCoordinate.x + relativeCoordinate.x,
+          y: hoveredLocalCoordinate.y + relativeCoordinate.y,
         };
         if (isOutsideMap(mapWidth, mapHeight, targetCoordinate)) {
           return;
@@ -91,12 +96,12 @@ function GameMap({
   }, [
     mapWidth,
     mapHeight,
-    hoveredCoordinate,
+    hoveredLocalCoordinate,
     relativeCoordinates,
     unitSquaresRef.current,
   ]);
 
-  useEffect(() => {
+  const handleMapSizeUpdate = () => {
     const newFrom = cloneDeep(area.from);
     const newTo = {
       x: newFrom.x + mapWidth - 1,
@@ -106,7 +111,8 @@ function GameMap({
       from: newFrom,
       to: newTo,
     });
-  }, [mapWidth, mapHeight]);
+  };
+  useEffect(handleMapSizeUpdate, [mapWidth, mapHeight]);
 
   return (
     <section
