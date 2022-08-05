@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
+import { CoordinateEntity } from '@/entities';
 import BaseModal from '@/components/modals/BaseModal';
 import RelativeCoordinatesEditor from '@/components/editors/RelativeCoordinatesEditor';
 
-type Coordinate = {
-  x: number;
-  y: number;
-};
-
 type Props = {
   opened: boolean;
-  relativeCoordinates: Coordinate[];
-  onPatternUpdate?: (coordinates: Coordinate[]) => any;
+  relativeCoordinates: CoordinateEntity[];
+  onPatternUpdate?: (coordinates: CoordinateEntity[]) => any;
 };
 
 export default function EditRelativeCoordinatesModal({
@@ -19,16 +15,16 @@ export default function EditRelativeCoordinatesModal({
   relativeCoordinates,
   onPatternUpdate = () => {},
 }: Props) {
-  const [tmpRelativeCoords, setTmpRelativeCoords] = useState<Coordinate[]>(
-    cloneDeep(relativeCoordinates)
-  );
+  const [tmpRelativeCoords, setTmpRelativeCoords] = useState<
+    CoordinateEntity[]
+  >(cloneDeep(relativeCoordinates));
   useEffect(() => {
     setTmpRelativeCoords(cloneDeep(relativeCoordinates));
   }, [relativeCoordinates]);
   const handleEditRelativeCoordinatesModalBackgroundClick = () => {
     onPatternUpdate(tmpRelativeCoords);
   };
-  const handlePatternUpdate = (newPattern: Coordinate[]) => {
+  const handlePatternUpdate = (newPattern: CoordinateEntity[]) => {
     setTmpRelativeCoords(newPattern);
   };
 

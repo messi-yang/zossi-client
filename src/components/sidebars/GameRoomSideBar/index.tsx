@@ -1,14 +1,10 @@
 import { useState } from 'react';
+import { CoordinateEntity } from '@/entities';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import EditRelativeCoordinatesModal from '@/components/modals/EditRelativeCoordinatesModal';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
-
-export type Coordinate = {
-  x: number;
-  y: number;
-};
 
 type HoverStateFlags = {
   unitMap: boolean;
@@ -16,8 +12,8 @@ type HoverStateFlags = {
 
 type Props = {
   onLogoClick: () => void;
-  relativeCoordinates: Coordinate[];
-  onRelativeCoordinatesUpdate: (coordinates: Coordinate[]) => void;
+  relativeCoordinates: CoordinateEntity[];
+  onRelativeCoordinatesUpdate: (coordinates: CoordinateEntity[]) => void;
 };
 
 function GameRoomSideBar({
@@ -40,7 +36,7 @@ function GameRoomSideBar({
   const handleUnitsPatternItemClick = () => {
     setIsUnitsPatternVisible(true);
   };
-  const handleUnitsPatternUpdate = (coordinates: Coordinate[]) => {
+  const handleUnitsPatternUpdate = (coordinates: CoordinateEntity[]) => {
     onRelativeCoordinatesUpdate(coordinates);
     setIsUnitsPatternVisible(false);
   };

@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
+import { CoordinateEntity } from '@/entities';
 import { generateKeyFromIndex } from '@/utils/component/';
 import UnitSquare from '@/components/squares/UnitSquare';
 import dataTestids from './dataTestids';
 
 type Pattern = boolean[][];
-export type Coordinate = {
-  x: number;
-  y: number;
-};
 
 type Props = {
   width: number;
   height: number;
-  relativeCoordinates: Coordinate[];
-  relativeCoordinateOffset: Coordinate;
-  onUpdate: (coordinates: Coordinate[]) => any;
+  relativeCoordinates: CoordinateEntity[];
+  relativeCoordinateOffset: CoordinateEntity;
+  onUpdate: (coordinates: CoordinateEntity[]) => any;
 };
 
 function createInitialPattern(width: number, height: number): Pattern {
@@ -30,8 +27,8 @@ function createInitialPattern(width: number, height: number): Pattern {
 }
 
 function convertCoordinatesToPattern(
-  coordinates: Coordinate[],
-  coordinateOffset: Coordinate,
+  coordinates: CoordinateEntity[],
+  coordinateOffset: CoordinateEntity,
   width: number,
   height: number
 ): Pattern {
@@ -79,7 +76,7 @@ function RelativeCoordinatesEditor({
     newPattern[coordinateX][coordinateY] =
       !newPattern[coordinateX][coordinateY];
 
-    const newCoordinates: Coordinate[] = [];
+    const newCoordinates: CoordinateEntity[] = [];
     newPattern.forEach((row, x) => {
       row.forEach((isTurnedOn, y) => {
         if (isTurnedOn) {

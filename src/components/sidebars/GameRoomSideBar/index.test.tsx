@@ -6,6 +6,7 @@ function renderGameRoomSideBar(): RenderResult {
     <GameRoomSideBar
       relativeCoordinates={[]}
       onRelativeCoordinatesUpdate={() => {}}
+      onLogoClick={() => {}}
     />
   );
 }

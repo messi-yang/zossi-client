@@ -1,9 +1,9 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
+import { CoordinateEntity } from '@/entities';
 
 import RelativeCoordinatesEditor from '.';
-import type { Coordinate } from '.';
 
 export default {
   title: 'Editor/RelativeCoordinatesEditor',
@@ -15,7 +15,7 @@ const Template: ComponentStory<typeof RelativeCoordinatesEditor> =
   function Template(args) {
     const [, updateArgs] = useArgs();
     const handleRelativeCoordinatesUpdate = (
-      newRelativeCoordinates: Coordinate[]
+      newRelativeCoordinates: CoordinateEntity[]
     ) => {
       updateArgs({
         relativeCoordinates: newRelativeCoordinates,
