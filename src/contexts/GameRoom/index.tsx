@@ -16,11 +16,33 @@ import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
 
+interface Unit extends UnitDTO {
+  coordinate: CoordinateDTO;
+}
+
+function convertAreaUpdatedEventPayloadToUnits({
+  area,
+  units,
+}: {
+  area: AreaDTO;
+  units: UnitDTO[][];
+}): Unit[][] {
+  const { from } = area;
+  return units.map((rowUnits, x) =>
+    rowUnits.map((unit, y) => ({
+      key: `${x},${y}`,
+      coordinate: { x: from.x + x, y: from.y + y },
+      alive: unit.alive,
+      age: unit.age,
+    }))
+  );
+}
+
 type GameRoomContextValue = {
   status: Status;
   mapSize: MapSizeDTO;
   area: AreaDTO;
-  units: UnitDTO[][];
+  units: Unit[][];
   relativeCoordinates: CoordinateDTO[];
   joinGame: () => void;
   updateRelativeCoordinates: (coordinates: CoordinateDTO[]) => void;
@@ -74,7 +96,7 @@ export function Provider({ children }: Props) {
     initialGameRoomContextValue.mapSize
   );
   const [area, setArea] = useState<AreaDTO>(initialGameRoomContextValue.area);
-  const [units, setUnits] = useState<UnitDTO[][]>(
+  const [units, setUnits] = useState<Unit[][]>(
     initialGameRoomContextValue.units
   );
   const [relativeCoordinates, setRelativeCoordinates] = useState<
@@ -164,13 +186,16 @@ export function Provider({ children }: Props) {
         if (event.type === EventTypeEnum.CoordinatesUpdated) {
           const newUnits = cloneDeep(units);
           event.payload.coordinates.forEach((coord, idx) => {
-            newUnits[coord.x][coord.y] = event.payload.units[idx];
+            newUnits[coord.x][coord.y] = {
+              ...newUnits[coord.x][coord.y],
+              ...event.payload.units[idx],
+            };
           });
 
           setUnits(newUnits);
         } else if (event.type === EventTypeEnum.AreaUpdated) {
           setArea(event.payload.area);
-          setUnits(event.payload.units);
+          setUnits(convertAreaUpdatedEventPayloadToUnits(event.payload));
         } else if (event.type === EventTypeEnum.InformationUpdated) {
           setMapSize(event.payload.mapSize);
         }

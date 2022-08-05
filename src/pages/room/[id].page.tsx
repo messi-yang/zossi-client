@@ -5,26 +5,9 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import { wrapper } from '@/stores';
 import { getInitialLocale } from '@/utils/i18n';
-import type { AreaDTO, UnitDTO } from '@/dto';
 import GameRoomContext from '@/contexts/GameRoom';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
-import type { Unit } from '@/components/maps/GameMap';
-
-function convertGameRoomContextUnitsToGameMapUnits(
-  area: AreaDTO,
-  units: UnitDTO[][]
-): Unit[][] {
-  const { from } = area;
-  return units.map((rowUnits, x) =>
-    rowUnits.map((unit, y) => ({
-      key: `${x},${y}`,
-      coordinate: { x: from.x + x, y: from.y + y },
-      alive: unit.alive,
-      age: unit.age,
-    }))
-  );
-}
 
 const Room: NextPage = function Room() {
   const router = useRouter();
@@ -39,8 +22,6 @@ const Room: NextPage = function Room() {
     watchArea,
     updateRelativeCoordinates,
   } = useContext(GameRoomContext);
-
-  const gameFieldUnits = convertGameRoomContextUnitsToGameMapUnits(area, units);
 
   useEffect(() => {
     if (status !== 'ONLINE') {
@@ -72,7 +53,7 @@ const Room: NextPage = function Room() {
           {status === 'ONLINE' && (
             <GameMap
               area={area}
-              units={gameFieldUnits}
+              units={units}
               relativeCoordinates={relativeCoordinates}
               onUnitsRevive={reviveUnits}
               onAreaUpdate={watchArea}
