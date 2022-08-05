@@ -1,12 +1,14 @@
 import { makeStore } from '@/stores';
-import { setUnits, Unit } from './index';
+import type { UnitEntity } from '@/entities';
+import { setUnits } from './index';
 
 describe('GameOfLife Reducer', () => {
   describe('setUnits', () => {
     it('Should correctly set units', () => {
-      const units: Unit[][] = [
+      const units: UnitEntity[][] = [
         [
           {
+            coordinate: { x: 0, y: 0 },
             alive: true,
             age: 0,
           },

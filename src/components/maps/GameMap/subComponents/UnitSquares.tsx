@@ -8,7 +8,7 @@ import {
   ForwardedRef,
   useImperativeHandle,
 } from 'react';
-import type { Unit } from '../types';
+import type { UnitEntity } from '@/entities';
 import CommandableUnitSquare from './CommandableUnitSquare';
 import type { Commands as CommandableUnitSquareCommands } from './CommandableUnitSquare';
 
@@ -21,7 +21,7 @@ export type Commands = {
 type Props = {
   width: number;
   height: number;
-  units: Unit[][];
+  units: UnitEntity[][];
   onUnitSquareClick: (x: number, y: number) => void;
   onUnitSquareHover: (x: number, y: number) => void;
 };
