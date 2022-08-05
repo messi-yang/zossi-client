@@ -26,6 +26,4 @@ const Template: ComponentStory<typeof UnitSquare> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-Primary.args = {
-  coordinate: { x: 0, y: 0 },
-};
+Primary.args = {};
