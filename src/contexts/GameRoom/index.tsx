@@ -8,8 +8,8 @@ import {
 } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
-import type { AreaDTO, CoordinateDTO, MapSizeDTO } from '@/dto';
-import type { UnitEntity } from '@/entities';
+import type { AreaDTO, MapSizeDTO } from '@/dto';
+import type { UnitEntity, CoordinateEntity } from '@/entities';
 import { EventTypeEnum } from './eventTypes';
 import type { Event, AreaUpdatedEventPayload } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -37,10 +37,10 @@ type GameRoomContextValue = {
   mapSize: MapSizeDTO;
   area: AreaDTO;
   units: UnitEntity[][];
-  relativeCoordinates: CoordinateDTO[];
+  relativeCoordinates: CoordinateEntity[];
   joinGame: () => void;
-  updateRelativeCoordinates: (coordinates: CoordinateDTO[]) => void;
-  reviveUnits: (coordinates: CoordinateDTO[]) => void;
+  updateRelativeCoordinates: (coordinates: CoordinateEntity[]) => void;
+  reviveUnits: (coordinates: CoordinateEntity[]) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
 };
@@ -94,21 +94,21 @@ export function Provider({ children }: Props) {
     initialGameRoomContextValue.units
   );
   const [relativeCoordinates, setRelativeCoordinates] = useState<
-    CoordinateDTO[]
+    CoordinateEntity[]
   >(initialGameRoomContextValue.relativeCoordinates);
   const [status, setStatus] = useState<Status>(
     initialGameRoomContextValue.status
   );
 
   const updateRelativeCoordinates = useCallback(
-    (coordinates: CoordinateDTO[]) => {
+    (coordinates: CoordinateEntity[]) => {
       setRelativeCoordinates(coordinates);
     },
     [socketRef.current, status]
   );
 
   const reviveUnits = useCallback(
-    (coordinates: CoordinateDTO[]) => {
+    (coordinates: CoordinateEntity[]) => {
       if (!socketRef.current) {
         return;
       }

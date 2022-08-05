@@ -2,8 +2,8 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import type { UnitEntity } from '@/entities';
-import type { Area, Coordinate } from './types';
+import type { UnitEntity, CoordinateEntity } from '@/entities';
+import type { Area } from './types';
 import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
@@ -28,8 +28,8 @@ const isOutsideMap = (
 type Props = {
   area: Area;
   units: UnitEntity[][];
-  relativeCoordinates: Coordinate[];
-  onUnitsRevive: (coordinates: Coordinate[]) => any;
+  relativeCoordinates: CoordinateEntity[];
+  onUnitsRevive: (coordinates: CoordinateEntity[]) => any;
   onAreaUpdate: (newArea: Area) => any;
 };
 
@@ -61,9 +61,8 @@ function GameMap({
   );
 
   const unitSquaresRef = useRef<UnitSquaresCommands>(null);
-  const [hoveredCoordinate, setHoveredCoordinate] = useState<Coordinate | null>(
-    null
-  );
+  const [hoveredCoordinate, setHoveredCoordinate] =
+    useState<CoordinateEntity | null>(null);
   const handleUnitSquareHover = useCallback((x: number, y: number) => {
     setHoveredCoordinate({ x, y });
   }, []);
@@ -135,4 +134,4 @@ function GameMap({
 
 export default GameMap;
 export { dataTestids };
-export type { Area, Coordinate };
+export type { Area };

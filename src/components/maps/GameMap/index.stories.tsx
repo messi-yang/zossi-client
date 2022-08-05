@@ -2,10 +2,10 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import type { UnitEntity } from '@/entities';
+import type { UnitEntity, CoordinateEntity } from '@/entities';
 
 import GameMap from '.';
-import type { Coordinate, Area } from '.';
+import type { Area } from '.';
 
 export default {
   title: 'Map/GameMap',
@@ -16,7 +16,7 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { area, units } = args;
-  const handleUnitsRevive = (coordinates: Coordinate[]) => {
+  const handleUnitsRevive = (coordinates: CoordinateEntity[]) => {
     const coordinateOffset = area.from;
     const newUnits = cloneDeep(units);
     coordinates.forEach(({ x, y }) => {
