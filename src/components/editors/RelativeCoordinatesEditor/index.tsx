@@ -71,10 +71,9 @@ function RelativeCoordinatesEditor({
     );
   }, [relativeCoordinates, relativeCoordinateOffset, width, height]);
 
-  const handleSquareClick = (coordinate: CoordinateEntity) => {
+  const handleSquareClick = (colIdx: number, rowIdx: number) => {
     const newPattern = cloneDeep(pattern);
-    newPattern[coordinate.x][coordinate.y] =
-      !newPattern[coordinate.x][coordinate.y];
+    newPattern[colIdx][rowIdx] = !newPattern[colIdx][rowIdx];
 
     const newCoordinates: CoordinateEntity[] = [];
     newPattern.forEach((row, x) => {
@@ -95,31 +94,30 @@ function RelativeCoordinatesEditor({
       data-testid={dataTestids.root}
       style={{ display: 'flex', flexFlow: 'row' }}
     >
-      {pattern.map((colInPattern, x) => (
+      {pattern.map((colInPattern, colIdx) => (
         <div
-          key={generateKeyFromIndex(x)}
+          key={generateKeyFromIndex(colIdx)}
           style={{
             display: 'flex',
             flexFlow: 'column',
           }}
         >
-          {colInPattern.map((isTurnedOn, y) => (
+          {colInPattern.map((isTurnedOn, rowIdx) => (
             <div
-              key={generateKeyFromIndex(y)}
+              key={generateKeyFromIndex(rowIdx)}
               style={{
                 width: '40px',
                 height: '40px',
               }}
             >
               <UnitSquare
-                coordinate={{ x, y }}
                 alive={isTurnedOn}
                 highlighted={false}
                 hasTopBorder
-                hasRightBorder={x === pattern.length - 1}
-                hasBottomBorder={y === colInPattern.length - 1}
+                hasRightBorder={colIdx === pattern.length - 1}
+                hasBottomBorder={rowIdx === colInPattern.length - 1}
                 hasLeftBorder
-                onClick={handleSquareClick}
+                onClick={() => handleSquareClick(colIdx, rowIdx)}
               />
             </div>
           ))}

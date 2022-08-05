@@ -1,6 +1,4 @@
 import { useRef, useCallback } from 'react';
-
-import { CoordinateEntity } from '@/entities';
 import useHover from '@/hooks/useHover';
 import dataTestids from './dataTestids';
 
@@ -23,19 +21,17 @@ const generateBackgroundColor = (
 };
 
 type Props = {
-  coordinate: CoordinateEntity;
   alive: boolean;
   highlighted: boolean;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
-  onClick?: (coordinate: CoordinateEntity) => any;
-  onHover?: (coordinate: CoordinateEntity) => any;
+  onClick?: () => void;
+  onHover?: () => void;
 };
 
 function UnitSquare({
-  coordinate,
   alive,
   highlighted,
   hasTopBorder,
@@ -51,13 +47,13 @@ function UnitSquare({
       if (!newHovered) {
         return;
       }
-      onHover(coordinate);
+      onHover();
     },
-    [alive, coordinate]
+    [alive]
   );
   useHover(nodeRef, handleHoverStateChange);
 
-  const handleSquareClick = () => onClick(coordinate);
+  const handleSquareClick = () => onClick();
   const handleSquareKeyDown = handleSquareClick;
 
   const backgroundColor = generateBackgroundColor(highlighted, alive);

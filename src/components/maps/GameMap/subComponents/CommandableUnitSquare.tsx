@@ -3,6 +3,7 @@ import {
   forwardRef,
   ForwardedRef,
   useState,
+  useCallback,
   memo,
 } from 'react';
 import { CoordinateEntity } from '@/entities';
@@ -44,17 +45,24 @@ function CommandableUnitSquare(
     },
   }));
 
+  const handleUnitSquareClick = useCallback(() => {
+    onClick(coordinate);
+  }, [coordinate.x, coordinate.y]);
+
+  const handleUnitSquareHover = useCallback(() => {
+    onHover(coordinate);
+  }, [coordinate.x, coordinate.y]);
+
   return (
     <UnitSquare
-      coordinate={coordinate}
       alive={alive}
       highlighted={highlighted}
       hasTopBorder={hasTopBorder}
       hasRightBorder={hasRightBorder}
       hasBottomBorder={hasBottomBorder}
       hasLeftBorder={hasLeftBorder}
-      onClick={onClick}
-      onHover={onHover}
+      onClick={handleUnitSquareClick}
+      onHover={handleUnitSquareHover}
     />
   );
 }
