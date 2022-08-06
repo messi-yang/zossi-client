@@ -1,10 +1,11 @@
 import { useRef, useCallback } from 'react';
 import useHover from '@/hooks/useHover';
+import { gameBackgroundColor } from '@/styles/colors';
 import dataTestids from './dataTestids';
 
 const styles = {
   aliveBackgroundColor: 'white',
-  deadBackgroundColor: 'black',
+  deadBackgroundColor: gameBackgroundColor,
   aliveHoverColor: 'rgb(200, 200, 200)',
   deadHoverColor: 'rgb(77, 77, 77)',
   borderColor: 'rgb(20, 20, 20)',

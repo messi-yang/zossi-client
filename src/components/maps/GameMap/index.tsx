@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
+import { gameBackgroundColor } from '@/styles/colors';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import type { AreaEntity, UnitEntity, CoordinateEntity } from '@/entities';
@@ -119,6 +120,7 @@ function GameMap({
         height: '100%',
         display: 'flex',
         overflow: 'hidden',
+        backgroundColor: gameBackgroundColor,
       }}
     >
       <UnitSquares

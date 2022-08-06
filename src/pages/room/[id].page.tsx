@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import { wrapper } from '@/stores';
+import { gameBackgroundColor } from '@/styles/colors';
 import { getInitialLocale } from '@/utils/i18n';
 import GameRoomContext from '@/contexts/GameRoom';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
@@ -48,7 +49,13 @@ const Room: NextPage = function Room() {
           onRelativeCoordinatesUpdate={updateRelativeCoordinates}
         />
       </section>
-      <section style={{ flexGrow: '1', overflow: 'hidden' }}>
+      <section
+        style={{
+          flexGrow: '1',
+          overflow: 'hidden',
+          backgroundColor: gameBackgroundColor,
+        }}
+      >
         <section style={{ width: '100%', height: '100%' }}>
           {status === 'ONLINE' && (
             <GameMap
