@@ -51,11 +51,11 @@ function CommandableUnitSquare(
 
   const handleUnitSquareClick = useCallback(() => {
     onClick(colIdx, rowIdx);
-  }, [colIdx, rowIdx]);
+  }, [colIdx, rowIdx, onClick]);
 
   const handleUnitSquareHover = useCallback(() => {
     onHover(colIdx, rowIdx);
-  }, [colIdx, rowIdx]);
+  }, [colIdx, rowIdx, onHover]);
 
   return (
     <UnitSquare
