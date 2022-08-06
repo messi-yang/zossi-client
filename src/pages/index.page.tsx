@@ -35,13 +35,10 @@ const Landing: NextPage = function Landing() {
   );
 };
 
-export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
-  () =>
-    async ({ locale }) => ({
-      props: {
-        ...(await serverSideTranslations(getInitialLocale(locale), ['index'])),
-      },
-    })
-);
+export const getStaticProps: GetStaticProps = wrapper.getStaticProps(() => async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(getInitialLocale(locale), ['index'])),
+  },
+}));
 
 export default Landing;

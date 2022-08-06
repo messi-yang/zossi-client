@@ -16,11 +16,7 @@ type Props = {
   onRelativeCoordinatesUpdate: (coordinates: CoordinateEntity[]) => void;
 };
 
-function GameRoomSideBar({
-  onLogoClick,
-  relativeCoordinates,
-  onRelativeCoordinatesUpdate,
-}: Props) {
+function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinatesUpdate }: Props) {
   const [hoverStateFlags, setHoverStateFlags] = useState<HoverStateFlags>({
     unitMap: false,
   });
@@ -31,8 +27,7 @@ function GameRoomSideBar({
     setHoverStateFlags(newFlags);
   }
 
-  const [isUnitsPatternVisible, setIsUnitsPatternVisible] =
-    useState<boolean>(false);
+  const [isUnitsPatternVisible, setIsUnitsPatternVisible] = useState<boolean>(false);
   const handleUnitsPatternItemClick = () => {
     setIsUnitsPatternVisible(true);
   };
@@ -52,12 +47,7 @@ function GameRoomSideBar({
         backgroundColor: '#1C1C1C',
       }}
     >
-      <ItemWrapper
-        hovered={false}
-        width="100%"
-        height="70px"
-        onClick={onLogoClick}
-      >
+      <ItemWrapper hovered={false} width="100%" height="70px" onClick={onLogoClick}>
         <SmallLogo />
       </ItemWrapper>
       <ItemWrapper

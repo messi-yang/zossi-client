@@ -1,11 +1,4 @@
-import {
-  useImperativeHandle,
-  forwardRef,
-  ForwardedRef,
-  useState,
-  useCallback,
-  memo,
-} from 'react';
+import { useImperativeHandle, forwardRef, ForwardedRef, useState, useCallback, memo } from 'react';
 import UnitSquare from '@/components/squares/UnitSquare';
 
 type Commands = {
@@ -25,16 +18,7 @@ type Props = {
 };
 
 function CommandableUnitSquare(
-  {
-    colIdx,
-    rowIdx,
-    hasTopBorder,
-    hasRightBorder,
-    hasBottomBorder,
-    hasLeftBorder,
-    onClick,
-    onHover,
-  }: Props,
+  { colIdx, rowIdx, hasTopBorder, hasRightBorder, hasBottomBorder, hasLeftBorder, onClick, onHover }: Props,
   ref: ForwardedRef<Commands>
 ) {
   const [highlighted, setHighlighted] = useState<boolean>(false);

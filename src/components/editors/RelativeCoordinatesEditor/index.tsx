@@ -44,31 +44,13 @@ function convertCoordinatesToPattern(
   return newPattern;
 }
 
-function RelativeCoordinatesEditor({
-  relativeCoordinates,
-  relativeCoordinateOffset,
-  width,
-  height,
-  onUpdate,
-}: Props) {
+function RelativeCoordinatesEditor({ relativeCoordinates, relativeCoordinateOffset, width, height, onUpdate }: Props) {
   const [pattern, setPattern] = useState<Pattern>(
-    convertCoordinatesToPattern(
-      relativeCoordinates,
-      relativeCoordinateOffset,
-      width,
-      height
-    )
+    convertCoordinatesToPattern(relativeCoordinates, relativeCoordinateOffset, width, height)
   );
 
   useEffect(() => {
-    setPattern(
-      convertCoordinatesToPattern(
-        relativeCoordinates,
-        relativeCoordinateOffset,
-        width,
-        height
-      )
-    );
+    setPattern(convertCoordinatesToPattern(relativeCoordinates, relativeCoordinateOffset, width, height));
   }, [relativeCoordinates, relativeCoordinateOffset, width, height]);
 
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
@@ -90,10 +72,7 @@ function RelativeCoordinatesEditor({
   };
 
   return (
-    <div
-      data-testid={dataTestids.root}
-      style={{ display: 'flex', flexFlow: 'row' }}
-    >
+    <div data-testid={dataTestids.root} style={{ display: 'flex', flexFlow: 'row' }}>
       {pattern.map((colInPattern, colIdx) => (
         <div
           key={generateKeyFromIndex(colIdx)}

@@ -15,14 +15,7 @@ function SmallLogo() {
         stroke="url(#paint0_linear_78_37)"
       />
       <defs>
-        <linearGradient
-          id="paint0_linear_78_37"
-          x1="14"
-          y1="1"
-          x2="14"
-          y2="27"
-          gradientUnits="userSpaceOnUse"
-        >
+        <linearGradient id="paint0_linear_78_37" x1="14" y1="1" x2="14" y2="27" gradientUnits="userSpaceOnUse">
           <stop stopColor="#FF3434" />
           <stop offset="1" stopColor="#35C2FF" />
         </linearGradient>

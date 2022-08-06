@@ -11,26 +11,20 @@ export default {
   argTypes: {},
 } as ComponentMeta<typeof RelativeCoordinatesEditor>;
 
-const Template: ComponentStory<typeof RelativeCoordinatesEditor> =
-  function Template(args) {
-    const [, updateArgs] = useArgs();
-    const handleRelativeCoordinatesUpdate = (
-      newRelativeCoordinates: CoordinateEntity[]
-    ) => {
-      updateArgs({
-        relativeCoordinates: newRelativeCoordinates,
-      });
-    };
-
-    return (
-      <div style={{ display: 'inline-flex' }}>
-        <RelativeCoordinatesEditor
-          {...args}
-          onUpdate={handleRelativeCoordinatesUpdate}
-        />
-      </div>
-    );
+const Template: ComponentStory<typeof RelativeCoordinatesEditor> = function Template(args) {
+  const [, updateArgs] = useArgs();
+  const handleRelativeCoordinatesUpdate = (newRelativeCoordinates: CoordinateEntity[]) => {
+    updateArgs({
+      relativeCoordinates: newRelativeCoordinates,
+    });
   };
+
+  return (
+    <div style={{ display: 'inline-flex' }}>
+      <RelativeCoordinatesEditor {...args} onUpdate={handleRelativeCoordinatesUpdate} />
+    </div>
+  );
+};
 
 export const Primary = Template.bind({});
 Primary.args = {

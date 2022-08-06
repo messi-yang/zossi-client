@@ -77,13 +77,10 @@ export const getStaticPaths: GetStaticPaths = async () => ({
   fallback: true,
 });
 
-export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
-  () =>
-    async ({ locale }) => ({
-      props: {
-        ...(await serverSideTranslations(getInitialLocale(locale), ['room'])),
-      },
-    })
-);
+export const getStaticProps: GetStaticProps = wrapper.getStaticProps(() => async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(getInitialLocale(locale), ['room'])),
+  },
+}));
 
 export default Room;

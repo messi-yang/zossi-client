@@ -16,9 +16,7 @@ export default {
   },
 } as ComponentMeta<typeof UnitPatternIcon>;
 
-const Template: ComponentStory<typeof UnitPatternIcon> = function Template(
-  args
-) {
+const Template: ComponentStory<typeof UnitPatternIcon> = function Template(args) {
   return <UnitPatternIcon {...args} />;
 };
 

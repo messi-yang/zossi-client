@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useState,
-  useMemo,
-  useRef,
-  useEffect,
-} from 'react';
+import { createContext, useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import type { AreaDTO, MapSizeDTO } from '@/dto';
@@ -17,10 +10,7 @@ import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
 
-function convertAreaUpdatedEventPayloadToUnitEntities({
-  area,
-  units,
-}: AreaUpdatedEventPayload): UnitEntity[][] {
+function convertAreaUpdatedEventPayloadToUnitEntities({ area, units }: AreaUpdatedEventPayload): UnitEntity[][] {
   const { from } = area;
   return units.map((rowUnits, x) =>
     rowUnits.map((unit, y) => ({
@@ -75,9 +65,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
   };
 }
 
-const GameRoomContext = createContext<GameRoomContextValue>(
-  createInitialGameRoomContextValue()
-);
+const GameRoomContext = createContext<GameRoomContextValue>(createInitialGameRoomContextValue());
 
 type Props = {
   children: JSX.Element;
@@ -86,19 +74,13 @@ type Props = {
 export function Provider({ children }: Props) {
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
   const socketRef = useRef<WebSocket | null>(null);
-  const [mapSize, setMapSize] = useState<MapSizeDTO>(
-    initialGameRoomContextValue.mapSize
-  );
+  const [mapSize, setMapSize] = useState<MapSizeDTO>(initialGameRoomContextValue.mapSize);
   const [area, setArea] = useState<AreaDTO>(initialGameRoomContextValue.area);
-  const [units, setUnits] = useState<UnitEntity[][]>(
-    initialGameRoomContextValue.units
+  const [units, setUnits] = useState<UnitEntity[][]>(initialGameRoomContextValue.units);
+  const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateEntity[]>(
+    initialGameRoomContextValue.relativeCoordinates
   );
-  const [relativeCoordinates, setRelativeCoordinates] = useState<
-    CoordinateEntity[]
-  >(initialGameRoomContextValue.relativeCoordinates);
-  const [status, setStatus] = useState<Status>(
-    initialGameRoomContextValue.status
-  );
+  const [status, setStatus] = useState<Status>(initialGameRoomContextValue.status);
 
   const updateRelativeCoordinates = useCallback(
     (coordinates: CoordinateEntity[]) => {
@@ -159,9 +141,7 @@ export function Provider({ children }: Props) {
 
   const joinGame = useCallback(() => {
     const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
-    const newSocket = new WebSocket(
-      `${schema}://${process.env.API_DOMAIN}/ws/game/`
-    );
+    const newSocket = new WebSocket(`${schema}://${process.env.API_DOMAIN}/ws/game/`);
     socketRef.current = newSocket;
 
     newSocket.onopen = () => {
@@ -213,11 +193,7 @@ export function Provider({ children }: Props) {
     [status, units, joinGame, watchArea, leaveGame]
   );
 
-  return (
-    <GameRoomContext.Provider value={gameRoomContextValue}>
-      {children}
-    </GameRoomContext.Provider>
-  );
+  return <GameRoomContext.Provider value={gameRoomContextValue}>{children}</GameRoomContext.Provider>;
 }
 
 export default GameRoomContext;

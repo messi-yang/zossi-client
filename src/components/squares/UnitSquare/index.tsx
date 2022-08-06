@@ -11,10 +11,7 @@ const styles = {
   borderColor: 'rgb(20, 20, 20)',
 };
 
-const generateBackgroundColor = (
-  highlighted: boolean,
-  alive: boolean
-): string => {
+const generateBackgroundColor = (highlighted: boolean, alive: boolean): string => {
   if (highlighted) {
     return alive ? styles.aliveHoverColor : styles.deadHoverColor;
   }

@@ -10,14 +10,7 @@ type Props = {
   onClick?: () => any;
 };
 
-function ItemWrapper({
-  width,
-  height,
-  hovered,
-  children,
-  onHoverStateChange = () => {},
-  onClick = () => {},
-}: Props) {
+function ItemWrapper({ width, height, hovered, children, onHoverStateChange = () => {}, onClick = () => {} }: Props) {
   const nodeRef = useRef<HTMLButtonElement>(null);
   useHover(nodeRef, onHoverStateChange);
 

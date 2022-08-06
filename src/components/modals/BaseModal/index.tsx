@@ -8,11 +8,7 @@ type BaseModalProps = {
   onBackgroundClick?: () => any;
 };
 
-export default function BaseModal({
-  opened,
-  children,
-  onBackgroundClick = () => {},
-}: BaseModalProps) {
+export default function BaseModal({ opened, children, onBackgroundClick = () => {} }: BaseModalProps) {
   return (
     <Wrapper visible={opened}>
       <Background onClick={onBackgroundClick} />

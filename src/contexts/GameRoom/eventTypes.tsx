@@ -30,16 +30,7 @@ type AreaUpdatedEvent = {
   payload: AreaUpdatedEventPayload;
 };
 
-type Event =
-  | InformationUpdatedEvent
-  | CoordinatesUpdatedEvent
-  | AreaUpdatedEvent;
+type Event = InformationUpdatedEvent | CoordinatesUpdatedEvent | AreaUpdatedEvent;
 
 export { EventTypeEnum };
-export type {
-  Event,
-  InformationUpdatedEvent,
-  CoordinatesUpdatedEvent,
-  AreaUpdatedEvent,
-  AreaUpdatedEventPayload,
-};
+export type { Event, InformationUpdatedEvent, CoordinatesUpdatedEvent, AreaUpdatedEvent, AreaUpdatedEventPayload };

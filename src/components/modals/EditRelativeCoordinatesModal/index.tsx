@@ -15,9 +15,7 @@ export default function EditRelativeCoordinatesModal({
   relativeCoordinates,
   onPatternUpdate = () => {},
 }: Props) {
-  const [tmpRelativeCoords, setTmpRelativeCoords] = useState<
-    CoordinateEntity[]
-  >(cloneDeep(relativeCoordinates));
+  const [tmpRelativeCoords, setTmpRelativeCoords] = useState<CoordinateEntity[]>(cloneDeep(relativeCoordinates));
   useEffect(() => {
     setTmpRelativeCoords(cloneDeep(relativeCoordinates));
   }, [relativeCoordinates]);
@@ -29,10 +27,7 @@ export default function EditRelativeCoordinatesModal({
   };
 
   return (
-    <BaseModal
-      opened={opened}
-      onBackgroundClick={handleEditRelativeCoordinatesModalBackgroundClick}
-    >
+    <BaseModal opened={opened} onBackgroundClick={handleEditRelativeCoordinatesModalBackgroundClick}>
       <RelativeCoordinatesEditor
         relativeCoordinates={tmpRelativeCoords}
         relativeCoordinateOffset={{ x: -2, y: -2 }}

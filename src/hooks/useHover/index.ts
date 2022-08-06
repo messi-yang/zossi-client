@@ -1,9 +1,6 @@
 import { useCallback, RefObject, useEffect } from 'react';
 
-export default function useHover(
-  ref: RefObject<Element>,
-  onHoverStateChange: (hovered: boolean) => any
-) {
+export default function useHover(ref: RefObject<Element>, onHoverStateChange: (hovered: boolean) => any) {
   const handleMouseOver = useCallback(() => {
     onHoverStateChange(true);
   }, [onHoverStateChange]);

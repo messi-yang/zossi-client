@@ -20,13 +20,7 @@ type Props = {
   onAreaUpdate: (newArea: AreaEntity) => any;
 };
 
-function GameMap({
-  area,
-  units,
-  relativeCoordinates,
-  onUnitsRevive,
-  onAreaUpdate,
-}: Props) {
+function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
   const [mapWidth, mapHeight] = useResolutionCalculator(
@@ -36,12 +30,10 @@ function GameMap({
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      const finalCoordinates = relativeCoordinates.map(
-        (relativeCoordinate) => ({
-          x: area.from.x + colIdx + relativeCoordinate.x,
-          y: area.from.y + rowIdx + relativeCoordinate.y,
-        })
-      );
+      const finalCoordinates = relativeCoordinates.map((relativeCoordinate) => ({
+        x: area.from.x + colIdx + relativeCoordinate.x,
+        y: area.from.y + rowIdx + relativeCoordinate.y,
+      }));
 
       onUnitsRevive(finalCoordinates);
     },
@@ -49,15 +41,11 @@ function GameMap({
   );
 
   const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
-  const [hoveredUnitIndexes, setHoveredUnitIndexes] =
-    useState<UnitIndexes | null>(null);
+  const [hoveredUnitIndexes, setHoveredUnitIndexes] = useState<UnitIndexes | null>(null);
 
-  const handleUnitSquareHover = useCallback(
-    (colIdx: number, rowIdx: number) => {
-      setHoveredUnitIndexes([colIdx, rowIdx]);
-    },
-    []
-  );
+  const handleUnitSquareHover = useCallback((colIdx: number, rowIdx: number) => {
+    setHoveredUnitIndexes([colIdx, rowIdx]);
+  }, []);
 
   useEffect(() => {
     const highlightRelativeCoordinates = (highlighted: boolean) => {
@@ -67,11 +55,7 @@ function GameMap({
         }
         const colIdx = hoveredUnitIndexes[0] + relativeCoordinate.x;
         const rowIdx = hoveredUnitIndexes[1] + relativeCoordinate.y;
-        unitSquaresCompRef.current.setUnitHighlighted(
-          colIdx,
-          rowIdx,
-          highlighted
-        );
+        unitSquaresCompRef.current.setUnitHighlighted(colIdx, rowIdx, highlighted);
       });
     };
 

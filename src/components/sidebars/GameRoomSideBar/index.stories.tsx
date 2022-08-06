@@ -11,22 +11,13 @@ export default {
   argTypes: {},
 } as ComponentMeta<typeof GameRoomSideBar>;
 
-const Template: ComponentStory<typeof GameRoomSideBar> = function Template(
-  args
-) {
+const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleRelativeCoordinatesUpdate = (
-    relativeCoordinates: CoordinateEntity[]
-  ) => {
+  const handleRelativeCoordinatesUpdate = (relativeCoordinates: CoordinateEntity[]) => {
     updateArgs({ relativeCoordinates });
   };
 
-  return (
-    <GameRoomSideBar
-      {...args}
-      onRelativeCoordinatesUpdate={handleRelativeCoordinatesUpdate}
-    />
-  );
+  return <GameRoomSideBar {...args} onRelativeCoordinatesUpdate={handleRelativeCoordinatesUpdate} />;
 };
 
 export const Primary = Template.bind({});
