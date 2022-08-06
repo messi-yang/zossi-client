@@ -32,10 +32,6 @@ i18n, A.K.A [Internationalization and localization](https://en.wikipedia.org/wik
 
 In this repository, we use [next-i18next](https://github.com/isaachinman/next-i18next) that helps implement i18n in next.js!
 
-### TailwindCSS
-
-Tired of using opinioated **"UI libraries"** or build-from-scratch **"styled components"**? Let's try [TailwindCSS](https://tailwindcss.com/) which provides a bunch of tiny but helpful **"utility classes"**, allowing a blanced way of styling your elements!
-
 ### Redux
 
 Loose-coupling is always a goal we want to achieve in software development, with [Redux](https://redux.js.org/), you can keep your data flow out of box but still make your data accessible by your components.
