@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import type { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
@@ -65,11 +65,18 @@ const Room: NextPage = function Room() {
   );
 };
 
-export const getServerSideProps: GetServerSideProps =
-  wrapper.getServerSideProps(() => async ({ locale }) => ({
-    props: {
-      ...(await serverSideTranslations(getInitialLocale(locale), ['room'])),
-    },
-  }));
+export const getStaticPaths: GetStaticPaths = async () => ({
+  paths: [{ params: { id: 'general' } }],
+  fallback: true,
+});
+
+export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
+  () =>
+    async ({ locale }) => ({
+      props: {
+        ...(await serverSideTranslations(getInitialLocale(locale), ['room'])),
+      },
+    })
+);
 
 export default Room;

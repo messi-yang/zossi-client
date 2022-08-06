@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSideProps } from 'next';
+import type { NextPage, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
@@ -35,11 +35,13 @@ const Landing: NextPage = function Landing() {
   );
 };
 
-export const getServerSideProps: GetServerSideProps =
-  wrapper.getServerSideProps(() => async ({ locale }) => ({
-    props: {
-      ...(await serverSideTranslations(getInitialLocale(locale), ['index'])),
-    },
-  }));
+export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
+  () =>
+    async ({ locale }) => ({
+      props: {
+        ...(await serverSideTranslations(getInitialLocale(locale), ['index'])),
+      },
+    })
+);
 
 export default Landing;
