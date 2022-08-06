@@ -8,8 +8,6 @@ import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
 
-const squareSize = 20;
-
 type UnitIndexes = [colIdx: number, rowIdx: number];
 
 type Props = {
@@ -21,6 +19,7 @@ type Props = {
 };
 
 function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
+  const [squareSize] = useState<number>(25);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
   const [mapWidth, mapHeight] = useResolutionCalculator(
@@ -105,6 +104,7 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
         ref={unitSquaresCompRef}
         width={mapWidth}
         height={mapHeight}
+        squareSize={squareSize}
         onUnitSquareClick={handleUnitSquareClick}
         onUnitSquareHover={handleUnitSquareHover}
       />

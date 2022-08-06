@@ -3,8 +3,6 @@ import range from 'lodash/range';
 import CommandableUnitSquare from './CommandableUnitSquare';
 import type { Commands as CommandableUnitSquareCommands } from './CommandableUnitSquare';
 
-const squareSize = 20;
-
 export type Commands = {
   setUnitHighlighted: (colIdx: number, rowIdx: number, highlighted: boolean) => void;
   setUnitAlive: (colIdx: number, rowIdx: number, alive: boolean) => void;
@@ -13,11 +11,15 @@ export type Commands = {
 type Props = {
   width: number;
   height: number;
+  squareSize: number;
   onUnitSquareClick: (colIdx: number, rowIdx: number) => void;
   onUnitSquareHover: (colIdx: number, rowIdx: number) => void;
 };
 
-function UnitSquares({ width, height, onUnitSquareClick, onUnitSquareHover }: Props, ref: ForwardedRef<Commands>) {
+function UnitSquares(
+  { width, height, squareSize, onUnitSquareClick, onUnitSquareHover }: Props,
+  ref: ForwardedRef<Commands>
+) {
   const [unitSquareCompRefs, setUnitSquareCompRefs] = useState<RefObject<CommandableUnitSquareCommands>[][]>([]);
 
   useEffect(() => {
