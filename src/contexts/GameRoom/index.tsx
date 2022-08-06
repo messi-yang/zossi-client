@@ -1,6 +1,7 @@
 import { createContext, useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
+import isEqual from 'lodash/isEqual';
 import type { AreaDTO, MapSizeDTO } from '@/dto';
 import type { UnitEntity, CoordinateEntity } from '@/entities';
 import { EventTypeEnum } from './eventTypes';
@@ -168,7 +169,9 @@ export function Provider({ children }: Props) {
 
           setUnits(newUnits);
         } else if (event.type === EventTypeEnum.AreaUpdated) {
-          setArea(event.payload.area);
+          if (!isEqual(area, event.payload.area)) {
+            setArea(event.payload.area);
+          }
           setUnits(convertAreaUpdatedEventPayloadToUnitEntities(event.payload));
         } else if (event.type === EventTypeEnum.InformationUpdated) {
           setMapSize(event.payload.mapSize);
