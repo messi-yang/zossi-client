@@ -79,13 +79,7 @@ function GameMap({
     return () => {
       highlightRelativeCoordinates(false);
     };
-  }, [
-    mapWidth,
-    mapHeight,
-    hoveredUnitIndexes,
-    relativeCoordinates,
-    unitSquaresCompRef.current,
-  ]);
+  }, [hoveredUnitIndexes, relativeCoordinates, unitSquaresCompRef.current]);
 
   useEffect(() => {
     units.forEach((colOfUnits, colIdx) => {
@@ -97,7 +91,7 @@ function GameMap({
         unitSquaresCompRef.current.setUnitAlive(colIdx, rowIdx, unit.alive);
       });
     });
-  }, [mapWidth, mapHeight, units, unitSquaresCompRef.current]);
+  }, [units, unitSquaresCompRef.current]);
 
   useEffect(() => {
     const newFrom = cloneDeep(area.from);
