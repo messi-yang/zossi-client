@@ -10,25 +10,24 @@ import UnitSquare from '@/components/squares/UnitSquare';
 
 type Commands = {
   setHighlighted: (highlighted: boolean) => void;
+  setAlive: (alive: boolean) => void;
 };
 
 type Props = {
-  rowIdx: number;
   colIdx: number;
-  alive: boolean;
+  rowIdx: number;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
-  onClick: (rowIdx: number, colIdx: number) => void;
-  onHover: (rowIdx: number, colIdx: number) => void;
+  onClick: (colIdx: number, rowIdx: number) => void;
+  onHover: (colIdx: number, rowIdx: number) => void;
 };
 
 function CommandableUnitSquare(
   {
-    rowIdx,
     colIdx,
-    alive,
+    rowIdx,
     hasTopBorder,
     hasRightBorder,
     hasBottomBorder,
@@ -39,20 +38,24 @@ function CommandableUnitSquare(
   ref: ForwardedRef<Commands>
 ) {
   const [highlighted, setHighlighted] = useState<boolean>(false);
+  const [alive, setAlive] = useState<boolean>(false);
 
   useImperativeHandle(ref, () => ({
     setHighlighted: (newHighlighted: boolean) => {
       setHighlighted(newHighlighted);
     },
+    setAlive: (newAlive: boolean) => {
+      setAlive(newAlive);
+    },
   }));
 
   const handleUnitSquareClick = useCallback(() => {
-    onClick(rowIdx, colIdx);
-  }, [rowIdx, colIdx]);
+    onClick(colIdx, rowIdx);
+  }, [colIdx, rowIdx]);
 
   const handleUnitSquareHover = useCallback(() => {
-    onHover(rowIdx, colIdx);
-  }, [rowIdx, colIdx]);
+    onHover(colIdx, rowIdx);
+  }, [colIdx, rowIdx]);
 
   return (
     <UnitSquare

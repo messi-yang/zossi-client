@@ -9,22 +9,7 @@ import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquare
 
 const squareSize = 20;
 
-type UnitIndexes = [rowIdx: number, colIdx: number];
-
-const isInsideMap = (
-  mapWidth: number,
-  mapHeight: number,
-  rowIdx: number,
-  colIdx: number
-): boolean => {
-  if (rowIdx < 0 || rowIdx >= mapWidth) {
-    return false;
-  }
-  if (colIdx < 0 || colIdx >= mapHeight) {
-    return false;
-  }
-  return true;
-};
+type UnitIndexes = [colIdx: number, rowIdx: number];
 
 type Props = {
   area: AreaEntity;
@@ -49,11 +34,11 @@ function GameMap({
   );
 
   const handleUnitSquareClick = useCallback(
-    (rowIdx: number, colIdx: number) => {
+    (colIdx: number, rowIdx: number) => {
       const finalCoordinates = relativeCoordinates.map(
         (relativeCoordinate) => ({
-          x: area.from.x + rowIdx + relativeCoordinate.x,
-          y: area.from.y + colIdx + relativeCoordinate.y,
+          x: area.from.x + colIdx + relativeCoordinate.x,
+          y: area.from.y + rowIdx + relativeCoordinate.y,
         })
       );
 
@@ -67,8 +52,8 @@ function GameMap({
     useState<UnitIndexes | null>(null);
 
   const handleUnitSquareHover = useCallback(
-    (rowIdx: number, colIdx: number) => {
-      setHoveredUnitIndexes([rowIdx, colIdx]);
+    (colIdx: number, rowIdx: number) => {
+      setHoveredUnitIndexes([colIdx, rowIdx]);
     },
     []
   );
@@ -79,15 +64,13 @@ function GameMap({
         if (!unitSquaresCompRef.current || !hoveredUnitIndexes) {
           return;
         }
-        const rowIdx = hoveredUnitIndexes[0] + relativeCoordinate.x;
-        const colIdx = hoveredUnitIndexes[1] + relativeCoordinate.y;
-        if (isInsideMap(mapWidth, mapHeight, rowIdx, colIdx)) {
-          unitSquaresCompRef.current.setUnitHighlighted(
-            rowIdx,
-            colIdx,
-            highlighted
-          );
-        }
+        const colIdx = hoveredUnitIndexes[0] + relativeCoordinate.x;
+        const rowIdx = hoveredUnitIndexes[1] + relativeCoordinate.y;
+        unitSquaresCompRef.current.setUnitHighlighted(
+          colIdx,
+          rowIdx,
+          highlighted
+        );
       });
     };
 
@@ -102,6 +85,18 @@ function GameMap({
     relativeCoordinates,
     unitSquaresCompRef.current,
   ]);
+
+  useEffect(() => {
+    units.forEach((colOfUnits, colIdx) => {
+      colOfUnits.forEach((unit, rowIdx) => {
+        if (!unitSquaresCompRef.current) {
+          return;
+        }
+
+        unitSquaresCompRef.current.setUnitAlive(colIdx, rowIdx, unit.alive);
+      });
+    });
+  }, [mapWidth, mapHeight, units, unitSquaresCompRef.current]);
 
   useEffect(() => {
     const newFrom = cloneDeep(area.from);
@@ -130,7 +125,6 @@ function GameMap({
         ref={unitSquaresCompRef}
         width={mapWidth}
         height={mapHeight}
-        units={units}
         onUnitSquareClick={handleUnitSquareClick}
         onUnitSquareHover={handleUnitSquareHover}
       />

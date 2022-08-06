@@ -8,7 +8,7 @@ import {
   ForwardedRef,
   useImperativeHandle,
 } from 'react';
-import type { UnitEntity } from '@/entities';
+import range from 'lodash/range';
 import CommandableUnitSquare from './CommandableUnitSquare';
 import type { Commands as CommandableUnitSquareCommands } from './CommandableUnitSquare';
 
@@ -16,22 +16,22 @@ const squareSize = 20;
 
 export type Commands = {
   setUnitHighlighted: (
-    rowIdx: number,
     colIdx: number,
+    rowIdx: number,
     highlighted: boolean
   ) => void;
+  setUnitAlive: (colIdx: number, rowIdx: number, alive: boolean) => void;
 };
 
 type Props = {
   width: number;
   height: number;
-  units: UnitEntity[][];
-  onUnitSquareClick: (rowIdx: number, colIdx: number) => void;
-  onUnitSquareHover: (rowIdx: number, colIdx: number) => void;
+  onUnitSquareClick: (colIdx: number, rowIdx: number) => void;
+  onUnitSquareHover: (colIdx: number, rowIdx: number) => void;
 };
 
 function UnitSquares(
-  { width, height, units, onUnitSquareClick, onUnitSquareHover }: Props,
+  { width, height, onUnitSquareClick, onUnitSquareHover }: Props,
   ref: ForwardedRef<Commands>
 ) {
   const [unitSquareCompRefs, setUnitSquareCompRefs] = useState<
@@ -53,11 +53,16 @@ function UnitSquares(
     ref,
     () => ({
       setUnitHighlighted: (
-        rowIdx: number,
         colIdx: number,
+        rowIdx: number,
         highlighted: boolean
       ) => {
-        unitSquareCompRefs[rowIdx][colIdx].current?.setHighlighted(highlighted);
+        unitSquareCompRefs?.[colIdx]?.[rowIdx]?.current?.setHighlighted(
+          highlighted
+        );
+      },
+      setUnitAlive: (colIdx: number, rowIdx: number, alive: boolean) => {
+        unitSquareCompRefs?.[colIdx]?.[rowIdx]?.current?.setAlive(alive);
       },
     }),
     [unitSquareCompRefs]
@@ -65,9 +70,9 @@ function UnitSquares(
 
   return (
     <>
-      {units.map((columnOfUnits, rowIdx) => (
+      {range(0, width).map((colIdx) => (
         <section
-          key={columnOfUnits[0].coordinate.x}
+          key={colIdx}
           style={{
             flexBasis: squareSize,
             flexShrink: '0',
@@ -75,20 +80,19 @@ function UnitSquares(
             flexFlow: 'column',
           }}
         >
-          {columnOfUnits.map((unit, colIdx) => (
+          {range(0, height).map((rowIdx) => (
             <section
-              key={unit.coordinate.y}
+              key={rowIdx}
               style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}
             >
-              {unitSquareCompRefs?.[rowIdx]?.[colIdx] && (
+              {unitSquareCompRefs?.[colIdx]?.[rowIdx] && (
                 <CommandableUnitSquare
-                  ref={unitSquareCompRefs[rowIdx][colIdx]}
+                  ref={unitSquareCompRefs[colIdx][rowIdx]}
                   rowIdx={rowIdx}
                   colIdx={colIdx}
-                  alive={unit.alive}
                   hasTopBorder
-                  hasRightBorder={rowIdx === units.length - 1}
-                  hasBottomBorder={colIdx === columnOfUnits.length - 1}
+                  hasRightBorder={colIdx === width - 1}
+                  hasBottomBorder={rowIdx === height - 1}
                   hasLeftBorder
                   onClick={onUnitSquareClick}
                   onHover={onUnitSquareHover}
