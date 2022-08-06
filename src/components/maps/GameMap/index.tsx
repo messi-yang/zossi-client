@@ -8,8 +8,6 @@ import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
 
-type UnitIndexes = [colIdx: number, rowIdx: number];
-
 type Props = {
   area: AreaEntity;
   units: UnitEntity[][];
@@ -40,29 +38,31 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
   );
 
   const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
-  const [hoveredUnitIndexes, setHoveredUnitIndexes] = useState<UnitIndexes | null>(null);
 
-  const handleUnitSquareHover = useCallback((colIdx: number, rowIdx: number) => {
-    setHoveredUnitIndexes([colIdx, rowIdx]);
-  }, []);
-
-  useEffect(() => {
-    const highlightRelativeCoordinates = (highlighted: boolean) => {
-      relativeCoordinates.forEach((relativeCoordinate) => {
-        if (!unitSquaresCompRef.current || !hoveredUnitIndexes) {
-          return;
-        }
-        const colIdx = hoveredUnitIndexes[0] + relativeCoordinate.x;
-        const rowIdx = hoveredUnitIndexes[1] + relativeCoordinate.y;
-        unitSquaresCompRef.current.setUnitHighlighted(colIdx, rowIdx, highlighted);
-      });
-    };
-
-    highlightRelativeCoordinates(true);
-    return () => {
-      highlightRelativeCoordinates(false);
-    };
-  }, [hoveredUnitIndexes, relativeCoordinates, unitSquaresCompRef.current]);
+  const setHighlightsOfRelativeCoordinates = (colIdx: number, rowIdx: number, highlighted: boolean) => {
+    relativeCoordinates.forEach((relativeCoordinate) => {
+      if (!unitSquaresCompRef.current) {
+        return;
+      }
+      unitSquaresCompRef.current.setUnitHighlighted(
+        colIdx + relativeCoordinate.x,
+        rowIdx + relativeCoordinate.y,
+        highlighted
+      );
+    });
+  };
+  const handleUnitSquareMouseEnter = useCallback(
+    (colIdx: number, rowIdx: number) => {
+      setHighlightsOfRelativeCoordinates(colIdx, rowIdx, true);
+    },
+    [relativeCoordinates]
+  );
+  const handleUnitSquareMouseLeave = useCallback(
+    (colIdx: number, rowIdx: number) => {
+      setHighlightsOfRelativeCoordinates(colIdx, rowIdx, false);
+    },
+    [relativeCoordinates]
+  );
 
   useEffect(() => {
     units.forEach((colOfUnits, colIdx) => {
@@ -106,7 +106,8 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
         height={mapHeight}
         squareSize={squareSize}
         onUnitSquareClick={handleUnitSquareClick}
-        onUnitSquareHover={handleUnitSquareHover}
+        onUnitSquareMouseEnter={handleUnitSquareMouseEnter}
+        onUnitSquareMouseLeave={handleUnitSquareMouseLeave}
       />
     </section>
   );

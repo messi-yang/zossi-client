@@ -14,11 +14,22 @@ type Props = {
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
   onClick: (colIdx: number, rowIdx: number) => void;
-  onHover: (colIdx: number, rowIdx: number) => void;
+  onMouseEnter: (colIdx: number, rowIdx: number) => void;
+  onMouseLeave: (colIdx: number, rowIdx: number) => void;
 };
 
 function CommandableUnitSquare(
-  { colIdx, rowIdx, hasTopBorder, hasRightBorder, hasBottomBorder, hasLeftBorder, onClick, onHover }: Props,
+  {
+    colIdx,
+    rowIdx,
+    hasTopBorder,
+    hasRightBorder,
+    hasBottomBorder,
+    hasLeftBorder,
+    onClick,
+    onMouseEnter,
+    onMouseLeave,
+  }: Props,
   ref: ForwardedRef<Commands>
 ) {
   const [highlighted, setHighlighted] = useState<boolean>(false);
@@ -37,9 +48,13 @@ function CommandableUnitSquare(
     onClick(colIdx, rowIdx);
   }, [colIdx, rowIdx, onClick]);
 
-  const handleUnitSquareHover = useCallback(() => {
-    onHover(colIdx, rowIdx);
-  }, [colIdx, rowIdx, onHover]);
+  const handleUnitSquareMouseEnter = useCallback(() => {
+    onMouseEnter(colIdx, rowIdx);
+  }, [colIdx, rowIdx, onMouseEnter]);
+
+  const handleUnitSquareMouseLeave = useCallback(() => {
+    onMouseLeave(colIdx, rowIdx);
+  }, [colIdx, rowIdx, onMouseLeave]);
 
   return (
     <UnitSquare
@@ -50,7 +65,8 @@ function CommandableUnitSquare(
       hasBottomBorder={hasBottomBorder}
       hasLeftBorder={hasLeftBorder}
       onClick={handleUnitSquareClick}
-      onHover={handleUnitSquareHover}
+      onMouseEnter={handleUnitSquareMouseEnter}
+      onMouseLeave={handleUnitSquareMouseLeave}
     />
   );
 }

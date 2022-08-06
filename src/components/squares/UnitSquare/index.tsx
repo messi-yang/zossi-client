@@ -1,5 +1,3 @@
-import { useRef, useCallback } from 'react';
-import useHover from '@/hooks/useHover';
 import { gameBackgroundColor } from '@/styles/colors';
 import dataTestids from './dataTestids';
 
@@ -26,7 +24,8 @@ type Props = {
   hasBottomBorder: boolean;
   hasLeftBorder: boolean;
   onClick?: () => void;
-  onHover?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 
 function UnitSquare({
@@ -37,29 +36,14 @@ function UnitSquare({
   hasBottomBorder,
   hasLeftBorder,
   onClick = () => {},
-  onHover = () => {},
+  onMouseEnter = () => {},
+  onMouseLeave = () => {},
 }: Props) {
-  const nodeRef = useRef<HTMLDivElement>(null);
-  const handleHoverStateChange = useCallback(
-    (newHovered) => {
-      if (!newHovered) {
-        return;
-      }
-      onHover();
-    },
-    [alive]
-  );
-  useHover(nodeRef, handleHoverStateChange);
-
-  const handleSquareClick = () => onClick();
-  const handleSquareKeyDown = handleSquareClick;
-
   const backgroundColor = generateBackgroundColor(highlighted, alive);
 
   return (
     <div
       data-testid={dataTestids.root}
-      ref={nodeRef}
       role="button"
       tabIndex={0}
       aria-label="game unit box"
@@ -75,8 +59,10 @@ function UnitSquare({
         borderBottom: hasBottomBorder ? `1px solid ${styles.borderColor}` : '',
         borderLeft: hasLeftBorder ? `1px solid ${styles.borderColor}` : '',
       }}
-      onClick={handleSquareClick}
-      onKeyDown={handleSquareKeyDown}
+      onClick={onClick}
+      onKeyDown={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     />
   );
 }
