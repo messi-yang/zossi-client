@@ -1,5 +1,5 @@
 type BackgroundProps = {
-  onClick: () => any;
+  onClick?: () => void;
 };
 
 export default function Background({ onClick }: BackgroundProps) {
@@ -13,7 +13,7 @@ export default function Background({ onClick }: BackgroundProps) {
         height: '100%',
         zIndex: '0',
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        cursor: 'pointer',
+        cursor: onClick ? 'pointer' : undefined,
       }}
       role="button"
       aria-label="modal background"

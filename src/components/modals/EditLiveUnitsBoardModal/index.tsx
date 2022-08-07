@@ -27,9 +27,6 @@ export default function LiveUnitsBoardModal({
   useEffect(() => {
     setTmpUnitsBoard(cloneDeep(liveUnitsBoard));
   }, [opened]);
-  const handleLiveUnitsBoardModalBackgroundClick = () => {
-    onCancel();
-  };
   const handleOkClick = () => {
     onUpdate(tmpUnitsBoard);
   };
@@ -38,7 +35,7 @@ export default function LiveUnitsBoardModal({
   };
 
   return (
-    <BaseModal opened={opened} onBackgroundClick={handleLiveUnitsBoardModalBackgroundClick}>
+    <BaseModal opened={opened}>
       <section
         style={{
           position: 'relative',
