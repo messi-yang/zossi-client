@@ -5,6 +5,31 @@ import LiveUnitsBoardEditor from '@/components/editors/LiveUnitsBoardEditor';
 import Button from '@/components/buttons/Button';
 import CrossIcon from '@/components/icons/CrossIcon';
 
+type CornerSquareProps = {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+};
+
+function CornerSquare({ top, right, bottom, left }: CornerSquareProps) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top,
+        right,
+        bottom,
+        left,
+        width: '56px',
+        height: '56px',
+        backgroundColor: 'white',
+        zIndex: -1,
+      }}
+    />
+  );
+}
+
 type LiveUnitsBoard = boolean[][];
 
 type Props = {
@@ -36,30 +61,37 @@ export default function LiveUnitsBoardModal({
 
   return (
     <BaseModal opened={opened}>
-      <section
-        style={{
-          position: 'relative',
-          padding: '30px 24px 39px',
-          display: 'flex',
-          flexFlow: 'column',
-        }}
-      >
-        <div
-          style={{ position: 'absolute', top: '21px', right: '21px', display: 'inline-flex', cursor: 'pointer' }}
-          role="button"
-          tabIndex={0}
-          area-label="close modal"
-          onClick={onCancel}
-          onKeyDown={onCancel}
+      <section style={{ position: 'relative' }}>
+        <CornerSquare top={-8} left={-8} />
+        <CornerSquare top={-8} right={-8} />
+        <CornerSquare bottom={-8} left={-8} />
+        <CornerSquare bottom={-8} right={-8} />
+        <section
+          style={{
+            position: 'relative',
+            padding: '30px 24px 39px',
+            display: 'flex',
+            flexFlow: 'column',
+            backgroundColor: '#121212',
+          }}
         >
-          <CrossIcon />
-        </div>
-        <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
-        <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
-          <LiveUnitsBoardEditor liveUnitsBoard={tmpUnitsBoard} onUpdate={handleLiveUnitsBoardUpdate} />
-        </section>
-        <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
-          <Button text="Ok" onClick={handleOkClick} />
+          <div
+            style={{ position: 'absolute', top: '21px', right: '21px', display: 'inline-flex', cursor: 'pointer' }}
+            role="button"
+            tabIndex={0}
+            area-label="close modal"
+            onClick={onCancel}
+            onKeyDown={onCancel}
+          >
+            <CrossIcon />
+          </div>
+          <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
+          <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
+            <LiveUnitsBoardEditor liveUnitsBoard={tmpUnitsBoard} onUpdate={handleLiveUnitsBoardUpdate} />
+          </section>
+          <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
+            <Button text="Ok" onClick={handleOkClick} />
+          </section>
         </section>
       </section>
     </BaseModal>
