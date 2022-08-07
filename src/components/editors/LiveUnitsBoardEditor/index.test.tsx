@@ -1,22 +1,23 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import RelativeCoordinatesEditor, { dataTestids } from '.';
+import LiveUnitsBoardEditor, { dataTestids } from '.';
 
-function renderRelativeCoordinatesEditor(): RenderResult {
+function renderLiveUnitsBoardEditor(): RenderResult {
   return render(
-    <RelativeCoordinatesEditor
-      relativeCoordinates={[{ x: 0, y: 0 }]}
-      relativeCoordinateOffset={{ x: 0, y: 0 }}
-      width={1}
-      height={1}
+    <LiveUnitsBoardEditor
+      liveUnitsBoard={[
+        [true, true, true],
+        [true, false, true],
+        [true, true, true],
+      ]}
       onUpdate={() => {}}
     />
   );
 }
 
-describe('RelativeCoordinatesEditor', () => {
+describe('LiveUnitsBoardEditor', () => {
   it('Should render component successfully.', () => {
     try {
-      renderRelativeCoordinatesEditor();
+      renderLiveUnitsBoardEditor();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

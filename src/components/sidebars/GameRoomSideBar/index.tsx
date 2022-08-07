@@ -1,10 +1,58 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import range from 'lodash/range';
 import { CoordinateEntity } from '@/entities';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
-import EditRelativeCoordinatesModal from '@/components/modals/EditRelativeCoordinatesModal';
+import EditLiveUnitsBoardModal from '@/components/modals/EditLiveUnitsBoardModal';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
+
+type LiveUnitsBoard = boolean[][];
+
+function convertRelativeCoordinatesToLiveUnitsBoard(
+  relativeCoordinates: CoordinateEntity[],
+  coordinateOffset: CoordinateEntity,
+  boardWidth: number,
+  boardHeight: number
+): LiveUnitsBoard {
+  const liveUnitsBoard: LiveUnitsBoard = [];
+  range(0, boardWidth).forEach((colIdx) => {
+    liveUnitsBoard.push([]);
+    range(0, boardHeight).forEach(() => {
+      liveUnitsBoard[colIdx].push(false);
+    });
+  });
+
+  relativeCoordinates.forEach((relativeCoordinate) => {
+    const colIdx = relativeCoordinate.x - coordinateOffset.x;
+    const rowIdx = relativeCoordinate.y - coordinateOffset.y;
+    if (liveUnitsBoard?.[colIdx]?.[rowIdx] !== undefined) {
+      liveUnitsBoard[colIdx][rowIdx] = true;
+    }
+  });
+
+  return liveUnitsBoard;
+}
+
+function convertLiveUnitsBoardToRelativeCoordinates(
+  liveUnitsBoard: LiveUnitsBoard,
+  coordinateOffset: CoordinateEntity
+): CoordinateEntity[] {
+  const coordinates: CoordinateEntity[] = [];
+
+  liveUnitsBoard.forEach((colInLiveUnitsBoard, colIdx) => {
+    colInLiveUnitsBoard.forEach((isTruthy, rowIdx) => {
+      if (isTruthy) {
+        coordinates.push({
+          x: colIdx + coordinateOffset.x,
+          y: rowIdx + coordinateOffset.y,
+        });
+      }
+    });
+  });
+
+  return coordinates;
+}
 
 type HoverStateFlags = {
   unitMap: boolean;
@@ -17,6 +65,8 @@ type Props = {
 };
 
 function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinatesUpdate }: Props) {
+  const [coordinateOffset] = useState<CoordinateEntity>({ x: -2, y: -2 });
+  const [boardWidth, boardHeight] = [5, 5];
   const [hoverStateFlags, setHoverStateFlags] = useState<HoverStateFlags>({
     unitMap: false,
   });
@@ -27,14 +77,26 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
     setHoverStateFlags(newFlags);
   }
 
-  const [isUnitsPatternVisible, setIsUnitsPatternVisible] = useState<boolean>(false);
-  const handleUnitsPatternItemClick = () => {
-    setIsUnitsPatternVisible(true);
+  const [isLiveUnitsBoardVisible, setIsLiveUnitsBoardVisible] = useState<boolean>(false);
+  const handleLiveUnitsBoardItemClick = () => {
+    setIsLiveUnitsBoardVisible(true);
   };
-  const handleUnitsPatternUpdate = (coordinates: CoordinateEntity[]) => {
-    onRelativeCoordinatesUpdate(coordinates);
-    setIsUnitsPatternVisible(false);
+  const handleLiveUnitsBoardUpdate = (liveUnitsBoard: LiveUnitsBoard) => {
+    const newRelativeCoordinates = convertLiveUnitsBoardToRelativeCoordinates(liveUnitsBoard, coordinateOffset);
+    onRelativeCoordinatesUpdate(newRelativeCoordinates);
+    setIsLiveUnitsBoardVisible(false);
   };
+
+  const [liveUnitsBoard, setLiveUnitsBoard] = useState<LiveUnitsBoard>([]);
+  useMemo(() => {
+    const newLiveUnitsBoard = convertRelativeCoordinatesToLiveUnitsBoard(
+      relativeCoordinates,
+      coordinateOffset,
+      boardWidth,
+      boardHeight
+    );
+    setLiveUnitsBoard(newLiveUnitsBoard);
+  }, [relativeCoordinates, coordinateOffset, boardWidth, boardHeight]);
 
   return (
     <section
@@ -57,14 +119,14 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
         onHoverStateChange={(hovered) => {
           handleHoverStateChange('unitMap', hovered);
         }}
-        onClick={handleUnitsPatternItemClick}
+        onClick={handleLiveUnitsBoardItemClick}
       >
         <UnitPatternIcon highlighted={hoverStateFlags.unitMap} active={false} />
       </ItemWrapper>
-      <EditRelativeCoordinatesModal
-        opened={isUnitsPatternVisible}
-        relativeCoordinates={relativeCoordinates}
-        onPatternUpdate={handleUnitsPatternUpdate}
+      <EditLiveUnitsBoardModal
+        opened={isLiveUnitsBoardVisible}
+        liveUnitsBoard={liveUnitsBoard}
+        onUpdate={handleLiveUnitsBoardUpdate}
       />
     </section>
   );
