@@ -12,6 +12,7 @@ export default function Modal({ children }: ModalProps) {
         transform: 'translate(-50%, -50%)',
         maxWidth: '100%',
         maxHeight: '100%',
+        backgroundColor: '#121212',
       }}
     >
       {children}

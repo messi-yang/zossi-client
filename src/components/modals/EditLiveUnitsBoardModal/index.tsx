@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import { gameBackgroundColor } from '@/styles/colors';
 import BaseModal from '@/components/modals/BaseModal';
 import LiveUnitsBoardEditor from '@/components/editors/LiveUnitsBoardEditor';
 import Button from '@/components/buttons/Button';
@@ -44,7 +43,6 @@ export default function LiveUnitsBoardModal({
         style={{
           position: 'relative',
           padding: '30px 24px 39px',
-          backgroundColor: gameBackgroundColor,
           display: 'flex',
           flexFlow: 'column',
         }}
