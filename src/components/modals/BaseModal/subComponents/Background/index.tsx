@@ -12,7 +12,7 @@ export default function Background({ onClick }: BackgroundProps) {
         width: '100%',
         height: '100%',
         zIndex: '0',
-        backgroundColor: 'rgba(0,0,0,0.8)',
+        backgroundColor: 'rgba(255,255,255,0.3)',
         cursor: 'pointer',
       }}
       role="button"
