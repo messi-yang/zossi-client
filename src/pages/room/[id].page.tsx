@@ -6,11 +6,13 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { wrapper } from '@/stores';
 import { gameBackgroundColor } from '@/styles/colors';
 import { getInitialLocale } from '@/utils/i18n';
+import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 
 const Room: NextPage = function Room() {
+  const windowSize = useWindowSize();
   const router = useRouter();
   const {
     area,
@@ -41,7 +43,7 @@ const Room: NextPage = function Room() {
   };
 
   return (
-    <main style={{ width: '100vw', height: '100vh', display: 'flex' }}>
+    <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex' }}>
       <section style={{ flexShrink: '0', height: '100%' }}>
         <GameRoomSideBar
           onLogoClick={handleLogoClick}
