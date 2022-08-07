@@ -39,6 +39,7 @@ function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
               <UnitSquare
                 alive={isTurnedOn}
                 highlighted={false}
+                borderColor="#2C2C2C"
                 hasTopBorder
                 hasRightBorder={colIdx === liveUnitsBoard.length - 1}
                 hasBottomBorder={rowIdx === colInLiveUnitsBoard.length - 1}

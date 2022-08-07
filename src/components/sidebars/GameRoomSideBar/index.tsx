@@ -81,6 +81,9 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
   const handleLiveUnitsBoardItemClick = () => {
     setIsLiveUnitsBoardVisible(true);
   };
+  const handleLiveUnitsBoardCancel = () => {
+    setIsLiveUnitsBoardVisible(false);
+  };
   const handleLiveUnitsBoardUpdate = (liveUnitsBoard: LiveUnitsBoard) => {
     const newRelativeCoordinates = convertLiveUnitsBoardToRelativeCoordinates(liveUnitsBoard, coordinateOffset);
     onRelativeCoordinatesUpdate(newRelativeCoordinates);
@@ -127,6 +130,7 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
         opened={isLiveUnitsBoardVisible}
         liveUnitsBoard={liveUnitsBoard}
         onUpdate={handleLiveUnitsBoardUpdate}
+        onCancel={handleLiveUnitsBoardCancel}
       />
     </section>
   );

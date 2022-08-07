@@ -6,7 +6,6 @@ const styles = {
   deadBackgroundColor: gameBackgroundColor,
   aliveHoverColor: 'rgb(200, 200, 200)',
   deadHoverColor: 'rgb(77, 77, 77)',
-  borderColor: 'rgb(20, 20, 20)',
 };
 
 const generateBackgroundColor = (highlighted: boolean, alive: boolean): string => {
@@ -19,6 +18,7 @@ const generateBackgroundColor = (highlighted: boolean, alive: boolean): string =
 type Props = {
   alive: boolean;
   highlighted: boolean;
+  borderColor?: string;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
@@ -31,6 +31,7 @@ type Props = {
 function UnitSquare({
   alive,
   highlighted,
+  borderColor = 'rgba(20,20,20)',
   hasTopBorder,
   hasRightBorder,
   hasBottomBorder,
@@ -54,10 +55,10 @@ function UnitSquare({
         cursor: 'pointer',
         backgroundColor,
         border: `1px solid ${styles.deadHoverColor}`,
-        borderTop: hasTopBorder ? `1px solid ${styles.borderColor}` : '',
-        borderRight: hasRightBorder ? `1px solid ${styles.borderColor}` : '',
-        borderBottom: hasBottomBorder ? `1px solid ${styles.borderColor}` : '',
-        borderLeft: hasLeftBorder ? `1px solid ${styles.borderColor}` : '',
+        borderTop: hasTopBorder ? `1px solid ${borderColor}` : '',
+        borderRight: hasRightBorder ? `1px solid ${borderColor}` : '',
+        borderBottom: hasBottomBorder ? `1px solid ${borderColor}` : '',
+        borderLeft: hasLeftBorder ? `1px solid ${borderColor}` : '',
       }}
       onClick={onClick}
       onKeyDown={onClick}
