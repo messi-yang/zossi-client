@@ -1,9 +1,9 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import LiveUnitsBoardEditor, { dataTestids } from '.';
+import LiveUnitBoardEditor, { dataTestids } from '.';
 
-function renderLiveUnitsBoardEditor(): RenderResult {
+function renderLiveUnitBoardEditor(): RenderResult {
   return render(
-    <LiveUnitsBoardEditor
+    <LiveUnitBoardEditor
       liveUnitBoard={[
         [true, true, true],
         [true, false, true],
@@ -14,10 +14,10 @@ function renderLiveUnitsBoardEditor(): RenderResult {
   );
 }
 
-describe('LiveUnitsBoardEditor', () => {
+describe('LiveUnitBoardEditor', () => {
   it('Should render component successfully.', () => {
     try {
-      renderLiveUnitsBoardEditor();
+      renderLiveUnitBoardEditor();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

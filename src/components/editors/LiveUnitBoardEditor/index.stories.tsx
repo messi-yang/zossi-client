@@ -2,26 +2,26 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 
-import LiveUnitsBoardEditor from '.';
+import LiveUnitBoardEditor from '.';
 import type { LiveUnitBoardEntity } from '@/entities/';
 
 export default {
-  title: 'Editor/LiveUnitsBoardEditor',
-  component: LiveUnitsBoardEditor,
+  title: 'Editor/LiveUnitBoardEditor',
+  component: LiveUnitBoardEditor,
   argTypes: {},
-} as ComponentMeta<typeof LiveUnitsBoardEditor>;
+} as ComponentMeta<typeof LiveUnitBoardEditor>;
 
-const Template: ComponentStory<typeof LiveUnitsBoardEditor> = function Template(args) {
+const Template: ComponentStory<typeof LiveUnitBoardEditor> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleLiveUnitsBoardUpdate = (liveUnitsBoard: LiveUnitBoardEntity) => {
+  const handleLiveUnitBoardUpdate = (liveUnitBoard: LiveUnitBoardEntity) => {
     updateArgs({
-      liveUnitsBoard,
+      liveUnitBoard,
     });
   };
 
   return (
     <div style={{ display: 'inline-flex' }}>
-      <LiveUnitsBoardEditor {...args} onUpdate={handleLiveUnitsBoardUpdate} />
+      <LiveUnitBoardEditor {...args} onUpdate={handleLiveUnitBoardUpdate} />
     </div>
   );
 };
