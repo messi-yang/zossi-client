@@ -7,7 +7,7 @@ export type Icon = 'cross';
 
 function getIconComponent(icon: Icon, highlighted: boolean) {
   if (icon === 'cross') {
-    <CrossIcon highlighted={highlighted} />;
+    return <CrossIcon highlighted={highlighted} />;
   }
   return null;
 }
