@@ -1,14 +1,14 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import UnitPatternIcon, { dataTestids } from '.';
+import LiveUnitBoardIcon, { dataTestids } from '.';
 
-function renderUnitPatternIcon(): RenderResult {
-  return render(<UnitPatternIcon active highlighted={false} />);
+function renderLiveUnitBoardIcon(): RenderResult {
+  return render(<LiveUnitBoardIcon active highlighted={false} />);
 }
 
-describe('UnitPatternIcon', () => {
+describe('LiveUnitBoardIcon', () => {
   it('Should render component successfully.', () => {
     try {
-      renderUnitPatternIcon();
+      renderLiveUnitBoardIcon();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

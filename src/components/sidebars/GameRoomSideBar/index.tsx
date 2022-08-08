@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import range from 'lodash/range';
 import { CoordinateEntity } from '@/entities';
 import SmallLogo from '@/components/logos/SmallLogo/';
-import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
+import LiveUnitBoardIcon from '@/components/icons/LiveUnitBoardIcon/';
 import EditLiveUnitBoardModal from '@/components/modals/EditLiveUnitBoardModal';
 import type { LiveUnitBoardEntity } from '@/entities/';
 import ItemWrapper from './subComponents/ItemWrapper';
@@ -123,7 +123,7 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
         }}
         onClick={handleLiveUnitBoardItemClick}
       >
-        <UnitPatternIcon highlighted={hoverStateFlags.unitMap} active={false} />
+        <LiveUnitBoardIcon highlighted={hoverStateFlags.unitMap} active={false} />
       </ItemWrapper>
       <EditLiveUnitBoardModal
         opened={isLiveUnitBoardVisible}

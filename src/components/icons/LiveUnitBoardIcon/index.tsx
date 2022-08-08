@@ -5,7 +5,7 @@ type Props = {
   active: boolean;
 };
 
-function UnitPatternIcon({ highlighted, active }: Props) {
+function LiveUnitBoardIcon({ highlighted, active }: Props) {
   return (
     <svg
       data-testid={dataTestids.root}
@@ -26,5 +26,5 @@ function UnitPatternIcon({ highlighted, active }: Props) {
   );
 }
 
-export default UnitPatternIcon;
+export default LiveUnitBoardIcon;
 export { dataTestids };
