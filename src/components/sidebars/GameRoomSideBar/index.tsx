@@ -3,45 +3,44 @@ import range from 'lodash/range';
 import { CoordinateEntity } from '@/entities';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
-import EditLiveUnitsBoardModal from '@/components/modals/EditLiveUnitBoardModal';
+import EditLiveUnitBoardModal from '@/components/modals/EditLiveUnitBoardModal';
+import type { LiveUnitBoardEntity } from '@/entities/';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
-type LiveUnitsBoard = boolean[][];
-
-function convertRelativeCoordinatesToLiveUnitsBoard(
+function convertRelativeCoordinatesToLiveUnitBoard(
   relativeCoordinates: CoordinateEntity[],
   coordinateOffset: CoordinateEntity,
   boardWidth: number,
   boardHeight: number
-): LiveUnitsBoard {
-  const liveUnitsBoard: LiveUnitsBoard = [];
+): LiveUnitBoardEntity {
+  const liveUnitBoard: LiveUnitBoardEntity = [];
   range(0, boardWidth).forEach((colIdx) => {
-    liveUnitsBoard.push([]);
+    liveUnitBoard.push([]);
     range(0, boardHeight).forEach(() => {
-      liveUnitsBoard[colIdx].push(false);
+      liveUnitBoard[colIdx].push(false);
     });
   });
 
   relativeCoordinates.forEach((relativeCoordinate) => {
     const colIdx = relativeCoordinate.x - coordinateOffset.x;
     const rowIdx = relativeCoordinate.y - coordinateOffset.y;
-    if (liveUnitsBoard?.[colIdx]?.[rowIdx] !== undefined) {
-      liveUnitsBoard[colIdx][rowIdx] = true;
+    if (liveUnitBoard?.[colIdx]?.[rowIdx] !== undefined) {
+      liveUnitBoard[colIdx][rowIdx] = true;
     }
   });
 
-  return liveUnitsBoard;
+  return liveUnitBoard;
 }
 
-function convertLiveUnitsBoardToRelativeCoordinates(
-  liveUnitsBoard: LiveUnitsBoard,
+function convertLiveUnitBoardToRelativeCoordinates(
+  liveUnitBoard: LiveUnitBoardEntity,
   coordinateOffset: CoordinateEntity
 ): CoordinateEntity[] {
   const coordinates: CoordinateEntity[] = [];
 
-  liveUnitsBoard.forEach((colInLiveUnitsBoard, colIdx) => {
-    colInLiveUnitsBoard.forEach((isTruthy, rowIdx) => {
+  liveUnitBoard.forEach((colInLiveUnitBoard, colIdx) => {
+    colInLiveUnitBoard.forEach((isTruthy, rowIdx) => {
       if (isTruthy) {
         coordinates.push({
           x: colIdx + coordinateOffset.x,
@@ -77,28 +76,28 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
     setHoverStateFlags(newFlags);
   }
 
-  const [isLiveUnitsBoardVisible, setIsLiveUnitsBoardVisible] = useState<boolean>(false);
-  const handleLiveUnitsBoardItemClick = () => {
-    setIsLiveUnitsBoardVisible(true);
+  const [isLiveUnitBoardVisible, setIsLiveUnitBoardVisible] = useState<boolean>(false);
+  const handleLiveUnitBoardItemClick = () => {
+    setIsLiveUnitBoardVisible(true);
   };
-  const handleLiveUnitsBoardCancel = () => {
-    setIsLiveUnitsBoardVisible(false);
+  const handleLiveUnitBoardCancel = () => {
+    setIsLiveUnitBoardVisible(false);
   };
-  const handleLiveUnitsBoardUpdate = (liveUnitsBoard: LiveUnitsBoard) => {
-    const newRelativeCoordinates = convertLiveUnitsBoardToRelativeCoordinates(liveUnitsBoard, coordinateOffset);
+  const handleLiveUnitBoardUpdate = (liveUnitBoard: LiveUnitBoardEntity) => {
+    const newRelativeCoordinates = convertLiveUnitBoardToRelativeCoordinates(liveUnitBoard, coordinateOffset);
     onRelativeCoordinatesUpdate(newRelativeCoordinates);
-    setIsLiveUnitsBoardVisible(false);
+    setIsLiveUnitBoardVisible(false);
   };
 
-  const [liveUnitsBoard, setLiveUnitsBoard] = useState<LiveUnitsBoard>([]);
+  const [liveUnitBoard, setLiveUnitBoard] = useState<LiveUnitBoardEntity>([]);
   useMemo(() => {
-    const newLiveUnitsBoard = convertRelativeCoordinatesToLiveUnitsBoard(
+    const newLiveUnitBoard = convertRelativeCoordinatesToLiveUnitBoard(
       relativeCoordinates,
       coordinateOffset,
       boardWidth,
       boardHeight
     );
-    setLiveUnitsBoard(newLiveUnitsBoard);
+    setLiveUnitBoard(newLiveUnitBoard);
   }, [relativeCoordinates, coordinateOffset, boardWidth, boardHeight]);
 
   return (
@@ -122,15 +121,15 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
         onHoverStateChange={(hovered) => {
           handleHoverStateChange('unitMap', hovered);
         }}
-        onClick={handleLiveUnitsBoardItemClick}
+        onClick={handleLiveUnitBoardItemClick}
       >
         <UnitPatternIcon highlighted={hoverStateFlags.unitMap} active={false} />
       </ItemWrapper>
-      <EditLiveUnitsBoardModal
-        opened={isLiveUnitsBoardVisible}
-        liveUnitBoard={liveUnitsBoard}
-        onUpdate={handleLiveUnitsBoardUpdate}
-        onCancel={handleLiveUnitsBoardCancel}
+      <EditLiveUnitBoardModal
+        opened={isLiveUnitBoardVisible}
+        liveUnitBoard={liveUnitBoard}
+        onUpdate={handleLiveUnitBoardUpdate}
+        onCancel={handleLiveUnitBoardCancel}
       />
     </section>
   );
