@@ -4,6 +4,7 @@ import BaseModal from '@/components/modals/BaseModal';
 import LiveUnitBoardEditor from '@/components/editors/LiveUnitBoardEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
+import type { LiveUnitBoardEntity } from '@/entities/';
 
 type CornerSquareProps = {
   top?: number;
@@ -30,33 +31,26 @@ function CornerSquare({ top, right, bottom, left }: CornerSquareProps) {
   );
 }
 
-type LiveUnitsBoard = boolean[][];
-
 type Props = {
   opened: boolean;
-  liveUnitsBoard: LiveUnitsBoard;
-  onUpdate?: (liveUnitsBoard: LiveUnitsBoard) => any;
+  liveUnitBoard: LiveUnitBoardEntity;
+  onUpdate?: (liveUnitBoard: LiveUnitBoardEntity) => any;
   onCancel?: () => void;
 };
 
-export default function LiveUnitsBoardModal({
-  opened,
-  liveUnitsBoard,
-  onUpdate = () => {},
-  onCancel = () => {},
-}: Props) {
-  const [tmpUnitsBoard, setTmpUnitsBoard] = useState<LiveUnitsBoard>(cloneDeep(liveUnitsBoard));
+export default function LiveUnitBoardModal({ opened, liveUnitBoard, onUpdate = () => {}, onCancel = () => {} }: Props) {
+  const [tmpUnitBoard, setTmpUnitBoard] = useState<LiveUnitBoardEntity>(cloneDeep(liveUnitBoard));
   useEffect(() => {
-    setTmpUnitsBoard(cloneDeep(liveUnitsBoard));
-  }, [liveUnitsBoard]);
+    setTmpUnitBoard(cloneDeep(liveUnitBoard));
+  }, [liveUnitBoard]);
   useEffect(() => {
-    setTmpUnitsBoard(cloneDeep(liveUnitsBoard));
+    setTmpUnitBoard(cloneDeep(liveUnitBoard));
   }, [opened]);
   const handleOkClick = () => {
-    onUpdate(tmpUnitsBoard);
+    onUpdate(tmpUnitBoard);
   };
-  const handleLiveUnitsBoardUpdate = (newLiveUnitsBoard: LiveUnitsBoard) => {
-    setTmpUnitsBoard(newLiveUnitsBoard);
+  const handleLiveUnitBoardUpdate = (newLiveUnitBoard: LiveUnitBoardEntity) => {
+    setTmpUnitBoard(newLiveUnitBoard);
   };
 
   return (
@@ -82,7 +76,7 @@ export default function LiveUnitsBoardModal({
           </div>
           <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
-            <LiveUnitBoardEditor liveUnitBoard={tmpUnitsBoard} onUpdate={handleLiveUnitsBoardUpdate} />
+            <LiveUnitBoardEditor liveUnitBoard={tmpUnitBoard} onUpdate={handleLiveUnitBoardUpdate} />
           </section>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
             <Button text="Ok" onClick={handleOkClick} />

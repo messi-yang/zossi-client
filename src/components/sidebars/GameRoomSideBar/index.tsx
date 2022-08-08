@@ -3,7 +3,7 @@ import range from 'lodash/range';
 import { CoordinateEntity } from '@/entities';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
-import EditLiveUnitsBoardModal from '@/components/modals/EditLiveUnitsBoardModal';
+import EditLiveUnitsBoardModal from '@/components/modals/EditLiveUnitBoardModal';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
@@ -128,7 +128,7 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
       </ItemWrapper>
       <EditLiveUnitsBoardModal
         opened={isLiveUnitsBoardVisible}
-        liveUnitsBoard={liveUnitsBoard}
+        liveUnitBoard={liveUnitsBoard}
         onUpdate={handleLiveUnitsBoardUpdate}
         onCancel={handleLiveUnitsBoardCancel}
       />
