@@ -1,13 +1,12 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { generateKeyFromIndex } from '@/utils/component/';
 import UnitSquare from '@/components/squares/UnitSquare';
+import type { LiveUnitBoardEntity } from '@/entities/';
 import dataTestids from './dataTestids';
 
-type LiveUnitsBoard = boolean[][];
-
 type Props = {
-  liveUnitsBoard: LiveUnitsBoard;
-  onUpdate: (liveUnitsBoard: LiveUnitsBoard) => any;
+  liveUnitsBoard: LiveUnitBoardEntity;
+  onUpdate: (liveUnitsBoard: LiveUnitBoardEntity) => any;
 };
 
 function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
@@ -28,7 +27,7 @@ function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
             flexFlow: 'column',
           }}
         >
-          {colInLiveUnitsBoard.map((isTurnedOn, rowIdx) => (
+          {colInLiveUnitsBoard.map((hasLiveUnit, rowIdx) => (
             <div
               key={generateKeyFromIndex(rowIdx)}
               style={{
@@ -37,7 +36,7 @@ function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
               }}
             >
               <UnitSquare
-                alive={isTurnedOn}
+                alive={hasLiveUnit || false}
                 highlighted={false}
                 borderColor="#2C2C2C"
                 hasTopBorder
@@ -56,4 +55,3 @@ function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
 
 export default LiveUnitsBoardEditor;
 export { dataTestids };
-export type { LiveUnitsBoard };

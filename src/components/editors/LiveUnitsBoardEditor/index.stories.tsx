@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 
 import LiveUnitsBoardEditor from '.';
-import type { LiveUnitsBoard } from '.';
+import type { LiveUnitBoardEntity } from '@/entities/';
 
 export default {
   title: 'Editor/LiveUnitsBoardEditor',
@@ -13,7 +13,7 @@ export default {
 
 const Template: ComponentStory<typeof LiveUnitsBoardEditor> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleLiveUnitsBoardUpdate = (liveUnitsBoard: LiveUnitsBoard) => {
+  const handleLiveUnitsBoardUpdate = (liveUnitsBoard: LiveUnitBoardEntity) => {
     updateArgs({
       liveUnitsBoard,
     });
