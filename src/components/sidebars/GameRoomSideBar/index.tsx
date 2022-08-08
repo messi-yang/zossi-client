@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import range from 'lodash/range';
 import { CoordinateEntity } from '@/entities';
 import SmallLogo from '@/components/logos/SmallLogo/';
@@ -90,7 +90,7 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
   };
 
   const [liveUnitBoard, setLiveUnitBoard] = useState<LiveUnitBoardEntity>([]);
-  useMemo(() => {
+  useEffect(() => {
     const newLiveUnitBoard = convertRelativeCoordinatesToLiveUnitBoard(
       relativeCoordinates,
       coordinateOffset,
