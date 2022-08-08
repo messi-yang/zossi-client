@@ -4,7 +4,7 @@ import LiveUnitsBoardEditor, { dataTestids } from '.';
 function renderLiveUnitsBoardEditor(): RenderResult {
   return render(
     <LiveUnitsBoardEditor
-      liveUnitsBoard={[
+      liveUnitBoard={[
         [true, true, true],
         [true, false, true],
         [true, true, true],

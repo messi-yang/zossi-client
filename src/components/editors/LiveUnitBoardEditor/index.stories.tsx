@@ -28,7 +28,7 @@ const Template: ComponentStory<typeof LiveUnitsBoardEditor> = function Template(
 
 export const Primary = Template.bind({});
 Primary.args = {
-  liveUnitsBoard: [
+  liveUnitBoard: [
     [true, true, true],
     [true, false, true],
     [true, true, true],

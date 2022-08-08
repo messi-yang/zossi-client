@@ -5,13 +5,13 @@ import type { LiveUnitBoardEntity } from '@/entities/';
 import dataTestids from './dataTestids';
 
 type Props = {
-  liveUnitsBoard: LiveUnitBoardEntity;
-  onUpdate: (liveUnitsBoard: LiveUnitBoardEntity) => any;
+  liveUnitBoard: LiveUnitBoardEntity;
+  onUpdate: (liveUnitBoard: LiveUnitBoardEntity) => any;
 };
 
-function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
+function LiveUnitBoardEditor({ liveUnitBoard, onUpdate }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
-    const newLiveUnitsBoard = cloneDeep(liveUnitsBoard);
+    const newLiveUnitsBoard = cloneDeep(liveUnitBoard);
     newLiveUnitsBoard[colIdx][rowIdx] = !newLiveUnitsBoard[colIdx][rowIdx];
 
     onUpdate(newLiveUnitsBoard);
@@ -19,7 +19,7 @@ function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
 
   return (
     <div data-testid={dataTestids.root} style={{ display: 'flex', flexFlow: 'row' }}>
-      {liveUnitsBoard.map((colInLiveUnitsBoard, colIdx) => (
+      {liveUnitBoard.map((colInLiveUnitsBoard, colIdx) => (
         <div
           key={generateKeyFromIndex(colIdx)}
           style={{
@@ -40,7 +40,7 @@ function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
                 highlighted={false}
                 borderColor="#2C2C2C"
                 hasTopBorder
-                hasRightBorder={colIdx === liveUnitsBoard.length - 1}
+                hasRightBorder={colIdx === liveUnitBoard.length - 1}
                 hasBottomBorder={rowIdx === colInLiveUnitsBoard.length - 1}
                 hasLeftBorder
                 onClick={() => handleSquareClick(colIdx, rowIdx)}
@@ -53,5 +53,5 @@ function LiveUnitsBoardEditor({ liveUnitsBoard, onUpdate }: Props) {
   );
 }
 
-export default LiveUnitsBoardEditor;
+export default LiveUnitBoardEditor;
 export { dataTestids };

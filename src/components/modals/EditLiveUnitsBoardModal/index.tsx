@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import BaseModal from '@/components/modals/BaseModal';
-import LiveUnitsBoardEditor from '@/components/editors/LiveUnitsBoardEditor';
+import LiveUnitBoardEditor from '@/components/editors/LiveUnitBoardEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
 
@@ -82,7 +82,7 @@ export default function LiveUnitsBoardModal({
           </div>
           <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
-            <LiveUnitsBoardEditor liveUnitsBoard={tmpUnitsBoard} onUpdate={handleLiveUnitsBoardUpdate} />
+            <LiveUnitBoardEditor liveUnitBoard={tmpUnitsBoard} onUpdate={handleLiveUnitsBoardUpdate} />
           </section>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
             <Button text="Ok" onClick={handleOkClick} />
