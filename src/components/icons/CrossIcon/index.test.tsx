@@ -2,7 +2,7 @@ import { render, RenderResult, screen } from '@testing-library/react';
 import CrossIcon, { dataTestids } from '.';
 
 function renderCrossIcon(): RenderResult {
-  return render(<CrossIcon />);
+  return render(<CrossIcon highlighted />);
 }
 
 describe('CrossIcon', () => {

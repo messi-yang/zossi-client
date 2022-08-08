@@ -3,7 +3,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import BaseModal from '@/components/modals/BaseModal';
 import LiveUnitsBoardEditor from '@/components/editors/LiveUnitsBoardEditor';
 import Button from '@/components/buttons/Button';
-import CrossIcon from '@/components/icons/CrossIcon';
+import IconButton from '@/components/buttons/IconButton';
 
 type CornerSquareProps = {
   top?: number;
@@ -76,14 +76,9 @@ export default function LiveUnitsBoardModal({
           }}
         >
           <div
-            style={{ position: 'absolute', top: '21px', right: '21px', display: 'inline-flex', cursor: 'pointer' }}
-            role="button"
-            tabIndex={0}
-            area-label="close modal"
-            onClick={onCancel}
-            onKeyDown={onCancel}
+            style={{ position: 'absolute', top: '20px', right: '20px', display: 'flex', justifyContent: 'flex-end' }}
           >
-            <CrossIcon />
+            <IconButton icon="cross" onClick={onCancel} />
           </div>
           <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>

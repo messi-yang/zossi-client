@@ -9,8 +9,8 @@ export default {
   argTypes: {},
 } as ComponentMeta<typeof CrossIcon>;
 
-const Template: ComponentStory<typeof CrossIcon> = function Template() {
-  return <CrossIcon />;
+const Template: ComponentStory<typeof CrossIcon> = function Template(args) {
+  return <CrossIcon {...args} />;
 };
 
 export const Primary = Template.bind({});
