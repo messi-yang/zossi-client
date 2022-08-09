@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import BaseModal from '@/components/modals/BaseModal';
-import LiveUnitBoardEditor from '@/components/editors/LiveUnitBoardEditor';
+import LiveUnitMapEditor from '@/components/editors/LiveUnitMapEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
-import type { LiveUnitBoardEntity } from '@/entities/';
+import type { LiveUnitMapEntity } from '@/entities/';
 
 type CornerSquareProps = {
   top?: number;
@@ -33,24 +33,24 @@ function CornerSquare({ top, right, bottom, left }: CornerSquareProps) {
 
 type Props = {
   opened: boolean;
-  liveUnitBoard: LiveUnitBoardEntity;
-  onUpdate?: (liveUnitBoard: LiveUnitBoardEntity) => any;
+  liveUnitMap: LiveUnitMapEntity;
+  onUpdate?: (liveUnitMap: LiveUnitMapEntity) => any;
   onCancel?: () => void;
 };
 
-export default function LiveUnitBoardModal({ opened, liveUnitBoard, onUpdate = () => {}, onCancel = () => {} }: Props) {
-  const [tmpUnitBoard, setTmpUnitBoard] = useState<LiveUnitBoardEntity>(cloneDeep(liveUnitBoard));
+export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () => {}, onCancel = () => {} }: Props) {
+  const [tmpUnitMap, setTmpUnitMap] = useState<LiveUnitMapEntity>(cloneDeep(liveUnitMap));
   useEffect(() => {
-    setTmpUnitBoard(cloneDeep(liveUnitBoard));
-  }, [liveUnitBoard]);
+    setTmpUnitMap(cloneDeep(liveUnitMap));
+  }, [liveUnitMap]);
   useEffect(() => {
-    setTmpUnitBoard(cloneDeep(liveUnitBoard));
+    setTmpUnitMap(cloneDeep(liveUnitMap));
   }, [opened]);
   const handleOkClick = () => {
-    onUpdate(tmpUnitBoard);
+    onUpdate(tmpUnitMap);
   };
-  const handleLiveUnitBoardUpdate = (newLiveUnitBoard: LiveUnitBoardEntity) => {
-    setTmpUnitBoard(newLiveUnitBoard);
+  const handleLiveUnitMapUpdate = (newLiveUnitMap: LiveUnitMapEntity) => {
+    setTmpUnitMap(newLiveUnitMap);
   };
 
   return (
@@ -76,7 +76,7 @@ export default function LiveUnitBoardModal({ opened, liveUnitBoard, onUpdate = (
           </div>
           <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
-            <LiveUnitBoardEditor liveUnitBoard={tmpUnitBoard} onUpdate={handleLiveUnitBoardUpdate} />
+            <LiveUnitMapEditor liveUnitMap={tmpUnitMap} onUpdate={handleLiveUnitMapUpdate} />
           </section>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
             <Button text="Ok" onClick={handleOkClick} />

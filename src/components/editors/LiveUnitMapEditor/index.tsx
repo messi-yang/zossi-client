@@ -1,25 +1,25 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { generateKeyFromIndex } from '@/utils/component/';
 import UnitSquare from '@/components/squares/UnitSquare';
-import type { LiveUnitBoardEntity } from '@/entities/';
+import type { LiveUnitMapEntity } from '@/entities/';
 import dataTestids from './dataTestids';
 
 type Props = {
-  liveUnitBoard: LiveUnitBoardEntity;
-  onUpdate: (liveUnitBoard: LiveUnitBoardEntity) => any;
+  liveUnitMap: LiveUnitMapEntity;
+  onUpdate: (liveUnitMap: LiveUnitMapEntity) => any;
 };
 
-function LiveUnitBoardEditor({ liveUnitBoard, onUpdate }: Props) {
+function LiveUnitMapEditor({ liveUnitMap, onUpdate }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
-    const newLiveUnitBoard = cloneDeep(liveUnitBoard);
-    newLiveUnitBoard[colIdx][rowIdx] = !newLiveUnitBoard[colIdx][rowIdx];
+    const newLiveUnitMap = cloneDeep(liveUnitMap);
+    newLiveUnitMap[colIdx][rowIdx] = !newLiveUnitMap[colIdx][rowIdx];
 
-    onUpdate(newLiveUnitBoard);
+    onUpdate(newLiveUnitMap);
   };
 
   return (
     <div data-testid={dataTestids.root} style={{ display: 'flex', flexFlow: 'row' }}>
-      {liveUnitBoard.map((colInLiveUnitBoard, colIdx) => (
+      {liveUnitMap.map((colInLiveUnitMap, colIdx) => (
         <div
           key={generateKeyFromIndex(colIdx)}
           style={{
@@ -27,7 +27,7 @@ function LiveUnitBoardEditor({ liveUnitBoard, onUpdate }: Props) {
             flexFlow: 'column',
           }}
         >
-          {colInLiveUnitBoard.map((hasLiveUnit, rowIdx) => (
+          {colInLiveUnitMap.map((hasLiveUnit, rowIdx) => (
             <div
               key={generateKeyFromIndex(rowIdx)}
               style={{
@@ -40,8 +40,8 @@ function LiveUnitBoardEditor({ liveUnitBoard, onUpdate }: Props) {
                 highlighted={false}
                 borderColor="#2C2C2C"
                 hasTopBorder
-                hasRightBorder={colIdx === liveUnitBoard.length - 1}
-                hasBottomBorder={rowIdx === colInLiveUnitBoard.length - 1}
+                hasRightBorder={colIdx === liveUnitMap.length - 1}
+                hasBottomBorder={rowIdx === colInLiveUnitMap.length - 1}
                 hasLeftBorder
                 onClick={() => handleSquareClick(colIdx, rowIdx)}
               />
@@ -53,5 +53,5 @@ function LiveUnitBoardEditor({ liveUnitBoard, onUpdate }: Props) {
   );
 }
 
-export default LiveUnitBoardEditor;
+export default LiveUnitMapEditor;
 export { dataTestids };

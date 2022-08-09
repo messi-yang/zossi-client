@@ -1,11 +1,11 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import LiveUnitBoardIcon from '.';
+import LiveUnitMapIcon from '.';
 
 export default {
-  title: 'Icon/LiveUnitBoardIcon',
-  component: LiveUnitBoardIcon,
+  title: 'Icon/LiveUnitMapIcon',
+  component: LiveUnitMapIcon,
   argTypes: {
     highlighted: {
       control: 'boolean',
@@ -14,10 +14,10 @@ export default {
       control: 'boolean',
     },
   },
-} as ComponentMeta<typeof LiveUnitBoardIcon>;
+} as ComponentMeta<typeof LiveUnitMapIcon>;
 
-const Template: ComponentStory<typeof LiveUnitBoardIcon> = function Template(args) {
-  return <LiveUnitBoardIcon {...args} />;
+const Template: ComponentStory<typeof LiveUnitMapIcon> = function Template(args) {
+  return <LiveUnitMapIcon {...args} />;
 };
 
 export const Primary = Template.bind({});
