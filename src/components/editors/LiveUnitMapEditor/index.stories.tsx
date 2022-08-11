@@ -20,7 +20,7 @@ const Template: ComponentStory<typeof LiveUnitMapEditor> = function Template(arg
   };
 
   return (
-    <div style={{ display: 'inline-flex' }}>
+    <div style={{ width: '120px', height: '120px', display: 'inline-flex' }}>
       <LiveUnitMapEditor {...args} onUpdate={handleLiveUnitMapUpdate} />
     </div>
   );

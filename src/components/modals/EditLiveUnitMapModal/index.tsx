@@ -75,7 +75,9 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
             <IconButton icon="cross" onClick={onCancel} />
           </div>
           <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
-          <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
+          <section
+            style={{ marginTop: '36px', width: '230px', height: '230px', display: 'flex', justifyContent: 'center' }}
+          >
             <LiveUnitMapEditor liveUnitMap={tmpUnitMap} onUpdate={handleLiveUnitMapUpdate} />
           </section>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>

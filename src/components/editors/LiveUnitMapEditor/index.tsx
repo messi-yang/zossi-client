@@ -18,12 +18,13 @@ function LiveUnitMapEditor({ liveUnitMap, onUpdate }: Props) {
   };
 
   return (
-    <div data-testid={dataTestids.root} style={{ display: 'flex', flexFlow: 'row' }}>
+    <div data-testid={dataTestids.root} style={{ width: '100%', height: '100%', display: 'flex', flexFlow: 'row' }}>
       {liveUnitMap.map((colInLiveUnitMap, colIdx) => (
         <div
           key={generateKeyFromIndex(colIdx)}
           style={{
             display: 'flex',
+            flexGrow: '1',
             flexFlow: 'column',
           }}
         >
@@ -31,8 +32,7 @@ function LiveUnitMapEditor({ liveUnitMap, onUpdate }: Props) {
             <div
               key={generateKeyFromIndex(rowIdx)}
               style={{
-                width: '40px',
-                height: '40px',
+                flexGrow: '1',
               }}
             >
               <UnitSquare
