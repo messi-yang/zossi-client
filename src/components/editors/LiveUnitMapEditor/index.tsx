@@ -12,7 +12,7 @@ type Props = {
 function LiveUnitMapEditor({ liveUnitMap, onUpdate }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
     const newLiveUnitMap = cloneDeep(liveUnitMap);
-    newLiveUnitMap[colIdx][rowIdx] = !newLiveUnitMap[colIdx][rowIdx];
+    newLiveUnitMap[colIdx][rowIdx] = newLiveUnitMap[colIdx][rowIdx] === true ? null : true;
 
     onUpdate(newLiveUnitMap);
   };

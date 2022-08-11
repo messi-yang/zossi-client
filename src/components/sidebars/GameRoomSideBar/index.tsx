@@ -18,7 +18,7 @@ function convertRelativeCoordinatesToLiveUnitMap(
   range(0, boardWidth).forEach((colIdx) => {
     liveUnitMap.push([]);
     range(0, boardHeight).forEach(() => {
-      liveUnitMap[colIdx].push(false);
+      liveUnitMap[colIdx].push(null);
     });
   });
 

@@ -1,2 +1,2 @@
-type LiveUnitMapEntity = boolean[][];
+type LiveUnitMapEntity = (true | null)[][];
 export default LiveUnitMapEntity;
