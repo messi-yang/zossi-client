@@ -3,9 +3,7 @@ const path = require('path');
 const isJsFile = (filename) => /(.ts|.tsx|.js|.jsx)$/.test(filename);
 
 const buildPrettierCommand = (filenames) => {
-  return `prettier --check ${filenames
-    .map((f) => path.relative(process.cwd(), f))
-    .join(' ')}`;
+  return `prettier --check ${filenames.map((f) => path.relative(process.cwd(), f)).join(' ')}`;
 };
 
 const buildEslintCommand = (filenames) => {
@@ -13,9 +11,11 @@ const buildEslintCommand = (filenames) => {
   if (jsFiles.length === 0) {
     return 'echo "No js files"';
   }
-  return `yarn lint --file ${jsFiles
-    .map((f) => path.relative(process.cwd(), f))
-    .join(' --file ')}`;
+  return `yarn lint --file ${jsFiles.map((f) => path.relative(process.cwd(), f)).join(' --file ')}`;
+};
+
+const buildTypeCommand = () => {
+  return 'yarn type';
 };
 
 const buildJestCommand = (filenames) => {
@@ -23,11 +23,9 @@ const buildJestCommand = (filenames) => {
   if (jsFiles.length === 0) {
     return 'echo "No js files"';
   }
-  return `yarn test --findRelatedTests --bail ${jsFiles
-    .map((f) => path.relative(process.cwd(), f))
-    .join(' ')}`;
+  return `yarn test --findRelatedTests --bail ${jsFiles.map((f) => path.relative(process.cwd(), f)).join(' ')}`;
 };
 
 module.exports = {
-  './src/**/*': [buildPrettierCommand, buildEslintCommand, buildJestCommand],
+  './src/**/*': [buildPrettierCommand, buildEslintCommand, buildTypeCommand, buildJestCommand],
 };
