@@ -6,10 +6,10 @@ import dataTestids from './dataTestids';
 
 type Props = {
   liveUnitMap: LiveUnitMapEntity;
-  onUpdate: (liveUnitMap: LiveUnitMapEntity) => any;
+  onUpdate?: (liveUnitMap: LiveUnitMapEntity) => any;
 };
 
-function LiveUnitMapEditor({ liveUnitMap, onUpdate }: Props) {
+function LiveUnitMapEditor({ liveUnitMap, onUpdate = () => {} }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
     const newLiveUnitMap = cloneDeep(liveUnitMap);
     newLiveUnitMap[colIdx][rowIdx] = newLiveUnitMap[colIdx][rowIdx] === true ? null : true;

@@ -3,16 +3,20 @@ import Background from './subComponents/Background';
 import Modal from './subComponents/Modal';
 
 type BaseModalProps = {
+  width: string;
+  height: string;
   opened: boolean;
   children: JSX.Element;
   onBackgroundClick?: () => void;
 };
 
-export default function BaseModal({ opened, children, onBackgroundClick }: BaseModalProps) {
+export default function BaseModal({ opened, width, height, children, onBackgroundClick }: BaseModalProps) {
   return (
     <Wrapper visible={opened}>
       <Background onClick={onBackgroundClick} />
-      <Modal>{children}</Modal>
+      <Modal width={width} height={height}>
+        {children}
+      </Modal>
     </Wrapper>
   );
 }

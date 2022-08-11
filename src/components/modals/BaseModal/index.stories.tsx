@@ -18,7 +18,7 @@ const Template: ComponentStory<typeof BaseModal> = function Template(args) {
 
   return (
     <BaseModal {...args} onBackgroundClick={handleBackgroundClick}>
-      <div style={{ width: '80vw', height: '80vh', background: 'white' }}>
+      <div style={{ width: '100%', height: '100%', background: 'white' }}>
         This white section is your fully customisable section.
       </div>
     </BaseModal>
@@ -26,4 +26,7 @@ const Template: ComponentStory<typeof BaseModal> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-Primary.args = {};
+Primary.args = {
+  width: '100%',
+  height: '100%',
+};

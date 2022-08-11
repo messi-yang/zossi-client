@@ -1,18 +1,17 @@
 type ModalProps = {
+  width: string;
+  height: string;
   children: JSX.Element;
 };
 
-export default function Modal({ children }: ModalProps) {
+export default function Modal({ width, height, children }: ModalProps) {
   return (
     <section
       style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        maxWidth: '100%',
-        maxHeight: '100%',
+        width,
+        height,
         backgroundColor: '#121212',
+        overflow: 'hidden',
       }}
     >
       {children}

@@ -5,6 +5,7 @@ import LiveUnitMapEditor from '@/components/editors/LiveUnitMapEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
 import type { LiveUnitMapEntity } from '@/entities/';
+import liveUnitMapTemplates from './liveUnitMapTemplates';
 
 type CornerSquareProps = {
   top?: number;
@@ -54,7 +55,7 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
   };
 
   return (
-    <BaseModal opened={opened}>
+    <BaseModal width="560px" height="auto" opened={opened}>
       <section style={{ position: 'relative' }}>
         <CornerSquare top={-8} left={-8} />
         <CornerSquare top={-8} right={-8} />
@@ -66,6 +67,7 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
             padding: '30px 24px 39px',
             display: 'flex',
             flexFlow: 'column',
+            alignItems: 'center',
             backgroundColor: '#121212',
           }}
         >
@@ -79,6 +81,25 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
             style={{ marginTop: '36px', width: '230px', height: '230px', display: 'flex', justifyContent: 'center' }}
           >
             <LiveUnitMapEditor liveUnitMap={tmpUnitMap} onUpdate={handleLiveUnitMapUpdate} />
+          </section>
+          <section style={{ marginTop: '36px', width: '100%', overflow: 'auto' }}>
+            <section style={{ display: 'flex' }}>
+              {liveUnitMapTemplates.map((liveUnitMapTemplate, liveUnitMapTemplateIdx) => (
+                <section
+                  style={{
+                    marginLeft: liveUnitMapTemplateIdx !== 0 ? '10px' : undefined,
+                    flexBasis: '70px',
+                    height: '70px',
+                    flexShrink: '0',
+                  }}
+                >
+                  <LiveUnitMapEditor
+                    liveUnitMap={liveUnitMapTemplate}
+                    onUpdate={() => handleLiveUnitMapUpdate(liveUnitMapTemplate)}
+                  />
+                </section>
+              ))}
+            </section>
           </section>
           <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
             <Button text="Ok" onClick={handleOkClick} />

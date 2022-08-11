@@ -14,7 +14,11 @@ export default function Wrapper({ visible, children }: WrapperProps) {
         left: '0',
         width: '100vw',
         height: '100vh',
-        display: visible ? 'block' : 'none',
+        display: visible ? 'flex' : 'none',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '24px',
+        overflow: 'hidden',
       }}
     >
       {children}
