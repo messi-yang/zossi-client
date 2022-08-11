@@ -14,11 +14,10 @@ type Props = {
   squareSize: number;
   onUnitSquareClick: (colIdx: number, rowIdx: number) => void;
   onUnitSquareMouseEnter: (colIdx: number, rowIdx: number) => void;
-  onUnitSquareMouseLeave: (colIdx: number, rowIdx: number) => void;
 };
 
 function UnitSquares(
-  { width, height, squareSize, onUnitSquareClick, onUnitSquareMouseEnter, onUnitSquareMouseLeave }: Props,
+  { width, height, squareSize, onUnitSquareClick, onUnitSquareMouseEnter }: Props,
   ref: ForwardedRef<Commands>
 ) {
   const [unitSquareCompRefs, setUnitSquareCompRefs] = useState<RefObject<CommandableUnitSquareCommands>[][]>([]);
@@ -72,7 +71,6 @@ function UnitSquares(
                   hasLeftBorder
                   onClick={onUnitSquareClick}
                   onMouseEnter={onUnitSquareMouseEnter}
-                  onMouseLeave={onUnitSquareMouseLeave}
                 />
               )}
             </section>

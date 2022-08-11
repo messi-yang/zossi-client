@@ -24,6 +24,7 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
     { width: rootElemRect.width, height: rootElemRect.height },
     squareSize
   );
+  const [hoveredIndexes, setHoveredIndexes] = useState<[colIdx: number, rowIdx: number] | null>(null);
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
@@ -51,18 +52,20 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
       );
     });
   };
-  const handleUnitSquareMouseEnter = useCallback(
-    (colIdx: number, rowIdx: number) => {
-      setHighlightsOfRelativeCoordinates(colIdx, rowIdx, true);
-    },
-    [relativeCoordinates]
-  );
-  const handleUnitSquareMouseLeave = useCallback(
-    (colIdx: number, rowIdx: number) => {
-      setHighlightsOfRelativeCoordinates(colIdx, rowIdx, false);
-    },
-    [relativeCoordinates]
-  );
+  const handleUnitSquareMouseEnter = useCallback((colIdx: number, rowIdx: number) => {
+    setHoveredIndexes([colIdx, rowIdx]);
+  }, []);
+
+  useEffect(() => {
+    if (hoveredIndexes) {
+      setHighlightsOfRelativeCoordinates(hoveredIndexes[0], hoveredIndexes[1], true);
+    }
+    return () => {
+      if (hoveredIndexes) {
+        setHighlightsOfRelativeCoordinates(hoveredIndexes[0], hoveredIndexes[1], false);
+      }
+    };
+  }, [hoveredIndexes, relativeCoordinates]);
 
   useEffect(() => {
     units.forEach((colOfUnits, colIdx) => {
@@ -107,7 +110,6 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
         squareSize={squareSize}
         onUnitSquareClick={handleUnitSquareClick}
         onUnitSquareMouseEnter={handleUnitSquareMouseEnter}
-        onUnitSquareMouseLeave={handleUnitSquareMouseLeave}
       />
     </section>
   );
