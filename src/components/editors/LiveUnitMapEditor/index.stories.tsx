@@ -30,7 +30,7 @@ export const Primary = Template.bind({});
 Primary.args = {
   liveUnitMap: [
     [true, true, true],
-    [true, false, true],
+    [true, null, true],
     [true, true, true],
   ],
 };

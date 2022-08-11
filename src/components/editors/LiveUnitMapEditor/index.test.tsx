@@ -6,7 +6,7 @@ function renderLiveUnitMapEditor(): RenderResult {
     <LiveUnitMapEditor
       liveUnitMap={[
         [true, true, true],
-        [true, false, true],
+        [true, null, true],
         [true, true, true],
       ]}
       onUpdate={() => {}}
