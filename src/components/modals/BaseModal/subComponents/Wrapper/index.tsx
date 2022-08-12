@@ -14,6 +14,8 @@ export default function Wrapper({ visible, children }: WrapperProps) {
         left: '0',
         width: '100vw',
         height: '100vh',
+        maxWidth: '100%',
+        maxHeight: '100%',
         display: visible ? 'flex' : 'none',
         justifyContent: 'center',
         alignItems: 'center',

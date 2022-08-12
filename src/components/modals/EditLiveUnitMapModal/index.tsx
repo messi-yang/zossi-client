@@ -26,7 +26,6 @@ function CornerSquare({ top, right, bottom, left }: CornerSquareProps) {
         width: '56px',
         height: '56px',
         backgroundColor: 'white',
-        zIndex: -1,
       }}
     />
   );
@@ -56,7 +55,7 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
 
   return (
     <BaseModal width="560px" height="auto" opened={opened}>
-      <section style={{ position: 'relative' }}>
+      <section style={{ position: 'relative', padding: '8px' }}>
         <CornerSquare top={-8} left={-8} />
         <CornerSquare top={-8} right={-8} />
         <CornerSquare bottom={-8} left={-8} />
