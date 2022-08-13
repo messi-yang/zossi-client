@@ -82,7 +82,7 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
           >
             <LiveUnitMapEditor liveUnitMap={tmpUnitMap} onUpdate={handleLiveUnitMapUpdate} />
           </section>
-          <section style={{ marginTop: '36px', width: '100%', overflow: 'auto' }}>
+          <section style={{ marginTop: '24px', width: '100%', overflow: 'auto' }}>
             <section style={{ display: 'flex' }}>
               {liveUnitMapTemplates.map((liveUnitMapTemplate, liveUnitMapTemplateIdx) => (
                 <section
