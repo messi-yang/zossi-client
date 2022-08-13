@@ -1,4 +1,5 @@
 import { ReactFragment } from 'react';
+import useWindowSize from '@/hooks/useWindowSize';
 
 type WrapperProps = {
   visible: boolean;
@@ -6,14 +7,15 @@ type WrapperProps = {
 };
 
 export default function Wrapper({ visible, children }: WrapperProps) {
+  const windowSize = useWindowSize();
   return (
     <section
       style={{
         position: 'fixed',
         top: '0',
         left: '0',
-        width: '100vw',
-        height: '100vh',
+        width: windowSize.width,
+        height: windowSize.height,
         maxWidth: '100%',
         maxHeight: '100%',
         display: visible ? 'flex' : 'none',
