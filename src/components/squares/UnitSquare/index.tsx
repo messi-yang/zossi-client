@@ -25,7 +25,6 @@ type Props = {
   hasLeftBorder: boolean;
   onClick?: () => void;
   onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
 };
 
 function UnitSquare({
@@ -38,7 +37,6 @@ function UnitSquare({
   hasLeftBorder,
   onClick = () => {},
   onMouseEnter = () => {},
-  onMouseLeave = () => {},
 }: Props) {
   const backgroundColor = generateBackgroundColor(highlighted, alive);
 
@@ -63,7 +61,6 @@ function UnitSquare({
       onClick={onClick}
       onKeyDown={onClick}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
     />
   );
 }
