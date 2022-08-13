@@ -25,6 +25,7 @@ const Landing: NextPage = function Landing() {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#1E1E1E',
+        overflow: 'hidden',
       }}
     >
       <BigLogo />
