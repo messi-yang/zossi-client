@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import BaseModal from '@/components/modals/BaseModal';
 import LiveUnitMapEditor from '@/components/editors/LiveUnitMapEditor';
 import Button from '@/components/buttons/Button';
@@ -87,9 +88,10 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
                 <section
                   style={{
                     marginLeft: liveUnitMapTemplateIdx !== 0 ? '10px' : undefined,
-                    flexBasis: '70px',
-                    height: '70px',
+                    flexBasis: '74px',
+                    height: '74px',
                     flexShrink: '0',
+                    border: isEqual(tmpUnitMap, liveUnitMapTemplate) ? '4px solid #01D6C9' : '4px solid black',
                   }}
                 >
                   <LiveUnitMapEditor
