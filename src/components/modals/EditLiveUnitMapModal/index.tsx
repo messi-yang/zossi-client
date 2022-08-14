@@ -6,6 +6,7 @@ import LiveUnitMapEditor from '@/components/editors/LiveUnitMapEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
 import type { LiveUnitMapEntity } from '@/entities/';
+import { generateKeyFromIndex } from '@/utils/component';
 import liveUnitMapTemplates from './liveUnitMapTemplates';
 
 type CornerSquareProps = {
@@ -86,6 +87,7 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
             <section style={{ display: 'flex' }}>
               {liveUnitMapTemplates.map((liveUnitMapTemplate, liveUnitMapTemplateIdx) => (
                 <section
+                  key={generateKeyFromIndex(liveUnitMapTemplateIdx)}
                   style={{
                     marginLeft: liveUnitMapTemplateIdx !== 0 ? '10px' : undefined,
                     flexBasis: '74px',
