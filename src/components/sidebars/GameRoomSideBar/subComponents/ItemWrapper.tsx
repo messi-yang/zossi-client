@@ -2,15 +2,13 @@ import { useRef } from 'react';
 import useHover from '@/hooks/useHover';
 
 type Props = {
-  width: string;
-  height: string;
   hovered: boolean;
   children: JSX.Element;
   onHoverStateChange?: (hovered: boolean) => any;
   onClick?: () => any;
 };
 
-function ItemWrapper({ width, height, hovered, children, onHoverStateChange = () => {}, onClick = () => {} }: Props) {
+function ItemWrapper({ hovered, children, onHoverStateChange = () => {}, onClick = () => {} }: Props) {
   const nodeRef = useRef<HTMLButtonElement>(null);
   useHover(nodeRef, onHoverStateChange);
 
@@ -18,8 +16,9 @@ function ItemWrapper({ width, height, hovered, children, onHoverStateChange = ()
     <section
       ref={nodeRef}
       style={{
-        width,
-        height,
+        width: '100%',
+        height: '100%',
+        flexBasis: '70px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

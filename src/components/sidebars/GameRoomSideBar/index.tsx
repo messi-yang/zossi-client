@@ -58,12 +58,13 @@ type HoverStateFlags = {
 };
 
 type Props = {
+  align: 'row' | 'column';
   onLogoClick: () => void;
   relativeCoordinates: CoordinateEntity[];
   onRelativeCoordinatesUpdate: (coordinates: CoordinateEntity[]) => void;
 };
 
-function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinatesUpdate }: Props) {
+function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCoordinatesUpdate }: Props) {
   const [coordinateOffset] = useState<CoordinateEntity>({ x: -2, y: -2 });
   const [boardWidth, boardHeight] = [5, 5];
   const [hoverStateFlags, setHoverStateFlags] = useState<HoverStateFlags>({
@@ -104,19 +105,17 @@ function GameRoomSideBar({ onLogoClick, relativeCoordinates, onRelativeCoordinat
     <section
       data-testid={dataTestids.root}
       style={{
-        width: '90px',
-        height: '100%',
+        width: align === 'column' ? '90px' : '100%',
+        height: align === 'row' ? '90px' : '100%',
         display: 'flex',
-        flexFlow: 'column',
+        flexFlow: align,
         backgroundColor: '#1C1C1C',
       }}
     >
-      <ItemWrapper hovered={false} width="100%" height="70px" onClick={onLogoClick}>
+      <ItemWrapper hovered={false} onClick={onLogoClick}>
         <SmallLogo />
       </ItemWrapper>
       <ItemWrapper
-        width="100%"
-        height="70px"
         hovered={hoverStateFlags.unitMap}
         onHoverStateChange={(hovered) => {
           handleHoverStateChange('unitMap', hovered);

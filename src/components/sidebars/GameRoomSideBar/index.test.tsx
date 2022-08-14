@@ -3,7 +3,12 @@ import GameRoomSideBar, { dataTestids } from '.';
 
 function renderGameRoomSideBar(): RenderResult {
   return render(
-    <GameRoomSideBar relativeCoordinates={[]} onRelativeCoordinatesUpdate={() => {}} onLogoClick={() => {}} />
+    <GameRoomSideBar
+      align="column"
+      relativeCoordinates={[]}
+      onRelativeCoordinatesUpdate={() => {}}
+      onLogoClick={() => {}}
+    />
   );
 }
 

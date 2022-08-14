@@ -19,4 +19,6 @@ const Template: ComponentStory<typeof IconButton> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-Primary.args = {};
+Primary.args = {
+  icon: 'cross',
+};

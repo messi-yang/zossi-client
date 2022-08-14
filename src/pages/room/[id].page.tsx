@@ -41,36 +41,73 @@ const Room: NextPage = function Room() {
   const handleLogoClick = () => {
     router.push('/');
   };
+  const pageLayoutFlow: 'row' | 'column' = windowSize.width > 700 ? 'row' : 'column';
 
   return (
-    <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex' }}>
-      <section style={{ flexShrink: '0', height: '100%' }}>
-        <GameRoomSideBar
-          onLogoClick={handleLogoClick}
-          relativeCoordinates={relativeCoordinates}
-          onRelativeCoordinatesUpdate={updateRelativeCoordinates}
-        />
-      </section>
-      <section
-        style={{
-          flexGrow: '1',
-          overflow: 'hidden',
-          backgroundColor: gameBackgroundColor,
-        }}
-      >
-        <section style={{ width: '100%', height: '100%' }}>
-          {status === 'ONLINE' && (
-            <GameMap
-              area={area}
-              units={units}
+    <>
+      {pageLayoutFlow === 'row' && (
+        <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex' }}>
+          <section style={{ flexShrink: '0' }}>
+            <GameRoomSideBar
+              align="column"
+              onLogoClick={handleLogoClick}
               relativeCoordinates={relativeCoordinates}
-              onUnitsRevive={reviveUnits}
-              onAreaUpdate={watchArea}
+              onRelativeCoordinatesUpdate={updateRelativeCoordinates}
             />
-          )}
-        </section>
-      </section>
-    </main>
+          </section>
+          <section
+            style={{
+              flexGrow: '1',
+              overflow: 'hidden',
+              backgroundColor: gameBackgroundColor,
+            }}
+          >
+            <section style={{ width: '100%', height: '100%' }}>
+              {status === 'ONLINE' && (
+                <GameMap
+                  area={area}
+                  units={units}
+                  relativeCoordinates={relativeCoordinates}
+                  onUnitsRevive={reviveUnits}
+                  onAreaUpdate={watchArea}
+                />
+              )}
+            </section>
+          </section>
+        </main>
+      )}
+      {pageLayoutFlow === 'column' && (
+        <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex', flexFlow: 'column' }}>
+          <section
+            style={{
+              flexGrow: '1',
+              overflow: 'hidden',
+              backgroundColor: gameBackgroundColor,
+            }}
+          >
+            <section style={{ width: '100%', height: '100%' }}>
+              {status === 'ONLINE' && (
+                <GameMap
+                  area={area}
+                  units={units}
+                  relativeCoordinates={relativeCoordinates}
+                  onUnitsRevive={reviveUnits}
+                  onAreaUpdate={watchArea}
+                />
+              )}
+            </section>
+          </section>
+          <section style={{ flexShrink: '0' }}>
+            <GameRoomSideBar
+              align="row"
+              onLogoClick={handleLogoClick}
+              relativeCoordinates={relativeCoordinates}
+              onRelativeCoordinatesUpdate={updateRelativeCoordinates}
+            />
+          </section>
+        </main>
+      )}
+    </>
   );
 };
 
