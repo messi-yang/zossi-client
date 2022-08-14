@@ -8,6 +8,7 @@ import IconButton from '@/components/buttons/IconButton';
 import type { LiveUnitMapEntity } from '@/entities/';
 import { generateKeyFromIndex } from '@/utils/component';
 import liveUnitMapTemplates from './liveUnitMapTemplates';
+import dataTestids from './dataTestids';
 
 type CornerSquareProps = {
   top?: number;
@@ -40,7 +41,7 @@ type Props = {
   onCancel?: () => void;
 };
 
-export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () => {}, onCancel = () => {} }: Props) {
+function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () => {}, onCancel = () => {} }: Props) {
   const [tmpUnitMap, setTmpUnitMap] = useState<LiveUnitMapEntity>(cloneDeep(liveUnitMap));
   useEffect(() => {
     setTmpUnitMap(cloneDeep(liveUnitMap));
@@ -57,7 +58,7 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
 
   return (
     <BaseModal width="560px" height="auto" opened={opened}>
-      <section style={{ position: 'relative', padding: '8px' }}>
+      <section data-testid={dataTestids.root} style={{ position: 'relative', padding: '8px' }}>
         <CornerSquare top={-8} left={-8} />
         <CornerSquare top={-8} right={-8} />
         <CornerSquare bottom={-8} left={-8} />
@@ -112,3 +113,6 @@ export default function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () =>
     </BaseModal>
   );
 }
+
+export default LiveUnitMapModal;
+export { dataTestids };
