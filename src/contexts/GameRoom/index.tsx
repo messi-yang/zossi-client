@@ -25,7 +25,7 @@ function convertAreaUpdatedEventPayloadToUnitEntities({ area, units }: AreaUpdat
 
 type GameRoomContextValue = {
   status: Status;
-  mapSize: MapSizeDTO;
+  mapSize: MapSizeDTO | null;
   area: AreaDTO;
   units: UnitEntity[][];
   relativeCoordinates: CoordinateEntity[];
@@ -39,10 +39,7 @@ type GameRoomContextValue = {
 function createInitialGameRoomContextValue(): GameRoomContextValue {
   return {
     status: 'OFFLINE',
-    mapSize: {
-      width: 0,
-      height: 0,
-    },
+    mapSize: null,
     area: {
       from: { x: 0, y: 0 },
       to: { x: 0, y: 0 },
@@ -70,7 +67,7 @@ type Props = {
 export function Provider({ children }: Props) {
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
   const socketRef = useRef<WebSocket | null>(null);
-  const [mapSize, setMapSize] = useState<MapSizeDTO>(initialGameRoomContextValue.mapSize);
+  const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
   const [area, setArea] = useState<AreaDTO>(initialGameRoomContextValue.area);
   const [units, setUnits] = useState<UnitEntity[][]>(initialGameRoomContextValue.units);
   const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateEntity[]>(
@@ -156,8 +153,10 @@ export function Provider({ children }: Props) {
         if (event.type === EventTypeEnum.CoordinatesUpdated) {
           const newUnits = cloneDeep(units);
           event.payload.coordinates.forEach((coord, idx) => {
-            newUnits[coord.x][coord.y] = {
-              ...newUnits[coord.x][coord.y],
+            const colIdx = coord.x - area.from.x;
+            const rowIdx = coord.y - area.from.y;
+            newUnits[colIdx][rowIdx] = {
+              ...newUnits[colIdx][rowIdx],
               ...event.payload.units[idx],
             };
           });

@@ -8,13 +8,16 @@ import { gameBackgroundColor } from '@/styles/colors';
 import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
+import { AreaEntity } from '@/entities';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
+import GameMiniMap from '@/components/maps/GameMiniMap';
 
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
   const router = useRouter();
   const {
+    mapSize,
     area,
     units,
     status,
@@ -41,11 +44,15 @@ const Room: NextPage = function Room() {
   const handleLogoClick = () => {
     router.push('/');
   };
-  const pageLayoutFlow: 'row' | 'column' = windowSize.width > 700 ? 'row' : 'column';
+  const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
+
+  const handleAreaUpdate = (newArea: AreaEntity) => {
+    watchArea(newArea);
+  };
 
   return (
     <>
-      {pageLayoutFlow === 'row' && (
+      {deviceSize === 'large' && (
         <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex' }}>
           <section style={{ flexShrink: '0' }}>
             <GameRoomSideBar
@@ -57,6 +64,7 @@ const Room: NextPage = function Room() {
           </section>
           <section
             style={{
+              position: 'relative',
               flexGrow: '1',
               overflow: 'hidden',
               backgroundColor: gameBackgroundColor,
@@ -73,10 +81,13 @@ const Room: NextPage = function Room() {
                 />
               )}
             </section>
+            <section style={{ position: 'absolute', right: '20px', bottom: '20px', display: 'inline-flex' }}>
+              {mapSize && <GameMiniMap mapSize={mapSize} area={area} onAreaUpdate={handleAreaUpdate} />}
+            </section>
           </section>
         </main>
       )}
-      {pageLayoutFlow === 'column' && (
+      {deviceSize === 'small' && (
         <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex', flexFlow: 'column' }}>
           <section
             style={{

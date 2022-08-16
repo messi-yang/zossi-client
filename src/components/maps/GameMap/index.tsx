@@ -20,7 +20,7 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
   const [squareSize] = useState<number>(25);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
-  const [mapWidth, mapHeight] = useResolutionCalculator(
+  const [areaWidth, areaHeight] = useResolutionCalculator(
     { width: rootElemRect.width, height: rootElemRect.height },
     squareSize
   );
@@ -82,14 +82,14 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
   useEffect(() => {
     const newFrom = cloneDeep(area.from);
     const newTo = {
-      x: newFrom.x + mapWidth - 1,
-      y: newFrom.x + mapHeight - 1,
+      x: newFrom.x + areaWidth - 1,
+      y: newFrom.x + areaHeight - 1,
     };
     onAreaUpdate({
       from: newFrom,
       to: newTo,
     });
-  }, [mapWidth, mapHeight]);
+  }, [areaWidth, areaHeight]);
 
   return (
     <section
@@ -105,8 +105,8 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
     >
       <UnitSquares
         ref={unitSquaresCompRef}
-        width={mapWidth}
-        height={mapHeight}
+        width={areaWidth}
+        height={areaHeight}
         squareSize={squareSize}
         onUnitSquareClick={handleUnitSquareClick}
         onUnitSquareMouseEnter={handleUnitSquareMouseEnter}

@@ -23,6 +23,7 @@ export default function Wrapper({ visible, children }: WrapperProps) {
         alignItems: 'center',
         padding: '24px',
         overflow: 'hidden',
+        zIndex: '10',
       }}
     >
       {children}
