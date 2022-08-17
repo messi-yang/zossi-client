@@ -27,6 +27,7 @@ type GameRoomContextValue = {
   status: Status;
   mapSize: MapSizeDTO | null;
   area: AreaDTO | null;
+  targetArea: AreaDTO | null;
   units: UnitEntity[][];
   relativeCoordinates: CoordinateEntity[];
   joinGame: () => void;
@@ -41,6 +42,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     status: 'OFFLINE',
     mapSize: null,
     area: null,
+    targetArea: null,
     units: [],
     relativeCoordinates: [
       { x: 0, y: -1 },
@@ -66,6 +68,7 @@ export function Provider({ children }: Props) {
   const socketRef = useRef<WebSocket | null>(null);
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
   const [area, setArea] = useState<AreaDTO | null>(initialGameRoomContextValue.area);
+  const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
   const [units, setUnits] = useState<UnitEntity[][]>(initialGameRoomContextValue.units);
   const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateEntity[]>(
     initialGameRoomContextValue.relativeCoordinates
@@ -99,8 +102,8 @@ export function Provider({ children }: Props) {
     [socketRef.current, status]
   );
 
-  const watchArea = useCallback(
-    (targetArea: AreaDTO) => {
+  const sendWatchAreaAction = useCallback(
+    (newArea: AreaDTO) => {
       if (!socketRef.current) {
         return;
       }
@@ -111,14 +114,21 @@ export function Provider({ children }: Props) {
       const action: WatchAreaAction = {
         type: ActionTypeEnum.WatchArea,
         payload: {
-          area: targetArea,
+          area: newArea,
         },
       };
       socketRef.current.send(JSON.stringify(action));
     },
     [socketRef.current, status]
   );
-  const watchAreaDebouncer = useCallback(debounce(watchArea, 200), [watchArea]);
+  const sendWatchAreaActionDebouncer = useCallback(debounce(sendWatchAreaAction, 200), [sendWatchAreaAction]);
+  const watchArea = useCallback(
+    (newArea: AreaDTO) => {
+      setTargetArea(newArea);
+      sendWatchAreaActionDebouncer(newArea);
+    },
+    [sendWatchAreaActionDebouncer]
+  );
 
   const leaveGame = useCallback(() => {
     if (!socketRef.current) {
@@ -183,15 +193,28 @@ export function Provider({ children }: Props) {
       status,
       mapSize,
       area,
+      targetArea,
       units,
       relativeCoordinates,
       joinGame,
       updateRelativeCoordinates,
       reviveUnits,
-      watchArea: watchAreaDebouncer,
+      watchArea,
       leaveGame,
     }),
-    [status, units, joinGame, watchArea, leaveGame]
+    [
+      status,
+      mapSize,
+      area,
+      targetArea,
+      units,
+      relativeCoordinates,
+      joinGame,
+      updateRelativeCoordinates,
+      reviveUnits,
+      watchArea,
+      leaveGame,
+    ]
   );
 
   return <GameRoomContext.Provider value={gameRoomContextValue}>{children}</GameRoomContext.Provider>;

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { memo, useRef, useState, useCallback, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { gameBackgroundColor } from '@/styles/colors';
 import useDomRect from '@/hooks/useDomRect';
@@ -126,5 +126,5 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
   );
 }
 
-export default GameMap;
+export default memo(GameMap);
 export { dataTestids };
