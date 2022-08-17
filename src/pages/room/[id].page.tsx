@@ -18,7 +18,7 @@ const Room: NextPage = function Room() {
   const router = useRouter();
   const {
     mapSize,
-    area,
+    displayedArea,
     targetArea,
     units,
     status,
@@ -74,7 +74,7 @@ const Room: NextPage = function Room() {
             <section style={{ width: '100%', height: '100%' }}>
               {status === 'ONLINE' && (
                 <GameMap
-                  area={area}
+                  displayedArea={displayedArea}
                   units={units}
                   relativeCoordinates={relativeCoordinates}
                   onUnitsRevive={reviveUnits}
@@ -102,7 +102,7 @@ const Room: NextPage = function Room() {
             <section style={{ width: '100%', height: '100%' }}>
               {status === 'ONLINE' && (
                 <GameMap
-                  area={area}
+                  displayedArea={displayedArea}
                   units={units}
                   relativeCoordinates={relativeCoordinates}
                   onUnitsRevive={reviveUnits}

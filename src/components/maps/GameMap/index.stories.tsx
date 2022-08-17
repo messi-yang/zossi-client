@@ -14,12 +14,12 @@ export default {
 
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const { area, units } = args;
+  const { displayedArea, units } = args;
   const handleUnitsRevive = (coordinates: CoordinateEntity[]) => {
-    if (!area) {
+    if (!displayedArea) {
       return;
     }
-    const coordinateOffset = area.from;
+    const coordinateOffset = displayedArea.from;
     const newUnits = cloneDeep(units);
     coordinates.forEach(({ x, y }) => {
       const adjustedX = x - coordinateOffset.x;
@@ -63,7 +63,7 @@ function generateMockupUnits(area: AreaEntity) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  area: {
+  displayedArea: {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
   },

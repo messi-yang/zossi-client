@@ -26,7 +26,7 @@ function convertAreaUpdatedEventPayloadToUnitEntities({ area, units }: AreaUpdat
 type GameRoomContextValue = {
   status: Status;
   mapSize: MapSizeDTO | null;
-  area: AreaDTO | null;
+  displayedArea: AreaDTO | null;
   targetArea: AreaDTO | null;
   units: UnitEntity[][];
   relativeCoordinates: CoordinateEntity[];
@@ -41,7 +41,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
   return {
     status: 'OFFLINE',
     mapSize: null,
-    area: null,
+    displayedArea: null,
     targetArea: null,
     units: [],
     relativeCoordinates: [
@@ -67,7 +67,7 @@ export function Provider({ children }: Props) {
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
   const socketRef = useRef<WebSocket | null>(null);
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
-  const [area, setArea] = useState<AreaDTO | null>(initialGameRoomContextValue.area);
+  const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
   const [units, setUnits] = useState<UnitEntity[][]>(initialGameRoomContextValue.units);
   const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateEntity[]>(
@@ -162,13 +162,13 @@ export function Provider({ children }: Props) {
       socketRef.current.onmessage = (evt: any) => {
         const event: Event = JSON.parse(evt.data);
         if (event.type === EventTypeEnum.CoordinatesUpdated) {
-          if (!area) {
+          if (!displayedArea) {
             return;
           }
           const newUnits = cloneDeep(units);
           event.payload.coordinates.forEach((coord, idx) => {
-            const colIdx = coord.x - area.from.x;
-            const rowIdx = coord.y - area.from.y;
+            const colIdx = coord.x - displayedArea.from.x;
+            const rowIdx = coord.y - displayedArea.from.y;
             newUnits[colIdx][rowIdx] = {
               ...newUnits[colIdx][rowIdx],
               ...event.payload.units[idx],
@@ -177,8 +177,8 @@ export function Provider({ children }: Props) {
 
           setUnits(newUnits);
         } else if (event.type === EventTypeEnum.AreaUpdated) {
-          if (!isEqual(area, event.payload.area)) {
-            setArea(event.payload.area);
+          if (!isEqual(displayedArea, event.payload.area)) {
+            setDisplayedArea(event.payload.area);
           }
           setUnits(convertAreaUpdatedEventPayloadToUnitEntities(event.payload));
         } else if (event.type === EventTypeEnum.InformationUpdated) {
@@ -192,7 +192,7 @@ export function Provider({ children }: Props) {
     () => ({
       status,
       mapSize,
-      area,
+      displayedArea,
       targetArea,
       units,
       relativeCoordinates,
@@ -205,7 +205,7 @@ export function Provider({ children }: Props) {
     [
       status,
       mapSize,
-      area,
+      displayedArea,
       targetArea,
       units,
       relativeCoordinates,

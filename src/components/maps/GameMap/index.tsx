@@ -9,18 +9,18 @@ import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
 
 type Props = {
-  area: AreaEntity | null;
+  displayedArea: AreaEntity | null;
   units: UnitEntity[][];
   relativeCoordinates: CoordinateEntity[];
   onUnitsRevive: (coordinates: CoordinateEntity[]) => any;
   onAreaUpdate: (newArea: AreaEntity) => any;
 };
 
-function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({ displayedArea, units, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
   const [squareSize] = useState<number>(25);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
-  const [areaWidth, areaHeight] = useResolutionCalculator(
+  const [desiredAreaWidth, desiredAreaHeight] = useResolutionCalculator(
     { width: rootElemRect.width, height: rootElemRect.height },
     squareSize
   );
@@ -28,17 +28,17 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!area) {
+      if (!displayedArea) {
         return;
       }
       const finalCoordinates = relativeCoordinates.map((relativeCoordinate) => ({
-        x: area.from.x + colIdx + relativeCoordinate.x,
-        y: area.from.y + rowIdx + relativeCoordinate.y,
+        x: displayedArea.from.x + colIdx + relativeCoordinate.x,
+        y: displayedArea.from.y + rowIdx + relativeCoordinate.y,
       }));
 
       onUnitsRevive(finalCoordinates);
     },
-    [relativeCoordinates, onUnitsRevive, area]
+    [relativeCoordinates, onUnitsRevive, displayedArea]
   );
 
   const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
@@ -82,10 +82,10 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
     });
   }, [units, unitSquaresCompRef.current]);
 
-  const generateNewAreaAndTriggerUpdate = (from: CoordinateEntity, width: number, height: number) => {
+  const generateNewAreaAndTriggerUpdate = (from: CoordinateEntity, areaWidth: number, areaHeight: number) => {
     const to = {
-      x: from.x + width - 1,
-      y: from.y + height - 1,
+      x: from.x + areaWidth - 1,
+      y: from.y + areaHeight - 1,
     };
 
     onAreaUpdate({
@@ -95,12 +95,12 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
   };
 
   useEffect(() => {
-    if (area === null) {
-      generateNewAreaAndTriggerUpdate({ x: 0, y: 0 }, areaWidth, areaHeight);
+    if (displayedArea === null) {
+      generateNewAreaAndTriggerUpdate({ x: 0, y: 0 }, desiredAreaWidth, desiredAreaHeight);
     } else {
-      generateNewAreaAndTriggerUpdate(cloneDeep(area.from), areaWidth, areaHeight);
+      generateNewAreaAndTriggerUpdate(cloneDeep(displayedArea.from), desiredAreaWidth, desiredAreaHeight);
     }
-  }, [area === null, areaWidth, areaHeight]);
+  }, [displayedArea === null, desiredAreaWidth, desiredAreaHeight]);
 
   return (
     <section
@@ -116,8 +116,8 @@ function GameMap({ area, units, relativeCoordinates, onUnitsRevive, onAreaUpdate
     >
       <UnitSquares
         ref={unitSquaresCompRef}
-        width={areaWidth}
-        height={areaHeight}
+        width={desiredAreaWidth}
+        height={desiredAreaHeight}
         squareSize={squareSize}
         onUnitSquareClick={handleUnitSquareClick}
         onUnitSquareMouseEnter={handleUnitSquareMouseEnter}

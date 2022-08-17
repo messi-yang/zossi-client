@@ -5,7 +5,7 @@ import type { UnitEntity } from '@/entities';
 function renderGameMap(units: UnitEntity[][]): RenderResult {
   return render(
     <GameMap
-      area={{
+      displayedArea={{
         from: { x: 0, y: 0 },
         to: { x: units.length - 1, y: units.length - 1 },
       }}
