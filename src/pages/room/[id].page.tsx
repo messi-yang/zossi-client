@@ -75,6 +75,7 @@ const Room: NextPage = function Room() {
               {status === 'ONLINE' && (
                 <GameMap
                   displayedArea={displayedArea}
+                  targetArea={targetArea}
                   units={units}
                   relativeCoordinates={relativeCoordinates}
                   onUnitsRevive={reviveUnits}
@@ -103,6 +104,7 @@ const Room: NextPage = function Room() {
               {status === 'ONLINE' && (
                 <GameMap
                   displayedArea={displayedArea}
+                  targetArea={targetArea}
                   units={units}
                   relativeCoordinates={relativeCoordinates}
                   onUnitsRevive={reviveUnits}

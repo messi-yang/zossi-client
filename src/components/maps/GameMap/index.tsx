@@ -8,15 +8,30 @@ import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
 
+function calculateDisplayedAreaOffset(
+  displayedArea: AreaEntity | null,
+  targetArea: AreaEntity | null,
+  squareSize: number
+): [offsetX: number, offsetY: number] {
+  if (!displayedArea || !targetArea) {
+    return [0, 0];
+  }
+  return [
+    (displayedArea.from.x - targetArea.from.x) * squareSize,
+    (displayedArea.from.y - targetArea.from.y) * squareSize,
+  ];
+}
+
 type Props = {
   displayedArea: AreaEntity | null;
+  targetArea: AreaEntity | null;
   units: UnitEntity[][];
   relativeCoordinates: CoordinateEntity[];
   onUnitsRevive: (coordinates: CoordinateEntity[]) => any;
   onAreaUpdate: (newArea: AreaEntity) => any;
 };
 
-function GameMap({ displayedArea, units, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({ displayedArea, targetArea, units, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
   const [squareSize] = useState<number>(25);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -25,6 +40,13 @@ function GameMap({ displayedArea, units, relativeCoordinates, onUnitsRevive, onA
     squareSize
   );
   const [hoveredIndexes, setHoveredIndexes] = useState<[colIdx: number, rowIdx: number] | null>(null);
+  const [displayedAreaOffsets, setDisplayedAreaOffsets] = useState<[offsetX: number, offsetY: number]>(
+    calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize)
+  );
+
+  useEffect(() => {
+    setDisplayedAreaOffsets(calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize));
+  }, [displayedArea, targetArea]);
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
@@ -109,19 +131,29 @@ function GameMap({ displayedArea, units, relativeCoordinates, onUnitsRevive, onA
       style={{
         width: '100%',
         height: '100%',
-        display: 'flex',
         overflow: 'hidden',
         backgroundColor: gameBackgroundColor,
       }}
     >
-      <UnitSquares
-        ref={unitSquaresCompRef}
-        width={desiredAreaWidth}
-        height={desiredAreaHeight}
-        squareSize={squareSize}
-        onUnitSquareClick={handleUnitSquareClick}
-        onUnitSquareMouseEnter={handleUnitSquareMouseEnter}
-      />
+      <section
+        style={{
+          position: 'relative',
+          left: displayedAreaOffsets[0],
+          top: displayedAreaOffsets[1],
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+        }}
+      >
+        <UnitSquares
+          ref={unitSquaresCompRef}
+          width={desiredAreaWidth}
+          height={desiredAreaHeight}
+          squareSize={squareSize}
+          onUnitSquareClick={handleUnitSquareClick}
+          onUnitSquareMouseEnter={handleUnitSquareMouseEnter}
+        />
+      </section>
     </section>
   );
 }

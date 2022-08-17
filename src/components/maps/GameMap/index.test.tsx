@@ -9,6 +9,10 @@ function renderGameMap(units: UnitEntity[][]): RenderResult {
         from: { x: 0, y: 0 },
         to: { x: units.length - 1, y: units.length - 1 },
       }}
+      targetArea={{
+        from: { x: 0, y: 0 },
+        to: { x: units.length - 1, y: units.length - 1 },
+      }}
       units={units}
       relativeCoordinates={[]}
       onUnitsRevive={() => {}}
