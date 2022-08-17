@@ -1,4 +1,4 @@
-import { MouseEvent, useRef, useState, useEffect } from 'react';
+import { MouseEvent, useRef, useState, useEffect, TouchEvent } from 'react';
 import { MapSizeEntity, AreaEntity } from '@/entities';
 import dataTestids from './dataTestids';
 
@@ -59,7 +59,14 @@ function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
   };
 
   const handleMouseDown = (event: MouseEvent<HTMLElement>) => {
+    console.log('Hello');
     const newArea = calculateNewAreaFromMouseEvent(event.clientX, event.clientY);
+    onAreaUpdate(newArea);
+    setIsMovable(true);
+  };
+
+  const handleTouchStart = (event: TouchEvent<HTMLElement>) => {
+    const newArea = calculateNewAreaFromMouseEvent(event.touches[0].clientX, event.touches[0].clientY);
     onAreaUpdate(newArea);
     setIsMovable(true);
   };
@@ -68,11 +75,16 @@ function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
     const handleMouseUp = () => {
       setIsMovable(false);
     };
+    const handleTouchEnd = () => {
+      setIsMovable(false);
+    };
 
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
   }, []);
 
@@ -84,11 +96,20 @@ function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
       const newArea = calculateNewAreaFromMouseEvent(event.clientX, event.clientY);
       onAreaUpdate(newArea);
     };
+    const handleTouchMove = (event: globalThis.TouchEvent) => {
+      if (!isMovable) {
+        return;
+      }
+      const newArea = calculateNewAreaFromMouseEvent(event.touches[0].clientX, event.touches[0].clientY);
+      onAreaUpdate(newArea);
+    };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
     };
   }, [isMovable]);
 
@@ -113,6 +134,7 @@ function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
         role="button"
         tabIndex={0}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
       >
         <section
           style={{
