@@ -59,7 +59,6 @@ function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
   };
 
   const handleMouseDown = (event: MouseEvent<HTMLElement>) => {
-    console.log('Hello');
     const newArea = calculateNewAreaFromMouseEvent(event.clientX, event.clientY);
     onAreaUpdate(newArea);
     setIsMovable(true);
