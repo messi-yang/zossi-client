@@ -45,6 +45,7 @@ function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
     } else if (standarizedY < 0) {
       adjustedY = 0;
     }
+
     return {
       from: {
         x: adjustedX,

@@ -26,7 +26,7 @@ function convertAreaUpdatedEventPayloadToUnitEntities({ area, units }: AreaUpdat
 type GameRoomContextValue = {
   status: Status;
   mapSize: MapSizeDTO | null;
-  area: AreaDTO;
+  area: AreaDTO | null;
   units: UnitEntity[][];
   relativeCoordinates: CoordinateEntity[];
   joinGame: () => void;
@@ -40,10 +40,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
   return {
     status: 'OFFLINE',
     mapSize: null,
-    area: {
-      from: { x: 0, y: 0 },
-      to: { x: 0, y: 0 },
-    },
+    area: null,
     units: [],
     relativeCoordinates: [
       { x: 0, y: -1 },
@@ -68,7 +65,7 @@ export function Provider({ children }: Props) {
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
   const socketRef = useRef<WebSocket | null>(null);
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
-  const [area, setArea] = useState<AreaDTO>(initialGameRoomContextValue.area);
+  const [area, setArea] = useState<AreaDTO | null>(initialGameRoomContextValue.area);
   const [units, setUnits] = useState<UnitEntity[][]>(initialGameRoomContextValue.units);
   const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateEntity[]>(
     initialGameRoomContextValue.relativeCoordinates
@@ -133,6 +130,10 @@ export function Provider({ children }: Props) {
   }, [socketRef.current]);
 
   const joinGame = useCallback(() => {
+    if (status === 'ONLINE') {
+      return;
+    }
+
     const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
     const newSocket = new WebSocket(`${schema}://${process.env.API_DOMAIN}/ws/game/`);
     socketRef.current = newSocket;
@@ -151,6 +152,9 @@ export function Provider({ children }: Props) {
       socketRef.current.onmessage = (evt: any) => {
         const event: Event = JSON.parse(evt.data);
         if (event.type === EventTypeEnum.CoordinatesUpdated) {
+          if (!area) {
+            return;
+          }
           const newUnits = cloneDeep(units);
           event.payload.coordinates.forEach((coord, idx) => {
             const colIdx = coord.x - area.from.x;

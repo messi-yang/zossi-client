@@ -82,7 +82,7 @@ const Room: NextPage = function Room() {
               )}
             </section>
             <section style={{ position: 'absolute', right: '20px', bottom: '20px', display: 'inline-flex' }}>
-              {mapSize && <GameMiniMap mapSize={mapSize} area={area} onAreaUpdate={handleAreaUpdate} />}
+              {mapSize && area && <GameMiniMap mapSize={mapSize} area={area} onAreaUpdate={handleAreaUpdate} />}
             </section>
           </section>
         </main>

@@ -16,6 +16,9 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { area, units } = args;
   const handleUnitsRevive = (coordinates: CoordinateEntity[]) => {
+    if (!area) {
+      return;
+    }
     const coordinateOffset = area.from;
     const newUnits = cloneDeep(units);
     coordinates.forEach(({ x, y }) => {
