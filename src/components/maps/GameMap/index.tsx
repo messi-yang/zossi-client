@@ -92,18 +92,6 @@ function GameMap({ displayedArea, targetArea, units, relativeCoordinates, onUnit
     };
   }, [hoveredIndexes, relativeCoordinates]);
 
-  useEffect(() => {
-    units.forEach((colOfUnits, colIdx) => {
-      colOfUnits.forEach((unit, rowIdx) => {
-        if (!unitSquaresCompRef.current) {
-          return;
-        }
-
-        unitSquaresCompRef.current.setUnitAlive(colIdx, rowIdx, unit.alive);
-      });
-    });
-  }, [units, unitSquaresCompRef.current]);
-
   const generateNewAreaAndTriggerUpdate = (from: CoordinateEntity, areaWidth: number, areaHeight: number) => {
     const to = {
       x: from.x + areaWidth - 1,
@@ -149,6 +137,7 @@ function GameMap({ displayedArea, targetArea, units, relativeCoordinates, onUnit
           ref={unitSquaresCompRef}
           width={desiredAreaWidth}
           height={desiredAreaHeight}
+          units={units}
           squareSize={squareSize}
           onUnitSquareClick={handleUnitSquareClick}
           onUnitSquareMouseEnter={handleUnitSquareMouseEnter}

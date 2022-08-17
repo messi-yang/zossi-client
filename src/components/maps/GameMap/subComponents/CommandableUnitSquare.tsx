@@ -3,12 +3,12 @@ import UnitSquare from '@/components/squares/UnitSquare';
 
 type Commands = {
   setHighlighted: (highlighted: boolean) => void;
-  setAlive: (alive: boolean) => void;
 };
 
 type Props = {
   colIdx: number;
   rowIdx: number;
+  alive: boolean;
   hasTopBorder: boolean;
   hasRightBorder: boolean;
   hasBottomBorder: boolean;
@@ -18,18 +18,14 @@ type Props = {
 };
 
 function CommandableUnitSquare(
-  { colIdx, rowIdx, hasTopBorder, hasRightBorder, hasBottomBorder, hasLeftBorder, onClick, onMouseEnter }: Props,
+  { colIdx, rowIdx, alive, hasTopBorder, hasRightBorder, hasBottomBorder, hasLeftBorder, onClick, onMouseEnter }: Props,
   ref: ForwardedRef<Commands>
 ) {
   const [highlighted, setHighlighted] = useState<boolean>(false);
-  const [alive, setAlive] = useState<boolean>(false);
 
   useImperativeHandle(ref, () => ({
     setHighlighted: (newHighlighted: boolean) => {
       setHighlighted(newHighlighted);
-    },
-    setAlive: (newAlive: boolean) => {
-      setAlive(newAlive);
     },
   }));
 

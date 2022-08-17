@@ -1,23 +1,24 @@
 import { memo, useState, useEffect, RefObject, createRef, forwardRef, ForwardedRef, useImperativeHandle } from 'react';
-import range from 'lodash/range';
+import type { UnitEntity } from '@/entities';
+import { generateKeyFromIndex } from '@/utils/component';
 import CommandableUnitSquare from './CommandableUnitSquare';
 import type { Commands as CommandableUnitSquareCommands } from './CommandableUnitSquare';
 
 export type Commands = {
   setUnitHighlighted: (colIdx: number, rowIdx: number, highlighted: boolean) => void;
-  setUnitAlive: (colIdx: number, rowIdx: number, alive: boolean) => void;
 };
 
 type Props = {
   width: number;
   height: number;
+  units: UnitEntity[][];
   squareSize: number;
   onUnitSquareClick: (colIdx: number, rowIdx: number) => void;
   onUnitSquareMouseEnter: (colIdx: number, rowIdx: number) => void;
 };
 
 function UnitSquares(
-  { width, height, squareSize, onUnitSquareClick, onUnitSquareMouseEnter }: Props,
+  { width, height, units, squareSize, onUnitSquareClick, onUnitSquareMouseEnter }: Props,
   ref: ForwardedRef<Commands>
 ) {
   const [unitSquareCompRefs, setUnitSquareCompRefs] = useState<RefObject<CommandableUnitSquareCommands>[][]>([]);
@@ -39,18 +40,15 @@ function UnitSquares(
       setUnitHighlighted: (colIdx: number, rowIdx: number, highlighted: boolean) => {
         unitSquareCompRefs?.[colIdx]?.[rowIdx]?.current?.setHighlighted(highlighted);
       },
-      setUnitAlive: (colIdx: number, rowIdx: number, alive: boolean) => {
-        unitSquareCompRefs?.[colIdx]?.[rowIdx]?.current?.setAlive(alive);
-      },
     }),
     [unitSquareCompRefs]
   );
 
   return (
     <>
-      {range(0, width).map((colIdx) => (
+      {units.map((unitsCol, colIdx) => (
         <section
-          key={colIdx}
+          key={generateKeyFromIndex(colIdx)}
           style={{
             flexBasis: squareSize,
             flexShrink: '0',
@@ -58,21 +56,20 @@ function UnitSquares(
             flexFlow: 'column',
           }}
         >
-          {range(0, height).map((rowIdx) => (
-            <section key={rowIdx} style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}>
-              {unitSquareCompRefs?.[colIdx]?.[rowIdx] && (
-                <CommandableUnitSquare
-                  ref={unitSquareCompRefs[colIdx][rowIdx]}
-                  rowIdx={rowIdx}
-                  colIdx={colIdx}
-                  hasTopBorder
-                  hasRightBorder={colIdx === width - 1}
-                  hasBottomBorder={rowIdx === height - 1}
-                  hasLeftBorder
-                  onClick={onUnitSquareClick}
-                  onMouseEnter={onUnitSquareMouseEnter}
-                />
-              )}
+          {unitsCol.map((unit, rowIdx) => (
+            <section key={generateKeyFromIndex(rowIdx)} style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}>
+              <CommandableUnitSquare
+                ref={unitSquareCompRefs?.[colIdx]?.[rowIdx]}
+                rowIdx={rowIdx}
+                colIdx={colIdx}
+                alive={unit.alive}
+                hasTopBorder
+                hasRightBorder={colIdx === width - 1}
+                hasBottomBorder={rowIdx === height - 1}
+                hasLeftBorder
+                onClick={onUnitSquareClick}
+                onMouseEnter={onUnitSquareMouseEnter}
+              />
             </section>
           ))}
         </section>
