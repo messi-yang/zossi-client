@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import type { AreaDTO, MapSizeDTO } from '@/dto';
 import type { UnitVO, CoordinateVO } from '@/valueObjects';
+import { ungzipBlob } from '@/utils/compression';
 import { EventTypeEnum } from './eventTypes';
 import type { Event, AreaUpdatedEventPayload } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -160,8 +161,11 @@ export function Provider({ children }: Props) {
 
   useEffect(() => {
     if (socketRef.current) {
-      socketRef.current.onmessage = (evt: any) => {
-        const event: Event = JSON.parse(evt.data);
+      socketRef.current.onmessage = async (evt: any) => {
+        const decompressedBlob = await ungzipBlob(evt.data as Blob);
+        const eventJsonString = await decompressedBlob.text();
+
+        const event: Event = JSON.parse(eventJsonString);
         if (event.type === EventTypeEnum.CoordinatesUpdated) {
           if (!displayedArea) {
             return;
