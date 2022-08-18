@@ -8,7 +8,7 @@ import { gameBackgroundColor } from '@/styles/colors';
 import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
-import { AreaEntity } from '@/entities';
+import { AreaVO } from '@/valueObjects';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 import GameMiniMap from '@/components/maps/GameMiniMap';
@@ -47,7 +47,7 @@ const Room: NextPage = function Room() {
   };
   const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
 
-  const handleAreaUpdate = (newArea: AreaEntity) => {
+  const handleAreaUpdate = (newArea: AreaVO) => {
     watchArea(newArea);
   };
 

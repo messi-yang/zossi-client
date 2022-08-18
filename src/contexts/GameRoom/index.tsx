@@ -3,7 +3,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import type { AreaDTO, MapSizeDTO } from '@/dto';
-import type { UnitEntity, CoordinateEntity } from '@/entities';
+import type { UnitVO, CoordinateVO } from '@/valueObjects';
 import { EventTypeEnum } from './eventTypes';
 import type { Event, AreaUpdatedEventPayload } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -11,7 +11,7 @@ import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
 
-function convertAreaUpdatedEventPayloadToUnitEntities({ area, units }: AreaUpdatedEventPayload): UnitEntity[][] {
+function convertAreaUpdatedEventPayloadToUnitEntities({ area, units }: AreaUpdatedEventPayload): UnitVO[][] {
   const { from } = area;
   return units.map((rowUnits, x) =>
     rowUnits.map((unit, y) => ({
@@ -28,11 +28,11 @@ type GameRoomContextValue = {
   mapSize: MapSizeDTO | null;
   displayedArea: AreaDTO | null;
   targetArea: AreaDTO | null;
-  units: UnitEntity[][];
-  relativeCoordinates: CoordinateEntity[];
+  units: UnitVO[][];
+  relativeCoordinates: CoordinateVO[];
   joinGame: () => void;
-  updateRelativeCoordinates: (coordinates: CoordinateEntity[]) => void;
-  reviveUnits: (coordinates: CoordinateEntity[]) => void;
+  updateRelativeCoordinates: (coordinates: CoordinateVO[]) => void;
+  reviveUnits: (coordinates: CoordinateVO[]) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
 };
@@ -69,21 +69,21 @@ export function Provider({ children }: Props) {
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
   const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
-  const [units, setUnits] = useState<UnitEntity[][]>(initialGameRoomContextValue.units);
-  const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateEntity[]>(
+  const [units, setUnits] = useState<UnitVO[][]>(initialGameRoomContextValue.units);
+  const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateVO[]>(
     initialGameRoomContextValue.relativeCoordinates
   );
   const [status, setStatus] = useState<Status>(initialGameRoomContextValue.status);
 
   const updateRelativeCoordinates = useCallback(
-    (coordinates: CoordinateEntity[]) => {
+    (coordinates: CoordinateVO[]) => {
       setRelativeCoordinates(coordinates);
     },
     [socketRef.current, status]
   );
 
   const reviveUnits = useCallback(
-    (coordinates: CoordinateEntity[]) => {
+    (coordinates: CoordinateVO[]) => {
       if (!socketRef.current) {
         return;
       }

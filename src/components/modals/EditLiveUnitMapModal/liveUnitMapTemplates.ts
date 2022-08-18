@@ -1,6 +1,6 @@
-import { LiveUnitMapEntity } from '@/entities';
+import { LiveUnitMapVO } from '@/valueObjects';
 
-const liveUnitMapTemplates: LiveUnitMapEntity[] = [
+const liveUnitMapTemplates: LiveUnitMapVO[] = [
   [
     [null, null, null, null, null],
     [null, null, null, null, null],

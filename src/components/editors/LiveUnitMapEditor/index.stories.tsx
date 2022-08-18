@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 
 import LiveUnitMapEditor from '.';
-import type { LiveUnitMapEntity } from '@/entities/';
+import type { LiveUnitMapVO } from '@/valueObjects';
 
 export default {
   title: 'Editor/LiveUnitMapEditor',
@@ -13,7 +13,7 @@ export default {
 
 const Template: ComponentStory<typeof LiveUnitMapEditor> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleLiveUnitMapUpdate = (liveUnitMap: LiveUnitMapEntity) => {
+  const handleLiveUnitMapUpdate = (liveUnitMap: LiveUnitMapVO) => {
     updateArgs({
       liveUnitMap,
     });

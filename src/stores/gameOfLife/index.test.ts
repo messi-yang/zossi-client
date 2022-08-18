@@ -1,11 +1,11 @@
 import { makeStore } from '@/stores';
-import type { UnitEntity } from '@/entities';
+import type { UnitVO } from '@/valueObjects';
 import { setUnits } from './index';
 
 describe('GameOfLife Reducer', () => {
   describe('setUnits', () => {
     it('Should correctly set units', () => {
-      const units: UnitEntity[][] = [
+      const units: UnitVO[][] = [
         [
           {
             coordinate: { x: 0, y: 0 },

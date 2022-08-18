@@ -3,14 +3,14 @@ import cloneDeep from 'lodash/cloneDeep';
 import { gameBackgroundColor } from '@/styles/colors';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import type { AreaEntity, UnitEntity, CoordinateEntity } from '@/entities';
+import type { AreaVO, UnitVO, CoordinateVO } from '@/valueObjects';
 import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
 
 function calculateDisplayedAreaOffset(
-  displayedArea: AreaEntity | null,
-  targetArea: AreaEntity | null,
+  displayedArea: AreaVO | null,
+  targetArea: AreaVO | null,
   squareSize: number
 ): [offsetX: number, offsetY: number] {
   if (!displayedArea || !targetArea) {
@@ -23,12 +23,12 @@ function calculateDisplayedAreaOffset(
 }
 
 type Props = {
-  displayedArea: AreaEntity | null;
-  targetArea: AreaEntity | null;
-  units: UnitEntity[][];
-  relativeCoordinates: CoordinateEntity[];
-  onUnitsRevive: (coordinates: CoordinateEntity[]) => any;
-  onAreaUpdate: (newArea: AreaEntity) => any;
+  displayedArea: AreaVO | null;
+  targetArea: AreaVO | null;
+  units: UnitVO[][];
+  relativeCoordinates: CoordinateVO[];
+  onUnitsRevive: (coordinates: CoordinateVO[]) => any;
+  onAreaUpdate: (newArea: AreaVO) => any;
 };
 
 function GameMap({ displayedArea, targetArea, units, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
@@ -92,7 +92,7 @@ function GameMap({ displayedArea, targetArea, units, relativeCoordinates, onUnit
     };
   }, [hoveredIndexes, relativeCoordinates]);
 
-  const generateNewAreaAndTriggerUpdate = (from: CoordinateEntity, areaWidth: number, areaHeight: number) => {
+  const generateNewAreaAndTriggerUpdate = (from: CoordinateVO, areaWidth: number, areaHeight: number) => {
     const to = {
       x: from.x + areaWidth - 1,
       y: from.y + areaHeight - 1,

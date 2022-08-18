@@ -2,7 +2,7 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import type { UnitEntity, CoordinateEntity, AreaEntity } from '@/entities';
+import type { UnitVO, CoordinateVO, AreaVO } from '@/valueObjects';
 
 import GameMap from '.';
 
@@ -15,7 +15,7 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { displayedArea, units } = args;
-  const handleUnitsRevive = (coordinates: CoordinateEntity[]) => {
+  const handleUnitsRevive = (coordinates: CoordinateVO[]) => {
     if (!displayedArea) {
       return;
     }
@@ -44,8 +44,8 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
   );
 };
 
-function generateMockupUnits(area: AreaEntity) {
-  const units: UnitEntity[][] = [];
+function generateMockupUnits(area: AreaVO) {
+  const units: UnitVO[][] = [];
   const width = area.to.x - area.from.x + 1;
   const height = area.to.y - area.from.y + 1;
   for (let x = 0; x < width; x += 1) {

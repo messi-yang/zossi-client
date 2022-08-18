@@ -1,12 +1,12 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { generateKeyFromIndex } from '@/utils/component/';
 import UnitSquare from '@/components/squares/UnitSquare';
-import type { LiveUnitMapEntity } from '@/entities/';
+import type { LiveUnitMapVO } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
-  liveUnitMap: LiveUnitMapEntity;
-  onUpdate?: (liveUnitMap: LiveUnitMapEntity) => any;
+  liveUnitMap: LiveUnitMapVO;
+  onUpdate?: (liveUnitMap: LiveUnitMapVO) => any;
 };
 
 function LiveUnitMapEditor({ liveUnitMap, onUpdate = () => {} }: Props) {

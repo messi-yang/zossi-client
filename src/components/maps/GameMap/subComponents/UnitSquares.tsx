@@ -1,5 +1,5 @@
 import { memo, useState, useEffect, RefObject, createRef, forwardRef, ForwardedRef, useImperativeHandle } from 'react';
-import type { UnitEntity } from '@/entities';
+import type { UnitVO } from '@/valueObjects';
 import { generateKeyFromIndex } from '@/utils/component';
 import CommandableUnitSquare from './CommandableUnitSquare';
 import type { Commands as CommandableUnitSquareCommands } from './CommandableUnitSquare';
@@ -11,7 +11,7 @@ export type Commands = {
 type Props = {
   width: number;
   height: number;
-  units: UnitEntity[][];
+  units: UnitVO[][];
   squareSize: number;
   onUnitSquareClick: (colIdx: number, rowIdx: number) => void;
   onUnitSquareMouseEnter: (colIdx: number, rowIdx: number) => void;

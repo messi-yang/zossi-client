@@ -1,8 +1,8 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
-import type { UnitEntity } from '@/entities';
+import type { UnitVO } from '@/valueObjects';
 
-function renderGameMap(units: UnitEntity[][]): RenderResult {
+function renderGameMap(units: UnitVO[][]): RenderResult {
   return render(
     <GameMap
       displayedArea={null}

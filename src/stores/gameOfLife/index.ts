@@ -1,12 +1,12 @@
 import { HYDRATE } from 'next-redux-wrapper';
 import { createSlice } from '@reduxjs/toolkit';
-import type { UnitEntity } from '@/entities';
+import type { UnitVO } from '@/valueObjects';
 
 export type Status = 'OFFLINE' | 'ONLINE';
 
 export type State = {
   status: Status;
-  units: UnitEntity[][];
+  units: UnitVO[][];
 };
 
 const slice = createSlice({
@@ -16,7 +16,7 @@ const slice = createSlice({
     units: [],
   } as State,
   reducers: {
-    setUnits(state: State, action: { type: string; payload: UnitEntity[][] }) {
+    setUnits(state: State, action: { type: string; payload: UnitVO[][] }) {
       state.units = action.payload;
     },
     setStatus(state: State, action: { type: string; payload: Status }) {

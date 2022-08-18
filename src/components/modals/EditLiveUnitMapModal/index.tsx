@@ -5,7 +5,7 @@ import BaseModal from '@/components/modals/BaseModal';
 import LiveUnitMapEditor from '@/components/editors/LiveUnitMapEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
-import type { LiveUnitMapEntity } from '@/entities/';
+import type { LiveUnitMapVO } from '@/valueObjects';
 import { generateKeyFromIndex } from '@/utils/component';
 import liveUnitMapTemplates from './liveUnitMapTemplates';
 import dataTestids from './dataTestids';
@@ -36,13 +36,13 @@ function CornerSquare({ top, right, bottom, left }: CornerSquareProps) {
 
 type Props = {
   opened: boolean;
-  liveUnitMap: LiveUnitMapEntity;
-  onUpdate?: (liveUnitMap: LiveUnitMapEntity) => any;
+  liveUnitMap: LiveUnitMapVO;
+  onUpdate?: (liveUnitMap: LiveUnitMapVO) => any;
   onCancel?: () => void;
 };
 
 function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () => {}, onCancel = () => {} }: Props) {
-  const [tmpUnitMap, setTmpUnitMap] = useState<LiveUnitMapEntity>(cloneDeep(liveUnitMap));
+  const [tmpUnitMap, setTmpUnitMap] = useState<LiveUnitMapVO>(cloneDeep(liveUnitMap));
   useEffect(() => {
     setTmpUnitMap(cloneDeep(liveUnitMap));
   }, [liveUnitMap]);
@@ -52,7 +52,7 @@ function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () => {}, onCancel =
   const handleOkClick = () => {
     onUpdate(tmpUnitMap);
   };
-  const handleLiveUnitMapUpdate = (newLiveUnitMap: LiveUnitMapEntity) => {
+  const handleLiveUnitMapUpdate = (newLiveUnitMap: LiveUnitMapVO) => {
     setTmpUnitMap(newLiveUnitMap);
   };
 

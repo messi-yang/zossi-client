@@ -1,11 +1,11 @@
 import { MouseEvent, useRef, useState, useEffect, TouchEvent } from 'react';
-import { MapSizeEntity, AreaEntity } from '@/entities';
+import { MapSizeVO, AreaVO } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
-  mapSize: MapSizeEntity;
-  area: AreaEntity;
-  onAreaUpdate: (newArea: AreaEntity) => void;
+  mapSize: MapSizeVO;
+  area: AreaVO;
+  onAreaUpdate: (newArea: AreaVO) => void;
 };
 
 function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
@@ -24,7 +24,7 @@ function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
   const areaElemWidth = elemWidth * mapZoomedAreaWidthRatio;
   const areaElemHeight = elemHeight * mapZoomedAreaHeightRatio;
 
-  const calculateNewAreaFromMouseEvent = (clientX: number, clientY: number): AreaEntity => {
+  const calculateNewAreaFromMouseEvent = (clientX: number, clientY: number): AreaVO => {
     if (!mapContentElemRef.current) {
       return area;
     }

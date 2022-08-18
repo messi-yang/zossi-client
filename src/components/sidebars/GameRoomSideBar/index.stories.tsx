@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { CoordinateEntity } from '@/entities';
+import { CoordinateVO } from '@/valueObjects';
 
 import GameRoomSideBar from '.';
 
@@ -14,7 +14,7 @@ export default {
 const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args) {
   const { align } = args;
   const [, updateArgs] = useArgs();
-  const handleRelativeCoordinatesUpdate = (relativeCoordinates: CoordinateEntity[]) => {
+  const handleRelativeCoordinatesUpdate = (relativeCoordinates: CoordinateVO[]) => {
     updateArgs({ relativeCoordinates });
   };
 

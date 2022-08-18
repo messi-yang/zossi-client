@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react';
 import range from 'lodash/range';
-import { CoordinateEntity } from '@/entities';
+import { CoordinateVO } from '@/valueObjects';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import LiveUnitMapIcon from '@/components/icons/LiveUnitMapIcon/';
 import EditLiveUnitMapModal from '@/components/modals/EditLiveUnitMapModal/';
-import type { LiveUnitMapEntity } from '@/entities/';
+import type { LiveUnitMapVO } from '@/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
 function convertRelativeCoordinatesToLiveUnitMap(
-  relativeCoordinates: CoordinateEntity[],
-  coordinateOffset: CoordinateEntity,
+  relativeCoordinates: CoordinateVO[],
+  coordinateOffset: CoordinateVO,
   boardWidth: number,
   boardHeight: number
-): LiveUnitMapEntity {
-  const liveUnitMap: LiveUnitMapEntity = [];
+): LiveUnitMapVO {
+  const liveUnitMap: LiveUnitMapVO = [];
   range(0, boardWidth).forEach((colIdx) => {
     liveUnitMap.push([]);
     range(0, boardHeight).forEach(() => {
@@ -34,10 +34,10 @@ function convertRelativeCoordinatesToLiveUnitMap(
 }
 
 function convertLiveUnitMapToRelativeCoordinates(
-  liveUnitMap: LiveUnitMapEntity,
-  coordinateOffset: CoordinateEntity
-): CoordinateEntity[] {
-  const coordinates: CoordinateEntity[] = [];
+  liveUnitMap: LiveUnitMapVO,
+  coordinateOffset: CoordinateVO
+): CoordinateVO[] {
+  const coordinates: CoordinateVO[] = [];
 
   liveUnitMap.forEach((colInLiveUnitMap, colIdx) => {
     colInLiveUnitMap.forEach((isTruthy, rowIdx) => {
@@ -60,12 +60,12 @@ type HoverStateFlags = {
 type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
-  relativeCoordinates: CoordinateEntity[];
-  onRelativeCoordinatesUpdate: (coordinates: CoordinateEntity[]) => void;
+  relativeCoordinates: CoordinateVO[];
+  onRelativeCoordinatesUpdate: (coordinates: CoordinateVO[]) => void;
 };
 
 function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCoordinatesUpdate }: Props) {
-  const [coordinateOffset] = useState<CoordinateEntity>({ x: -2, y: -2 });
+  const [coordinateOffset] = useState<CoordinateVO>({ x: -2, y: -2 });
   const [boardWidth, boardHeight] = [5, 5];
   const [hoverStateFlags, setHoverStateFlags] = useState<HoverStateFlags>({
     unitMap: false,
@@ -84,13 +84,13 @@ function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCo
   const handleLiveUnitMapCancel = () => {
     setIsLiveUnitMapVisible(false);
   };
-  const handleLiveUnitMapUpdate = (liveUnitMap: LiveUnitMapEntity) => {
+  const handleLiveUnitMapUpdate = (liveUnitMap: LiveUnitMapVO) => {
     const newRelativeCoordinates = convertLiveUnitMapToRelativeCoordinates(liveUnitMap, coordinateOffset);
     onRelativeCoordinatesUpdate(newRelativeCoordinates);
     setIsLiveUnitMapVisible(false);
   };
 
-  const [liveUnitMap, setLiveUnitMap] = useState<LiveUnitMapEntity>([]);
+  const [liveUnitMap, setLiveUnitMap] = useState<LiveUnitMapVO>([]);
   useEffect(() => {
     const newLiveUnitMap = convertRelativeCoordinatesToLiveUnitMap(
       relativeCoordinates,
