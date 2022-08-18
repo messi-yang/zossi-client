@@ -53,10 +53,6 @@ function convertLiveUnitMapToRelativeCoordinates(
   return coordinates;
 }
 
-type HoverStateFlags = {
-  unitMap: boolean;
-};
-
 type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
@@ -67,27 +63,20 @@ type Props = {
 function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCoordinatesUpdate }: Props) {
   const [coordinateOffset] = useState<CoordinateVO>({ x: -2, y: -2 });
   const [boardWidth, boardHeight] = [5, 5];
-  const [hoverStateFlags, setHoverStateFlags] = useState<HoverStateFlags>({
-    unitMap: false,
-  });
 
-  function handleHoverStateChange(key: 'unitMap', hovered: boolean) {
-    const newFlags = { ...hoverStateFlags };
-    newFlags[key] = hovered;
-    setHoverStateFlags(newFlags);
-  }
+  const [isLiveUnitMapHovered, setIsLiveUnitMapHovered] = useState<boolean>(false);
+  const [isEditLiveUnitMapModalVisible, setIsEditLiveUnitMapModalVisible] = useState<boolean>(false);
 
-  const [isLiveUnitMapVisible, setIsLiveUnitMapVisible] = useState<boolean>(false);
   const handleLiveUnitMapItemClick = () => {
-    setIsLiveUnitMapVisible(true);
+    setIsEditLiveUnitMapModalVisible(true);
   };
   const handleLiveUnitMapCancel = () => {
-    setIsLiveUnitMapVisible(false);
+    setIsEditLiveUnitMapModalVisible(false);
   };
   const handleLiveUnitMapUpdate = (liveUnitMap: LiveUnitMapVO) => {
     const newRelativeCoordinates = convertLiveUnitMapToRelativeCoordinates(liveUnitMap, coordinateOffset);
     onRelativeCoordinatesUpdate(newRelativeCoordinates);
-    setIsLiveUnitMapVisible(false);
+    setIsEditLiveUnitMapModalVisible(false);
   };
 
   const [liveUnitMap, setLiveUnitMap] = useState<LiveUnitMapVO>([]);
@@ -116,16 +105,19 @@ function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCo
         <SmallLogo />
       </ItemWrapper>
       <ItemWrapper
-        hovered={hoverStateFlags.unitMap}
-        onHoverStateChange={(hovered) => {
-          handleHoverStateChange('unitMap', hovered);
-        }}
+        hovered={isLiveUnitMapHovered}
         onClick={handleLiveUnitMapItemClick}
+        onMouseEnter={() => {
+          setIsLiveUnitMapHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsLiveUnitMapHovered(false);
+        }}
       >
-        <LiveUnitMapIcon highlighted={hoverStateFlags.unitMap} active={false} />
+        <LiveUnitMapIcon highlighted={isLiveUnitMapHovered} active={false} />
       </ItemWrapper>
       <EditLiveUnitMapModal
-        opened={isLiveUnitMapVisible}
+        opened={isEditLiveUnitMapModalVisible}
         liveUnitMap={liveUnitMap}
         onUpdate={handleLiveUnitMapUpdate}
         onCancel={handleLiveUnitMapCancel}
