@@ -8,6 +8,8 @@ function renderGameRoomSideBar(): RenderResult {
       relativeCoordinates={[]}
       onRelativeCoordinatesUpdate={() => {}}
       onLogoClick={() => {}}
+      isMiniMapActive
+      onMiniMapClick={() => {}}
     />
   );
 }

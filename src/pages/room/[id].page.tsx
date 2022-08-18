@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -15,6 +15,7 @@ import GameMiniMap from '@/components/maps/GameMiniMap';
 
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
+  const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
   const router = useRouter();
   const {
     mapSize,
@@ -29,6 +30,15 @@ const Room: NextPage = function Room() {
     watchArea,
     updateRelativeCoordinates,
   } = useContext(GameRoomContext);
+  const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (deviceSize === 'large') {
+      setIsMiniMapVisible(true);
+      return;
+    }
+    setIsMiniMapVisible(false);
+  }, [deviceSize]);
 
   useEffect(() => {
     if (status !== 'ONLINE') {
@@ -45,10 +55,13 @@ const Room: NextPage = function Room() {
   const handleLogoClick = () => {
     router.push('/');
   };
-  const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
 
   const handleAreaUpdate = (newArea: AreaVO) => {
     watchArea(newArea);
+  };
+
+  const handleMiniMapClick = () => {
+    setIsMiniMapVisible(!isMiniMapVisible);
   };
 
   return (
@@ -61,6 +74,8 @@ const Room: NextPage = function Room() {
               onLogoClick={handleLogoClick}
               relativeCoordinates={relativeCoordinates}
               onRelativeCoordinatesUpdate={updateRelativeCoordinates}
+              isMiniMapActive={isMiniMapVisible}
+              onMiniMapClick={handleMiniMapClick}
             />
           </section>
           <section
@@ -83,11 +98,13 @@ const Room: NextPage = function Room() {
                 />
               )}
             </section>
-            <section style={{ position: 'absolute', right: '20px', bottom: '20px', display: 'inline-flex' }}>
-              {mapSize && targetArea && (
-                <GameMiniMap mapSize={mapSize} area={targetArea} onAreaUpdate={handleAreaUpdate} />
-              )}
-            </section>
+            {mapSize && targetArea && isMiniMapVisible && (
+              <section
+                style={{ position: 'absolute', right: '20px', bottom: '20px', opacity: '0.8', display: 'inline-flex' }}
+              >
+                <GameMiniMap width={300} mapSize={mapSize} area={targetArea} onAreaUpdate={handleAreaUpdate} />
+              </section>
+            )}
           </section>
         </main>
       )}
@@ -95,6 +112,7 @@ const Room: NextPage = function Room() {
         <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex', flexFlow: 'column' }}>
           <section
             style={{
+              position: 'relative',
               flexGrow: '1',
               overflow: 'hidden',
               backgroundColor: gameBackgroundColor,
@@ -112,6 +130,25 @@ const Room: NextPage = function Room() {
                 />
               )}
             </section>
+            {mapSize && targetArea && isMiniMapVisible && (
+              <section
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  bottom: '20px',
+                  transform: 'translateX(-50%)',
+                  opacity: '0.8',
+                  display: 'inline-flex',
+                }}
+              >
+                <GameMiniMap
+                  width={windowSize.width * 0.8}
+                  mapSize={mapSize}
+                  area={targetArea}
+                  onAreaUpdate={handleAreaUpdate}
+                />
+              </section>
+            )}
           </section>
           <section style={{ flexShrink: '0' }}>
             <GameRoomSideBar
@@ -119,6 +156,8 @@ const Room: NextPage = function Room() {
               onLogoClick={handleLogoClick}
               relativeCoordinates={relativeCoordinates}
               onRelativeCoordinatesUpdate={updateRelativeCoordinates}
+              isMiniMapActive={isMiniMapVisible}
+              onMiniMapClick={handleMiniMapClick}
             />
           </section>
         </main>

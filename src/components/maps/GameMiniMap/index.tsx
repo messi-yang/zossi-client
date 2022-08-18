@@ -3,12 +3,13 @@ import { MapSizeVO, AreaVO } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
+  width: number;
   mapSize: MapSizeVO;
   area: AreaVO;
   onAreaUpdate: (newArea: AreaVO) => void;
 };
 
-function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
+function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
   const [isMovable, setIsMovable] = useState<boolean>(false);
   const mapContentElemRef = useRef<HTMLDivElement>(null);
   const mapSizeRatio = mapSize.height / mapSize.width;
@@ -19,8 +20,8 @@ function GameMiniMap({ mapSize, area, onAreaUpdate }: Props) {
   const offsetXRatio = area.from.x / mapSize.width;
   const offsetYRatio = area.from.y / mapSize.height;
 
-  const elemWidth = 100;
-  const elemHeight = 100 * mapSizeRatio;
+  const elemWidth = width;
+  const elemHeight = elemWidth * mapSizeRatio;
   const areaElemWidth = elemWidth * mapZoomedAreaWidthRatio;
   const areaElemHeight = elemHeight * mapZoomedAreaHeightRatio;
 

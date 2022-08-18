@@ -24,6 +24,7 @@ const Template: ComponentStory<typeof GameMiniMap> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
+  width: 300,
   mapSize: { width: 300, height: 300 },
   area: { from: { x: 0, y: 0 }, to: { x: 50, y: 50 } },
 };

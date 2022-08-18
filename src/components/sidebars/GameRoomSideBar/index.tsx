@@ -68,14 +68,25 @@ type Props = {
   onLogoClick: () => void;
   relativeCoordinates: CoordinateVO[] | null;
   onRelativeCoordinatesUpdate: (coordinates: CoordinateVO[] | null) => void;
+  isMiniMapActive: boolean;
+  onMiniMapClick: () => void;
 };
 
-function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCoordinatesUpdate }: Props) {
+function GameRoomSideBar({
+  align,
+  onLogoClick,
+  relativeCoordinates,
+  onRelativeCoordinatesUpdate,
+  isMiniMapActive,
+  onMiniMapClick,
+}: Props) {
   const [coordinateOffset] = useState<CoordinateVO>({ x: -2, y: -2 });
   const [boardWidth, boardHeight] = [5, 5];
 
   const [isLiveUnitMapHovered, setIsLiveUnitMapHovered] = useState<boolean>(false);
   const [isEditLiveUnitMapModalVisible, setIsEditLiveUnitMapModalVisible] = useState<boolean>(false);
+
+  const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
 
   const handleLiveUnitMapItemClick = () => {
     setIsEditLiveUnitMapModalVisible(true);
@@ -125,6 +136,18 @@ function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCo
         }}
       >
         <LiveUnitMapIcon highlighted={isLiveUnitMapHovered} active={!!relativeCoordinates} />
+      </ItemWrapper>
+      <ItemWrapper
+        hovered={isMiniMapHovered}
+        onClick={onMiniMapClick}
+        onMouseEnter={() => {
+          setIsMiniMapHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsMiniMapHovered(false);
+        }}
+      >
+        <LiveUnitMapIcon highlighted={isMiniMapHovered} active={isMiniMapActive} />
       </ItemWrapper>
       <EditLiveUnitMapModal
         opened={isEditLiveUnitMapModalVisible}
