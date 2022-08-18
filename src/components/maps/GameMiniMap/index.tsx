@@ -143,7 +143,7 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
             left: `${offsetXRatio * 100}%`,
             top: `${offsetYRatio * 100}%`,
             boxSizing: 'border-box',
-            border: '1px solid yellow',
+            border: '1px solid #01D6C9',
             width: areaElemWidth,
             height: areaElemHeight,
           }}
