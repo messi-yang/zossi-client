@@ -29,9 +29,9 @@ type GameRoomContextValue = {
   displayedArea: AreaDTO | null;
   targetArea: AreaDTO | null;
   units: UnitVO[][];
-  relativeCoordinates: CoordinateVO[];
+  relativeCoordinates: CoordinateVO[] | null;
   joinGame: () => void;
-  updateRelativeCoordinates: (coordinates: CoordinateVO[]) => void;
+  updateRelativeCoordinates: (coordinates: CoordinateVO[] | null) => void;
   reviveUnits: (coordinates: CoordinateVO[]) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
@@ -44,11 +44,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     displayedArea: null,
     targetArea: null,
     units: [],
-    relativeCoordinates: [
-      { x: 0, y: -1 },
-      { x: 0, y: 0 },
-      { x: 0, y: 1 },
-    ],
+    relativeCoordinates: null,
     joinGame: () => {},
     updateRelativeCoordinates: () => {},
     reviveUnits: () => {},
@@ -70,13 +66,13 @@ export function Provider({ children }: Props) {
   const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
   const [units, setUnits] = useState<UnitVO[][]>(initialGameRoomContextValue.units);
-  const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateVO[]>(
+  const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateVO[] | null>(
     initialGameRoomContextValue.relativeCoordinates
   );
   const [status, setStatus] = useState<Status>(initialGameRoomContextValue.status);
 
   const updateRelativeCoordinates = useCallback(
-    (coordinates: CoordinateVO[]) => {
+    (coordinates: CoordinateVO[] | null) => {
       setRelativeCoordinates(coordinates);
     },
     [socketRef.current, status]

@@ -26,7 +26,7 @@ type Props = {
   displayedArea: AreaVO | null;
   targetArea: AreaVO | null;
   units: UnitVO[][];
-  relativeCoordinates: CoordinateVO[];
+  relativeCoordinates: CoordinateVO[] | null;
   onUnitsRevive: (coordinates: CoordinateVO[]) => any;
   onAreaUpdate: (newArea: AreaVO) => any;
 };
@@ -50,7 +50,7 @@ function GameMap({ displayedArea, targetArea, units, relativeCoordinates, onUnit
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!displayedArea) {
+      if (!displayedArea || !relativeCoordinates) {
         return;
       }
       const finalCoordinates = relativeCoordinates.map((relativeCoordinate) => ({
@@ -66,6 +66,10 @@ function GameMap({ displayedArea, targetArea, units, relativeCoordinates, onUnit
   const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
 
   const setHighlightsOfRelativeCoordinates = (colIdx: number, rowIdx: number, highlighted: boolean) => {
+    if (!relativeCoordinates) {
+      return;
+    }
+
     relativeCoordinates.forEach((relativeCoordinate) => {
       if (!unitSquaresCompRef.current) {
         return;

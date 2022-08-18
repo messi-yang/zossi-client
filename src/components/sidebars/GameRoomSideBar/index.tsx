@@ -9,7 +9,7 @@ import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
 function convertRelativeCoordinatesToLiveUnitMap(
-  relativeCoordinates: CoordinateVO[],
+  relativeCoordinates: CoordinateVO[] | null,
   coordinateOffset: CoordinateVO,
   boardWidth: number,
   boardHeight: number
@@ -21,6 +21,10 @@ function convertRelativeCoordinatesToLiveUnitMap(
       liveUnitMap[colIdx].push(null);
     });
   });
+
+  if (!relativeCoordinates) {
+    return liveUnitMap;
+  }
 
   relativeCoordinates.forEach((relativeCoordinate) => {
     const colIdx = relativeCoordinate.x - coordinateOffset.x;
@@ -36,12 +40,14 @@ function convertRelativeCoordinatesToLiveUnitMap(
 function convertLiveUnitMapToRelativeCoordinates(
   liveUnitMap: LiveUnitMapVO,
   coordinateOffset: CoordinateVO
-): CoordinateVO[] {
+): CoordinateVO[] | null {
   const coordinates: CoordinateVO[] = [];
 
+  let truthyCellsCount = 0;
   liveUnitMap.forEach((colInLiveUnitMap, colIdx) => {
     colInLiveUnitMap.forEach((isTruthy, rowIdx) => {
       if (isTruthy) {
+        truthyCellsCount += 1;
         coordinates.push({
           x: colIdx + coordinateOffset.x,
           y: rowIdx + coordinateOffset.y,
@@ -50,14 +56,18 @@ function convertLiveUnitMapToRelativeCoordinates(
     });
   });
 
+  if (truthyCellsCount === 0) {
+    return null;
+  }
+
   return coordinates;
 }
 
 type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
-  relativeCoordinates: CoordinateVO[];
-  onRelativeCoordinatesUpdate: (coordinates: CoordinateVO[]) => void;
+  relativeCoordinates: CoordinateVO[] | null;
+  onRelativeCoordinatesUpdate: (coordinates: CoordinateVO[] | null) => void;
 };
 
 function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCoordinatesUpdate }: Props) {
@@ -114,7 +124,7 @@ function GameRoomSideBar({ align, onLogoClick, relativeCoordinates, onRelativeCo
           setIsLiveUnitMapHovered(false);
         }}
       >
-        <LiveUnitMapIcon highlighted={isLiveUnitMapHovered} active={false} />
+        <LiveUnitMapIcon highlighted={isLiveUnitMapHovered} active={!!relativeCoordinates} />
       </ItemWrapper>
       <EditLiveUnitMapModal
         opened={isEditLiveUnitMapModalVisible}

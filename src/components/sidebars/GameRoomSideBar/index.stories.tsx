@@ -14,7 +14,7 @@ export default {
 const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args) {
   const { align } = args;
   const [, updateArgs] = useArgs();
-  const handleRelativeCoordinatesUpdate = (relativeCoordinates: CoordinateVO[]) => {
+  const handleRelativeCoordinatesUpdate = (relativeCoordinates: CoordinateVO[] | null) => {
     updateArgs({ relativeCoordinates });
   };
 
