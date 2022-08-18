@@ -130,6 +130,7 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
           height: elemHeight,
           background: 'black',
           cursor: 'grab',
+          touchAction: 'none',
         }}
         role="button"
         tabIndex={0}
