@@ -29,7 +29,7 @@ type GameRoomContextValue = {
   mapSize: MapSizeDTO | null;
   displayedArea: AreaDTO | null;
   targetArea: AreaDTO | null;
-  unitMap: UnitVO[][];
+  unitMap: UnitVO[][] | null;
   relativeCoordinates: CoordinateVO[] | null;
   joinGame: () => void;
   updateRelativeCoordinates: (coordinates: CoordinateVO[] | null) => void;
@@ -44,7 +44,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     mapSize: null,
     displayedArea: null,
     targetArea: null,
-    unitMap: [],
+    unitMap: null,
     relativeCoordinates: [
       { x: -1, y: 0 },
       { x: 0, y: -1 },
@@ -71,7 +71,7 @@ export function Provider({ children }: Props) {
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
   const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
-  const [unitMap, setUnitMap] = useState<UnitVO[][]>(initialGameRoomContextValue.unitMap);
+  const [unitMap, setUnitMap] = useState<UnitVO[][] | null>(initialGameRoomContextValue.unitMap);
   const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateVO[] | null>(
     initialGameRoomContextValue.relativeCoordinates
   );
@@ -167,7 +167,7 @@ export function Provider({ children }: Props) {
 
         const event: Event = JSON.parse(eventJsonString);
         if (event.type === EventTypeEnum.CoordinatesUpdated) {
-          if (!displayedArea) {
+          if (!displayedArea || !unitMap) {
             return;
           }
           const newUnitMap = cloneDeep(unitMap);

@@ -25,7 +25,7 @@ function calculateDisplayedAreaOffset(
 type Props = {
   displayedArea: AreaVO | null;
   targetArea: AreaVO | null;
-  unitMap: UnitVO[][];
+  unitMap: UnitVO[][] | null;
   relativeCoordinates: CoordinateVO[] | null;
   onUnitsRevive: (coordinates: CoordinateVO[]) => any;
   onAreaUpdate: (newArea: AreaVO) => any;
@@ -137,15 +137,17 @@ function GameMap({ displayedArea, targetArea, unitMap, relativeCoordinates, onUn
           display: 'flex',
         }}
       >
-        <UnitSquares
-          ref={unitSquaresCompRef}
-          width={desiredAreaWidth}
-          height={desiredAreaHeight}
-          unitMap={unitMap}
-          squareSize={squareSize}
-          onUnitSquareClick={handleUnitSquareClick}
-          onUnitSquareMouseEnter={handleUnitSquareMouseEnter}
-        />
+        {unitMap && (
+          <UnitSquares
+            ref={unitSquaresCompRef}
+            width={desiredAreaWidth}
+            height={desiredAreaHeight}
+            unitMap={unitMap}
+            squareSize={squareSize}
+            onUnitSquareClick={handleUnitSquareClick}
+            onUnitSquareMouseEnter={handleUnitSquareMouseEnter}
+          />
+        )}
       </section>
     </section>
   );
