@@ -52,7 +52,6 @@ function generateUnitMap(area: AreaVO) {
     unitMap.push([]);
     for (let y = 0; y < height; y += 1) {
       unitMap[x].push({
-        coordinate: { x: area.from.x + x, y: area.from.y + y },
         alive: false,
         age: 0,
       });
