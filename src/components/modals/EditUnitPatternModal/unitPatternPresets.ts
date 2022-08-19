@@ -1,6 +1,6 @@
-import { LiveUnitMapVO } from '@/valueObjects';
+import { UnitPatternVO } from '@/valueObjects';
 
-const liveUnitMapTemplates: LiveUnitMapVO[] = [
+const unitPatternPresets: UnitPatternVO[] = [
   [
     [null, null, null, null, null],
     [null, null, null, null, null],
@@ -52,4 +52,4 @@ const liveUnitMapTemplates: LiveUnitMapVO[] = [
   ],
 ];
 
-export default liveUnitMapTemplates;
+export default unitPatternPresets;

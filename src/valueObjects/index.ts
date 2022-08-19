@@ -1,8 +1,8 @@
 import UnitVO from './UnitVO';
 import CoordinateVO from './CoordinateVO';
 import AreaVO from './AreaVO';
-import LiveUnitMapVO from './LiveUnitMapVO';
+import UnitPatternVO from './UnitPatternVO';
 import MapSizeVO from './MapSizeVO';
 
 export default {};
-export type { UnitVO, CoordinateVO, AreaVO, LiveUnitMapVO, MapSizeVO };
+export type { UnitVO, CoordinateVO, AreaVO, UnitPatternVO, MapSizeVO };

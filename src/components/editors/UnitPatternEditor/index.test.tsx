@@ -1,10 +1,10 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import LiveUnitMapEditor, { dataTestids } from '.';
+import UnitPatternEditor, { dataTestids } from '.';
 
-function renderLiveUnitMapEditor(): RenderResult {
+function renderUnitPatternEditor(): RenderResult {
   return render(
-    <LiveUnitMapEditor
-      liveUnitMap={[
+    <UnitPatternEditor
+      unitPattern={[
         [true, true, true],
         [true, null, true],
         [true, true, true],
@@ -14,10 +14,10 @@ function renderLiveUnitMapEditor(): RenderResult {
   );
 }
 
-describe('LiveUnitMapEditor', () => {
+describe('UnitPatternEditor', () => {
   it('Should render component successfully.', () => {
     try {
-      renderLiveUnitMapEditor();
+      renderUnitPatternEditor();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

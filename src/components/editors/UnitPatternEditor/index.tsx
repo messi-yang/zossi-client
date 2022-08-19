@@ -1,25 +1,25 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { generateKeyFromIndex } from '@/utils/component/';
 import UnitSquare from '@/components/squares/UnitSquare';
-import type { LiveUnitMapVO } from '@/valueObjects';
+import type { UnitPatternVO } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
-  liveUnitMap: LiveUnitMapVO;
-  onUpdate?: (liveUnitMap: LiveUnitMapVO) => any;
+  unitPattern: UnitPatternVO;
+  onUpdate?: (unitPattern: UnitPatternVO) => any;
 };
 
-function LiveUnitMapEditor({ liveUnitMap, onUpdate = () => {} }: Props) {
+function UnitPatternEditor({ unitPattern, onUpdate = () => {} }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
-    const newLiveUnitMap = cloneDeep(liveUnitMap);
-    newLiveUnitMap[colIdx][rowIdx] = newLiveUnitMap[colIdx][rowIdx] === true ? null : true;
+    const newUnitPattern = cloneDeep(unitPattern);
+    newUnitPattern[colIdx][rowIdx] = newUnitPattern[colIdx][rowIdx] === true ? null : true;
 
-    onUpdate(newLiveUnitMap);
+    onUpdate(newUnitPattern);
   };
 
   return (
     <div data-testid={dataTestids.root} style={{ width: '100%', height: '100%', display: 'flex', flexFlow: 'row' }}>
-      {liveUnitMap.map((colInLiveUnitMap, colIdx) => (
+      {unitPattern.map((unitCol, colIdx) => (
         <div
           key={generateKeyFromIndex(colIdx)}
           style={{
@@ -28,7 +28,7 @@ function LiveUnitMapEditor({ liveUnitMap, onUpdate = () => {} }: Props) {
             flexFlow: 'column',
           }}
         >
-          {colInLiveUnitMap.map((hasLiveUnit, rowIdx) => (
+          {unitCol.map((isTruthy, rowIdx) => (
             <div
               key={generateKeyFromIndex(rowIdx)}
               style={{
@@ -36,12 +36,12 @@ function LiveUnitMapEditor({ liveUnitMap, onUpdate = () => {} }: Props) {
               }}
             >
               <UnitSquare
-                alive={hasLiveUnit || false}
+                alive={isTruthy || false}
                 highlighted={false}
                 borderColor="#2C2C2C"
                 hasTopBorder
-                hasRightBorder={colIdx === liveUnitMap.length - 1}
-                hasBottomBorder={rowIdx === colInLiveUnitMap.length - 1}
+                hasRightBorder={colIdx === unitPattern.length - 1}
+                hasBottomBorder={rowIdx === unitCol.length - 1}
                 hasLeftBorder
                 onClick={() => handleSquareClick(colIdx, rowIdx)}
               />
@@ -53,5 +53,5 @@ function LiveUnitMapEditor({ liveUnitMap, onUpdate = () => {} }: Props) {
   );
 }
 
-export default LiveUnitMapEditor;
+export default UnitPatternEditor;
 export { dataTestids };

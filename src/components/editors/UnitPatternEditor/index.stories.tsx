@@ -2,33 +2,33 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 
-import LiveUnitMapEditor from '.';
-import type { LiveUnitMapVO } from '@/valueObjects';
+import UnitPatternEditor from '.';
+import type { UnitPatternVO } from '@/valueObjects';
 
 export default {
-  title: 'Editor/LiveUnitMapEditor',
-  component: LiveUnitMapEditor,
+  title: 'Editor/UnitPatternEditor',
+  component: UnitPatternEditor,
   argTypes: {},
-} as ComponentMeta<typeof LiveUnitMapEditor>;
+} as ComponentMeta<typeof UnitPatternEditor>;
 
-const Template: ComponentStory<typeof LiveUnitMapEditor> = function Template(args) {
+const Template: ComponentStory<typeof UnitPatternEditor> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleLiveUnitMapUpdate = (liveUnitMap: LiveUnitMapVO) => {
+  const handleUnitPatternUpdate = (unitPattern: UnitPatternVO) => {
     updateArgs({
-      liveUnitMap,
+      unitPattern,
     });
   };
 
   return (
     <div style={{ width: '120px', height: '120px', display: 'inline-flex' }}>
-      <LiveUnitMapEditor {...args} onUpdate={handleLiveUnitMapUpdate} />
+      <UnitPatternEditor {...args} onUpdate={handleUnitPatternUpdate} />
     </div>
   );
 };
 
 export const Primary = Template.bind({});
 Primary.args = {
-  liveUnitMap: [
+  unitPattern: [
     [true, true, true],
     [true, null, true],
     [true, true, true],

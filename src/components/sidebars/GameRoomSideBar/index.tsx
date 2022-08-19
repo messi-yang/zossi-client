@@ -2,50 +2,50 @@ import { useState, useEffect } from 'react';
 import range from 'lodash/range';
 import { CoordinateVO } from '@/valueObjects';
 import SmallLogo from '@/components/logos/SmallLogo/';
-import LiveUnitMapIcon from '@/components/icons/LiveUnitMapIcon/';
-import EditLiveUnitMapModal from '@/components/modals/EditLiveUnitMapModal/';
-import type { LiveUnitMapVO } from '@/valueObjects';
+import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
+import EditUnitPatternModal from '@/components/modals/EditUnitPatternModal';
+import type { UnitPatternVO } from '@/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
-function convertRelativeCoordinatesToLiveUnitMap(
+function convertRelativeCoordinatesToUnitPattern(
   relativeCoordinates: CoordinateVO[] | null,
   coordinateOffset: CoordinateVO,
   boardWidth: number,
   boardHeight: number
-): LiveUnitMapVO {
-  const liveUnitMap: LiveUnitMapVO = [];
+): UnitPatternVO {
+  const unitPattern: UnitPatternVO = [];
   range(0, boardWidth).forEach((colIdx) => {
-    liveUnitMap.push([]);
+    unitPattern.push([]);
     range(0, boardHeight).forEach(() => {
-      liveUnitMap[colIdx].push(null);
+      unitPattern[colIdx].push(null);
     });
   });
 
   if (!relativeCoordinates) {
-    return liveUnitMap;
+    return unitPattern;
   }
 
   relativeCoordinates.forEach((relativeCoordinate) => {
     const colIdx = relativeCoordinate.x - coordinateOffset.x;
     const rowIdx = relativeCoordinate.y - coordinateOffset.y;
-    if (liveUnitMap?.[colIdx]?.[rowIdx] !== undefined) {
-      liveUnitMap[colIdx][rowIdx] = true;
+    if (unitPattern?.[colIdx]?.[rowIdx] !== undefined) {
+      unitPattern[colIdx][rowIdx] = true;
     }
   });
 
-  return liveUnitMap;
+  return unitPattern;
 }
 
-function convertLiveUnitMapToRelativeCoordinates(
-  liveUnitMap: LiveUnitMapVO,
+function convertUnitPatternToRelativeCoordinates(
+  unitPattern: UnitPatternVO,
   coordinateOffset: CoordinateVO
 ): CoordinateVO[] | null {
   const coordinates: CoordinateVO[] = [];
 
   let truthyCellsCount = 0;
-  liveUnitMap.forEach((colInLiveUnitMap, colIdx) => {
-    colInLiveUnitMap.forEach((isTruthy, rowIdx) => {
+  unitPattern.forEach((unitCol, colIdx) => {
+    unitCol.forEach((isTruthy, rowIdx) => {
       if (isTruthy) {
         truthyCellsCount += 1;
         coordinates.push({
@@ -83,32 +83,32 @@ function GameRoomSideBar({
   const [coordinateOffset] = useState<CoordinateVO>({ x: -2, y: -2 });
   const [boardWidth, boardHeight] = [5, 5];
 
-  const [isLiveUnitMapHovered, setIsLiveUnitMapHovered] = useState<boolean>(false);
-  const [isEditLiveUnitMapModalVisible, setIsEditLiveUnitMapModalVisible] = useState<boolean>(false);
+  const [isUnitPatternHovered, setIsUnitPatternHovered] = useState<boolean>(false);
+  const [isEditUnitPatternModalVisible, setIsEditUnitPatternModalVisible] = useState<boolean>(false);
 
   const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
 
-  const handleLiveUnitMapItemClick = () => {
-    setIsEditLiveUnitMapModalVisible(true);
+  const handleUnitPatternItemClick = () => {
+    setIsEditUnitPatternModalVisible(true);
   };
-  const handleLiveUnitMapCancel = () => {
-    setIsEditLiveUnitMapModalVisible(false);
+  const handleUnitPatternCancel = () => {
+    setIsEditUnitPatternModalVisible(false);
   };
-  const handleLiveUnitMapUpdate = (liveUnitMap: LiveUnitMapVO) => {
-    const newRelativeCoordinates = convertLiveUnitMapToRelativeCoordinates(liveUnitMap, coordinateOffset);
+  const handleUnitPatternUpdate = (unitPattern: UnitPatternVO) => {
+    const newRelativeCoordinates = convertUnitPatternToRelativeCoordinates(unitPattern, coordinateOffset);
     onRelativeCoordinatesUpdate(newRelativeCoordinates);
-    setIsEditLiveUnitMapModalVisible(false);
+    setIsEditUnitPatternModalVisible(false);
   };
 
-  const [liveUnitMap, setLiveUnitMap] = useState<LiveUnitMapVO>([]);
+  const [unitPattern, setUnitPattern] = useState<UnitPatternVO>([]);
   useEffect(() => {
-    const newLiveUnitMap = convertRelativeCoordinatesToLiveUnitMap(
+    const newUnitPattern = convertRelativeCoordinatesToUnitPattern(
       relativeCoordinates,
       coordinateOffset,
       boardWidth,
       boardHeight
     );
-    setLiveUnitMap(newLiveUnitMap);
+    setUnitPattern(newUnitPattern);
   }, [relativeCoordinates, coordinateOffset, boardWidth, boardHeight]);
 
   return (
@@ -126,16 +126,16 @@ function GameRoomSideBar({
         <SmallLogo />
       </ItemWrapper>
       <ItemWrapper
-        hovered={isLiveUnitMapHovered}
-        onClick={handleLiveUnitMapItemClick}
+        hovered={isUnitPatternHovered}
+        onClick={handleUnitPatternItemClick}
         onMouseEnter={() => {
-          setIsLiveUnitMapHovered(true);
+          setIsUnitPatternHovered(true);
         }}
         onMouseLeave={() => {
-          setIsLiveUnitMapHovered(false);
+          setIsUnitPatternHovered(false);
         }}
       >
-        <LiveUnitMapIcon highlighted={isLiveUnitMapHovered} active={!!relativeCoordinates} />
+        <UnitPatternIcon highlighted={isUnitPatternHovered} active={!!relativeCoordinates} />
       </ItemWrapper>
       <ItemWrapper
         hovered={isMiniMapHovered}
@@ -147,13 +147,13 @@ function GameRoomSideBar({
           setIsMiniMapHovered(false);
         }}
       >
-        <LiveUnitMapIcon highlighted={isMiniMapHovered} active={isMiniMapActive} />
+        <UnitPatternIcon highlighted={isMiniMapHovered} active={isMiniMapActive} />
       </ItemWrapper>
-      <EditLiveUnitMapModal
-        opened={isEditLiveUnitMapModalVisible}
-        liveUnitMap={liveUnitMap}
-        onUpdate={handleLiveUnitMapUpdate}
-        onCancel={handleLiveUnitMapCancel}
+      <EditUnitPatternModal
+        opened={isEditUnitPatternModalVisible}
+        unitPattern={unitPattern}
+        onUpdate={handleUnitPatternUpdate}
+        onCancel={handleUnitPatternCancel}
       />
     </section>
   );

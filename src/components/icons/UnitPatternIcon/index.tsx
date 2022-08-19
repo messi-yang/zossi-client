@@ -5,7 +5,7 @@ type Props = {
   active: boolean;
 };
 
-function LiveUnitMapIcon({ highlighted, active }: Props) {
+function UnitPatternIcon({ highlighted, active }: Props) {
   return (
     <svg
       data-testid={dataTestids.root}
@@ -26,5 +26,5 @@ function LiveUnitMapIcon({ highlighted, active }: Props) {
   );
 }
 
-export default LiveUnitMapIcon;
+export default UnitPatternIcon;
 export { dataTestids };

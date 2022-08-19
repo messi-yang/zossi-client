@@ -1,14 +1,14 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import EditLiveUnitMapModal, { dataTestids } from '.';
+import UnitPatternIcon, { dataTestids } from '.';
 
-function renderEditLiveUnitMapModal(): RenderResult {
-  return render(<EditLiveUnitMapModal opened liveUnitMap={[]} />);
+function renderUnitPatternIcon(): RenderResult {
+  return render(<UnitPatternIcon active highlighted={false} />);
 }
 
-describe('EditLiveUnitMapModal', () => {
+describe('UnitPatternIcon', () => {
   it('Should render component successfully.', () => {
     try {
-      renderEditLiveUnitMapModal();
+      renderUnitPatternIcon();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

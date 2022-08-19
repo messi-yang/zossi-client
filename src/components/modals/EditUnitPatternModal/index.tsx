@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 import BaseModal from '@/components/modals/BaseModal';
-import LiveUnitMapEditor from '@/components/editors/LiveUnitMapEditor';
+import UnitPatternEditor from '@/components/editors/UnitPatternEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
-import type { LiveUnitMapVO } from '@/valueObjects';
+import type { UnitPatternVO } from '@/valueObjects';
 import { generateKeyFromIndex } from '@/utils/component';
-import liveUnitMapTemplates from './liveUnitMapTemplates';
+import unitPatternPresets from './unitPatternPresets';
 import dataTestids from './dataTestids';
 
 type CornerSquareProps = {
@@ -36,24 +36,24 @@ function CornerSquare({ top, right, bottom, left }: CornerSquareProps) {
 
 type Props = {
   opened: boolean;
-  liveUnitMap: LiveUnitMapVO;
-  onUpdate?: (liveUnitMap: LiveUnitMapVO) => any;
+  unitPattern: UnitPatternVO;
+  onUpdate?: (unitPattern: UnitPatternVO) => any;
   onCancel?: () => void;
 };
 
-function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () => {}, onCancel = () => {} }: Props) {
-  const [tmpUnitMap, setTmpUnitMap] = useState<LiveUnitMapVO>(cloneDeep(liveUnitMap));
+function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCancel = () => {} }: Props) {
+  const [tmpUnitPattern, setTmpUnitPattern] = useState<UnitPatternVO>(cloneDeep(unitPattern));
   useEffect(() => {
-    setTmpUnitMap(cloneDeep(liveUnitMap));
-  }, [liveUnitMap]);
+    setTmpUnitPattern(cloneDeep(unitPattern));
+  }, [unitPattern]);
   useEffect(() => {
-    setTmpUnitMap(cloneDeep(liveUnitMap));
+    setTmpUnitPattern(cloneDeep(unitPattern));
   }, [opened]);
   const handleOkClick = () => {
-    onUpdate(tmpUnitMap);
+    onUpdate(tmpUnitPattern);
   };
-  const handleLiveUnitMapUpdate = (newLiveUnitMap: LiveUnitMapVO) => {
-    setTmpUnitMap(newLiveUnitMap);
+  const handleUnitPatternUpdate = (newUnitPattern: UnitPatternVO) => {
+    setTmpUnitPattern(newUnitPattern);
   };
 
   return (
@@ -82,24 +82,24 @@ function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () => {}, onCancel =
           <section
             style={{ marginTop: '36px', width: '230px', height: '230px', display: 'flex', justifyContent: 'center' }}
           >
-            <LiveUnitMapEditor liveUnitMap={tmpUnitMap} onUpdate={handleLiveUnitMapUpdate} />
+            <UnitPatternEditor unitPattern={tmpUnitPattern} onUpdate={handleUnitPatternUpdate} />
           </section>
           <section style={{ marginTop: '24px', width: '100%', overflow: 'auto' }}>
             <section style={{ display: 'flex' }}>
-              {liveUnitMapTemplates.map((liveUnitMapTemplate, liveUnitMapTemplateIdx) => (
+              {unitPatternPresets.map((unitPatternPreset, unitPatternPresetIdx) => (
                 <section
-                  key={generateKeyFromIndex(liveUnitMapTemplateIdx)}
+                  key={generateKeyFromIndex(unitPatternPresetIdx)}
                   style={{
-                    marginLeft: liveUnitMapTemplateIdx !== 0 ? '10px' : undefined,
+                    marginLeft: unitPatternPresetIdx !== 0 ? '10px' : undefined,
                     flexBasis: '74px',
                     height: '74px',
                     flexShrink: '0',
-                    border: isEqual(tmpUnitMap, liveUnitMapTemplate) ? '4px solid #01D6C9' : '4px solid black',
+                    border: isEqual(tmpUnitPattern, unitPatternPreset) ? '4px solid #01D6C9' : '4px solid black',
                   }}
                 >
-                  <LiveUnitMapEditor
-                    liveUnitMap={liveUnitMapTemplate}
-                    onUpdate={() => handleLiveUnitMapUpdate(liveUnitMapTemplate)}
+                  <UnitPatternEditor
+                    unitPattern={unitPatternPreset}
+                    onUpdate={() => handleUnitPatternUpdate(unitPatternPreset)}
                   />
                 </section>
               ))}
@@ -114,5 +114,5 @@ function LiveUnitMapModal({ opened, liveUnitMap, onUpdate = () => {}, onCancel =
   );
 }
 
-export default LiveUnitMapModal;
+export default EditUnitPatternModal;
 export { dataTestids };
