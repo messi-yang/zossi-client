@@ -32,7 +32,7 @@ type Props = {
 };
 
 function GameMap({ displayedArea, targetArea, units, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
-  const [squareSize] = useState<number>(25);
+  const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
   const [desiredAreaWidth, desiredAreaHeight] = useResolutionCalculator(
