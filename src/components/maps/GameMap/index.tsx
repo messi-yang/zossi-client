@@ -22,25 +22,23 @@ function calculateDisplayedAreaOffset(
   };
 }
 
+function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
+  return {
+    x: -Math.floor(unitPattern.length / 2),
+    y: -Math.floor(unitPattern[0] ? unitPattern[0].length / 2 : 0),
+  };
+}
+
 type Props = {
   displayedArea: AreaVO | null;
   targetArea: AreaVO | null;
   unitMap: UnitVO[][] | null;
-  unitPatternOffset: OffsetVO;
   unitPattern: UnitPatternVO;
   onUnitsRevive: (coordinate: CoordinateVO, unitPatternOffset: OffsetVO, unitPattern: UnitPatternVO) => any;
   onAreaUpdate: (newArea: AreaVO) => any;
 };
 
-function GameMap({
-  displayedArea,
-  targetArea,
-  unitMap,
-  unitPatternOffset,
-  unitPattern,
-  onUnitsRevive,
-  onAreaUpdate,
-}: Props) {
+function GameMap({ displayedArea, targetArea, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
   const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -52,6 +50,11 @@ function GameMap({
   const [displayedAreaOffset, setDisplayedAreaOffset] = useState<OffsetVO>(
     calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize)
   );
+  const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVO>(calculateUnitPatternOffset(unitPattern));
+
+  useEffect(() => {
+    setUnitPatternOffset(calculateUnitPatternOffset(unitPattern));
+  }, [unitPattern]);
 
   useEffect(() => {
     setDisplayedAreaOffset(calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize));

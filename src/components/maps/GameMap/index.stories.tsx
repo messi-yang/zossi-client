@@ -75,7 +75,6 @@ Primary.args = {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
   }),
-  unitPatternOffset: { x: -2, y: -2 },
   unitPattern: [
     [null, null, null, null, null],
     [null, null, true, null, null],
