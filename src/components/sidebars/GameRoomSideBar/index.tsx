@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-import range from 'lodash/range';
-import { CoordinateVO } from '@/valueObjects';
+import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import EditUnitPatternModal from '@/components/modals/EditUnitPatternModal';
@@ -8,66 +6,11 @@ import type { UnitPatternVO } from '@/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
-function convertRelativeCoordinatesToUnitPattern(
-  relativeCoordinates: CoordinateVO[] | null,
-  coordinateOffset: CoordinateVO,
-  boardWidth: number,
-  boardHeight: number
-): UnitPatternVO {
-  const unitPattern: UnitPatternVO = [];
-  range(0, boardWidth).forEach((colIdx) => {
-    unitPattern.push([]);
-    range(0, boardHeight).forEach(() => {
-      unitPattern[colIdx].push(null);
-    });
-  });
-
-  if (!relativeCoordinates) {
-    return unitPattern;
-  }
-
-  relativeCoordinates.forEach((relativeCoordinate) => {
-    const colIdx = relativeCoordinate.x - coordinateOffset.x;
-    const rowIdx = relativeCoordinate.y - coordinateOffset.y;
-    if (unitPattern?.[colIdx]?.[rowIdx] !== undefined) {
-      unitPattern[colIdx][rowIdx] = true;
-    }
-  });
-
-  return unitPattern;
-}
-
-function convertUnitPatternToRelativeCoordinates(
-  unitPattern: UnitPatternVO,
-  coordinateOffset: CoordinateVO
-): CoordinateVO[] | null {
-  const coordinates: CoordinateVO[] = [];
-
-  let truthyCellsCount = 0;
-  unitPattern.forEach((unitCol, colIdx) => {
-    unitCol.forEach((isTruthy, rowIdx) => {
-      if (isTruthy) {
-        truthyCellsCount += 1;
-        coordinates.push({
-          x: colIdx + coordinateOffset.x,
-          y: rowIdx + coordinateOffset.y,
-        });
-      }
-    });
-  });
-
-  if (truthyCellsCount === 0) {
-    return null;
-  }
-
-  return coordinates;
-}
-
 type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
-  relativeCoordinates: CoordinateVO[] | null;
-  onRelativeCoordinatesUpdate: (coordinates: CoordinateVO[] | null) => void;
+  unitPattern: UnitPatternVO;
+  onUnitPatternUpdate: (unitPattern: UnitPatternVO) => void;
   isMiniMapActive: boolean;
   onMiniMapClick: () => void;
 };
@@ -75,14 +18,11 @@ type Props = {
 function GameRoomSideBar({
   align,
   onLogoClick,
-  relativeCoordinates,
-  onRelativeCoordinatesUpdate,
+  unitPattern,
+  onUnitPatternUpdate,
   isMiniMapActive,
   onMiniMapClick,
 }: Props) {
-  const [coordinateOffset] = useState<CoordinateVO>({ x: -2, y: -2 });
-  const [boardWidth, boardHeight] = [5, 5];
-
   const [isUnitPatternHovered, setIsUnitPatternHovered] = useState<boolean>(false);
   const [isEditUnitPatternModalVisible, setIsEditUnitPatternModalVisible] = useState<boolean>(false);
 
@@ -94,22 +34,10 @@ function GameRoomSideBar({
   const handleUnitPatternCancel = () => {
     setIsEditUnitPatternModalVisible(false);
   };
-  const handleUnitPatternUpdate = (unitPattern: UnitPatternVO) => {
-    const newRelativeCoordinates = convertUnitPatternToRelativeCoordinates(unitPattern, coordinateOffset);
-    onRelativeCoordinatesUpdate(newRelativeCoordinates);
+  const handleUnitPatternUpdate = (newUnitPattern: UnitPatternVO) => {
+    onUnitPatternUpdate(newUnitPattern);
     setIsEditUnitPatternModalVisible(false);
   };
-
-  const [unitPattern, setUnitPattern] = useState<UnitPatternVO>([]);
-  useEffect(() => {
-    const newUnitPattern = convertRelativeCoordinatesToUnitPattern(
-      relativeCoordinates,
-      coordinateOffset,
-      boardWidth,
-      boardHeight
-    );
-    setUnitPattern(newUnitPattern);
-  }, [relativeCoordinates, coordinateOffset, boardWidth, boardHeight]);
 
   return (
     <section
@@ -135,7 +63,7 @@ function GameRoomSideBar({
           setIsUnitPatternHovered(false);
         }}
       >
-        <UnitPatternIcon highlighted={isUnitPatternHovered} active={!!relativeCoordinates} />
+        <UnitPatternIcon highlighted={isUnitPatternHovered} active={!!unitPattern} />
       </ItemWrapper>
       <ItemWrapper
         hovered={isMiniMapHovered}

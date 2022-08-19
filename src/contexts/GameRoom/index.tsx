@@ -3,7 +3,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import type { AreaDTO, MapSizeDTO } from '@/dto';
-import type { UnitVO, CoordinateVO } from '@/valueObjects';
+import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 import { ungzipBlob } from '@/utils/compression';
 import { EventTypeEnum } from './eventTypes';
 import type { Event, AreaUpdatedEventPayload } from './eventTypes';
@@ -30,10 +30,10 @@ type GameRoomContextValue = {
   displayedArea: AreaDTO | null;
   targetArea: AreaDTO | null;
   unitMap: UnitVO[][] | null;
-  relativeCoordinates: CoordinateVO[] | null;
+  unitPattern: UnitPatternVO;
   joinGame: () => void;
-  updateRelativeCoordinates: (coordinates: CoordinateVO[] | null) => void;
-  reviveUnits: (coordinates: CoordinateVO[]) => void;
+  updateUnitPattern: (pattern: UnitPatternVO) => void;
+  reviveUnitsWithPattern: (coordinate: CoordinateVO, unitPatternOffset: OffsetVO, unitPattern: UnitPatternVO) => void;
   watchArea: (area: AreaDTO) => void;
   leaveGame: () => void;
 };
@@ -45,15 +45,16 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     displayedArea: null,
     targetArea: null,
     unitMap: null,
-    relativeCoordinates: [
-      { x: -1, y: 0 },
-      { x: 0, y: -1 },
-      { x: 0, y: 1 },
-      { x: 1, y: 0 },
+    unitPattern: [
+      [null, null, null, null, null],
+      [null, null, true, null, null],
+      [null, true, null, true, null],
+      [null, null, true, null, null],
+      [null, null, null, null, null],
     ],
     joinGame: () => {},
-    updateRelativeCoordinates: () => {},
-    reviveUnits: () => {},
+    updateUnitPattern: () => {},
+    reviveUnitsWithPattern: () => {},
     watchArea: () => {},
     leaveGame: () => {},
   };
@@ -72,26 +73,36 @@ export function Provider({ children }: Props) {
   const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
   const [unitMap, setUnitMap] = useState<UnitVO[][] | null>(initialGameRoomContextValue.unitMap);
-  const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateVO[] | null>(
-    initialGameRoomContextValue.relativeCoordinates
-  );
+  const [unitPattern, setUnitPattern] = useState<UnitPatternVO>(initialGameRoomContextValue.unitPattern);
   const [status, setStatus] = useState<Status>(initialGameRoomContextValue.status);
 
-  const updateRelativeCoordinates = useCallback(
-    (coordinates: CoordinateVO[] | null) => {
-      setRelativeCoordinates(coordinates);
+  const updateUnitPattern = useCallback(
+    (newUnitPattern: UnitPatternVO) => {
+      setUnitPattern(newUnitPattern);
     },
     [socketRef.current, status]
   );
 
-  const reviveUnits = useCallback(
-    (coordinates: CoordinateVO[]) => {
+  const reviveUnitsWithPattern = useCallback(
+    (coordinate: CoordinateVO, patternOffset: OffsetVO, pattern: UnitPatternVO) => {
       if (!socketRef.current) {
         return;
       }
       if (status !== 'ONLINE') {
         return;
       }
+
+      const coordinates: CoordinateVO[] = [];
+      pattern.forEach((patternCol, colIdx) => {
+        patternCol.forEach((isTruthy, rowIdx) => {
+          if (isTruthy) {
+            coordinates.push({
+              x: coordinate.x + colIdx + patternOffset.x,
+              y: coordinate.y + rowIdx + patternOffset.y,
+            });
+          }
+        });
+      });
 
       const action: ReviveUnitsAction = {
         type: ActionTypeEnum.ReviveUnits,
@@ -200,10 +211,10 @@ export function Provider({ children }: Props) {
       displayedArea,
       targetArea,
       unitMap,
-      relativeCoordinates,
+      unitPattern,
       joinGame,
-      updateRelativeCoordinates,
-      reviveUnits,
+      updateUnitPattern,
+      reviveUnitsWithPattern,
       watchArea,
       leaveGame,
     }),
@@ -213,10 +224,10 @@ export function Provider({ children }: Props) {
       displayedArea,
       targetArea,
       unitMap,
-      relativeCoordinates,
+      unitPattern,
       joinGame,
-      updateRelativeCoordinates,
-      reviveUnits,
+      updateUnitPattern,
+      reviveUnitsWithPattern,
       watchArea,
       leaveGame,
     ]

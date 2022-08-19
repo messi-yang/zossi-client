@@ -23,12 +23,12 @@ const Room: NextPage = function Room() {
     targetArea,
     unitMap,
     status,
-    relativeCoordinates,
+    unitPattern,
     joinGame,
     leaveGame,
-    reviveUnits,
+    reviveUnitsWithPattern,
     watchArea,
-    updateRelativeCoordinates,
+    updateUnitPattern,
   } = useContext(GameRoomContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
 
@@ -72,8 +72,8 @@ const Room: NextPage = function Room() {
             <GameRoomSideBar
               align="column"
               onLogoClick={handleLogoClick}
-              relativeCoordinates={relativeCoordinates}
-              onRelativeCoordinatesUpdate={updateRelativeCoordinates}
+              unitPattern={unitPattern}
+              onUnitPatternUpdate={updateUnitPattern}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
             />
@@ -92,8 +92,9 @@ const Room: NextPage = function Room() {
                   displayedArea={displayedArea}
                   targetArea={targetArea}
                   unitMap={unitMap}
-                  relativeCoordinates={relativeCoordinates}
-                  onUnitsRevive={reviveUnits}
+                  unitPatternOffset={{ x: -2, y: -2 }}
+                  unitPattern={unitPattern}
+                  onUnitsRevive={reviveUnitsWithPattern}
                   onAreaUpdate={watchArea}
                 />
               )}
@@ -124,8 +125,9 @@ const Room: NextPage = function Room() {
                   displayedArea={displayedArea}
                   targetArea={targetArea}
                   unitMap={unitMap}
-                  relativeCoordinates={relativeCoordinates}
-                  onUnitsRevive={reviveUnits}
+                  unitPatternOffset={{ x: -2, y: -2 }}
+                  unitPattern={unitPattern}
+                  onUnitsRevive={reviveUnitsWithPattern}
                   onAreaUpdate={watchArea}
                 />
               )}
@@ -154,8 +156,8 @@ const Room: NextPage = function Room() {
             <GameRoomSideBar
               align="row"
               onLogoClick={handleLogoClick}
-              relativeCoordinates={relativeCoordinates}
-              onRelativeCoordinatesUpdate={updateRelativeCoordinates}
+              unitPattern={unitPattern}
+              onUnitPatternUpdate={updateUnitPattern}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
             />

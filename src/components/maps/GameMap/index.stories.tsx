@@ -2,7 +2,7 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import type { UnitVO, CoordinateVO, AreaVO } from '@/valueObjects';
+import type { UnitVO, CoordinateVO, AreaVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 
 import GameMap from '.';
 
@@ -15,21 +15,22 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { displayedArea, unitMap } = args;
-  const handleUnitsRevive = (coordinates: CoordinateVO[]) => {
+  const handleUnitsRevive = (coordinate: CoordinateVO, patternOffset: OffsetVO, pattern: UnitPatternVO) => {
     if (!displayedArea) {
       return;
     }
-    const coordinateOffset = displayedArea.from;
+
     const newUnitMap = cloneDeep(unitMap);
-    coordinates.forEach(({ x, y }) => {
-      const adjustedX = x - coordinateOffset.x;
-      const adjustedY = y - coordinateOffset.y;
-
-      if (newUnitMap?.[adjustedX]?.[adjustedY] === undefined) {
-        return;
-      }
-
-      newUnitMap[adjustedX][adjustedY].alive = true;
+    pattern.forEach((patternCol, colIdx) => {
+      patternCol.forEach((isTruthy, rowIdx) => {
+        if (isTruthy) {
+          const adjustedX = coordinate.x - displayedArea.from.x + colIdx + patternOffset.x;
+          const adjustedY = coordinate.y - displayedArea.from.y + rowIdx + patternOffset.y;
+          if (newUnitMap?.[adjustedX]?.[adjustedY]) {
+            newUnitMap[adjustedX][adjustedY].alive = true;
+          }
+        }
+      });
     });
 
     updateArgs({
@@ -38,7 +39,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
   };
 
   return (
-    <div style={{ display: 'inline-flex', width: '140px', height: '140px' }}>
+    <div style={{ display: 'inline-flex', width: '105px', height: '105px' }}>
       <GameMap {...args} onUnitsRevive={handleUnitsRevive} />
     </div>
   );
@@ -62,6 +63,10 @@ function generateUnitMap(area: AreaVO) {
 
 export const Primary = Template.bind({});
 Primary.args = {
+  targetArea: {
+    from: { x: 3, y: 3 },
+    to: { x: 9, y: 9 },
+  },
   displayedArea: {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
@@ -70,5 +75,12 @@ Primary.args = {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
   }),
-  relativeCoordinates: [{ x: 0, y: 0 }],
+  unitPatternOffset: { x: -2, y: -2 },
+  unitPattern: [
+    [null, null, null, null, null],
+    [null, null, true, null, null],
+    [null, null, true, null, null],
+    [null, null, true, null, null],
+    [null, null, null, null, null],
+  ],
 };

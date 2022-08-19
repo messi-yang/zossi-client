@@ -3,7 +3,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { gameBackgroundColor } from '@/styles/colors';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import type { AreaVO, UnitVO, CoordinateVO } from '@/valueObjects';
+import type { AreaVO, UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
@@ -26,12 +26,21 @@ type Props = {
   displayedArea: AreaVO | null;
   targetArea: AreaVO | null;
   unitMap: UnitVO[][] | null;
-  relativeCoordinates: CoordinateVO[] | null;
-  onUnitsRevive: (coordinates: CoordinateVO[]) => any;
+  unitPatternOffset: OffsetVO;
+  unitPattern: UnitPatternVO;
+  onUnitsRevive: (coordinate: CoordinateVO, unitPatternOffset: OffsetVO, unitPattern: UnitPatternVO) => any;
   onAreaUpdate: (newArea: AreaVO) => any;
 };
 
-function GameMap({ displayedArea, targetArea, unitMap, relativeCoordinates, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({
+  displayedArea,
+  targetArea,
+  unitMap,
+  unitPatternOffset,
+  unitPattern,
+  onUnitsRevive,
+  onAreaUpdate,
+}: Props) {
   const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -50,35 +59,40 @@ function GameMap({ displayedArea, targetArea, unitMap, relativeCoordinates, onUn
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!displayedArea || !relativeCoordinates) {
+      if (!displayedArea || !unitPattern) {
         return;
       }
-      const finalCoordinates = relativeCoordinates.map((relativeCoordinate) => ({
-        x: displayedArea.from.x + colIdx + relativeCoordinate.x,
-        y: displayedArea.from.y + rowIdx + relativeCoordinate.y,
-      }));
 
-      onUnitsRevive(finalCoordinates);
+      const finalCoordinate = {
+        x: displayedArea.from.x + colIdx,
+        y: displayedArea.from.y + rowIdx,
+      };
+
+      onUnitsRevive(finalCoordinate, unitPatternOffset, unitPattern);
     },
-    [relativeCoordinates, onUnitsRevive, displayedArea]
+    [unitPattern, unitPatternOffset, onUnitsRevive, displayedArea]
   );
 
   const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
 
-  const setHighlightsOfRelativeCoordinates = (colIdx: number, rowIdx: number, highlighted: boolean) => {
-    if (!relativeCoordinates) {
+  const highlightUnitMapWithCoordinateAndPattern = (colIdx: number, rowIdx: number, highlighted: boolean) => {
+    if (!unitPattern) {
       return;
     }
 
-    relativeCoordinates.forEach((relativeCoordinate) => {
-      if (!unitSquaresCompRef.current) {
-        return;
-      }
-      unitSquaresCompRef.current.setUnitHighlighted(
-        colIdx + relativeCoordinate.x,
-        rowIdx + relativeCoordinate.y,
-        highlighted
-      );
+    unitPattern.forEach((unitCol, unitPatternColIdx) => {
+      unitCol.forEach((isTruthy, unitPatternRowIdx) => {
+        if (!unitSquaresCompRef.current) {
+          return;
+        }
+        if (isTruthy) {
+          unitSquaresCompRef.current.setUnitHighlighted(
+            colIdx + unitPatternColIdx + unitPatternOffset.x,
+            rowIdx + unitPatternRowIdx + unitPatternOffset.y,
+            highlighted
+          );
+        }
+      });
     });
   };
   const handleUnitSquareMouseEnter = useCallback((colIdx: number, rowIdx: number) => {
@@ -87,14 +101,14 @@ function GameMap({ displayedArea, targetArea, unitMap, relativeCoordinates, onUn
 
   useEffect(() => {
     if (hoveredIndexes) {
-      setHighlightsOfRelativeCoordinates(hoveredIndexes[0], hoveredIndexes[1], true);
+      highlightUnitMapWithCoordinateAndPattern(hoveredIndexes[0], hoveredIndexes[1], true);
     }
     return () => {
       if (hoveredIndexes) {
-        setHighlightsOfRelativeCoordinates(hoveredIndexes[0], hoveredIndexes[1], false);
+        highlightUnitMapWithCoordinateAndPattern(hoveredIndexes[0], hoveredIndexes[1], false);
       }
     };
-  }, [hoveredIndexes, relativeCoordinates]);
+  }, [hoveredIndexes, unitPattern]);
 
   const generateNewAreaAndTriggerUpdate = (from: CoordinateVO, areaWidth: number, areaHeight: number) => {
     const to = {

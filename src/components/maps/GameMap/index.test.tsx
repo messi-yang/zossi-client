@@ -8,7 +8,8 @@ function renderGameMap(unitMap: UnitVO[][]): RenderResult {
       displayedArea={null}
       targetArea={null}
       unitMap={unitMap}
-      relativeCoordinates={[]}
+      unitPatternOffset={{ x: 0, y: 0 }}
+      unitPattern={[]}
       onUnitsRevive={() => {}}
       onAreaUpdate={() => {}}
     />

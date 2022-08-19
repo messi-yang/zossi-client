@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { CoordinateVO } from '@/valueObjects';
+import { UnitPatternVO } from '@/valueObjects';
 
 import GameRoomSideBar from '.';
 
@@ -14,8 +14,8 @@ export default {
 const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args) {
   const { align } = args;
   const [, updateArgs] = useArgs();
-  const handleRelativeCoordinatesUpdate = (relativeCoordinates: CoordinateVO[] | null) => {
-    updateArgs({ relativeCoordinates });
+  const handleUnitPatternUpdate = (unitPattern: UnitPatternVO) => {
+    updateArgs({ unitPattern });
   };
 
   return (
@@ -25,7 +25,7 @@ const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args)
         width: align === 'row' ? '100vw' : undefined,
       }}
     >
-      <GameRoomSideBar {...args} onRelativeCoordinatesUpdate={handleRelativeCoordinatesUpdate} />
+      <GameRoomSideBar {...args} onUnitPatternUpdate={handleUnitPatternUpdate} />
     </section>
   );
 };
@@ -33,5 +33,11 @@ const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args)
 export const Primary = Template.bind({});
 Primary.args = {
   align: 'column',
-  relativeCoordinates: [],
+  unitPattern: [
+    [null, null, null, null, null],
+    [null, null, null, null, null],
+    [null, true, true, true, null],
+    [null, null, null, null, null],
+    [null, null, null, null, null],
+  ],
 };

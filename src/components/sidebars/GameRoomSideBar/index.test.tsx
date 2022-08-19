@@ -5,8 +5,8 @@ function renderGameRoomSideBar(): RenderResult {
   return render(
     <GameRoomSideBar
       align="column"
-      relativeCoordinates={[]}
-      onRelativeCoordinatesUpdate={() => {}}
+      unitPattern={[[true]]}
+      onUnitPatternUpdate={() => {}}
       onLogoClick={() => {}}
       isMiniMapActive
       onMiniMapClick={() => {}}
