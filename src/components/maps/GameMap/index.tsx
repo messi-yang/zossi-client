@@ -12,14 +12,14 @@ function calculateDisplayedAreaOffset(
   displayedArea: AreaVO | null,
   targetArea: AreaVO | null,
   squareSize: number
-): [offsetX: number, offsetY: number] {
+): OffsetVO {
   if (!displayedArea || !targetArea) {
-    return [0, 0];
+    return { x: 0, y: 0 };
   }
-  return [
-    (displayedArea.from.x - targetArea.from.x) * squareSize,
-    (displayedArea.from.y - targetArea.from.y) * squareSize,
-  ];
+  return {
+    x: (displayedArea.from.x - targetArea.from.x) * squareSize,
+    y: (displayedArea.from.y - targetArea.from.y) * squareSize,
+  };
 }
 
 type Props = {
@@ -49,12 +49,12 @@ function GameMap({
     squareSize
   );
   const [hoveredIndexes, setHoveredIndexes] = useState<[colIdx: number, rowIdx: number] | null>(null);
-  const [displayedAreaOffsets, setDisplayedAreaOffsets] = useState<[offsetX: number, offsetY: number]>(
+  const [displayedAreaOffset, setDisplayedAreaOffset] = useState<OffsetVO>(
     calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize)
   );
 
   useEffect(() => {
-    setDisplayedAreaOffsets(calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize));
+    setDisplayedAreaOffset(calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize));
   }, [displayedArea, targetArea]);
 
   const handleUnitSquareClick = useCallback(
@@ -144,8 +144,8 @@ function GameMap({
       <section
         style={{
           position: 'relative',
-          left: displayedAreaOffsets[0],
-          top: displayedAreaOffsets[1],
+          left: displayedAreaOffset.x,
+          top: displayedAreaOffset.y,
           width: '100%',
           height: '100%',
           display: 'flex',
