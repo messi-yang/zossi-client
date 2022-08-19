@@ -4,6 +4,7 @@ import UnitPatternEditor, { dataTestids } from '.';
 function renderUnitPatternEditor(): RenderResult {
   return render(
     <UnitPatternEditor
+      unitSize={20}
       unitPattern={[
         [true, true, true],
         [true, null, true],

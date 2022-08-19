@@ -16,11 +16,10 @@ const unitPatternPresets: UnitPatternVO[] = [
     [null, null, null, null, null],
   ],
   [
-    [null, null, null, null, null],
-    [null, true, true, null, null],
-    [null, true, true, null, null],
-    [null, null, null, null, null],
-    [null, null, null, null, null],
+    [null, null, null, null],
+    [null, true, true, null],
+    [null, true, true, null],
+    [null, null, null, null],
   ],
   [
     [null, null, null, null, null],
@@ -30,6 +29,7 @@ const unitPatternPresets: UnitPatternVO[] = [
     [null, null, null, null, null],
   ],
   [
+    [null, null, null, null, null],
     [null, null, true, null, null],
     [null, true, null, true, null],
     [null, true, null, true, null],
@@ -49,6 +49,15 @@ const unitPatternPresets: UnitPatternVO[] = [
     [null, null, true, true, null],
     [null, true, true, null, null],
     [null, null, null, null, null],
+  ],
+  [
+    [null, null, null, null, null, null, null],
+    [null, null, true, null, null, null, null],
+    [null, true, null, true, null, null, null],
+    [null, null, true, null, true, null, null],
+    [null, null, null, true, null, true, null],
+    [null, null, null, null, true, null, null],
+    [null, null, null, null, null, null, null],
   ],
 ];
 

@@ -79,10 +79,12 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
             <IconButton icon="cross" onClick={onCancel} />
           </div>
           <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
-          <section
-            style={{ marginTop: '36px', width: '230px', height: '230px', display: 'flex', justifyContent: 'center' }}
-          >
-            <UnitPatternEditor unitPattern={tmpUnitPattern} onUpdate={handleUnitPatternUpdate} />
+          <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
+            <UnitPatternEditor
+              unitSize={230 / (tmpUnitPattern?.[0]?.length || 1)}
+              unitPattern={tmpUnitPattern}
+              onUpdate={handleUnitPatternUpdate}
+            />
           </section>
           <section style={{ marginTop: '24px', width: '100%', overflow: 'auto' }}>
             <section style={{ display: 'flex' }}>
@@ -91,13 +93,12 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
                   key={generateKeyFromIndex(unitPatternPresetIdx)}
                   style={{
                     marginLeft: unitPatternPresetIdx !== 0 ? '10px' : undefined,
-                    flexBasis: '74px',
-                    height: '74px',
                     flexShrink: '0',
                     border: isEqual(tmpUnitPattern, unitPatternPreset) ? '4px solid #01D6C9' : '4px solid black',
                   }}
                 >
                   <UnitPatternEditor
+                    unitSize={70 / (unitPatternPreset?.[0]?.length || 1)}
                     unitPattern={unitPatternPreset}
                     onUpdate={() => handleUnitPatternUpdate(unitPatternPreset)}
                   />

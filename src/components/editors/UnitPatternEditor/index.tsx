@@ -5,11 +5,12 @@ import type { UnitPatternVO } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
+  unitSize: number;
   unitPattern: UnitPatternVO;
   onUpdate?: (unitPattern: UnitPatternVO) => any;
 };
 
-function UnitPatternEditor({ unitPattern, onUpdate = () => {} }: Props) {
+function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
     const newUnitPattern = cloneDeep(unitPattern);
     newUnitPattern[colIdx][rowIdx] = newUnitPattern[colIdx][rowIdx] === true ? null : true;
@@ -18,13 +19,13 @@ function UnitPatternEditor({ unitPattern, onUpdate = () => {} }: Props) {
   };
 
   return (
-    <div data-testid={dataTestids.root} style={{ width: '100%', height: '100%', display: 'flex', flexFlow: 'row' }}>
+    <div data-testid={dataTestids.root} style={{ display: 'flex', flexFlow: 'row' }}>
       {unitPattern.map((unitCol, colIdx) => (
         <div
           key={generateKeyFromIndex(colIdx)}
           style={{
             display: 'flex',
-            flexGrow: '1',
+            width: unitSize,
             flexFlow: 'column',
           }}
         >
@@ -32,7 +33,7 @@ function UnitPatternEditor({ unitPattern, onUpdate = () => {} }: Props) {
             <div
               key={generateKeyFromIndex(rowIdx)}
               style={{
-                flexGrow: '1',
+                height: unitSize,
               }}
             >
               <UnitSquare
