@@ -12,10 +12,10 @@ import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'OFFLINE' | 'ONLINE';
 
-function convertAreaUpdatedEventPayloadToUnitEntities({ area, units }: AreaUpdatedEventPayload): UnitVO[][] {
+function convertAreaUpdatedEventPayloadToUnitEntities({ area, unitMap }: AreaUpdatedEventPayload): UnitVO[][] {
   const { from } = area;
-  return units.map((rowUnits, x) =>
-    rowUnits.map((unit, y) => ({
+  return unitMap.map((unitCol, x) =>
+    unitCol.map((unit, y) => ({
       key: `${x},${y}`,
       coordinate: { x: from.x + x, y: from.y + y },
       alive: unit.alive,
@@ -29,7 +29,7 @@ type GameRoomContextValue = {
   mapSize: MapSizeDTO | null;
   displayedArea: AreaDTO | null;
   targetArea: AreaDTO | null;
-  units: UnitVO[][];
+  unitMap: UnitVO[][];
   relativeCoordinates: CoordinateVO[] | null;
   joinGame: () => void;
   updateRelativeCoordinates: (coordinates: CoordinateVO[] | null) => void;
@@ -44,7 +44,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     mapSize: null,
     displayedArea: null,
     targetArea: null,
-    units: [],
+    unitMap: [],
     relativeCoordinates: [
       { x: -1, y: 0 },
       { x: 0, y: -1 },
@@ -71,7 +71,7 @@ export function Provider({ children }: Props) {
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
   const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
-  const [units, setUnits] = useState<UnitVO[][]>(initialGameRoomContextValue.units);
+  const [unitMap, setUnitMap] = useState<UnitVO[][]>(initialGameRoomContextValue.unitMap);
   const [relativeCoordinates, setRelativeCoordinates] = useState<CoordinateVO[] | null>(
     initialGameRoomContextValue.relativeCoordinates
   );
@@ -170,28 +170,28 @@ export function Provider({ children }: Props) {
           if (!displayedArea) {
             return;
           }
-          const newUnits = cloneDeep(units);
+          const newUnitMap = cloneDeep(unitMap);
           event.payload.coordinates.forEach((coord, idx) => {
             const colIdx = coord.x - displayedArea.from.x;
             const rowIdx = coord.y - displayedArea.from.y;
-            newUnits[colIdx][rowIdx] = {
-              ...newUnits[colIdx][rowIdx],
+            newUnitMap[colIdx][rowIdx] = {
+              ...newUnitMap[colIdx][rowIdx],
               ...event.payload.units[idx],
             };
           });
 
-          setUnits(newUnits);
+          setUnitMap(newUnitMap);
         } else if (event.type === EventTypeEnum.AreaUpdated) {
           if (!isEqual(displayedArea, event.payload.area)) {
             setDisplayedArea(event.payload.area);
           }
-          setUnits(convertAreaUpdatedEventPayloadToUnitEntities(event.payload));
+          setUnitMap(convertAreaUpdatedEventPayloadToUnitEntities(event.payload));
         } else if (event.type === EventTypeEnum.InformationUpdated) {
           setMapSize(event.payload.mapSize);
         }
       };
     }
-  }, [socketRef.current, units]);
+  }, [socketRef.current, unitMap]);
 
   const gameRoomContextValue = useMemo<GameRoomContextValue>(
     () => ({
@@ -199,7 +199,7 @@ export function Provider({ children }: Props) {
       mapSize,
       displayedArea,
       targetArea,
-      units,
+      unitMap,
       relativeCoordinates,
       joinGame,
       updateRelativeCoordinates,
@@ -212,7 +212,7 @@ export function Provider({ children }: Props) {
       mapSize,
       displayedArea,
       targetArea,
-      units,
+      unitMap,
       relativeCoordinates,
       joinGame,
       updateRelativeCoordinates,

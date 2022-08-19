@@ -23,7 +23,7 @@ type CoordinatesUpdatedEvent = {
 
 type AreaUpdatedEventPayload = {
   area: AreaDTO;
-  units: UnitDTO[][];
+  unitMap: UnitDTO[][];
 };
 type AreaUpdatedEvent = {
   type: EventTypeEnum.AreaUpdated;

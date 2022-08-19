@@ -2,11 +2,7 @@ import { createWrapper } from 'next-redux-wrapper';
 import { Action } from 'redux';
 import { configureStore, ThunkAction } from '@reduxjs/toolkit';
 
-import gameOfLifeReducer from './gameOfLife';
-
-export const reducer = {
-  gameOfLife: gameOfLifeReducer,
-};
+export const reducer = {};
 
 export const makeStore = () =>
   configureStore({

@@ -21,7 +21,7 @@ const Room: NextPage = function Room() {
     mapSize,
     displayedArea,
     targetArea,
-    units,
+    unitMap,
     status,
     relativeCoordinates,
     joinGame,
@@ -91,7 +91,7 @@ const Room: NextPage = function Room() {
                 <GameMap
                   displayedArea={displayedArea}
                   targetArea={targetArea}
-                  units={units}
+                  unitMap={unitMap}
                   relativeCoordinates={relativeCoordinates}
                   onUnitsRevive={reviveUnits}
                   onAreaUpdate={watchArea}
@@ -123,7 +123,7 @@ const Room: NextPage = function Room() {
                 <GameMap
                   displayedArea={displayedArea}
                   targetArea={targetArea}
-                  units={units}
+                  unitMap={unitMap}
                   relativeCoordinates={relativeCoordinates}
                   onUnitsRevive={reviveUnits}
                   onAreaUpdate={watchArea}

@@ -14,26 +14,26 @@ export default {
 
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const { displayedArea, units } = args;
+  const { displayedArea, unitMap } = args;
   const handleUnitsRevive = (coordinates: CoordinateVO[]) => {
     if (!displayedArea) {
       return;
     }
     const coordinateOffset = displayedArea.from;
-    const newUnits = cloneDeep(units);
+    const newUnitMap = cloneDeep(unitMap);
     coordinates.forEach(({ x, y }) => {
       const adjustedX = x - coordinateOffset.x;
       const adjustedY = y - coordinateOffset.y;
 
-      if (newUnits?.[adjustedX]?.[adjustedY] === undefined) {
+      if (newUnitMap?.[adjustedX]?.[adjustedY] === undefined) {
         return;
       }
 
-      newUnits[adjustedX][adjustedY].alive = true;
+      newUnitMap[adjustedX][adjustedY].alive = true;
     });
 
     updateArgs({
-      units: newUnits,
+      unitMap: newUnitMap,
     });
   };
 
@@ -44,21 +44,21 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
   );
 };
 
-function generateMockupUnits(area: AreaVO) {
-  const units: UnitVO[][] = [];
+function generateUnitMap(area: AreaVO) {
+  const unitMap: UnitVO[][] = [];
   const width = area.to.x - area.from.x + 1;
   const height = area.to.y - area.from.y + 1;
   for (let x = 0; x < width; x += 1) {
-    units.push([]);
+    unitMap.push([]);
     for (let y = 0; y < height; y += 1) {
-      units[x].push({
+      unitMap[x].push({
         coordinate: { x: area.from.x + x, y: area.from.y + y },
         alive: false,
         age: 0,
       });
     }
   }
-  return units;
+  return unitMap;
 }
 
 export const Primary = Template.bind({});
@@ -67,7 +67,7 @@ Primary.args = {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
   },
-  units: generateMockupUnits({
+  unitMap: generateUnitMap({
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
   }),

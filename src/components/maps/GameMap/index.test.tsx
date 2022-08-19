@@ -2,12 +2,12 @@ import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
 import type { UnitVO } from '@/valueObjects';
 
-function renderGameMap(units: UnitVO[][]): RenderResult {
+function renderGameMap(unitMap: UnitVO[][]): RenderResult {
   return render(
     <GameMap
       displayedArea={null}
       targetArea={null}
-      units={units}
+      unitMap={unitMap}
       relativeCoordinates={[]}
       onUnitsRevive={() => {}}
       onAreaUpdate={() => {}}

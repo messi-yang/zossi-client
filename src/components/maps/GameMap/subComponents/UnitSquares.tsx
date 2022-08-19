@@ -11,14 +11,14 @@ export type Commands = {
 type Props = {
   width: number;
   height: number;
-  units: UnitVO[][];
+  unitMap: UnitVO[][];
   squareSize: number;
   onUnitSquareClick: (colIdx: number, rowIdx: number) => void;
   onUnitSquareMouseEnter: (colIdx: number, rowIdx: number) => void;
 };
 
 function UnitSquares(
-  { width, height, units, squareSize, onUnitSquareClick, onUnitSquareMouseEnter }: Props,
+  { width, height, unitMap, squareSize, onUnitSquareClick, onUnitSquareMouseEnter }: Props,
   ref: ForwardedRef<Commands>
 ) {
   const [unitSquareCompRefs, setUnitSquareCompRefs] = useState<RefObject<CommandableUnitSquareCommands>[][]>([]);
@@ -46,7 +46,7 @@ function UnitSquares(
 
   return (
     <>
-      {units.map((unitsCol, colIdx) => (
+      {unitMap.map((unitCol, colIdx) => (
         <section
           key={generateKeyFromIndex(colIdx)}
           style={{
@@ -56,7 +56,7 @@ function UnitSquares(
             flexFlow: 'column',
           }}
         >
-          {unitsCol.map((unit, rowIdx) => (
+          {unitCol.map((unit, rowIdx) => (
             <section key={generateKeyFromIndex(rowIdx)} style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}>
               <CommandableUnitSquare
                 ref={unitSquareCompRefs?.[colIdx]?.[rowIdx]}
