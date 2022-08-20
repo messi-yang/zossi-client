@@ -41,14 +41,10 @@ const Room: NextPage = function Room() {
   }, [deviceSize]);
 
   useEffect(() => {
-    if (status !== 'ONLINE') {
-      joinGame();
-    }
+    joinGame();
 
     return () => {
-      if (status === 'ONLINE') {
-        leaveGame();
-      }
+      leaveGame();
     };
   }, [status]);
 

@@ -147,13 +147,13 @@ export function Provider({ children }: Props) {
   );
 
   const leaveGame = useCallback(() => {
-    if (!socketRef.current) {
+    if (!socketRef.current || status === 'OFFLINE') {
       return;
     }
 
     setStatus('OFFLINE');
     socketRef.current.close();
-  }, [socketRef.current]);
+  }, [socketRef.current, status]);
 
   const joinGame = useCallback(() => {
     if (status === 'ONLINE') {
@@ -171,7 +171,7 @@ export function Provider({ children }: Props) {
     newSocket.onclose = () => {
       setStatus('OFFLINE');
     };
-  }, []);
+  }, [status]);
 
   useEffect(() => {
     if (socketRef.current) {
