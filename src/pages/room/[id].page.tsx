@@ -46,7 +46,7 @@ const Room: NextPage = function Room() {
     return () => {
       leaveGame();
     };
-  }, [status]);
+  }, [joinGame, leaveGame]);
 
   const handleLogoClick = () => {
     router.push('/');
