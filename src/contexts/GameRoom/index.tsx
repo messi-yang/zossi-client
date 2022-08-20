@@ -4,7 +4,7 @@ import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import type { AreaDTO, MapSizeDTO } from '@/dto';
 import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
-import { ungzipBlob } from '@/utils/compression';
+import { ungzipBlob, gzipBlob } from '@/utils/compression';
 import { EventTypeEnum } from './eventTypes';
 import type { Event, AreaUpdatedEventPayload } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -83,6 +83,20 @@ export function Provider({ children }: Props) {
     [status]
   );
 
+  const sendMessage = useCallback(
+    async (jsonData: Object) => {
+      if (!socket || socket.readyState !== socket.OPEN) {
+        return;
+      }
+
+      const jsonString = JSON.stringify(jsonData);
+      const jsonBlob = new Blob([jsonString]);
+      const compressedJsonBlob = await gzipBlob(jsonBlob);
+      socket.send(compressedJsonBlob);
+    },
+    [socket]
+  );
+
   const reviveUnitsWithPattern = useCallback(
     (coordinate: CoordinateVO, patternOffset: OffsetVO, pattern: UnitPatternVO) => {
       if (!socket || socket.readyState !== socket.OPEN) {
@@ -107,7 +121,7 @@ export function Provider({ children }: Props) {
           coordinates,
         },
       };
-      socket.send(JSON.stringify(action));
+      sendMessage(action);
     },
     [socket, status]
   );
@@ -124,7 +138,7 @@ export function Provider({ children }: Props) {
           area: newArea,
         },
       };
-      socket.send(JSON.stringify(action));
+      sendMessage(action);
     },
     [socket, status]
   );
