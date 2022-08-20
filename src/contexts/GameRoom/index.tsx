@@ -134,9 +134,10 @@ export function Provider({ children }: Props) {
     },
     [socketRef.current, status]
   );
-  const sendWatchAreaActionDebouncer = useCallback(debounce(sendWatchAreaAction, 50, { maxWait: 250 }), [
-    sendWatchAreaAction,
-  ]);
+  const sendWatchAreaActionDebouncer = useCallback(
+    debounce(sendWatchAreaAction, 50, { leading: true, maxWait: 250, trailing: true }),
+    [sendWatchAreaAction]
+  );
   const watchArea = useCallback(
     (newArea: AreaDTO) => {
       setTargetArea(newArea);
