@@ -76,6 +76,15 @@ export function Provider({ children }: Props) {
   const [unitPattern, setUnitPattern] = useState<UnitPatternVO>(initialGameRoomContextValue.unitPattern);
   const [status, setStatus] = useState<Status>(initialGameRoomContextValue.status);
 
+  const resetContext = useCallback(() => {
+    setMapSize(initialGameRoomContextValue.mapSize);
+    setDisplayedArea(initialGameRoomContextValue.displayedArea);
+    setTargetArea(initialGameRoomContextValue.targetArea);
+    setUnitMap(initialGameRoomContextValue.unitMap);
+    setUnitPattern(initialGameRoomContextValue.unitPattern);
+    setStatus(initialGameRoomContextValue.status);
+  }, []);
+
   const updateUnitPattern = useCallback(
     (newUnitPattern: UnitPatternVO) => {
       setUnitPattern(newUnitPattern);
@@ -172,9 +181,7 @@ export function Provider({ children }: Props) {
       return;
     }
 
-    setStatus('OFFLINE');
     socket.close();
-    setSocket(null);
   }, [socket]);
 
   useEffect(() => {
@@ -187,6 +194,7 @@ export function Provider({ children }: Props) {
     };
 
     socket.onclose = () => {
+      resetContext();
       setStatus('OFFLINE');
       setSocket(null);
     };
