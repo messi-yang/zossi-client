@@ -2,7 +2,7 @@ import { createContext, useCallback, useState, useMemo, useEffect } from 'react'
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
-import type { AreaDTO, MapSizeDTO } from '@/dto';
+import type { AreaDTO, MapSizeDTO, CoordinateDTO } from '@/dto';
 import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 import { ungzipBlob, gzipBlob } from '@/utils/compression';
 import { EventTypeEnum } from './eventTypes';
@@ -112,7 +112,25 @@ export function Provider({ children }: Props) {
         return;
       }
 
-      const coordinates: CoordinateVO[] = [];
+      const normalizeCoordinate = (c: CoordinateDTO) => {
+        if (!mapSize) {
+          return c;
+        }
+        let normalizedX = c.x;
+        let normalizedY = c.y;
+        while (normalizedX < 0) {
+          normalizedX += mapSize.width;
+        }
+        while (normalizedY < 0) {
+          normalizedY += mapSize.height;
+        }
+        return {
+          x: normalizedX % mapSize.width,
+          y: normalizedY % mapSize.height,
+        };
+      };
+
+      const coordinates: CoordinateDTO[] = [];
       pattern.forEach((patternCol, colIdx) => {
         patternCol.forEach((isTruthy, rowIdx) => {
           if (isTruthy) {
@@ -127,12 +145,12 @@ export function Provider({ children }: Props) {
       const action: ReviveUnitsAction = {
         type: ActionTypeEnum.ReviveUnits,
         payload: {
-          coordinates,
+          coordinates: coordinates.map(normalizeCoordinate),
         },
       };
       sendMessage(action);
     },
-    [socket, status]
+    [socket, status, mapSize]
   );
 
   const sendWatchAreaAction = useCallback(
