@@ -1,8 +1,11 @@
 import { createWrapper } from 'next-redux-wrapper';
 import { Action } from 'redux';
 import { configureStore, ThunkAction } from '@reduxjs/toolkit';
+import gameRoom from './gameRoom';
 
-export const reducer = {};
+export const reducer = {
+  gameRoom,
+};
 
 export const makeStore = () =>
   configureStore({

@@ -1,16 +1,16 @@
-import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
+import { createContext, useCallback, useState, useMemo } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
+import useWebSocket from '@/hooks/useWebSocket';
 import type { AreaDTO, MapSizeDTO, CoordinateDTO } from '@/dto';
 import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
-import { ungzipBlob, gzipBlob } from '@/utils/compression';
 import { EventTypeEnum } from './eventTypes';
 import type { Event, AreaUpdatedEventPayload } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
-type Status = 'OFFLINE' | 'ONLINE';
+type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
 function convertAreaUpdatedEventPayloadToUnitEntities({ area, unitMap }: AreaUpdatedEventPayload): UnitVO[][] {
   const { from } = area;
@@ -40,7 +40,7 @@ type GameRoomContextValue = {
 
 function createInitialGameRoomContextValue(): GameRoomContextValue {
   return {
-    status: 'OFFLINE',
+    status: 'CLOSED',
     mapSize: null,
     displayedArea: null,
     targetArea: null,
@@ -67,14 +67,51 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
+  const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
+  const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
+
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
-  const [socket, setSocket] = useState<WebSocket | null>(null);
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
   const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
   const [unitMap, setUnitMap] = useState<UnitVO[][] | null>(initialGameRoomContextValue.unitMap);
   const [unitPattern, setUnitPattern] = useState<UnitPatternVO>(initialGameRoomContextValue.unitPattern);
-  const [status, setStatus] = useState<Status>(initialGameRoomContextValue.status);
+
+  const updateUnitPattern = useCallback((newUnitPattern: UnitPatternVO) => {
+    setUnitPattern(newUnitPattern);
+  }, []);
+
+  const handleSocketOpen = useCallback(() => {}, []);
+
+  const handleSocketMessage = useCallback(
+    (msg: any) => {
+      const newMsg: Event = msg;
+      if (newMsg.type === EventTypeEnum.CoordinatesUpdated) {
+        if (!displayedArea || !unitMap) {
+          return;
+        }
+        const newUnitMap = cloneDeep(unitMap);
+        newMsg.payload.coordinates.forEach((coord, idx) => {
+          const colIdx = coord.x - displayedArea.from.x;
+          const rowIdx = coord.y - displayedArea.from.y;
+          newUnitMap[colIdx][rowIdx] = {
+            ...newUnitMap[colIdx][rowIdx],
+            ...newMsg.payload.units[idx],
+          };
+        });
+
+        setUnitMap(newUnitMap);
+      } else if (newMsg.type === EventTypeEnum.AreaUpdated) {
+        if (!isEqual(displayedArea, newMsg.payload.area)) {
+          setDisplayedArea(newMsg.payload.area);
+        }
+        setUnitMap(convertAreaUpdatedEventPayloadToUnitEntities(newMsg.payload));
+      } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
+        setMapSize(newMsg.payload.mapSize);
+      }
+    },
+    [unitMap, displayedArea]
+  );
 
   const resetContext = useCallback(() => {
     setMapSize(initialGameRoomContextValue.mapSize);
@@ -82,36 +119,28 @@ export function Provider({ children }: Props) {
     setTargetArea(initialGameRoomContextValue.targetArea);
     setUnitMap(initialGameRoomContextValue.unitMap);
     setUnitPattern(initialGameRoomContextValue.unitPattern);
-    setStatus(initialGameRoomContextValue.status);
   }, []);
 
-  const updateUnitPattern = useCallback(
-    (newUnitPattern: UnitPatternVO) => {
-      setUnitPattern(newUnitPattern);
-    },
-    [status]
-  );
+  const handleSocketClose = () => {
+    resetContext();
+  };
 
-  const sendMessage = useCallback(
-    async (jsonData: Object) => {
-      if (!socket || socket.readyState !== socket.OPEN) {
-        return;
-      }
+  const { status, connect, sendMessage, disconnect } = useWebSocket(socketUrl, {
+    onOpen: handleSocketOpen,
+    onMessage: handleSocketMessage,
+    onClose: handleSocketClose,
+  });
 
-      const jsonString = JSON.stringify(jsonData);
-      const jsonBlob = new Blob([jsonString]);
-      const compressedJsonBlob = await gzipBlob(jsonBlob);
-      socket.send(compressedJsonBlob);
-    },
-    [socket]
-  );
+  const joinGame = useCallback(() => {
+    connect();
+  }, [connect]);
+
+  const leaveGame = useCallback(() => {
+    disconnect();
+  }, [disconnect]);
 
   const reviveUnitsWithPattern = useCallback(
     (coordinate: CoordinateVO, patternOffset: OffsetVO, pattern: UnitPatternVO) => {
-      if (!socket || socket.readyState !== socket.OPEN) {
-        return;
-      }
-
       const normalizeCoordinate = (c: CoordinateDTO) => {
         if (!mapSize) {
           return c;
@@ -150,15 +179,11 @@ export function Provider({ children }: Props) {
       };
       sendMessage(action);
     },
-    [socket, status, mapSize]
+    [mapSize, sendMessage]
   );
 
   const sendWatchAreaAction = useCallback(
     (newArea: AreaDTO) => {
-      if (!socket || socket.readyState !== socket.OPEN) {
-        return;
-      }
-
       const action: WatchAreaAction = {
         type: ActionTypeEnum.WatchArea,
         payload: {
@@ -167,7 +192,7 @@ export function Provider({ children }: Props) {
       };
       sendMessage(action);
     },
-    [socket, status]
+    [sendMessage]
   );
   const sendWatchAreaActionDebouncer = useCallback(
     debounce(sendWatchAreaAction, 50, { leading: true, maxWait: 250, trailing: true }),
@@ -181,73 +206,6 @@ export function Provider({ children }: Props) {
     [sendWatchAreaActionDebouncer]
   );
 
-  const joinGame = useCallback(() => {
-    if (socket) {
-      return;
-    }
-
-    const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
-    const newSocket = new WebSocket(`${schema}://${process.env.API_DOMAIN}/ws/game/`);
-    setSocket(newSocket);
-  }, [socket]);
-
-  const leaveGame = useCallback(() => {
-    if (!socket) {
-      return;
-    }
-    if (socket.readyState === socket.CLOSING) {
-      return;
-    }
-
-    socket.close();
-  }, [socket]);
-
-  useEffect(() => {
-    if (!socket) {
-      return;
-    }
-
-    socket.onopen = () => {
-      setStatus('ONLINE');
-    };
-
-    socket.onclose = () => {
-      resetContext();
-      setStatus('OFFLINE');
-      setSocket(null);
-    };
-
-    socket.onmessage = async (evt: any) => {
-      const decompressedBlob = await ungzipBlob(evt.data as Blob);
-      const eventJsonString = await decompressedBlob.text();
-
-      const event: Event = JSON.parse(eventJsonString);
-      if (event.type === EventTypeEnum.CoordinatesUpdated) {
-        if (!displayedArea || !unitMap) {
-          return;
-        }
-        const newUnitMap = cloneDeep(unitMap);
-        event.payload.coordinates.forEach((coord, idx) => {
-          const colIdx = coord.x - displayedArea.from.x;
-          const rowIdx = coord.y - displayedArea.from.y;
-          newUnitMap[colIdx][rowIdx] = {
-            ...newUnitMap[colIdx][rowIdx],
-            ...event.payload.units[idx],
-          };
-        });
-
-        setUnitMap(newUnitMap);
-      } else if (event.type === EventTypeEnum.AreaUpdated) {
-        if (!isEqual(displayedArea, event.payload.area)) {
-          setDisplayedArea(event.payload.area);
-        }
-        setUnitMap(convertAreaUpdatedEventPayloadToUnitEntities(event.payload));
-      } else if (event.type === EventTypeEnum.InformationUpdated) {
-        setMapSize(event.payload.mapSize);
-      }
-    };
-  }, [socket, unitMap]);
-
   const gameRoomContextValue = useMemo<GameRoomContextValue>(
     () => ({
       status,
@@ -257,10 +215,10 @@ export function Provider({ children }: Props) {
       unitMap,
       unitPattern,
       joinGame,
+      leaveGame,
       updateUnitPattern,
       reviveUnitsWithPattern,
       watchArea,
-      leaveGame,
     }),
     [
       status,
@@ -270,10 +228,10 @@ export function Provider({ children }: Props) {
       unitMap,
       unitPattern,
       joinGame,
+      leaveGame,
       updateUnitPattern,
       reviveUnitsWithPattern,
       watchArea,
-      leaveGame,
     ]
   );
 

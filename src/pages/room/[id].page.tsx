@@ -83,7 +83,7 @@ const Room: NextPage = function Room() {
             }}
           >
             <section style={{ width: '100%', height: '100%' }}>
-              {status === 'ONLINE' && (
+              {status === 'CONNECTED' && (
                 <GameMap
                   displayedArea={displayedArea}
                   targetArea={targetArea}
@@ -115,7 +115,7 @@ const Room: NextPage = function Room() {
             }}
           >
             <section style={{ width: '100%', height: '100%' }}>
-              {status === 'ONLINE' && (
+              {status === 'CONNECTED' && (
                 <GameMap
                   displayedArea={displayedArea}
                   targetArea={targetArea}
@@ -163,7 +163,7 @@ const Room: NextPage = function Room() {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: [{ params: { id: 'general' } }],
+  paths: [{ params: { id: 'a' } }],
   fallback: true,
 });
 
