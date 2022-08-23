@@ -1,6 +1,4 @@
-import { useRef, useState } from 'react';
-
-import useHover from '@/hooks/useHover';
+import { useState } from 'react';
 
 import ContentWrapper from './subComponents/ContentWrapper';
 import dataTestids from './dataTestids';
@@ -12,13 +10,18 @@ type Props = {
 
 function Button({ text, onClick = () => {} }: Props) {
   const [hovered, setHovered] = useState(false);
-  const nodeRef = useRef<HTMLButtonElement>(null);
-  useHover(nodeRef, setHovered);
+
+  const handleMouseEnter = () => {
+    setHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+  };
 
   return (
     <button
       data-testid={dataTestids.root}
-      ref={nodeRef}
       type="button"
       style={{
         cursor: 'pointer',
@@ -27,6 +30,8 @@ function Button({ text, onClick = () => {} }: Props) {
         background: 'none',
       }}
       onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <ContentWrapper hovered={hovered}>
         <div
