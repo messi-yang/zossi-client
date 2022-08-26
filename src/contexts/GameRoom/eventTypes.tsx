@@ -3,7 +3,7 @@ import type { AreaDTO, CoordinateDTO, MapSizeDTO, UnitDTO } from '@/dto';
 enum EventTypeEnum {
   InformationUpdated = 'INFORMATION_UPDATED',
   CoordinatesUpdated = 'COORDINATES_UPDATED',
-  AreaUpdated = 'AREA_UPDATED',
+  UnitMapFetched = 'UNIT_MAP_FETCHED',
 }
 
 type InformationUpdatedEvent = {
@@ -21,16 +21,22 @@ type CoordinatesUpdatedEvent = {
   };
 };
 
-type AreaUpdatedEventPayload = {
+type UnitMapFetchedEventPayload = {
   area: AreaDTO;
   unitMap: UnitDTO[][];
 };
-type AreaUpdatedEvent = {
-  type: EventTypeEnum.AreaUpdated;
-  payload: AreaUpdatedEventPayload;
+type UnitMapFetchedEvent = {
+  type: EventTypeEnum.UnitMapFetched;
+  payload: UnitMapFetchedEventPayload;
 };
 
-type Event = InformationUpdatedEvent | CoordinatesUpdatedEvent | AreaUpdatedEvent;
+type Event = InformationUpdatedEvent | CoordinatesUpdatedEvent | UnitMapFetchedEvent;
 
 export { EventTypeEnum };
-export type { Event, InformationUpdatedEvent, CoordinatesUpdatedEvent, AreaUpdatedEvent, AreaUpdatedEventPayload };
+export type {
+  Event,
+  InformationUpdatedEvent,
+  CoordinatesUpdatedEvent,
+  UnitMapFetchedEvent,
+  UnitMapFetchedEventPayload,
+};

@@ -6,13 +6,13 @@ import useWebSocket from '@/hooks/useWebSocket';
 import type { AreaDTO, MapSizeDTO, CoordinateDTO } from '@/dto';
 import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 import { EventTypeEnum } from './eventTypes';
-import type { Event, AreaUpdatedEventPayload } from './eventTypes';
+import type { Event, UnitMapFetchedEventPayload } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
-function convertAreaUpdatedEventPayloadToUnitEntities({ area, unitMap }: AreaUpdatedEventPayload): UnitVO[][] {
+function convertUnitMapFetchedEventPayloadToUnitEntities({ area, unitMap }: UnitMapFetchedEventPayload): UnitVO[][] {
   const { from } = area;
   return unitMap.map((unitCol, x) =>
     unitCol.map((unit, y) => ({
@@ -101,11 +101,11 @@ export function Provider({ children }: Props) {
         });
 
         setUnitMap(newUnitMap);
-      } else if (newMsg.type === EventTypeEnum.AreaUpdated) {
+      } else if (newMsg.type === EventTypeEnum.UnitMapFetched) {
         if (!isEqual(displayedArea, newMsg.payload.area)) {
           setDisplayedArea(newMsg.payload.area);
         }
-        setUnitMap(convertAreaUpdatedEventPayloadToUnitEntities(newMsg.payload));
+        setUnitMap(convertUnitMapFetchedEventPayloadToUnitEntities(newMsg.payload));
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         setMapSize(newMsg.payload.mapSize);
       }
