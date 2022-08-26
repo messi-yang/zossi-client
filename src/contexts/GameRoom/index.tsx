@@ -86,7 +86,7 @@ export function Provider({ children }: Props) {
   const handleSocketMessage = useCallback(
     (msg: any) => {
       const newMsg: Event = msg;
-      if (newMsg.type === EventTypeEnum.CoordinatesUpdated) {
+      if (newMsg.type === EventTypeEnum.UnitsUpdated) {
         if (!displayedArea || !unitMap) {
           return;
         }
