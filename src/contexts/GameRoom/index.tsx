@@ -86,6 +86,7 @@ export function Provider({ children }: Props) {
   const handleSocketMessage = useCallback(
     (msg: any) => {
       const newMsg: Event = msg;
+      console.log(newMsg);
       if (newMsg.type === EventTypeEnum.UnitsUpdated) {
         if (!displayedArea || !unitMap) {
           return;
@@ -101,7 +102,7 @@ export function Provider({ children }: Props) {
         });
 
         setUnitMap(newUnitMap);
-      } else if (newMsg.type === EventTypeEnum.UnitMapFetched) {
+      } else if (newMsg.type === EventTypeEnum.UnitMapReceived) {
         if (!isEqual(displayedArea, newMsg.payload.area)) {
           setDisplayedArea(newMsg.payload.area);
         }
