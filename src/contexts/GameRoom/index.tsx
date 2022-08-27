@@ -1,5 +1,4 @@
-import { createContext, useCallback, useState, useMemo } from 'react';
-import cloneDeep from 'lodash/cloneDeep';
+import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import useWebSocket from '@/hooks/useWebSocket';
@@ -80,7 +79,8 @@ export function Provider({ children }: Props) {
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
   const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
-  const [unitMap, setUnitMap] = useState<UnitVO[][] | null>(initialGameRoomContextValue.unitMap);
+  const unitMapSource = useRef<UnitVO[][] | null>(initialGameRoomContextValue.unitMap);
+  const [unitMap, setUnitMap] = useState<UnitVO[][] | null>(unitMapSource.current);
   const [unitPattern, setUnitPattern] = useState<UnitPatternVO>(initialGameRoomContextValue.unitPattern);
 
   const updateUnitPattern = useCallback((newUnitPattern: UnitPatternVO) => {
@@ -89,40 +89,65 @@ export function Provider({ children }: Props) {
 
   const handleSocketOpen = useCallback(() => {}, []);
 
-  const handleUnitsUpdatedEvent = (event: UnitsUpdatedEvent) => {
-    if (!displayedArea || !unitMap) {
-      return;
-    }
-    const newUnitMap = cloneDeep(unitMap);
-    event.payload.coordinates.forEach((coord, idx) => {
-      const colIdx = coord.x - displayedArea.from.x;
-      const rowIdx = coord.y - displayedArea.from.y;
-      newUnitMap[colIdx][rowIdx] = {
-        ...newUnitMap[colIdx][rowIdx],
-        ...event.payload.units[idx],
-      };
-    });
+  const updateUnitMapSource = debounce(
+    () => {
+      if (!unitMapSource.current) {
+        setUnitMap(unitMapSource.current);
+        return;
+      }
 
-    setUnitMap(newUnitMap);
-  };
+      const dereferencedSourceUnitMap = [...unitMapSource.current];
+      setUnitMap(dereferencedSourceUnitMap);
+    },
+    25,
+    { leading: true }
+  );
 
-  const handleUnitMapReceivedEvent = (event: UnitMapReceivedEvent) => {
+  const handleUnitsUpdatedEvent = useCallback(
+    (event: UnitsUpdatedEvent) => {
+      if (!displayedArea || !unitMapSource.current) {
+        return;
+      }
+
+      for (let idx = 0; idx < event.payload.coordinates.length; idx += 1) {
+        const coord = event.payload.coordinates[idx];
+        const colIdx = coord.x - displayedArea.from.x;
+        const rowIdx = coord.y - displayedArea.from.y;
+        unitMapSource.current[colIdx][rowIdx] = {
+          ...unitMapSource.current[colIdx][rowIdx],
+          ...event.payload.units[idx],
+        };
+      }
+
+      updateUnitMapSource();
+    },
+    [displayedArea]
+  );
+
+  const handleUnitMapReceivedEvent = useCallback((event: UnitMapReceivedEvent) => {
     if (!isEqual(displayedArea, event.payload.area)) {
       setDisplayedArea(event.payload.area);
     }
-    setUnitMap(convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap));
-  };
+    unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
+    updateUnitMapSource.cancel();
+    updateUnitMapSource();
+  }, []);
 
-  const handleUnitMapUpdatedEvent = (event: UnitMapUpdatedEvent) => {
-    if (!isEqual(displayedArea, event.payload.area)) {
-      setDisplayedArea(event.payload.area);
-    }
-    setUnitMap(convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap));
-  };
+  const handleUnitMapUpdatedEvent = useCallback(
+    (event: UnitMapUpdatedEvent) => {
+      if (!isEqual(displayedArea, event.payload.area)) {
+        setDisplayedArea(event.payload.area);
+      }
 
-  const handleInformationUpdatedEvent = (event: InformationUpdatedEvent) => {
+      unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
+      updateUnitMapSource();
+    },
+    [displayedArea]
+  );
+
+  const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
     setMapSize(event.payload.mapSize);
-  };
+  }, []);
 
   const handleSocketMessage = useCallback(
     (msg: any) => {
@@ -137,14 +162,21 @@ export function Provider({ children }: Props) {
         handleInformationUpdatedEvent(newMsg);
       }
     },
-    [unitMap, displayedArea]
+    [
+      unitMap,
+      handleUnitsUpdatedEvent,
+      handleUnitMapReceivedEvent,
+      handleUnitMapUpdatedEvent,
+      handleInformationUpdatedEvent,
+    ]
   );
 
   const resetContext = useCallback(() => {
     setMapSize(initialGameRoomContextValue.mapSize);
     setDisplayedArea(initialGameRoomContextValue.displayedArea);
     setTargetArea(initialGameRoomContextValue.targetArea);
-    setUnitMap(initialGameRoomContextValue.unitMap);
+    unitMapSource.current = initialGameRoomContextValue.unitMap;
+    updateUnitMapSource();
     setUnitPattern(initialGameRoomContextValue.unitPattern);
   }, []);
 
