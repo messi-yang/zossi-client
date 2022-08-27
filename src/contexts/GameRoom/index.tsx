@@ -181,6 +181,7 @@ export function Provider({ children }: Props) {
         type: ActionTypeEnum.ReviveUnits,
         payload: {
           coordinates: coordinates.map(normalizeCoordinate),
+          actionedAt: new Date().toISOString(),
         },
       };
       sendMessage(action);
@@ -194,6 +195,7 @@ export function Provider({ children }: Props) {
         type: ActionTypeEnum.WatchArea,
         payload: {
           area: newArea,
+          actionedAt: new Date().toISOString(),
         },
       };
       sendMessage(action);

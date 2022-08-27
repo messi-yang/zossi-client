@@ -9,6 +9,7 @@ type WatchAreaAction = {
   type: ActionTypeEnum.WatchArea;
   payload: {
     area: AreaDTO;
+    actionedAt: string;
   };
 };
 
@@ -16,6 +17,7 @@ type ReviveUnitsAction = {
   type: ActionTypeEnum.ReviveUnits;
   payload: {
     coordinates: CoordinateDTO[];
+    actionedAt: string;
   };
 };
 
