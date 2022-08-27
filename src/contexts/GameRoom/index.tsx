@@ -3,16 +3,16 @@ import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import useWebSocket from '@/hooks/useWebSocket';
-import type { AreaDTO, MapSizeDTO, CoordinateDTO } from '@/dto';
+import type { AreaDTO, UnitDTO, MapSizeDTO, CoordinateDTO } from '@/dto';
 import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 import { EventTypeEnum } from './eventTypes';
-import type { Event, UnitMapFetchedEventPayload } from './eventTypes';
+import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
-function convertUnitMapFetchedEventPayloadToUnitEntities({ area, unitMap }: UnitMapFetchedEventPayload): UnitVO[][] {
+function convertAreaAndUnitMapIntoUnitVOMap(area: AreaDTO, unitMap: UnitDTO[][]): UnitVO[][] {
   const { from } = area;
   return unitMap.map((unitCol, x) =>
     unitCol.map((unit, y) => ({
@@ -105,7 +105,12 @@ export function Provider({ children }: Props) {
         if (!isEqual(displayedArea, newMsg.payload.area)) {
           setDisplayedArea(newMsg.payload.area);
         }
-        setUnitMap(convertUnitMapFetchedEventPayloadToUnitEntities(newMsg.payload));
+        setUnitMap(convertAreaAndUnitMapIntoUnitVOMap(newMsg.payload.area, newMsg.payload.unitMap));
+      } else if (newMsg.type === EventTypeEnum.UnitMapUpdated) {
+        if (!isEqual(displayedArea, newMsg.payload.area)) {
+          setDisplayedArea(newMsg.payload.area);
+        }
+        setUnitMap(convertAreaAndUnitMapIntoUnitVOMap(newMsg.payload.area, newMsg.payload.unitMap));
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         setMapSize(newMsg.payload.mapSize);
       }
