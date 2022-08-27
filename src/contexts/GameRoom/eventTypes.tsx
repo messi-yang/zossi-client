@@ -49,5 +49,6 @@ export type {
   UnitsUpdatedEvent,
   UnitMapReceivedEvent,
   UnitMapReceivedEventPayload,
+  UnitMapUpdatedEvent,
   UnitMapUpdatedEventPayload,
 };

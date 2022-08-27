@@ -5,7 +5,13 @@ import isEqual from 'lodash/isEqual';
 import useWebSocket from '@/hooks/useWebSocket';
 import type { AreaDTO, UnitDTO, MapSizeDTO, CoordinateDTO } from '@/dto';
 import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
-import { EventTypeEnum } from './eventTypes';
+import {
+  EventTypeEnum,
+  UnitMapReceivedEvent,
+  UnitMapUpdatedEvent,
+  InformationUpdatedEvent,
+  UnitsUpdatedEvent,
+} from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
@@ -83,37 +89,52 @@ export function Provider({ children }: Props) {
 
   const handleSocketOpen = useCallback(() => {}, []);
 
+  const handleUnitsUpdatedEvent = (event: UnitsUpdatedEvent) => {
+    if (!displayedArea || !unitMap) {
+      return;
+    }
+    const newUnitMap = cloneDeep(unitMap);
+    event.payload.coordinates.forEach((coord, idx) => {
+      const colIdx = coord.x - displayedArea.from.x;
+      const rowIdx = coord.y - displayedArea.from.y;
+      newUnitMap[colIdx][rowIdx] = {
+        ...newUnitMap[colIdx][rowIdx],
+        ...event.payload.units[idx],
+      };
+    });
+
+    setUnitMap(newUnitMap);
+  };
+
+  const handleUnitMapReceivedEvent = (event: UnitMapReceivedEvent) => {
+    if (!isEqual(displayedArea, event.payload.area)) {
+      setDisplayedArea(event.payload.area);
+    }
+    setUnitMap(convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap));
+  };
+
+  const handleUnitMapUpdatedEvent = (event: UnitMapUpdatedEvent) => {
+    if (!isEqual(displayedArea, event.payload.area)) {
+      setDisplayedArea(event.payload.area);
+    }
+    setUnitMap(convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap));
+  };
+
+  const handleInformationUpdatedEvent = (event: InformationUpdatedEvent) => {
+    setMapSize(event.payload.mapSize);
+  };
+
   const handleSocketMessage = useCallback(
     (msg: any) => {
       const newMsg: Event = msg;
-      console.log(newMsg);
       if (newMsg.type === EventTypeEnum.UnitsUpdated) {
-        if (!displayedArea || !unitMap) {
-          return;
-        }
-        const newUnitMap = cloneDeep(unitMap);
-        newMsg.payload.coordinates.forEach((coord, idx) => {
-          const colIdx = coord.x - displayedArea.from.x;
-          const rowIdx = coord.y - displayedArea.from.y;
-          newUnitMap[colIdx][rowIdx] = {
-            ...newUnitMap[colIdx][rowIdx],
-            ...newMsg.payload.units[idx],
-          };
-        });
-
-        setUnitMap(newUnitMap);
+        handleUnitsUpdatedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.UnitMapReceived) {
-        if (!isEqual(displayedArea, newMsg.payload.area)) {
-          setDisplayedArea(newMsg.payload.area);
-        }
-        setUnitMap(convertAreaAndUnitMapIntoUnitVOMap(newMsg.payload.area, newMsg.payload.unitMap));
+        handleUnitMapReceivedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.UnitMapUpdated) {
-        if (!isEqual(displayedArea, newMsg.payload.area)) {
-          setDisplayedArea(newMsg.payload.area);
-        }
-        setUnitMap(convertAreaAndUnitMapIntoUnitVOMap(newMsg.payload.area, newMsg.payload.unitMap));
+        handleUnitMapUpdatedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
-        setMapSize(newMsg.payload.mapSize);
+        handleInformationUpdatedEvent(newMsg);
       }
     },
     [unitMap, displayedArea]
