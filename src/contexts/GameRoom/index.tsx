@@ -7,7 +7,7 @@ import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjec
 import {
   EventTypeEnum,
   UnitMapReceivedEvent,
-  UnitMapUpdatedEvent,
+  UnitMapTickedEvent,
   InformationUpdatedEvent,
   UnitsRevivedEvent,
 } from './eventTypes';
@@ -133,8 +133,8 @@ export function Provider({ children }: Props) {
     updateUnitMapSource();
   }, []);
 
-  const handleUnitMapUpdatedEvent = useCallback(
-    (event: UnitMapUpdatedEvent) => {
+  const handleUnitMapTickedEvent = useCallback(
+    (event: UnitMapTickedEvent) => {
       if (!isEqual(displayedArea, event.payload.area)) {
         setDisplayedArea(event.payload.area);
       }
@@ -156,8 +156,8 @@ export function Provider({ children }: Props) {
         handleUnitsRevivedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.UnitMapReceived) {
         handleUnitMapReceivedEvent(newMsg);
-      } else if (newMsg.type === EventTypeEnum.UnitMapUpdated) {
-        handleUnitMapUpdatedEvent(newMsg);
+      } else if (newMsg.type === EventTypeEnum.UnitMapTicked) {
+        handleUnitMapTickedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         handleInformationUpdatedEvent(newMsg);
       }
@@ -166,7 +166,7 @@ export function Provider({ children }: Props) {
       unitMap,
       handleUnitsRevivedEvent,
       handleUnitMapReceivedEvent,
-      handleUnitMapUpdatedEvent,
+      handleUnitMapTickedEvent,
       handleInformationUpdatedEvent,
     ]
   );

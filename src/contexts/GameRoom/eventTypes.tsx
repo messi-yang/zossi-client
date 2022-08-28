@@ -4,7 +4,7 @@ enum EventTypeEnum {
   InformationUpdated = 'INFORMATION_UPDATED',
   UnitsRevived = 'UNITS_REVIVED',
   UnitMapReceived = 'UNIT_MAP_RECEIVED',
-  UnitMapUpdated = 'UNIT_MAP_UPDATED',
+  UnitMapTicked = 'UNIT_MAP_TICKED',
 }
 
 type InformationUpdatedEvent = {
@@ -31,16 +31,16 @@ type UnitMapReceivedEvent = {
   payload: UnitMapReceivedEventPayload;
 };
 
-type UnitMapUpdatedEventPayload = {
+type UnitMapTickedEventPayload = {
   area: AreaDTO;
   unitMap: UnitDTO[][];
 };
-type UnitMapUpdatedEvent = {
-  type: EventTypeEnum.UnitMapUpdated;
-  payload: UnitMapUpdatedEventPayload;
+type UnitMapTickedEvent = {
+  type: EventTypeEnum.UnitMapTicked;
+  payload: UnitMapTickedEventPayload;
 };
 
-type Event = InformationUpdatedEvent | UnitsRevivedEvent | UnitMapReceivedEvent | UnitMapUpdatedEvent;
+type Event = InformationUpdatedEvent | UnitsRevivedEvent | UnitMapReceivedEvent | UnitMapTickedEvent;
 
 export { EventTypeEnum };
 export type {
@@ -49,6 +49,6 @@ export type {
   UnitsRevivedEvent,
   UnitMapReceivedEvent,
   UnitMapReceivedEventPayload,
-  UnitMapUpdatedEvent,
-  UnitMapUpdatedEventPayload,
+  UnitMapTickedEvent,
+  UnitMapTickedEventPayload,
 };
