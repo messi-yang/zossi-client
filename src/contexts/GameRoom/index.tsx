@@ -9,7 +9,7 @@ import {
   UnitMapReceivedEvent,
   UnitMapUpdatedEvent,
   InformationUpdatedEvent,
-  UnitsUpdatedEvent,
+  UnitsRevivedEvent,
 } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -103,8 +103,8 @@ export function Provider({ children }: Props) {
     { leading: true }
   );
 
-  const handleUnitsUpdatedEvent = useCallback(
-    (event: UnitsUpdatedEvent) => {
+  const handleUnitsRevivedEvent = useCallback(
+    (event: UnitsRevivedEvent) => {
       if (!displayedArea || !unitMapSource.current) {
         return;
       }
@@ -152,8 +152,8 @@ export function Provider({ children }: Props) {
   const handleSocketMessage = useCallback(
     (msg: any) => {
       const newMsg: Event = msg;
-      if (newMsg.type === EventTypeEnum.UnitsUpdated) {
-        handleUnitsUpdatedEvent(newMsg);
+      if (newMsg.type === EventTypeEnum.UnitsRevived) {
+        handleUnitsRevivedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.UnitMapReceived) {
         handleUnitMapReceivedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.UnitMapUpdated) {
@@ -164,7 +164,7 @@ export function Provider({ children }: Props) {
     },
     [
       unitMap,
-      handleUnitsUpdatedEvent,
+      handleUnitsRevivedEvent,
       handleUnitMapReceivedEvent,
       handleUnitMapUpdatedEvent,
       handleInformationUpdatedEvent,
