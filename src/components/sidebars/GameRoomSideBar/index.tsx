@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import flatten from 'lodash/flatten';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import EditUnitPatternModal from '@/components/modals/EditUnitPatternModal';
@@ -27,6 +28,8 @@ function GameRoomSideBar({
   const [isEditUnitPatternModalVisible, setIsEditUnitPatternModalVisible] = useState<boolean>(false);
 
   const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
+
+  const isUnitPatternEmpty = flatten(unitPattern).findIndex((alive) => alive) === -1;
 
   const handleUnitPatternItemClick = () => {
     setIsEditUnitPatternModalVisible(true);
@@ -63,7 +66,7 @@ function GameRoomSideBar({
           setIsUnitPatternHovered(false);
         }}
       >
-        <UnitPatternIcon highlighted={isUnitPatternHovered} active={!!unitPattern} />
+        <UnitPatternIcon highlighted={isUnitPatternHovered} active={!isUnitPatternEmpty} />
       </ItemWrapper>
       <ItemWrapper
         hovered={isMiniMapHovered}
