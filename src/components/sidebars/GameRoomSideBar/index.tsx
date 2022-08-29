@@ -46,8 +46,8 @@ function GameRoomSideBar({
     <section
       data-testid={dataTestids.root}
       style={{
-        width: align === 'column' ? '90px' : '100%',
-        height: align === 'row' ? '90px' : '100%',
+        width: align === 'column' ? '78px' : '100%',
+        height: align === 'row' ? '78px' : '100%',
         display: 'flex',
         flexFlow: align,
         backgroundColor: '#1C1C1C',
