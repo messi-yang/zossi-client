@@ -10,30 +10,6 @@ import { generateKeyFromIndex } from '@/utils/component';
 import unitPatternPresets from './unitPatternPresets';
 import dataTestids from './dataTestids';
 
-type CornerSquareProps = {
-  top?: number;
-  right?: number;
-  bottom?: number;
-  left?: number;
-};
-
-function CornerSquare({ top, right, bottom, left }: CornerSquareProps) {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top,
-        right,
-        bottom,
-        left,
-        width: '56px',
-        height: '56px',
-        backgroundColor: 'white',
-      }}
-    />
-  );
-}
-
 type Props = {
   opened: boolean;
   unitPattern: UnitPatternVO;
@@ -59,10 +35,6 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
   return (
     <BaseModal width="560px" height="auto" opened={opened}>
       <section data-testid={dataTestids.root} style={{ position: 'relative', padding: '8px' }}>
-        <CornerSquare top={-8} left={-8} />
-        <CornerSquare top={-8} right={-8} />
-        <CornerSquare bottom={-8} left={-8} />
-        <CornerSquare bottom={-8} right={-8} />
         <section
           style={{
             position: 'relative',
@@ -71,6 +43,7 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
             flexFlow: 'column',
             alignItems: 'center',
             backgroundColor: '#121212',
+            border: '4px solid white',
           }}
         >
           <div
