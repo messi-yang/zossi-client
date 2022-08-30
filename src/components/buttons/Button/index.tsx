@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import Text from '@/components/text/Text';
+
 import ContentWrapper from './subComponents/ContentWrapper';
 import dataTestids from './dataTestids';
 
@@ -44,15 +46,7 @@ function Button({ text, onClick = () => {} }: Props) {
             background: hovered ? 'white' : 'none',
           }}
         >
-          <span
-            style={{
-              color: hovered ? 'black' : 'white',
-              fontWeight: 'bold',
-              fontSize: '16px',
-            }}
-          >
-            {text}
-          </span>
+          <Text color={hovered ? 'black' : 'white'} copy={text} size={16} />
         </div>
       </ContentWrapper>
     </button>
