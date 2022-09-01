@@ -2,6 +2,7 @@ import Text from '@/components/text/Text';
 
 type Props = {
   label?: string;
+  highlighted: boolean;
   active: boolean;
   hovered: boolean;
   children: JSX.Element;
@@ -12,6 +13,7 @@ type Props = {
 
 function ItemWrapper({
   label,
+  highlighted,
   active,
   hovered,
   children,
@@ -42,7 +44,7 @@ function ItemWrapper({
       {children}
       {label && (
         <div style={{ marginTop: '7px' }}>
-          <Text copy={label} color={active ? '#01D6C9' : 'white'} size={12} />
+          <Text copy={label} color={active || highlighted ? '#01D6C9' : 'white'} size={12} />
         </div>
       )}
     </section>
