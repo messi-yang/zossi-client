@@ -43,7 +43,7 @@ function ItemWrapper({
     >
       {children}
       {label && (
-        <div style={{ marginTop: '7px' }}>
+        <div style={{ marginTop: '7px', display: 'flex' }}>
           <Text copy={label} color={active || highlighted ? '#01D6C9' : 'white'} size={12} />
         </div>
       )}
