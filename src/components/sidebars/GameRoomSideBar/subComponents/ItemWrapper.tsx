@@ -1,4 +1,8 @@
+import Text from '@/components/text/Text';
+
 type Props = {
+  label?: string;
+  active: boolean;
   hovered: boolean;
   children: JSX.Element;
   onClick?: () => any;
@@ -7,6 +11,8 @@ type Props = {
 };
 
 function ItemWrapper({
+  label,
+  active,
   hovered,
   children,
   onClick = () => {},
@@ -20,6 +26,7 @@ function ItemWrapper({
         height: '100%',
         flexBasis: '70px',
         display: 'flex',
+        flexFlow: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
@@ -33,6 +40,11 @@ function ItemWrapper({
       onMouseLeave={onMouseLeave}
     >
       {children}
+      {label && (
+        <div style={{ marginTop: '7px' }}>
+          <Text copy={label} color={active ? '#01D6C9' : 'white'} size={12} />
+        </div>
+      )}
     </section>
   );
 }

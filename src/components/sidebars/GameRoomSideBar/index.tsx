@@ -54,10 +54,12 @@ function GameRoomSideBar({
         backgroundColor: '#1C1C1C',
       }}
     >
-      <ItemWrapper hovered={false} onClick={onLogoClick}>
+      <ItemWrapper active={false} hovered={false} onClick={onLogoClick}>
         <SmallLogo />
       </ItemWrapper>
       <ItemWrapper
+        label="Pattern"
+        active={!isUnitPatternEmpty}
         hovered={isUnitPatternHovered}
         onClick={handleUnitPatternItemClick}
         onMouseEnter={() => {
@@ -70,6 +72,8 @@ function GameRoomSideBar({
         <UnitPatternIcon highlighted={isUnitPatternHovered} active={!isUnitPatternEmpty} />
       </ItemWrapper>
       <ItemWrapper
+        label="Map"
+        active={isMiniMapActive}
         hovered={isMiniMapHovered}
         onClick={onMiniMapClick}
         onMouseEnter={() => {
