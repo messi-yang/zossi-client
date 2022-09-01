@@ -6,6 +6,7 @@ type Props = {
 };
 
 function UnitPatternIcon({ highlighted, active }: Props) {
+  const fill = active || highlighted ? '#01D6C9' : 'white';
   return (
     <svg
       data-testid={dataTestids.root}
@@ -18,10 +19,14 @@ function UnitPatternIcon({ highlighted, active }: Props) {
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M3.19995 3.19995H28.7999V28.7999H3.19995V3.19995ZM20.8 4.26662H27.7333V11.7333H20.8V4.26662ZM19.7333 4.26662H12.2666V11.7333H19.7333V4.26662ZM11.2 4.26662H4.26662V11.7333H11.2V4.26662ZM4.26662 12.8V19.7333H11.2V12.8H4.26662ZM4.26662 20.8V27.7333H11.2V20.8H4.26662ZM12.2666 27.7333H19.7333V20.8H12.2666V27.7333ZM20.8 27.7333H27.7333V20.8H20.8V27.7333ZM27.7333 19.7333V12.8H20.8V19.7333H27.7333ZM19.7333 19.7333H12.2666V12.8H19.7333V19.7333Z"
-        fill={active || highlighted ? '#01D6C9' : 'white'}
+        d="M5 3H27V4H21V12H28V5H29V27H28V21H21V28H27V29H5V28H11V21H4V27H3V5H4V12H11V4H5V3ZM12 28H20V21H12V28ZM28 13V20H21V13H28ZM20 13V20H12V13H20ZM11 13V20H4V13H11ZM12 12H20V4H12V12Z"
+        fill={fill}
       />
-      {active && <path d="M12.2666 19.7333H19.7333V12.8H12.2666V19.7333Z" fill="#01D6C9" />}
+      <path d="M5 4V5H4V4H5Z" fill={fill} />
+      <path d="M4 27H5V28H4V27Z" fill={fill} />
+      <path d="M27 28H28V27H27V28Z" fill={fill} />
+      <path d="M28 5H27V4H28V5Z" fill={fill} />
+      {active && <path d="M20 20V13H12V20H20Z" fill="#01D6C9" />}
     </svg>
   );
 }
