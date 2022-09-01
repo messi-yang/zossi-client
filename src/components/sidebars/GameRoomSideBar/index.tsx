@@ -2,6 +2,7 @@ import { useState } from 'react';
 import flatten from 'lodash/flatten';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
+import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
 import EditUnitPatternModal from '@/components/modals/EditUnitPatternModal';
 import type { UnitPatternVO } from '@/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
@@ -78,7 +79,7 @@ function GameRoomSideBar({
           setIsMiniMapHovered(false);
         }}
       >
-        <UnitPatternIcon highlighted={isMiniMapHovered} active={isMiniMapActive} />
+        <MapMarkerIcon highlighted={isMiniMapHovered} active={isMiniMapActive} />
       </ItemWrapper>
       <EditUnitPatternModal
         opened={isEditUnitPatternModalVisible}
