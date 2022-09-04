@@ -6,14 +6,14 @@ import type { AreaDTO, UnitDTO, MapSizeDTO, CoordinateDTO } from '@/dto';
 import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 import {
   EventTypeEnum,
-  UnitMapReceivedEvent,
+  AreaZoomedEvent,
   UnitMapTickedEvent,
   InformationUpdatedEvent,
   UnitsRevivedEvent,
 } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { WatchAreaAction, ReviveUnitsAction } from './actionTypes';
+import type { ZoomAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
@@ -39,7 +39,7 @@ type GameRoomContextValue = {
   joinGame: () => void;
   updateUnitPattern: (pattern: UnitPatternVO) => void;
   reviveUnitsWithPattern: (coordinate: CoordinateVO, unitPatternOffset: OffsetVO, unitPattern: UnitPatternVO) => void;
-  watchArea: (area: AreaDTO) => void;
+  zoomArea: (area: AreaDTO) => void;
   leaveGame: () => void;
 };
 
@@ -60,7 +60,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     joinGame: () => {},
     updateUnitPattern: () => {},
     reviveUnitsWithPattern: () => {},
-    watchArea: () => {},
+    zoomArea: () => {},
     leaveGame: () => {},
   };
 }
@@ -124,7 +124,7 @@ export function Provider({ children }: Props) {
     [displayedArea]
   );
 
-  const handleUnitMapReceivedEvent = useCallback((event: UnitMapReceivedEvent) => {
+  const handleAreaZoomedEvent = useCallback((event: AreaZoomedEvent) => {
     if (!isEqual(displayedArea, event.payload.area)) {
       setDisplayedArea(event.payload.area);
     }
@@ -154,21 +154,15 @@ export function Provider({ children }: Props) {
       const newMsg: Event = msg;
       if (newMsg.type === EventTypeEnum.UnitsRevived) {
         handleUnitsRevivedEvent(newMsg);
-      } else if (newMsg.type === EventTypeEnum.UnitMapReceived) {
-        handleUnitMapReceivedEvent(newMsg);
+      } else if (newMsg.type === EventTypeEnum.AreaZoomed) {
+        handleAreaZoomedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.UnitMapTicked) {
         handleUnitMapTickedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         handleInformationUpdatedEvent(newMsg);
       }
     },
-    [
-      unitMap,
-      handleUnitsRevivedEvent,
-      handleUnitMapReceivedEvent,
-      handleUnitMapTickedEvent,
-      handleInformationUpdatedEvent,
-    ]
+    [unitMap, handleUnitsRevivedEvent, handleAreaZoomedEvent, handleUnitMapTickedEvent, handleInformationUpdatedEvent]
   );
 
   const resetContext = useCallback(() => {
@@ -242,10 +236,10 @@ export function Provider({ children }: Props) {
     [mapSize, sendMessage]
   );
 
-  const sendWatchAreaAction = useCallback(
+  const sendZoomAreaAction = useCallback(
     (newArea: AreaDTO) => {
-      const action: WatchAreaAction = {
-        type: ActionTypeEnum.WatchArea,
+      const action: ZoomAreaAction = {
+        type: ActionTypeEnum.ZoomArea,
         payload: {
           area: newArea,
           actionedAt: new Date().toISOString(),
@@ -255,16 +249,16 @@ export function Provider({ children }: Props) {
     },
     [sendMessage]
   );
-  const sendWatchAreaActionDebouncer = useCallback(
-    debounce(sendWatchAreaAction, 50, { leading: true, maxWait: 250, trailing: true }),
-    [sendWatchAreaAction]
+  const sendZoomAreaActionDebouncer = useCallback(
+    debounce(sendZoomAreaAction, 50, { leading: true, maxWait: 250, trailing: true }),
+    [sendZoomAreaAction]
   );
-  const watchArea = useCallback(
+  const zoomArea = useCallback(
     (newArea: AreaDTO) => {
       setTargetArea(newArea);
-      sendWatchAreaActionDebouncer(newArea);
+      sendZoomAreaActionDebouncer(newArea);
     },
-    [sendWatchAreaActionDebouncer]
+    [sendZoomAreaActionDebouncer]
   );
 
   const gameRoomContextValue = useMemo<GameRoomContextValue>(
@@ -279,7 +273,7 @@ export function Provider({ children }: Props) {
       leaveGame,
       updateUnitPattern,
       reviveUnitsWithPattern,
-      watchArea,
+      zoomArea,
     }),
     [
       status,
@@ -292,7 +286,7 @@ export function Provider({ children }: Props) {
       leaveGame,
       updateUnitPattern,
       reviveUnitsWithPattern,
-      watchArea,
+      zoomArea,
     ]
   );
 

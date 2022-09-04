@@ -1,12 +1,12 @@
 import { AreaDTO, CoordinateDTO } from '@/dto';
 
 enum ActionTypeEnum {
-  WatchArea = 'WATCH_AREA',
+  ZoomArea = 'ZOOM_AREA',
   ReviveUnits = 'REVIVE_UNITS',
 }
 
-type WatchAreaAction = {
-  type: ActionTypeEnum.WatchArea;
+type ZoomAreaAction = {
+  type: ActionTypeEnum.ZoomArea;
   payload: {
     area: AreaDTO;
     actionedAt: string;
@@ -23,4 +23,4 @@ type ReviveUnitsAction = {
 
 export { ActionTypeEnum };
 
-export type { WatchAreaAction, ReviveUnitsAction };
+export type { ZoomAreaAction, ReviveUnitsAction };

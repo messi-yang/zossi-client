@@ -27,7 +27,7 @@ const Room: NextPage = function Room() {
     joinGame,
     leaveGame,
     reviveUnitsWithPattern,
-    watchArea,
+    zoomArea,
     updateUnitPattern,
   } = useContext(GameRoomContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
@@ -53,7 +53,7 @@ const Room: NextPage = function Room() {
   };
 
   const handleAreaUpdate = (newArea: AreaVO) => {
-    watchArea(newArea);
+    zoomArea(newArea);
   };
 
   const handleMiniMapClick = () => {
@@ -90,7 +90,7 @@ const Room: NextPage = function Room() {
                   unitMap={unitMap}
                   unitPattern={unitPattern}
                   onUnitsRevive={reviveUnitsWithPattern}
-                  onAreaUpdate={watchArea}
+                  onAreaUpdate={zoomArea}
                 />
               )}
             </section>
@@ -122,7 +122,7 @@ const Room: NextPage = function Room() {
                   unitMap={unitMap}
                   unitPattern={unitPattern}
                   onUnitsRevive={reviveUnitsWithPattern}
-                  onAreaUpdate={watchArea}
+                  onAreaUpdate={zoomArea}
                 />
               )}
             </section>
