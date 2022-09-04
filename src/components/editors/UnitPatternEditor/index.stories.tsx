@@ -33,4 +33,5 @@ Primary.args = {
     [true, null, true],
     [true, true, true],
   ],
+  unitSize: 40,
 };
