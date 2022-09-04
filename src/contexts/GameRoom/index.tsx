@@ -7,7 +7,7 @@ import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjec
 import {
   EventTypeEnum,
   AreaZoomedEvent,
-  UnitMapTickedEvent,
+  ZoomedAreaUpdatedEvent,
   InformationUpdatedEvent,
   UnitsRevivedEvent,
 } from './eventTypes';
@@ -133,8 +133,8 @@ export function Provider({ children }: Props) {
     updateUnitMapSource();
   }, []);
 
-  const handleUnitMapTickedEvent = useCallback(
-    (event: UnitMapTickedEvent) => {
+  const handleZoomedAreaUpdatedEvent = useCallback(
+    (event: ZoomedAreaUpdatedEvent) => {
       if (!isEqual(displayedArea, event.payload.area)) {
         setDisplayedArea(event.payload.area);
       }
@@ -156,13 +156,19 @@ export function Provider({ children }: Props) {
         handleUnitsRevivedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.AreaZoomed) {
         handleAreaZoomedEvent(newMsg);
-      } else if (newMsg.type === EventTypeEnum.UnitMapTicked) {
-        handleUnitMapTickedEvent(newMsg);
+      } else if (newMsg.type === EventTypeEnum.ZoomedAreaUpdated) {
+        handleZoomedAreaUpdatedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         handleInformationUpdatedEvent(newMsg);
       }
     },
-    [unitMap, handleUnitsRevivedEvent, handleAreaZoomedEvent, handleUnitMapTickedEvent, handleInformationUpdatedEvent]
+    [
+      unitMap,
+      handleUnitsRevivedEvent,
+      handleAreaZoomedEvent,
+      handleZoomedAreaUpdatedEvent,
+      handleInformationUpdatedEvent,
+    ]
   );
 
   const resetContext = useCallback(() => {
