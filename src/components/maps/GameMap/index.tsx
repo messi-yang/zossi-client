@@ -7,6 +7,7 @@ import type { AreaVO, UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/va
 import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
+import BlurredUnitMap from './subComponents/BlurredUnitMap';
 
 function calculateZoomedAreaOffset(zoomedArea: AreaVO | null, targetArea: AreaVO | null, squareSize: number): OffsetVO {
   if (!zoomedArea || !targetArea) {
@@ -140,6 +141,9 @@ function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, 
         backgroundColor: gameBackgroundColor,
       }}
     >
+      <section style={{ position: 'absolute', width: '100%', height: '100%' }}>
+        <BlurredUnitMap width={desiredAreaWidth} height={desiredAreaHeight} squareSize={squareSize} />
+      </section>
       <section
         style={{
           position: 'relative',
