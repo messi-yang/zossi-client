@@ -25,6 +25,7 @@ type AreaZoomedEvent = {
 type ZoomedAreaUpdatedEventPayload = {
   area: AreaDTO;
   unitMap: UnitDTO[][];
+  updatedAt: string;
 };
 type ZoomedAreaUpdatedEvent = {
   type: EventTypeEnum.ZoomedAreaUpdated;
