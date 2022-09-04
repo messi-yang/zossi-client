@@ -32,7 +32,7 @@ function convertAreaAndUnitMapIntoUnitVOMap(area: AreaDTO, unitMap: UnitDTO[][])
 type GameRoomContextValue = {
   status: Status;
   mapSize: MapSizeDTO | null;
-  displayedArea: AreaDTO | null;
+  zoomedArea: AreaDTO | null;
   targetArea: AreaDTO | null;
   unitMap: UnitVO[][] | null;
   unitPattern: UnitPatternVO;
@@ -47,7 +47,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
   return {
     status: 'CLOSED',
     mapSize: null,
-    displayedArea: null,
+    zoomedArea: null,
     targetArea: null,
     unitMap: null,
     unitPattern: [
@@ -77,7 +77,7 @@ export function Provider({ children }: Props) {
 
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
-  const [displayedArea, setDisplayedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.displayedArea);
+  const [zoomedArea, setZoomedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.zoomedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
   const unitMapSource = useRef<UnitVO[][] | null>(initialGameRoomContextValue.unitMap);
   const [unitMap, setUnitMap] = useState<UnitVO[][] | null>(unitMapSource.current);
@@ -105,14 +105,14 @@ export function Provider({ children }: Props) {
 
   const handleUnitsRevivedEvent = useCallback(
     (event: UnitsRevivedEvent) => {
-      if (!displayedArea || !unitMapSource.current) {
+      if (!zoomedArea || !unitMapSource.current) {
         return;
       }
 
       for (let idx = 0; idx < event.payload.coordinates.length; idx += 1) {
         const coord = event.payload.coordinates[idx];
-        const colIdx = coord.x - displayedArea.from.x;
-        const rowIdx = coord.y - displayedArea.from.y;
+        const colIdx = coord.x - zoomedArea.from.x;
+        const rowIdx = coord.y - zoomedArea.from.y;
         unitMapSource.current[colIdx][rowIdx] = {
           ...unitMapSource.current[colIdx][rowIdx],
           ...event.payload.units[idx],
@@ -121,12 +121,12 @@ export function Provider({ children }: Props) {
 
       updateUnitMapSource();
     },
-    [displayedArea]
+    [zoomedArea]
   );
 
   const handleAreaZoomedEvent = useCallback((event: AreaZoomedEvent) => {
-    if (!isEqual(displayedArea, event.payload.area)) {
-      setDisplayedArea(event.payload.area);
+    if (!isEqual(zoomedArea, event.payload.area)) {
+      setZoomedArea(event.payload.area);
     }
     unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
     updateUnitMapSource.cancel();
@@ -135,14 +135,14 @@ export function Provider({ children }: Props) {
 
   const handleZoomedAreaUpdatedEvent = useCallback(
     (event: ZoomedAreaUpdatedEvent) => {
-      if (!isEqual(displayedArea, event.payload.area)) {
-        setDisplayedArea(event.payload.area);
+      if (!isEqual(zoomedArea, event.payload.area)) {
+        setZoomedArea(event.payload.area);
       }
 
       unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
       updateUnitMapSource();
     },
-    [displayedArea]
+    [zoomedArea]
   );
 
   const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
@@ -173,7 +173,7 @@ export function Provider({ children }: Props) {
 
   const resetContext = useCallback(() => {
     setMapSize(initialGameRoomContextValue.mapSize);
-    setDisplayedArea(initialGameRoomContextValue.displayedArea);
+    setZoomedArea(initialGameRoomContextValue.zoomedArea);
     setTargetArea(initialGameRoomContextValue.targetArea);
     unitMapSource.current = initialGameRoomContextValue.unitMap;
     updateUnitMapSource();
@@ -271,7 +271,7 @@ export function Provider({ children }: Props) {
     () => ({
       status,
       mapSize,
-      displayedArea,
+      zoomedArea,
       targetArea,
       unitMap,
       unitPattern,
@@ -284,7 +284,7 @@ export function Provider({ children }: Props) {
     [
       status,
       mapSize,
-      displayedArea,
+      zoomedArea,
       targetArea,
       unitMap,
       unitPattern,

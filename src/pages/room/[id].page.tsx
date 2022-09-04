@@ -19,7 +19,7 @@ const Room: NextPage = function Room() {
   const router = useRouter();
   const {
     mapSize,
-    displayedArea,
+    zoomedArea,
     targetArea,
     unitMap,
     status,
@@ -85,7 +85,7 @@ const Room: NextPage = function Room() {
             <section style={{ width: '100%', height: '100%' }}>
               {status === 'CONNECTED' && (
                 <GameMap
-                  displayedArea={displayedArea}
+                  zoomedArea={zoomedArea}
                   targetArea={targetArea}
                   unitMap={unitMap}
                   unitPattern={unitPattern}
@@ -117,7 +117,7 @@ const Room: NextPage = function Room() {
             <section style={{ width: '100%', height: '100%' }}>
               {status === 'CONNECTED' && (
                 <GameMap
-                  displayedArea={displayedArea}
+                  zoomedArea={zoomedArea}
                   targetArea={targetArea}
                   unitMap={unitMap}
                   unitPattern={unitPattern}

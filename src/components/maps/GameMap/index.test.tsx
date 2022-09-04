@@ -5,7 +5,7 @@ import type { UnitVO } from '@/valueObjects';
 function renderGameMap(unitMap: UnitVO[][]): RenderResult {
   return render(
     <GameMap
-      displayedArea={null}
+      zoomedArea={null}
       targetArea={null}
       unitMap={unitMap}
       unitPattern={[]}

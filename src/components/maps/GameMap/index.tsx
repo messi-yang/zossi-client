@@ -8,17 +8,13 @@ import dataTestids from './dataTestids';
 import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
 
-function calculateDisplayedAreaOffset(
-  displayedArea: AreaVO | null,
-  targetArea: AreaVO | null,
-  squareSize: number
-): OffsetVO {
-  if (!displayedArea || !targetArea) {
+function calculateZoomedAreaOffset(zoomedArea: AreaVO | null, targetArea: AreaVO | null, squareSize: number): OffsetVO {
+  if (!zoomedArea || !targetArea) {
     return { x: 0, y: 0 };
   }
   return {
-    x: (displayedArea.from.x - targetArea.from.x) * squareSize,
-    y: (displayedArea.from.y - targetArea.from.y) * squareSize,
+    x: (zoomedArea.from.x - targetArea.from.x) * squareSize,
+    y: (zoomedArea.from.y - targetArea.from.y) * squareSize,
   };
 }
 
@@ -30,7 +26,7 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
 }
 
 type Props = {
-  displayedArea: AreaVO | null;
+  zoomedArea: AreaVO | null;
   targetArea: AreaVO | null;
   unitMap: UnitVO[][] | null;
   unitPattern: UnitPatternVO;
@@ -38,7 +34,7 @@ type Props = {
   onAreaUpdate: (newArea: AreaVO) => any;
 };
 
-function GameMap({ displayedArea, targetArea, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
   const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -47,8 +43,8 @@ function GameMap({ displayedArea, targetArea, unitMap, unitPattern, onUnitsReviv
     squareSize
   );
   const [hoveredIndexes, setHoveredIndexes] = useState<[colIdx: number, rowIdx: number] | null>(null);
-  const [displayedAreaOffset, setDisplayedAreaOffset] = useState<OffsetVO>(
-    calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize)
+  const [zoomedAreaOffset, setZoomedAreaOffset] = useState<OffsetVO>(
+    calculateZoomedAreaOffset(zoomedArea, targetArea, squareSize)
   );
   const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVO>(calculateUnitPatternOffset(unitPattern));
 
@@ -57,23 +53,23 @@ function GameMap({ displayedArea, targetArea, unitMap, unitPattern, onUnitsReviv
   }, [unitPattern]);
 
   useEffect(() => {
-    setDisplayedAreaOffset(calculateDisplayedAreaOffset(displayedArea, targetArea, squareSize));
-  }, [displayedArea, targetArea]);
+    setZoomedAreaOffset(calculateZoomedAreaOffset(zoomedArea, targetArea, squareSize));
+  }, [zoomedArea, targetArea]);
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!displayedArea || !unitPattern) {
+      if (!zoomedArea || !unitPattern) {
         return;
       }
 
       const finalCoordinate = {
-        x: displayedArea.from.x + colIdx,
-        y: displayedArea.from.y + rowIdx,
+        x: zoomedArea.from.x + colIdx,
+        y: zoomedArea.from.y + rowIdx,
       };
 
       onUnitsRevive(finalCoordinate, unitPatternOffset, unitPattern);
     },
-    [unitPattern, unitPatternOffset, onUnitsRevive, displayedArea]
+    [unitPattern, unitPatternOffset, onUnitsRevive, zoomedArea]
   );
 
   const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
@@ -126,12 +122,12 @@ function GameMap({ displayedArea, targetArea, unitMap, unitPattern, onUnitsReviv
   };
 
   useEffect(() => {
-    if (displayedArea === null) {
+    if (zoomedArea === null) {
       generateNewAreaAndTriggerUpdate({ x: 0, y: 0 }, desiredAreaWidth, desiredAreaHeight);
     } else {
-      generateNewAreaAndTriggerUpdate(cloneDeep(displayedArea.from), desiredAreaWidth, desiredAreaHeight);
+      generateNewAreaAndTriggerUpdate(cloneDeep(zoomedArea.from), desiredAreaWidth, desiredAreaHeight);
     }
-  }, [displayedArea === null, desiredAreaWidth, desiredAreaHeight]);
+  }, [zoomedArea === null, desiredAreaWidth, desiredAreaHeight]);
 
   return (
     <section
@@ -147,8 +143,8 @@ function GameMap({ displayedArea, targetArea, unitMap, unitPattern, onUnitsReviv
       <section
         style={{
           position: 'relative',
-          left: displayedAreaOffset.x,
-          top: displayedAreaOffset.y,
+          left: zoomedAreaOffset.x,
+          top: zoomedAreaOffset.y,
           width: '100%',
           height: '100%',
           display: 'flex',
