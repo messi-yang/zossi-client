@@ -4,13 +4,7 @@ import isEqual from 'lodash/isEqual';
 import useWebSocket from '@/hooks/useWebSocket';
 import type { AreaDTO, UnitDTO, MapSizeDTO, CoordinateDTO } from '@/dto';
 import type { UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
-import {
-  EventTypeEnum,
-  AreaZoomedEvent,
-  ZoomedAreaUpdatedEvent,
-  InformationUpdatedEvent,
-  UnitsRevivedEvent,
-} from './eventTypes';
+import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { ZoomAreaAction, ReviveUnitsAction } from './actionTypes';
@@ -103,27 +97,6 @@ export function Provider({ children }: Props) {
     { leading: true }
   );
 
-  const handleUnitsRevivedEvent = useCallback(
-    (event: UnitsRevivedEvent) => {
-      if (!zoomedArea || !unitMapSource.current) {
-        return;
-      }
-
-      for (let idx = 0; idx < event.payload.coordinates.length; idx += 1) {
-        const coord = event.payload.coordinates[idx];
-        const colIdx = coord.x - zoomedArea.from.x;
-        const rowIdx = coord.y - zoomedArea.from.y;
-        unitMapSource.current[colIdx][rowIdx] = {
-          ...unitMapSource.current[colIdx][rowIdx],
-          ...event.payload.units[idx],
-        };
-      }
-
-      updateUnitMapSource();
-    },
-    [zoomedArea]
-  );
-
   const handleAreaZoomedEvent = useCallback((event: AreaZoomedEvent) => {
     if (!isEqual(zoomedArea, event.payload.area)) {
       setZoomedArea(event.payload.area);
@@ -152,9 +125,7 @@ export function Provider({ children }: Props) {
   const handleSocketMessage = useCallback(
     (msg: any) => {
       const newMsg: Event = msg;
-      if (newMsg.type === EventTypeEnum.UnitsRevived) {
-        handleUnitsRevivedEvent(newMsg);
-      } else if (newMsg.type === EventTypeEnum.AreaZoomed) {
+      if (newMsg.type === EventTypeEnum.AreaZoomed) {
         handleAreaZoomedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.ZoomedAreaUpdated) {
         handleZoomedAreaUpdatedEvent(newMsg);
@@ -162,13 +133,7 @@ export function Provider({ children }: Props) {
         handleInformationUpdatedEvent(newMsg);
       }
     },
-    [
-      unitMap,
-      handleUnitsRevivedEvent,
-      handleAreaZoomedEvent,
-      handleZoomedAreaUpdatedEvent,
-      handleInformationUpdatedEvent,
-    ]
+    [unitMap, handleAreaZoomedEvent, handleZoomedAreaUpdatedEvent, handleInformationUpdatedEvent]
   );
 
   const resetContext = useCallback(() => {
