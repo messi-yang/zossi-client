@@ -1,17 +1,22 @@
+import { useContext } from 'react';
 import type { NextPage, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import { wrapper } from '@/stores';
 import { getInitialLocale } from '@/utils/i18n';
+import GameRoomContext from '@/contexts/GameRoom';
 
 import BigLogo from '@/components/logos/BigLogo';
 import Button from '@/components/buttons/Button';
 
 const Landing: NextPage = function Landing() {
+  const { joinGame } = useContext(GameRoomContext);
+
   const router = useRouter();
 
   const onStartClick = () => {
+    joinGame();
     router.push('/room/a');
   };
 

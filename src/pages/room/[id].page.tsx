@@ -24,8 +24,6 @@ const Room: NextPage = function Room() {
     unitMap,
     status,
     unitPattern,
-    joinGame,
-    leaveGame,
     reviveUnitsWithPattern,
     zoomArea,
     updateUnitPattern,
@@ -41,12 +39,10 @@ const Room: NextPage = function Room() {
   }, [deviceSize]);
 
   useEffect(() => {
-    joinGame();
-
-    return () => {
-      leaveGame();
-    };
-  }, [joinGame, leaveGame]);
+    if (status === 'CLOSED') {
+      router.push('/');
+    }
+  }, [status]);
 
   const handleLogoClick = () => {
     router.push('/');
