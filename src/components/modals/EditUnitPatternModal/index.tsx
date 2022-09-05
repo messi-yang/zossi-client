@@ -34,40 +34,32 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
 
   return (
     <BaseModal width="560px" height="auto" opened={opened}>
-      <section data-testid={dataTestids.root} style={{ position: 'relative', padding: '8px' }}>
+      <section data-testid={dataTestids.root} className="relative p-2">
         <section
+          className="relative pt-8 px-6 pb-10 flex flex-col items-center border-4 border-solid border-white"
           style={{
-            position: 'relative',
-            padding: '30px 24px 39px',
-            display: 'flex',
-            flexFlow: 'column',
-            alignItems: 'center',
             backgroundColor: '#121212',
-            border: '4px solid white',
           }}
         >
-          <div
-            style={{ position: 'absolute', top: '20px', right: '20px', display: 'flex', justifyContent: 'flex-end' }}
-          >
+          <div className="absolute top-5 right-5 flex justify-end">
             <IconButton icon="cross" onClick={onCancel} />
           </div>
-          <span style={{ color: 'white', textAlign: 'center' }}>PATTERN</span>
-          <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
+          <span className="text-white text-center">PATTERN</span>
+          <section className="mt-9 flex justify-center">
             <UnitPatternEditor
               unitSize={230 / (tmpUnitPattern?.[0]?.length || 1)}
               unitPattern={tmpUnitPattern}
               onUpdate={handleUnitPatternUpdate}
             />
           </section>
-          <section style={{ marginTop: '24px', width: '100%', overflow: 'auto' }}>
-            <section style={{ display: 'flex' }}>
+          <section className="mt-6 w-full overflow-auto">
+            <section className="flex">
               {unitPatternPresets.map((unitPatternPreset, unitPatternPresetIdx) => (
                 <section
                   key={generateKeyFromIndex(unitPatternPresetIdx)}
+                  className={[unitPatternPresetIdx !== 0 && 'ml-3', 'shrink-0', 'border-4', 'border-solid'].join(' ')}
                   style={{
-                    marginLeft: unitPatternPresetIdx !== 0 ? '10px' : undefined,
-                    flexShrink: '0',
-                    border: isEqual(tmpUnitPattern, unitPatternPreset) ? '4px solid #01D6C9' : '4px solid black',
+                    borderColor: isEqual(tmpUnitPattern, unitPatternPreset) ? '#01D6C9' : 'black',
                   }}
                 >
                   <UnitPatternEditor
@@ -79,7 +71,7 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
               ))}
             </section>
           </section>
-          <section style={{ marginTop: '36px', display: 'flex', justifyContent: 'center' }}>
+          <section className="mt-9 flex justify-center">
             <Button text="Ok" onClick={handleOkClick} />
           </section>
         </section>
