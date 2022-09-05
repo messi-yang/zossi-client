@@ -114,23 +114,13 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
   }, [isMovable]);
 
   return (
-    <div
-      data-testid={dataTestids.root}
-      style={{
-        display: 'inline-flex',
-        border: '4px solid white',
-      }}
-    >
+    <div data-testid={dataTestids.root} className="inline-flex border-4 border-solid border-white">
       <div
         ref={mapContentElemRef}
+        className="relative inline-flex bg-black cursor-grab touch-none"
         style={{
-          position: 'relative',
-          display: 'inline-flex',
           width: elemWidth,
           height: elemHeight,
-          background: 'black',
-          cursor: 'grab',
-          touchAction: 'none',
         }}
         role="button"
         tabIndex={0}
@@ -138,12 +128,11 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
         onTouchStart={handleTouchStart}
       >
         <section
+          className="absolute box-border border border-solid"
           style={{
-            position: 'absolute',
             left: `${offsetXRatio * 100}%`,
             top: `${offsetYRatio * 100}%`,
-            boxSizing: 'border-box',
-            border: '1px solid #01D6C9',
+            borderColor: '#01D6C9',
             width: areaElemWidth,
             height: areaElemHeight,
           }}
