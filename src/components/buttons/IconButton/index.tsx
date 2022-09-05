@@ -31,14 +31,7 @@ function IconButton({ icon, onClick = () => {} }: Props) {
   return (
     <button
       data-testid={dataTestids.root}
-      style={{
-        display: 'inline-flex',
-        cursor: 'pointer',
-        outline: 'none',
-        border: 'none',
-        background: 'none',
-        padding: '0',
-      }}
+      className="inline-flex cursor-pointer outline-none border-none bg-none p-0"
       type="button"
       aria-label="icon button"
       onClick={onClick}
