@@ -19,14 +19,13 @@ function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props
   };
 
   return (
-    <div data-testid={dataTestids.root} style={{ display: 'flex', flexFlow: 'row' }}>
+    <div data-testid={dataTestids.root} className="flex flex-row">
       {unitPattern.map((unitCol, colIdx) => (
         <div
           key={generateKeyFromIndex(colIdx)}
+          className="flex flex-col"
           style={{
-            display: 'flex',
             width: unitSize,
-            flexFlow: 'column',
           }}
         >
           {unitCol.map((isTruthy, rowIdx) => (
