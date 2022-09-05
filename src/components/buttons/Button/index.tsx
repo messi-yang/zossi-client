@@ -25,26 +25,22 @@ function Button({ text, onClick = () => {} }: Props) {
     <button
       data-testid={dataTestids.root}
       type="button"
-      style={{
-        cursor: 'pointer',
-        border: 'none',
-        outline: 'none',
-        background: 'none',
-      }}
+      className="border-none outline-none cursor-none bg-none"
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <ContentWrapper hovered={hovered}>
         <div
-          style={{
-            height: '100%',
-            display: 'flex',
-            padding: '0 48px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            background: hovered ? 'white' : 'none',
-          }}
+          className={[
+            'h-full',
+            'flex',
+            'py-0',
+            'px-12',
+            'justify-center',
+            'items-center',
+            hovered ? 'bg-white' : 'bg-none',
+          ].join(' ')}
         >
           <Text color={hovered ? 'black' : 'white'} copy={text} size={16} />
         </div>

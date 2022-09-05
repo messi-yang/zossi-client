@@ -5,145 +5,31 @@ type Props = {
 
 export default function ContentWrapper({ hovered, children }: Props) {
   return (
-    <div
-      style={{
-        height: '56px',
-        display: 'flex',
-        padding: '0',
-        flexFlow: 'column',
-        background: 'none',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <div
-          style={{
-            width: 'calc(100% - 32px)',
-            height: '8px',
-            background: 'white',
-          }}
-        />
+    <div className="h-14 flex p-0 flex-col bg-none">
+      <div className="w-full flex justify-center px-4">
+        <div className="w-full h-2 bg-white" />
       </div>
-      <div style={{ flexGrow: '1', display: 'flex', flexFlow: 'row' }}>
-        <div
-          style={{
-            width: '8px',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              height: 'calc(100% - 16px)',
-              background: 'white',
-            }}
-          />
+      <div className="grow flex flex-row">
+        <div className="w-2 h-full flex py-2 items-center">
+          <div className="w-full h-full bg-white" />
         </div>
-        <div
-          style={{
-            width: '8px',
-            height: '100%',
-            display: 'flex',
-            flexFlow: 'column',
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              height: '8px',
-              background: 'white',
-            }}
-          />
-          <div
-            style={{
-              flexGrow: '1',
-              width: '100%',
-              background: hovered ? 'white' : 'none',
-            }}
-          />
-          <div
-            style={{
-              width: '100%',
-              height: '8px',
-              background: 'white',
-            }}
-          />
+        <div className="w-2 h-full flex flex-col">
+          <div className="w-full h-2 bg-white" />
+          <div className={['grow', 'w-full', hovered ? 'bg-white' : 'bg-none'].join(' ')} />
+          <div className="w-full h-2 bg-white" />
         </div>
-        <div
-          style={{
-            flexGrow: '1',
-          }}
-        >
-          {children}
+        <div className="grow">{children}</div>
+        <div className="w-2 h-full flex flex-col">
+          <div className="w-full h-2 bg-white" />
+          <div className={['grow', 'w-full', hovered ? 'bg-white' : 'bg-none'].join(' ')} />
+          <div className="w-full h-2 bg-white" />
         </div>
-        <div
-          style={{
-            width: '8px',
-            height: '100%',
-            display: 'flex',
-            flexFlow: 'column',
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              height: '8px',
-              background: 'white',
-            }}
-          />
-          <div
-            style={{
-              flexGrow: '1',
-              width: '100%',
-              background: hovered ? 'white' : 'none',
-            }}
-          />
-          <div
-            style={{
-              width: '100%',
-              height: '8px',
-              background: 'white',
-            }}
-          />
-        </div>
-        <div
-          style={{
-            width: '8px',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              height: 'calc(100% - 16px)',
-              background: 'white',
-            }}
-          />
+        <div className="w-2 h-full flex py-2 items-center">
+          <div className="w-full h-full bg-white" />
         </div>
       </div>
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <div
-          style={{
-            width: 'calc(100% - 32px)',
-            height: '8px',
-            background: 'white',
-          }}
-        />
+      <div className="w-full flex px-4 justify-center">
+        <div className="w-full h-2 bg-white" />
       </div>
     </div>
   );
