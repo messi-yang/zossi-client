@@ -10,20 +10,22 @@ export default function Wrapper({ visible, children }: WrapperProps) {
   const windowSize = useWindowSize();
   return (
     <section
+      className={[
+        'fixed',
+        'top-0',
+        'left-0',
+        'max-w-full',
+        'max-h-full',
+        visible ? 'flex' : 'hidden',
+        'justify-center',
+        'items-center',
+        'p-6',
+        'overflow-hidden',
+        'z-10',
+      ].join(' ')}
       style={{
-        position: 'fixed',
-        top: '0',
-        left: '0',
         width: windowSize.width,
         height: windowSize.height,
-        maxWidth: '100%',
-        maxHeight: '100%',
-        display: visible ? 'flex' : 'none',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '24px',
-        overflow: 'hidden',
-        zIndex: '10',
       }}
     >
       {children}
