@@ -49,15 +49,13 @@ function UnitSquares(
       {unitMap.map((unitCol, colIdx) => (
         <section
           key={generateKeyFromIndex(colIdx)}
+          className="shrink-0 flex flex-col"
           style={{
             flexBasis: squareSize,
-            flexShrink: '0',
-            display: 'flex',
-            flexFlow: 'column',
           }}
         >
           {unitCol.map((unit, rowIdx) => (
-            <section key={generateKeyFromIndex(rowIdx)} style={{ width: '100%', flexBasis: squareSize, flexShrink: 0 }}>
+            <section key={generateKeyFromIndex(rowIdx)} className="w-full shrink-0" style={{ flexBasis: squareSize }}>
               <CommandableUnitSquare
                 ref={unitSquareCompRefs?.[colIdx]?.[rowIdx]}
                 rowIdx={rowIdx}

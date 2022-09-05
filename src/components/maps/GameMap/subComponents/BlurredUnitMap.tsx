@@ -12,24 +12,21 @@ type Props = {
 
 function BlurredUnitMap({ width, height, squareSize }: Props) {
   return (
-    <section style={{ width: '100%', height: '100%', display: 'flex' }}>
+    <section className="w-full h-full flex">
       {range(width).map((colIdx) => (
         <section
           key={generateKeyFromIndex(colIdx)}
+          className="shrink-0 flex flex-col"
           style={{
             flexBasis: squareSize,
-            flexShrink: '0',
-            display: 'flex',
-            flexFlow: 'column',
           }}
         >
           {range(height).map((rowIdx) => (
             <section
               key={generateKeyFromIndex(rowIdx)}
+              className="w-full shrink-0"
               style={{
-                width: '100%',
                 flexBasis: squareSize,
-                flexShrink: 0,
               }}
             >
               <UnitSquare
