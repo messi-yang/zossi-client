@@ -134,24 +134,19 @@ function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, 
     <section
       ref={rootRef}
       data-testid={dataTestids.root}
+      className="w-full h-full overflow-hidden"
       style={{
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
         backgroundColor: gameBackgroundColor,
       }}
     >
-      <section style={{ position: 'absolute', width: '100%', height: '100%' }}>
+      <section className="absolute w-full h-full">
         <BlurredUnitMap width={desiredAreaWidth} height={desiredAreaHeight} squareSize={squareSize} />
       </section>
       <section
+        className="relative w-full h-full flex"
         style={{
-          position: 'relative',
           left: zoomedAreaOffset.x,
           top: zoomedAreaOffset.y,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
         }}
       >
         {unitMap && (
