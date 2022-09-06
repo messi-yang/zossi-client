@@ -11,9 +11,9 @@ function Text({ copy = '', color = 'black', size = 16, weight = 'regular' }: Pro
   return (
     <span
       data-testid={dataTestids.root}
+      className={[weight === 'regular' ? 'font-normal' : 'font-bold'].join(' ')}
       style={{
         fontFamily: '"Silkscreen", cursive',
-        fontWeight: weight === 'regular' ? 400 : 700,
         color,
         fontSize: size,
       }}
