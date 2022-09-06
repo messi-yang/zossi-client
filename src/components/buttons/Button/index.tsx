@@ -25,7 +25,7 @@ function Button({ text, onClick = () => {} }: Props) {
     <button
       data-testid={dataTestids.root}
       type="button"
-      className="border-none outline-none cursor-none bg-none"
+      className="border-none outline-none cursor-pointer bg-none"
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
