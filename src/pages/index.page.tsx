@@ -22,19 +22,13 @@ const Landing: NextPage = function Landing() {
 
   return (
     <main
+      className="w-screen h-screen flex flex-col items-center justify-center overflow-hidden"
       style={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        flexFlow: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: '#1E1E1E',
-        overflow: 'hidden',
       }}
     >
       <BigLogo />
-      <div style={{ marginTop: '100px' }}>
+      <div className="mt-[100px]">
         <Button text="Start" onClick={onStartClick} />
       </div>
     </main>
