@@ -11,8 +11,10 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "prepare": "husky install",
+    "tailwind:watch": "tailwindcss -i ./src/styles/globals.css -o ./.storybook/tailwind.css --watch",
+    "tailwind": "tailwindcss -i ./src/styles/globals.css -o ./.storybook/tailwind.css",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
+    "build-storybook": "yarn tailwind && build-storybook",
     "chromatic": "chromatic --project-token ${PROJECT_TOKEN} --auto-accept-changes"
   },
   "dependencies": {

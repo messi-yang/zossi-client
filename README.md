@@ -1,10 +1,4 @@
-# Next Boilerplate 2022
-
-This [Next.js](https://nextjs.org/) boilerplate 2022 allows you to kick off your new project with all necessary tools for building a large-scale client-side web app.
-
-![Vercel](https://vercelbadge.vercel.app/api/DumDumGeniuss/dumdum-next-boilerplate-2022)
-
-## Features
+# Development Guide
 
 ### Linting
 
@@ -88,7 +82,15 @@ chmod +x .husky/pre-commit
 
 ## Storybook
 
-Coming soon, maybe.
+Please run these two commands in separate tabs
+
+```bash
+yarn tailwind:watch
+```
+
+```bash
+yarn storybook
+```
 
 ## E2E Tests
 

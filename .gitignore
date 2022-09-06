@@ -140,3 +140,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# Storybook
+storybook-static
+.storybook/tailwind.css
