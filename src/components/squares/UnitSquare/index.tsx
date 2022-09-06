@@ -46,17 +46,14 @@ function UnitSquare({
       role="button"
       tabIndex={0}
       aria-label="game unit box"
+      className="w-100 h-100 box-border cursor-pointer border border-solid"
       style={{
-        width: '100%',
-        height: '100%',
-        boxSizing: 'border-box',
-        cursor: 'pointer',
         backgroundColor,
-        border: `1px solid ${styles.deadHoverColor}`,
-        borderTop: hasTopBorder ? `1px solid ${borderColor}` : '',
-        borderRight: hasRightBorder ? `1px solid ${borderColor}` : '',
-        borderBottom: hasBottomBorder ? `1px solid ${borderColor}` : '',
-        borderLeft: hasLeftBorder ? `1px solid ${borderColor}` : '',
+        borderColor: styles.deadHoverColor,
+        borderTopColor: hasTopBorder ? borderColor : undefined,
+        borderRightColor: hasRightBorder ? borderColor : undefined,
+        borderBottomColor: hasBottomBorder ? borderColor : undefined,
+        borderLeftColor: hasLeftBorder ? borderColor : undefined,
       }}
       onClick={onClick}
       onKeyDown={onClick}
