@@ -59,7 +59,7 @@ const Room: NextPage = function Room() {
   return (
     <>
       {deviceSize === 'large' && (
-        <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex' }}>
+        <main className="flex" style={{ width: windowSize.width, height: windowSize.height }}>
           <section style={{ flexShrink: '0' }}>
             <GameRoomSideBar
               align="column"
@@ -71,14 +71,12 @@ const Room: NextPage = function Room() {
             />
           </section>
           <section
+            className="relative grow overflow-hidden"
             style={{
-              position: 'relative',
-              flexGrow: '1',
-              overflow: 'hidden',
               backgroundColor: gameBackgroundColor,
             }}
           >
-            <section style={{ width: '100%', height: '100%' }}>
+            <section className="w-full h-full">
               {status === 'CONNECTED' && (
                 <GameMap
                   zoomedArea={zoomedArea}
@@ -91,9 +89,7 @@ const Room: NextPage = function Room() {
               )}
             </section>
             {mapSize && targetArea && isMiniMapVisible && (
-              <section
-                style={{ position: 'absolute', right: '20px', bottom: '20px', opacity: '0.8', display: 'inline-flex' }}
-              >
+              <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
                 <GameMiniMap width={300} mapSize={mapSize} area={targetArea} onAreaUpdate={handleAreaUpdate} />
               </section>
             )}
@@ -101,16 +97,14 @@ const Room: NextPage = function Room() {
         </main>
       )}
       {deviceSize === 'small' && (
-        <main style={{ width: windowSize.width, height: windowSize.height, display: 'flex', flexFlow: 'column' }}>
+        <main className="flex flex-col" style={{ width: windowSize.width, height: windowSize.height }}>
           <section
+            className="relative grow overflow-hidden"
             style={{
-              position: 'relative',
-              flexGrow: '1',
-              overflow: 'hidden',
               backgroundColor: gameBackgroundColor,
             }}
           >
-            <section style={{ width: '100%', height: '100%' }}>
+            <section className="w-full h-full">
               {status === 'CONNECTED' && (
                 <GameMap
                   zoomedArea={zoomedArea}
@@ -124,13 +118,9 @@ const Room: NextPage = function Room() {
             </section>
             {mapSize && targetArea && isMiniMapVisible && (
               <section
+                className="absolute left-1/2 bottom-5 opacity-80 inline-flex"
                 style={{
-                  position: 'absolute',
-                  left: '50%',
-                  bottom: '20px',
                   transform: 'translateX(-50%)',
-                  opacity: '0.8',
-                  display: 'inline-flex',
                 }}
               >
                 <GameMiniMap
@@ -142,7 +132,7 @@ const Room: NextPage = function Room() {
               </section>
             )}
           </section>
-          <section style={{ flexShrink: '0' }}>
+          <section className="shrink-0">
             <GameRoomSideBar
               align="row"
               onLogoClick={handleLogoClick}
