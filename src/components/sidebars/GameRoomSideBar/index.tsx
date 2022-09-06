@@ -46,11 +46,13 @@ function GameRoomSideBar({
   return (
     <section
       data-testid={dataTestids.root}
+      className={[
+        align === 'column' ? 'w-16' : 'w-100',
+        align === 'row' ? 'h-16' : 'w-100',
+        'flex',
+        align === 'column' ? 'flex-col' : 'flex-row',
+      ].join(' ')}
       style={{
-        width: align === 'column' ? '78px' : '100%',
-        height: align === 'row' ? '78px' : '100%',
-        display: 'flex',
-        flexFlow: align,
         backgroundColor: '#1C1C1C',
       }}
     >

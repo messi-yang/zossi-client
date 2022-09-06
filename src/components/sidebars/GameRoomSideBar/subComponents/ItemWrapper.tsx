@@ -23,15 +23,8 @@ function ItemWrapper({
 }: Props) {
   return (
     <section
+      className="w-full h-full basis-16 flex flex-col items-center justify-center cursor-pointer"
       style={{
-        width: '100%',
-        height: '100%',
-        flexBasis: '70px',
-        display: 'flex',
-        flexFlow: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
         backgroundColor: hovered ? '#575757' : 'unset',
       }}
       role="button"
@@ -43,7 +36,7 @@ function ItemWrapper({
     >
       {children}
       {label && (
-        <div style={{ marginTop: '7px', display: 'flex' }}>
+        <div className="mt-2 flex">
           <Text copy={label} color={active || highlighted ? '#01D6C9' : 'white'} size={12} />
         </div>
       )}
