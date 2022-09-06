@@ -23,7 +23,7 @@ function ItemWrapper({
 }: Props) {
   return (
     <section
-      className="w-full h-full basis-16 flex flex-col items-center justify-center cursor-pointer"
+      className="w-full h-full basis-[78px] flex flex-col items-center justify-center cursor-pointer"
       style={{
         backgroundColor: hovered ? '#575757' : 'unset',
       }}
