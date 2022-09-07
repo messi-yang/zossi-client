@@ -1,5 +1,6 @@
-import { MouseEvent, useRef, useState, useEffect, TouchEvent } from 'react';
+import { useRef } from 'react';
 import { MapSizeVO, AreaVO } from '@/valueObjects';
+import usePull from '@/hooks/usePull';
 import dataTestids from './dataTestids';
 
 type Props = {
@@ -10,7 +11,6 @@ type Props = {
 };
 
 function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
-  const [isMovable, setIsMovable] = useState<boolean>(false);
   const mapContentElemRef = useRef<HTMLDivElement>(null);
   const mapSizeRatio = mapSize.height / mapSize.width;
   const areaWidth = area.to.x - area.from.x + 1;
@@ -59,59 +59,16 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
     };
   };
 
-  const handleMouseDown = (event: MouseEvent<HTMLElement>) => {
-    const newArea = calculateNewAreaFromMouseEvent(event.clientX, event.clientY);
-    onAreaUpdate(newArea);
-    setIsMovable(true);
-  };
-
-  const handleTouchStart = (event: TouchEvent<HTMLElement>) => {
-    const newArea = calculateNewAreaFromMouseEvent(event.touches[0].clientX, event.touches[0].clientY);
-    onAreaUpdate(newArea);
-    setIsMovable(true);
-  };
-
-  useEffect(() => {
-    const handleMouseUp = () => {
-      setIsMovable(false);
-    };
-    const handleTouchEnd = () => {
-      setIsMovable(false);
-    };
-
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('touchend', handleTouchEnd);
-
-    return () => {
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleMouseMove = (event: globalThis.MouseEvent) => {
-      if (!isMovable) {
-        return;
-      }
-      const newArea = calculateNewAreaFromMouseEvent(event.clientX, event.clientY);
+  usePull(mapContentElemRef, {
+    onPullStart: (x, y) => {
+      const newArea = calculateNewAreaFromMouseEvent(x, y);
       onAreaUpdate(newArea);
-    };
-    const handleTouchMove = (event: globalThis.TouchEvent) => {
-      if (!isMovable) {
-        return;
-      }
-      const newArea = calculateNewAreaFromMouseEvent(event.touches[0].clientX, event.touches[0].clientY);
+    },
+    onPull: (x, y) => {
+      const newArea = calculateNewAreaFromMouseEvent(x, y);
       onAreaUpdate(newArea);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('touchmove', handleTouchMove);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchmove', handleTouchMove);
-    };
-  }, [isMovable]);
+    },
+  });
 
   return (
     <div data-testid={dataTestids.root} className="inline-flex border-4 border-solid border-white">
@@ -124,8 +81,6 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
         }}
         role="button"
         tabIndex={0}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
       >
         <section
           className="absolute box-border border border-solid"
