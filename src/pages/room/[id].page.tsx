@@ -24,6 +24,7 @@ const Room: NextPage = function Room() {
     unitMap,
     status,
     unitPattern,
+    leaveGame,
     reviveUnitsWithPattern,
     zoomArea,
     updateUnitPattern,
@@ -45,6 +46,7 @@ const Room: NextPage = function Room() {
   }, [status]);
 
   const handleLogoClick = () => {
+    leaveGame();
     router.push('/');
   };
 
