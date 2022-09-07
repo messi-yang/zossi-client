@@ -28,7 +28,7 @@ export default function usePull(ref: RefObject<HTMLElement>, { onPullStart, onPu
         ref.current.removeEventListener('touchstart', handleTouchStart);
       }
     };
-  }, [ref.current]);
+  }, [ref.current, onPullStart, onPull]);
 
   useEffect(() => {
     const handleMouseUp = () => {
