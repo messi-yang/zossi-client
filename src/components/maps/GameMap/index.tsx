@@ -69,26 +69,30 @@ function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, 
 
   const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
 
-  const highlightUnitMapWithCoordinateAndPattern = (colIdx: number, rowIdx: number, highlighted: boolean) => {
-    if (!unitPattern) {
-      return;
-    }
+  const highlightUnitMapWithCoordinateAndPattern = useCallback(
+    (colIdx: number, rowIdx: number, highlighted: boolean) => {
+      if (!unitPattern) {
+        return;
+      }
 
-    unitPattern.forEach((unitCol, unitPatternColIdx) => {
-      unitCol.forEach((isTruthy, unitPatternRowIdx) => {
-        if (!unitSquaresCompRef.current) {
-          return;
-        }
-        if (isTruthy) {
-          unitSquaresCompRef.current.setUnitHighlighted(
-            colIdx + unitPatternColIdx + unitPatternOffset.x,
-            rowIdx + unitPatternRowIdx + unitPatternOffset.y,
-            highlighted
-          );
-        }
+      unitPattern.forEach((unitCol, unitPatternColIdx) => {
+        unitCol.forEach((isTruthy, unitPatternRowIdx) => {
+          if (!unitSquaresCompRef.current) {
+            return;
+          }
+          if (isTruthy) {
+            unitSquaresCompRef.current.setUnitHighlighted(
+              colIdx + unitPatternColIdx + unitPatternOffset.x,
+              rowIdx + unitPatternRowIdx + unitPatternOffset.y,
+              highlighted
+            );
+          }
+        });
       });
-    });
-  };
+    },
+    [unitPattern]
+  );
+
   const handleUnitSquareMouseEnter = useCallback((colIdx: number, rowIdx: number) => {
     setHoveredIndexes([colIdx, rowIdx]);
   }, []);
@@ -104,7 +108,7 @@ function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, 
     };
   }, [hoveredIndexes, unitPattern]);
 
-  const generateNewAreaAndTriggerUpdate = (from: CoordinateVO, areaWidth: number, areaHeight: number) => {
+  const generateNewAreaAndTriggerUpdate = useCallback((from: CoordinateVO, areaWidth: number, areaHeight: number) => {
     const to = {
       x: from.x + areaWidth - 1,
       y: from.y + areaHeight - 1,
@@ -114,7 +118,7 @@ function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, 
       from,
       to,
     });
-  };
+  }, []);
 
   useEffect(() => {
     if (zoomedArea === null) {

@@ -86,13 +86,15 @@ export function Provider({ children }: Props) {
 
   const handleSocketOpen = useCallback(() => {}, []);
 
-  const updateUnitMapSourceAndZoomedAreaSource = debounce(
-    () => {
-      setUnitMap(unitMapSource.current ? [...unitMapSource.current] : null);
-      setZoomedArea(zoomedAreaSource.current ? { ...zoomedAreaSource.current } : null);
-    },
-    25,
-    { leading: true }
+  const updateUnitMapSourceAndZoomedAreaSource = useCallback(() => {
+    setUnitMap(unitMapSource.current ? [...unitMapSource.current] : null);
+    setZoomedArea(zoomedAreaSource.current ? { ...zoomedAreaSource.current } : null);
+  }, []);
+  const updateUnitMapSourceAndZoomedAreaSourceDebouncer = useCallback(
+    debounce(updateUnitMapSourceAndZoomedAreaSource, 25, {
+      leading: true,
+    }),
+    [updateUnitMapSourceAndZoomedAreaSource]
   );
 
   const handleAreaZoomedEvent = useCallback((event: AreaZoomedEvent) => {
@@ -100,8 +102,8 @@ export function Provider({ children }: Props) {
       zoomedAreaSource.current = event.payload.area;
     }
     unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
-    updateUnitMapSourceAndZoomedAreaSource.cancel();
-    updateUnitMapSourceAndZoomedAreaSource();
+    updateUnitMapSourceAndZoomedAreaSourceDebouncer.cancel();
+    updateUnitMapSourceAndZoomedAreaSourceDebouncer();
   }, []);
 
   const handleZoomedAreaUpdatedEvent = useCallback((event: ZoomedAreaUpdatedEvent) => {
@@ -110,7 +112,7 @@ export function Provider({ children }: Props) {
     }
 
     unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
-    updateUnitMapSourceAndZoomedAreaSource();
+    updateUnitMapSourceAndZoomedAreaSourceDebouncer();
   }, []);
 
   const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
@@ -137,7 +139,7 @@ export function Provider({ children }: Props) {
 
     zoomedAreaSource.current = initialGameRoomContextValue.zoomedArea;
     unitMapSource.current = initialGameRoomContextValue.unitMap;
-    updateUnitMapSourceAndZoomedAreaSource();
+    updateUnitMapSourceAndZoomedAreaSourceDebouncer();
 
     setUnitPattern(initialGameRoomContextValue.unitPattern);
   }, []);
