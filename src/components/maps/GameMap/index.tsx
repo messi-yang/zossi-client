@@ -44,18 +44,12 @@ function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, 
     squareSize
   );
   const [hoveredIndexes, setHoveredIndexes] = useState<[colIdx: number, rowIdx: number] | null>(null);
-  const [zoomedAreaOffset, setZoomedAreaOffset] = useState<OffsetVO>(
-    calculateZoomedAreaOffset(zoomedArea, targetArea, squareSize)
-  );
   const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVO>(calculateUnitPatternOffset(unitPattern));
+  const zoomedAreaOffset = calculateZoomedAreaOffset(zoomedArea, targetArea, squareSize);
 
   useEffect(() => {
     setUnitPatternOffset(calculateUnitPatternOffset(unitPattern));
   }, [unitPattern]);
-
-  useEffect(() => {
-    setZoomedAreaOffset(calculateZoomedAreaOffset(zoomedArea, targetArea, squareSize));
-  }, [zoomedArea, targetArea]);
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {

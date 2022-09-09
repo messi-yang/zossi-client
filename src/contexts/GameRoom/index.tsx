@@ -71,10 +71,13 @@ export function Provider({ children }: Props) {
 
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
   const [mapSize, setMapSize] = useState<MapSizeDTO | null>(initialGameRoomContextValue.mapSize);
-  const [zoomedArea, setZoomedArea] = useState<AreaDTO | null>(initialGameRoomContextValue.zoomedArea);
   const [targetArea, setTargetArea] = useState<AreaDTO | null>(initialGameRoomContextValue.targetArea);
+
+  const zoomedAreaSource = useRef<AreaDTO | null>(initialGameRoomContextValue.zoomedArea);
   const unitMapSource = useRef<UnitVO[][] | null>(initialGameRoomContextValue.unitMap);
+  const [zoomedArea, setZoomedArea] = useState<AreaDTO | null>(zoomedAreaSource.current);
   const [unitMap, setUnitMap] = useState<UnitVO[][] | null>(unitMapSource.current);
+
   const [unitPattern, setUnitPattern] = useState<UnitPatternVO>(initialGameRoomContextValue.unitPattern);
 
   const updateUnitPattern = useCallback((newUnitPattern: UnitPatternVO) => {
@@ -83,40 +86,32 @@ export function Provider({ children }: Props) {
 
   const handleSocketOpen = useCallback(() => {}, []);
 
-  const updateUnitMapSource = debounce(
+  const updateUnitMapSourceAndZoomedAreaSource = debounce(
     () => {
-      if (!unitMapSource.current) {
-        setUnitMap(unitMapSource.current);
-        return;
-      }
-
-      const dereferencedSourceUnitMap = [...unitMapSource.current];
-      setUnitMap(dereferencedSourceUnitMap);
+      setUnitMap(unitMapSource.current ? [...unitMapSource.current] : null);
+      setZoomedArea(zoomedAreaSource.current ? { ...zoomedAreaSource.current } : null);
     },
     25,
     { leading: true }
   );
 
   const handleAreaZoomedEvent = useCallback((event: AreaZoomedEvent) => {
-    if (!isEqual(zoomedArea, event.payload.area)) {
-      setZoomedArea(event.payload.area);
+    if (!isEqual(zoomedAreaSource.current, event.payload.area)) {
+      zoomedAreaSource.current = event.payload.area;
     }
     unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
-    updateUnitMapSource.cancel();
-    updateUnitMapSource();
+    updateUnitMapSourceAndZoomedAreaSource.cancel();
+    updateUnitMapSourceAndZoomedAreaSource();
   }, []);
 
-  const handleZoomedAreaUpdatedEvent = useCallback(
-    (event: ZoomedAreaUpdatedEvent) => {
-      if (!isEqual(zoomedArea, event.payload.area)) {
-        setZoomedArea(event.payload.area);
-      }
+  const handleZoomedAreaUpdatedEvent = useCallback((event: ZoomedAreaUpdatedEvent) => {
+    if (!isEqual(zoomedAreaSource.current, event.payload.area)) {
+      zoomedAreaSource.current = event.payload.area;
+    }
 
-      unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
-      updateUnitMapSource();
-    },
-    [zoomedArea]
-  );
+    unitMapSource.current = convertAreaAndUnitMapIntoUnitVOMap(event.payload.area, event.payload.unitMap);
+    updateUnitMapSourceAndZoomedAreaSource();
+  }, []);
 
   const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
     setMapSize(event.payload.mapSize);
@@ -138,10 +133,12 @@ export function Provider({ children }: Props) {
 
   const resetContext = useCallback(() => {
     setMapSize(initialGameRoomContextValue.mapSize);
-    setZoomedArea(initialGameRoomContextValue.zoomedArea);
     setTargetArea(initialGameRoomContextValue.targetArea);
+
+    zoomedAreaSource.current = initialGameRoomContextValue.zoomedArea;
     unitMapSource.current = initialGameRoomContextValue.unitMap;
-    updateUnitMapSource();
+    updateUnitMapSourceAndZoomedAreaSource();
+
     setUnitPattern(initialGameRoomContextValue.unitPattern);
   }, []);
 
