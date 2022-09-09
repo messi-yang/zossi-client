@@ -109,8 +109,9 @@ export function Provider({ children }: Props) {
     setZoomedAreaOffset(calculateZoomedAreaOffset(zoomedAreaSource.current, targetAreaSource.current));
   }, []);
   const updateUnitMapAndOffsetsDebouncer = useCallback(
-    debounce(updateUnitMapAndOffsets, 250, {
+    debounce(updateUnitMapAndOffsets, 25, {
       leading: true,
+      maxWait: 25,
     }),
     []
   );

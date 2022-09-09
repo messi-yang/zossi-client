@@ -132,8 +132,8 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
       <section
         className="relative w-full h-full flex"
         style={{
-          left: zoomedAreaOffset.x,
-          top: zoomedAreaOffset.y,
+          left: zoomedAreaOffset.x * squareSize,
+          top: zoomedAreaOffset.y * squareSize,
         }}
       >
         {unitMap && (
