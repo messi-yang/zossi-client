@@ -78,7 +78,7 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const schema = process.env.NODE_ENV === 'production' ? 'ws' : 'ws';
+  const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
   const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
 
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
@@ -109,7 +109,7 @@ export function Provider({ children }: Props) {
     setZoomedAreaOffset(calculateZoomedAreaOffset(zoomedAreaSource.current, targetAreaSource.current));
   }, []);
   const updateUnitMapAndOffsetsDebouncer = useCallback(
-    debounce(updateUnitMapAndOffsets, 25, {
+    debounce(updateUnitMapAndOffsets, 250, {
       leading: true,
     }),
     []
