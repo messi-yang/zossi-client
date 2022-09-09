@@ -9,16 +9,6 @@ import UnitSquares from './subComponents/UnitSquares';
 import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
 import BlurredUnitMap from './subComponents/BlurredUnitMap';
 
-function calculateZoomedAreaOffset(zoomedArea: AreaVO | null, targetArea: AreaVO | null, squareSize: number): OffsetVO {
-  if (!zoomedArea || !targetArea) {
-    return { x: 0, y: 0 };
-  }
-  return {
-    x: (zoomedArea.from.x - targetArea.from.x) * squareSize,
-    y: (zoomedArea.from.y - targetArea.from.y) * squareSize,
-  };
-}
-
 function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
   return {
     x: -Math.floor(unitPattern.length / 2),
@@ -28,14 +18,14 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
 
 type Props = {
   zoomedArea: AreaVO | null;
-  targetArea: AreaVO | null;
+  zoomedAreaOffset: OffsetVO;
   unitMap: UnitVO[][] | null;
   unitPattern: UnitPatternVO;
   onUnitsRevive: (coordinate: CoordinateVO, unitPatternOffset: OffsetVO, unitPattern: UnitPatternVO) => any;
   onAreaUpdate: (newArea: AreaVO) => any;
 };
 
-function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
   const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -45,7 +35,6 @@ function GameMap({ zoomedArea, targetArea, unitMap, unitPattern, onUnitsRevive, 
   );
   const [hoveredIndexes, setHoveredIndexes] = useState<[colIdx: number, rowIdx: number] | null>(null);
   const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVO>(calculateUnitPatternOffset(unitPattern));
-  const zoomedAreaOffset = calculateZoomedAreaOffset(zoomedArea, targetArea, squareSize);
 
   useEffect(() => {
     setUnitPatternOffset(calculateUnitPatternOffset(unitPattern));

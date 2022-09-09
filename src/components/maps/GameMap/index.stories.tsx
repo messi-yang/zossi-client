@@ -63,13 +63,13 @@ function generateUnitMap(area: AreaVO) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  targetArea: {
-    from: { x: 3, y: 3 },
-    to: { x: 9, y: 9 },
-  },
   zoomedArea: {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
+  },
+  zoomedAreaOffset: {
+    x: 0,
+    y: 0,
   },
   unitMap: generateUnitMap({
     from: { x: 3, y: 3 },

@@ -20,6 +20,7 @@ const Room: NextPage = function Room() {
   const {
     mapSize,
     zoomedArea,
+    zoomedAreaOffset,
     targetArea,
     unitMap,
     status,
@@ -82,7 +83,7 @@ const Room: NextPage = function Room() {
               {status === 'CONNECTED' && (
                 <GameMap
                   zoomedArea={zoomedArea}
-                  targetArea={targetArea}
+                  zoomedAreaOffset={zoomedAreaOffset}
                   unitMap={unitMap}
                   unitPattern={unitPattern}
                   onUnitsRevive={reviveUnitsWithPattern}
@@ -110,7 +111,7 @@ const Room: NextPage = function Room() {
               {status === 'CONNECTED' && (
                 <GameMap
                   zoomedArea={zoomedArea}
-                  targetArea={targetArea}
+                  zoomedAreaOffset={zoomedAreaOffset}
                   unitMap={unitMap}
                   unitPattern={unitPattern}
                   onUnitsRevive={reviveUnitsWithPattern}

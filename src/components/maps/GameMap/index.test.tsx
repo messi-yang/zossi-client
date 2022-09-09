@@ -6,7 +6,7 @@ function renderGameMap(unitMap: UnitVO[][]): RenderResult {
   return render(
     <GameMap
       zoomedArea={null}
-      targetArea={null}
+      zoomedAreaOffset={{ x: 0, y: 0 }}
       unitMap={unitMap}
       unitPattern={[]}
       onUnitsRevive={() => {}}
