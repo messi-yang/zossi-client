@@ -20,7 +20,7 @@ const Template: ComponentStory<typeof UnitPatternEditor> = function Template(arg
   };
 
   return (
-    <div style={{ width: '120px', height: '120px', display: 'inline-flex' }}>
+    <div className="w-32 h-32 inline-flex">
       <UnitPatternEditor {...args} onUpdate={handleUnitPatternUpdate} />
     </div>
   );

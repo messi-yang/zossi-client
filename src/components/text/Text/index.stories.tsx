@@ -12,7 +12,7 @@ export default {
 
 const Template: ComponentStory<typeof Text> = function Template(args) {
   return (
-    <div style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div className="w-screen h-screen flex justify-center items-center">
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" />

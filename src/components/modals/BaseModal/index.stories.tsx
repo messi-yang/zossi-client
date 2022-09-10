@@ -18,9 +18,7 @@ const Template: ComponentStory<typeof BaseModal> = function Template(args) {
 
   return (
     <BaseModal {...args} onBackgroundClick={handleBackgroundClick}>
-      <div style={{ width: '100%', height: '100%', background: 'white' }}>
-        This white section is your fully customisable section.
-      </div>
+      <div className="w-full h-full bg-white">This white section is your fully customisable section.</div>
     </BaseModal>
   );
 };

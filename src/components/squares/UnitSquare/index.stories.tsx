@@ -19,7 +19,7 @@ const Template: ComponentStory<typeof UnitSquare> = function Template(args) {
   };
 
   return (
-    <div style={{ display: 'inline-flex', width: '50px', height: '50px' }}>
+    <div className="inline-flex w-24 h-24">
       <UnitSquare {...args} onClick={handleClick} />
     </div>
   );

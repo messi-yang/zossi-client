@@ -39,7 +39,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
   };
 
   return (
-    <div style={{ display: 'inline-flex', width: '105px', height: '105px' }}>
+    <div className="inline-flex w-24 h-24">
       <GameMap {...args} onUnitsRevive={handleUnitsRevive} />
     </div>
   );

@@ -63,7 +63,7 @@ const Room: NextPage = function Room() {
     <>
       {deviceSize === 'large' && (
         <main className="flex" style={{ width: windowSize.width, height: windowSize.height }}>
-          <section style={{ flexShrink: '0' }}>
+          <section className="shrink-0">
             <GameRoomSideBar
               align="column"
               onLogoClick={handleLogoClick}
@@ -120,12 +120,7 @@ const Room: NextPage = function Room() {
               )}
             </section>
             {mapSize && targetArea && isMiniMapVisible && (
-              <section
-                className="absolute left-1/2 bottom-5 opacity-80 inline-flex"
-                style={{
-                  transform: 'translateX(-50%)',
-                }}
-              >
+              <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={windowSize.width * 0.8}
                   mapSize={mapSize}

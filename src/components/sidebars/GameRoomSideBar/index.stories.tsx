@@ -19,12 +19,7 @@ const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args)
   };
 
   return (
-    <section
-      style={{
-        height: align === 'column' ? '100vh' : undefined,
-        width: align === 'row' ? '100vw' : undefined,
-      }}
-    >
+    <section className={[align === 'column' ? 'h-screen' : '', align === 'row' ? 'w-screen' : undefined].join(' ')}>
       <GameRoomSideBar {...args} onUnitPatternUpdate={handleUnitPatternUpdate} />
     </section>
   );
