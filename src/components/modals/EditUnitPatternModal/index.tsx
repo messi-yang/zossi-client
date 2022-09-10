@@ -45,7 +45,7 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
           <div className="absolute top-5 right-5 flex justify-end">
             <IconButton icon="cross" onClick={onCancel} />
           </div>
-          <span className="text-white text-center">PATTERN</span>
+          <Text color="white" copy="PATTERN" size={18} />
           <section className="mt-9 flex justify-center">
             <UnitPatternEditor
               unitSize={230 / (tmpUnitPattern?.[0]?.length || 1)}
