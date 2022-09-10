@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import Text from '@/components/text/Text';
 import BaseModal from '@/components/modals/BaseModal';
 import UnitPatternEditor from '@/components/editors/UnitPatternEditor';
 import Button from '@/components/buttons/Button';
@@ -57,16 +58,27 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
               {unitPatternPresets.map((unitPatternPreset, unitPatternPresetIdx) => (
                 <section
                   key={generateKeyFromIndex(unitPatternPresetIdx)}
-                  className={[unitPatternPresetIdx !== 0 && 'ml-3', 'shrink-0', 'border-4', 'border-solid'].join(' ')}
-                  style={{
-                    borderColor: isEqual(tmpUnitPattern, unitPatternPreset) ? '#01D6C9' : 'black',
-                  }}
+                  className={[
+                    unitPatternPresetIdx !== 0 && 'ml-3',
+                    'shrink-0',
+                    'inline-flex',
+                    'items-center',
+                    'flex-col',
+                  ].join(' ')}
                 >
-                  <UnitPatternEditor
-                    unitSize={70 / (unitPatternPreset?.[0]?.length || 1)}
-                    unitPattern={unitPatternPreset}
-                    onUpdate={() => handleUnitPatternUpdate(unitPatternPreset)}
-                  />
+                  <div
+                    className={['border-4', 'border-solid'].join(' ')}
+                    style={{
+                      borderColor: isEqual(tmpUnitPattern, unitPatternPreset.pattern) ? '#01D6C9' : 'rgba(0,0,0,0)',
+                    }}
+                  >
+                    <UnitPatternEditor
+                      unitSize={70 / (unitPatternPreset?.pattern[0]?.length || 1)}
+                      unitPattern={unitPatternPreset.pattern}
+                      onUpdate={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
+                    />
+                  </div>
+                  <Text color="white" copy={unitPatternPreset.title} />
                 </section>
               ))}
             </section>
