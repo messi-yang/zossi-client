@@ -79,7 +79,7 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
         });
       });
     },
-    [unitPattern]
+    [unitPattern, unitPatternOffset]
   );
 
   const handleUnitSquareMouseEnter = useCallback((colIdx: number, rowIdx: number) => {
