@@ -46,7 +46,7 @@ function UnitSquare({
       role="button"
       tabIndex={0}
       aria-label="game unit box"
-      className="w-full h-full box-border cursor-pointer"
+      className="w-full h-full box-border cursor-pointer select-none"
       style={{
         backgroundColor,
         border: `1px solid ${styles.deadHoverColor}`,
