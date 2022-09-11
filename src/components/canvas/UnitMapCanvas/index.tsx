@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState, MouseEventHandler, useEffect } from 'react';
 import isEqual from 'lodash/isEqual';
+import debounce from 'lodash/debounce';
 
 import type { UnitVO, MapSizeVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 
@@ -264,7 +265,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
   const handleDropPatternCanvasMouseMove: MouseEventHandler<HTMLCanvasElement> = useCallback(
     (event) => {
       const ctx = patternCanvasElem?.getContext('2d');
-      if (!ctx || !hoveredIndexes) {
+      if (!ctx) {
         return;
       }
 
@@ -284,7 +285,12 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
         hoveredIndexes.current = newHoveredIndexes;
       }
     },
-    [patternCanvasElem, unitSize, mapSize, hoveredIndexes, unitPattern, borderWidth, canvasUnitSize]
+    [patternCanvasElem, unitSize, mapSize, unitPattern, borderWidth, canvasUnitSize]
+  );
+
+  const handleDropPatternCanvasMouseMoveDebouncer = useCallback(
+    debounce(handleDropPatternCanvasMouseMove, 25, { maxWait: 25 }),
+    [handleDropPatternCanvasMouseMove]
   );
 
   const handleDropPatternCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
@@ -320,7 +326,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
         width={canvasResolution.width}
         height={canvasResolution.height}
         className="absolute left-0 top-0"
-        onMouseMove={handleDropPatternCanvasMouseMove}
+        onMouseMove={handleDropPatternCanvasMouseMoveDebouncer}
         onClick={handleDropPatternCanvasClick}
         style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
       />
