@@ -32,4 +32,5 @@ export const Primary = Template.bind({});
 Primary.args = {
   unitMap: generateUnitMap(30),
   unitSize: 15,
+  unitMapOffset: { x: 0, y: 0 },
 };

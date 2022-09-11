@@ -1,6 +1,7 @@
 import { memo, useRef, useState, useCallback, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { gameBackgroundColor } from '@/styles/colors';
+// import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import type { AreaVO, UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
@@ -136,6 +137,7 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
           top: zoomedAreaOffset.y * squareSize,
         }}
       >
+        {/* {unitMap && <UnitMapCanvas unitMap={unitMap} unitSize={squareSize} unitMapOffset={zoomedAreaOffset} />} */}
         {unitMap && (
           <UnitSquares
             ref={unitSquaresCompRef}

@@ -2,7 +2,7 @@ import { render, RenderResult, screen } from '@testing-library/react';
 import UnitMapCanvas, { dataTestids } from '.';
 
 function renderUnitMapCanvas(): RenderResult {
-  return render(<UnitMapCanvas unitMap={[[]]} unitSize={20} />);
+  return render(<UnitMapCanvas unitMap={[[]]} unitSize={20} unitMapOffset={{ x: 0, y: 0 }} />);
 }
 
 describe('UnitMapCanvas', () => {
