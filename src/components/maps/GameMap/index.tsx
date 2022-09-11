@@ -1,14 +1,11 @@
 import { memo, useRef, useState, useCallback, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { gameBackgroundColor } from '@/styles/colors';
-// import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
+import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import type { AreaVO, UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 import dataTestids from './dataTestids';
-import UnitSquares from './subComponents/UnitSquares';
-import type { Commands as UnitSquaresCommands } from './subComponents/UnitSquares';
-import BlurredUnitMap from './subComponents/BlurredUnitMap';
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
   return {
@@ -34,7 +31,6 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
     { width: rootElemRect.width, height: rootElemRect.height },
     squareSize
   );
-  const [hoveredIndexes, setHoveredIndexes] = useState<[colIdx: number, rowIdx: number] | null>(null);
   const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVO>(calculateUnitPatternOffset(unitPattern));
 
   useEffect(() => {
@@ -56,47 +52,6 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
     },
     [unitPattern, unitPatternOffset, onUnitsRevive, zoomedArea]
   );
-
-  const unitSquaresCompRef = useRef<UnitSquaresCommands>(null);
-
-  const highlightUnitMapWithCoordinateAndPattern = useCallback(
-    (colIdx: number, rowIdx: number, highlighted: boolean) => {
-      if (!unitPattern) {
-        return;
-      }
-
-      unitPattern.forEach((unitCol, unitPatternColIdx) => {
-        unitCol.forEach((isTruthy, unitPatternRowIdx) => {
-          if (!unitSquaresCompRef.current) {
-            return;
-          }
-          if (isTruthy) {
-            unitSquaresCompRef.current.setUnitHighlighted(
-              colIdx + unitPatternColIdx + unitPatternOffset.x,
-              rowIdx + unitPatternRowIdx + unitPatternOffset.y,
-              highlighted
-            );
-          }
-        });
-      });
-    },
-    [unitPattern, unitPatternOffset]
-  );
-
-  const handleUnitSquareMouseEnter = useCallback((colIdx: number, rowIdx: number) => {
-    setHoveredIndexes([colIdx, rowIdx]);
-  }, []);
-
-  useEffect(() => {
-    if (hoveredIndexes) {
-      highlightUnitMapWithCoordinateAndPattern(hoveredIndexes[0], hoveredIndexes[1], true);
-    }
-    return () => {
-      if (hoveredIndexes) {
-        highlightUnitMapWithCoordinateAndPattern(hoveredIndexes[0], hoveredIndexes[1], false);
-      }
-    };
-  }, [hoveredIndexes, unitPattern]);
 
   const generateNewAreaAndTriggerUpdate = useCallback((from: CoordinateVO, areaWidth: number, areaHeight: number) => {
     const to = {
@@ -128,25 +83,16 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
       }}
     >
       <section className="absolute w-full h-full">
-        <BlurredUnitMap width={desiredAreaWidth} height={desiredAreaHeight} squareSize={squareSize} />
+        {/* <BlurredUnitMap width={desiredAreaWidth} height={desiredAreaHeight} squareSize={squareSize} /> */}
       </section>
-      <section
-        className="relative w-full h-full flex"
-        style={{
-          left: zoomedAreaOffset.x * squareSize,
-          top: zoomedAreaOffset.y * squareSize,
-        }}
-      >
-        {/* {unitMap && <UnitMapCanvas unitMap={unitMap} unitSize={squareSize} unitMapOffset={zoomedAreaOffset} />} */}
+      <section className="relative w-full h-full flex">
         {unitMap && (
-          <UnitSquares
-            ref={unitSquaresCompRef}
-            width={desiredAreaWidth}
-            height={desiredAreaHeight}
+          <UnitMapCanvas
             unitMap={unitMap}
-            squareSize={squareSize}
-            onUnitSquareClick={handleUnitSquareClick}
-            onUnitSquareMouseEnter={handleUnitSquareMouseEnter}
+            unitSize={squareSize}
+            unitMapOffset={zoomedAreaOffset}
+            unitPattern={unitPattern}
+            onClick={handleUnitSquareClick}
           />
         )}
       </section>

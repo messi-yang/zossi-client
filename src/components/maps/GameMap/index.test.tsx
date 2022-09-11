@@ -8,7 +8,7 @@ function renderGameMap(unitMap: UnitVO[][]): RenderResult {
       zoomedArea={null}
       zoomedAreaOffset={{ x: 0, y: 0 }}
       unitMap={unitMap}
-      unitPattern={[]}
+      unitPattern={[[true]]}
       onUnitsRevive={() => {}}
       onAreaUpdate={() => {}}
     />
@@ -18,7 +18,7 @@ function renderGameMap(unitMap: UnitVO[][]): RenderResult {
 describe('GameMap', () => {
   it('Should render component successfully.', () => {
     try {
-      renderGameMap([]);
+      renderGameMap([[{ alive: true, age: 0 }]]);
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {
