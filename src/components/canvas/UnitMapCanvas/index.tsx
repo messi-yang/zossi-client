@@ -284,7 +284,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
         hoveredIndexes.current = newHoveredIndexes;
       }
     },
-    [patternCanvasElem, unitSize, mapSize, hoveredIndexes, unitSize, borderWidth, canvasUnitSize]
+    [patternCanvasElem, unitSize, mapSize, hoveredIndexes, unitPattern, borderWidth, canvasUnitSize]
   );
 
   const handleDropPatternCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
