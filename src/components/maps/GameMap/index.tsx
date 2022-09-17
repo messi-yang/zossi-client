@@ -9,8 +9,8 @@ import dataTestids from './dataTestids';
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
   return {
-    x: -Math.floor(unitPattern.length / 2),
-    y: -Math.floor(unitPattern[0] ? unitPattern[0].length / 2 : 0),
+    x: -Math.floor(unitPattern.getWidth() / 2),
+    y: -Math.floor(unitPattern.getHeight() / 2),
   };
 }
 

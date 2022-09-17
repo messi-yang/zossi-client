@@ -3,7 +3,7 @@ import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import useWebSocket from '@/hooks/useWebSocket';
 import type { AreaDto, UnitDto, MapSizeDto, CoordinateDto } from '@/dtos';
-import type { UnitVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { UnitVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -56,13 +56,13 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     targetArea: null,
     unitMap: null,
     zoomedAreaOffset: { x: 0, y: 0 },
-    unitPattern: [
-      [null, null, null, null, null],
-      [null, null, true, null, null],
-      [null, true, null, true, null],
-      [null, null, true, null, null],
-      [null, null, null, null, null],
-    ],
+    unitPattern: new UnitPatternVo([
+      [false, false, false, false, false],
+      [false, false, true, false, false],
+      [false, true, false, true, false],
+      [false, false, true, false, false],
+      [false, false, false, false, false],
+    ]),
     joinGame: () => {},
     updateUnitPattern: () => {},
     reviveUnitsWithPattern: () => {},
@@ -203,15 +203,13 @@ export function Provider({ children }: Props) {
       };
 
       const coordinates: CoordinateDto[] = [];
-      pattern.forEach((patternCol, colIdx) => {
-        patternCol.forEach((isTruthy, rowIdx) => {
-          if (isTruthy) {
-            coordinates.push({
-              x: coordinate.x + colIdx + patternOffset.x,
-              y: coordinate.y + rowIdx + patternOffset.y,
-            });
-          }
-        });
+      pattern.iterate((colIdx, rowIdx, alive) => {
+        if (alive) {
+          coordinates.push({
+            x: coordinate.x + colIdx + patternOffset.x,
+            y: coordinate.y + rowIdx + patternOffset.y,
+          });
+        }
       });
 
       const action: ReviveUnitsAction = {

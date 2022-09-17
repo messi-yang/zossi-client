@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
 import Text from '@/components/text/Text';
 import BaseModal from '@/components/modals/BaseModal';
 import UnitPatternEditor from '@/components/editors/UnitPatternEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
-import type { UnitPatternVo } from '@/valueObjects';
+import { UnitPatternVo } from '@/valueObjects';
 import { generateKeyFromIndex } from '@/utils/component';
 import unitPatternPresets from './unitPatternPresets';
 import dataTestids from './dataTestids';
@@ -48,7 +47,7 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
           <Text color="white" copy="PATTERN" size={18} />
           <section className="mt-9 flex justify-center">
             <UnitPatternEditor
-              unitSize={230 / (tmpUnitPattern?.[0]?.length || 1)}
+              unitSize={230 / (tmpUnitPattern.getHeight() || 1)}
               unitPattern={tmpUnitPattern}
               onUpdate={handleUnitPatternUpdate}
             />
@@ -69,11 +68,11 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
                   <div
                     className={['border-4', 'border-solid'].join(' ')}
                     style={{
-                      borderColor: isEqual(tmpUnitPattern, unitPatternPreset.pattern) ? '#01D6C9' : 'rgba(0,0,0,0)',
+                      borderColor: tmpUnitPattern.isEqual(unitPatternPreset.pattern) ? '#01D6C9' : 'rgba(0,0,0,0)',
                     }}
                   >
                     <UnitPatternEditor
-                      unitSize={70 / (unitPatternPreset?.pattern[0]?.length || 1)}
+                      unitSize={70 / (unitPatternPreset?.pattern.getHeight() || 1)}
                       unitPattern={unitPatternPreset.pattern}
                       onUpdate={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
                     />

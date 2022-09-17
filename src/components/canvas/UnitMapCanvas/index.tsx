@@ -52,8 +52,8 @@ function generateCanvasResolution(unitMap: UnitVo[][], unitSize: number, canvasU
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
   return {
-    x: -Math.floor(unitPattern.length / 2),
-    y: -Math.floor(unitPattern[0] ? unitPattern[0].length / 2 : 0),
+    x: -Math.floor(unitPattern.getWidth() / 2),
+    y: -Math.floor(unitPattern.getHeight() / 2),
   };
 }
 
@@ -214,23 +214,21 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
     ctx.fillStyle = color.hoverColor; // eslint-disable-line no-param-reassign
     ctx.beginPath();
-    newUnitPattern.forEach((patternCol, colIdx) => {
-      patternCol.forEach((isTruthy, rowIdx) => {
-        if (!isTruthy) {
-          return;
-        }
-        const leftTopX =
-          ((newHoveredIndexes[0] + colIdx + unitPatternOffset.x) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-        const leftTopY =
-          ((newHoveredIndexes[1] + rowIdx + unitPatternOffset.y) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-        ctx.moveTo(leftTopX, leftTopY);
-        ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
-        ctx.lineTo(
-          leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize,
-          leftTopY + (newUnitSize - newBorderWidth) * newCanvasUnitSize
-        );
-        ctx.lineTo(leftTopX, leftTopY + (newUnitSize - 1) * newCanvasUnitSize);
-      });
+    newUnitPattern.iterate((colIdx, rowIdx, alive) => {
+      if (!alive) {
+        return;
+      }
+      const leftTopX =
+        ((newHoveredIndexes[0] + colIdx + unitPatternOffset.x) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+      const leftTopY =
+        ((newHoveredIndexes[1] + rowIdx + unitPatternOffset.y) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+      ctx.moveTo(leftTopX, leftTopY);
+      ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
+      ctx.lineTo(
+        leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize,
+        leftTopY + (newUnitSize - newBorderWidth) * newCanvasUnitSize
+      );
+      ctx.lineTo(leftTopX, leftTopY + (newUnitSize - 1) * newCanvasUnitSize);
     });
     ctx.closePath();
     ctx.fill();
@@ -245,8 +243,8 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
     newCanvasUnitSize: number
   ) => {
     const unitPatternOffset = calculateUnitPatternOffset(newUnitPattern);
-    const newUnitPatternWidth = newUnitPattern.length;
-    const newUnitPatternHeight = newUnitPattern[0].length || 0;
+    const newUnitPatternWidth = newUnitPattern.getWidth();
+    const newUnitPatternHeight = newUnitPattern.getHeight();
     ctx.beginPath();
     const leftTopX = ((newHoveredIndexes[0] + unitPatternOffset.x) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
     const leftTopY = ((newHoveredIndexes[1] + unitPatternOffset.y) * newUnitSize + newBorderWidth) * newCanvasUnitSize;

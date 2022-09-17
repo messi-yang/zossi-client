@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import type { UnitVo } from '@/valueObjects';
+import { UnitVo, UnitPatternVo } from '@/valueObjects';
 
 import UnitMapCanvas from '.';
 
@@ -32,5 +32,5 @@ export const Primary = Template.bind({});
 Primary.args = {
   unitMap: generateUnitMap(30),
   unitSize: 15,
-  unitPattern: [[true]],
+  unitPattern: new UnitPatternVo([[true]]),
 };

@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import flatten from 'lodash/flatten';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
 import EditUnitPatternModal from '@/components/modals/EditUnitPatternModal';
-import type { UnitPatternVo } from '@/valueObjects';
+import { UnitPatternVo } from '@/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
@@ -30,7 +29,7 @@ function GameRoomSideBar({
 
   const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
 
-  const isUnitPatternEmpty = flatten(unitPattern).findIndex((alive) => alive) === -1;
+  const isUnitPatternEmpty = unitPattern.isEmpty();
 
   const handleUnitPatternItemClick = () => {
     setIsEditUnitPatternModalVisible(true);

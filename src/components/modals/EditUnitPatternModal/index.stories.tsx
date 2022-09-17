@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { UnitPatternVo } from '@/valueObjects';
 
 import EditUnitPatternModal from '.';
 
@@ -16,9 +17,9 @@ const Template: ComponentStory<typeof EditUnitPatternModal> = function Template(
 export const Primary = Template.bind({});
 Primary.args = {
   opened: true,
-  unitPattern: [
-    [null, true, null],
-    [true, null, true],
-    [null, true, null],
-  ],
+  unitPattern: new UnitPatternVo([
+    [false, true, false],
+    [true, false, true],
+    [false, true, false],
+  ]),
 };

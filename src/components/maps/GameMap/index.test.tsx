@@ -1,6 +1,6 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
-import type { UnitVo } from '@/valueObjects';
+import { UnitVo, UnitPatternVo } from '@/valueObjects';
 
 function renderGameMap(unitMap: UnitVo[][]): RenderResult {
   return render(
@@ -8,7 +8,7 @@ function renderGameMap(unitMap: UnitVo[][]): RenderResult {
       area={null}
       areaOffset={{ x: 0, y: 0 }}
       unitMap={unitMap}
-      unitPattern={[[true]]}
+      unitPattern={new UnitPatternVo([[true]])}
       onUnitsRevive={() => {}}
       onAreaUpdate={() => {}}
     />

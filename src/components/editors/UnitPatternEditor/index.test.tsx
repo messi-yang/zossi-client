@@ -1,15 +1,18 @@
 import { render, RenderResult, screen } from '@testing-library/react';
+import { UnitPatternVo } from '@/valueObjects';
 import UnitPatternEditor, { dataTestids } from '.';
 
 function renderUnitPatternEditor(): RenderResult {
   return render(
     <UnitPatternEditor
       unitSize={20}
-      unitPattern={[
-        [true, true, true],
-        [true, null, true],
-        [true, true, true],
-      ]}
+      unitPattern={
+        new UnitPatternVo([
+          [true, true, true],
+          [true, false, true],
+          [true, true, true],
+        ])
+      }
       onUpdate={() => {}}
     />
   );

@@ -6,4 +6,4 @@ import UnitPatternVo from './UnitPatternVo';
 import MapSizeVo from './MapSizeVo';
 
 export default {};
-export type { UnitVo, CoordinateVo, OffsetVo, AreaVo, UnitPatternVo, MapSizeVo };
+export { UnitVo, CoordinateVo, OffsetVo, AreaVo, UnitPatternVo, MapSizeVo };

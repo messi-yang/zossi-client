@@ -1,9 +1,15 @@
 import { render, RenderResult, screen } from '@testing-library/react';
+import { UnitPatternVo } from '@/valueObjects';
 import UnitMapCanvas, { dataTestids } from '.';
 
 function renderUnitMapCanvas(): RenderResult {
   return render(
-    <UnitMapCanvas unitMap={[[{ alive: true, age: 0 }]]} unitSize={20} unitPattern={[[true]]} onClick={() => {}} />
+    <UnitMapCanvas
+      unitMap={[[{ alive: true, age: 0 }]]}
+      unitSize={20}
+      unitPattern={new UnitPatternVo([[true]])}
+      onClick={() => {}}
+    />
   );
 }
 

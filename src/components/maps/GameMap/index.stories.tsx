@@ -2,7 +2,7 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import type { UnitVo, CoordinateVo, AreaVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { UnitVo, CoordinateVo, AreaVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 
 import GameMap from '.';
 
@@ -21,16 +21,14 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     }
 
     const newUnitMap = cloneDeep(unitMap);
-    pattern.forEach((patternCol, colIdx) => {
-      patternCol.forEach((isTruthy, rowIdx) => {
-        if (isTruthy) {
-          const adjustedX = coordinate.x - area.from.x + colIdx + patternOffset.x;
-          const adjustedY = coordinate.y - area.from.y + rowIdx + patternOffset.y;
-          if (newUnitMap?.[adjustedX]?.[adjustedY]) {
-            newUnitMap[adjustedX][adjustedY].alive = true;
-          }
+    pattern.iterate((colIdx, rowIdx, alive) => {
+      if (alive) {
+        const adjustedX = coordinate.x - area.from.x + colIdx + patternOffset.x;
+        const adjustedY = coordinate.y - area.from.y + rowIdx + patternOffset.y;
+        if (newUnitMap?.[adjustedX]?.[adjustedY]) {
+          newUnitMap[adjustedX][adjustedY].alive = true;
         }
-      });
+      }
     });
 
     updateArgs({
@@ -75,11 +73,11 @@ Primary.args = {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
   }),
-  unitPattern: [
-    [null, null, null, null, null],
-    [null, null, true, null, null],
-    [null, null, true, null, null],
-    [null, null, true, null, null],
-    [null, null, null, null, null],
-  ],
+  unitPattern: new UnitPatternVo([
+    [false, false, false, false, false],
+    [false, false, true, false, false],
+    [false, false, true, false, false],
+    [false, false, true, false, false],
+    [false, false, false, false, false],
+  ]),
 };

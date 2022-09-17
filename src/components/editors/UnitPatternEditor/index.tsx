@@ -13,14 +13,14 @@ type Props = {
 function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
     const newUnitPattern = cloneDeep(unitPattern);
-    newUnitPattern[colIdx][rowIdx] = newUnitPattern[colIdx][rowIdx] === true ? null : true;
+    newUnitPattern.setPatternUnit(colIdx, rowIdx, !newUnitPattern.isAlive(colIdx, rowIdx));
 
     onUpdate(newUnitPattern);
   };
 
   return (
     <div data-testid={dataTestids.root} className="flex flex-row">
-      {unitPattern.map((unitCol, colIdx) => (
+      {unitPattern.mapPatternColumn((colIdx) => (
         <div
           key={generateKeyFromIndex(colIdx)}
           className="flex flex-col"
@@ -28,7 +28,7 @@ function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props
             width: unitSize,
           }}
         >
-          {unitCol.map((isTruthy, rowIdx) => (
+          {unitPattern.mapPatternUnit(colIdx, (rowIdx, isAlive) => (
             <div
               key={generateKeyFromIndex(rowIdx)}
               style={{
@@ -36,12 +36,12 @@ function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props
               }}
             >
               <UnitSquare
-                alive={isTruthy || false}
+                alive={isAlive}
                 highlighted={false}
                 borderColor="#2C2C2C"
                 hasTopBorder
-                hasRightBorder={colIdx === unitPattern.length - 1}
-                hasBottomBorder={rowIdx === unitCol.length - 1}
+                hasRightBorder={colIdx === unitPattern.getWidth() - 1}
+                hasBottomBorder={rowIdx === unitPattern.getHeight() - 1}
                 hasLeftBorder
                 onClick={() => handleSquareClick(colIdx, rowIdx)}
               />
