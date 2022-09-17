@@ -1,5 +1,4 @@
 import { gameBackgroundColor } from '@/styles/colors';
-import dataTestids from './dataTestids';
 
 const styles = {
   aliveBackgroundColor: 'white',
@@ -42,7 +41,6 @@ function UnitSquare({
 
   return (
     <div
-      data-testid={dataTestids.root}
       role="button"
       tabIndex={0}
       aria-label="game unit box"
@@ -63,4 +61,3 @@ function UnitSquare({
 }
 
 export default UnitSquare;
-export { dataTestids };
