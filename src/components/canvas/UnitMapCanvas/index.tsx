@@ -2,7 +2,7 @@ import { useCallback, useRef, useState, MouseEventHandler, useEffect } from 'rea
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import type { UnitVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { UnitVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 
 import dataTestids from './dataTestids';
 
@@ -51,10 +51,7 @@ function generateCanvasResolution(unitMap: UnitVo[][], unitSize: number, canvasU
 }
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
-  return {
-    x: -Math.floor(unitPattern.getWidth() / 2),
-    y: -Math.floor(unitPattern.getHeight() / 2),
-  };
+  return new OffsetVo(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
 }
 
 type Props = {
@@ -219,9 +216,9 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
         return;
       }
       const leftTopX =
-        ((newHoveredIndexes[0] + colIdx + unitPatternOffset.x) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+        ((newHoveredIndexes[0] + colIdx + unitPatternOffset.getX()) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
       const leftTopY =
-        ((newHoveredIndexes[1] + rowIdx + unitPatternOffset.y) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+        ((newHoveredIndexes[1] + rowIdx + unitPatternOffset.getY()) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
       ctx.moveTo(leftTopX, leftTopY);
       ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
       ctx.lineTo(
@@ -246,8 +243,10 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
     const newUnitPatternWidth = newUnitPattern.getWidth();
     const newUnitPatternHeight = newUnitPattern.getHeight();
     ctx.beginPath();
-    const leftTopX = ((newHoveredIndexes[0] + unitPatternOffset.x) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-    const leftTopY = ((newHoveredIndexes[1] + unitPatternOffset.y) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+    const leftTopX =
+      ((newHoveredIndexes[0] + unitPatternOffset.getX()) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+    const leftTopY =
+      ((newHoveredIndexes[1] + unitPatternOffset.getY()) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
     ctx.clearRect(
       leftTopX,
       leftTopY,

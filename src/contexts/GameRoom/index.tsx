@@ -13,12 +13,9 @@ type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
 function calculateZoomedAreaOffset(zoomedArea: AreaVo | null, targetArea: AreaVo | null): OffsetVo {
   if (!zoomedArea || !targetArea) {
-    return { x: 0, y: 0 };
+    return new OffsetVo(0, 0);
   }
-  return {
-    x: zoomedArea.from.getX() - targetArea.from.getX(),
-    y: zoomedArea.from.getY() - targetArea.from.getY(),
-  };
+  return new OffsetVo(zoomedArea.from.getX() - targetArea.from.getX(), zoomedArea.from.getY() - targetArea.from.getY());
 }
 
 function convertAreaAndUnitMapIntoUnitVoMap(area: AreaDto, unitMap: UnitDto[][]): UnitVo[][] {
@@ -55,7 +52,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     zoomedArea: null,
     targetArea: null,
     unitMap: null,
-    zoomedAreaOffset: { x: 0, y: 0 },
+    zoomedAreaOffset: new OffsetVo(0, 0),
     unitPattern: new UnitPatternVo([
       [false, false, false, false, false],
       [false, false, true, false, false],
@@ -214,8 +211,8 @@ export function Provider({ children }: Props) {
       pattern.iterate((colIdx, rowIdx, alive) => {
         if (alive) {
           coordinates.push({
-            x: coordinate.getX() + colIdx + patternOffset.x,
-            y: coordinate.getY() + rowIdx + patternOffset.y,
+            x: coordinate.getX() + colIdx + patternOffset.getX(),
+            y: coordinate.getY() + rowIdx + patternOffset.getY(),
           });
         }
       });

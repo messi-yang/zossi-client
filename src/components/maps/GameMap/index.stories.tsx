@@ -23,8 +23,8 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     const newUnitMap = cloneDeep(unitMap);
     pattern.iterate((colIdx, rowIdx, alive) => {
       if (alive) {
-        const adjustedX = coordinate.getX() - area.from.getX() + colIdx + patternOffset.x;
-        const adjustedY = coordinate.getY() - area.from.getY() + rowIdx + patternOffset.y;
+        const adjustedX = coordinate.getX() - area.from.getX() + colIdx + patternOffset.getX();
+        const adjustedY = coordinate.getY() - area.from.getY() + rowIdx + patternOffset.getY();
         if (newUnitMap?.[adjustedX]?.[adjustedY]) {
           newUnitMap[adjustedX][adjustedY].alive = true;
         }
@@ -65,10 +65,7 @@ Primary.args = {
     from: new CoordinateVo(3, 3),
     to: new CoordinateVo(9, 9),
   },
-  areaOffset: {
-    x: 0,
-    y: 0,
-  },
+  areaOffset: new OffsetVo(0, 0),
   unitMap: generateUnitMap({
     from: new CoordinateVo(3, 3),
     to: new CoordinateVo(9, 9),

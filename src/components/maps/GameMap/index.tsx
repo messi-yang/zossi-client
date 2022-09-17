@@ -8,10 +8,7 @@ import { AreaVo, UnitVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/valueOb
 import dataTestids from './dataTestids';
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
-  return {
-    x: -Math.floor(unitPattern.getWidth() / 2),
-    y: -Math.floor(unitPattern.getHeight() / 2),
-  };
+  return new OffsetVo(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
 }
 
 type Props = {
@@ -78,7 +75,7 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
     >
       <section
         className="relative w-full h-full flex"
-        style={{ left: areaOffset.x * squareSize, top: areaOffset.y * squareSize }}
+        style={{ left: areaOffset.getX() * squareSize, top: areaOffset.getY() * squareSize }}
       >
         {unitMap && (
           <UnitMapCanvas
