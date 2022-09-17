@@ -23,8 +23,8 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     const newUnitMap = cloneDeep(unitMap);
     pattern.iterate((colIdx, rowIdx, alive) => {
       if (alive) {
-        const adjustedX = coordinate.x - area.from.x + colIdx + patternOffset.x;
-        const adjustedY = coordinate.y - area.from.y + rowIdx + patternOffset.y;
+        const adjustedX = coordinate.getX() - area.from.getX() + colIdx + patternOffset.x;
+        const adjustedY = coordinate.getY() - area.from.getY() + rowIdx + patternOffset.y;
         if (newUnitMap?.[adjustedX]?.[adjustedY]) {
           newUnitMap[adjustedX][adjustedY].alive = true;
         }
@@ -45,8 +45,8 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
 
 function generateUnitMap(area: AreaVo) {
   const unitMap: UnitVo[][] = [];
-  const width = area.to.x - area.from.x + 1;
-  const height = area.to.y - area.from.y + 1;
+  const width = area.to.getX() - area.from.getX() + 1;
+  const height = area.to.getY() - area.from.getY() + 1;
   for (let x = 0; x < width; x += 1) {
     unitMap.push([]);
     for (let y = 0; y < height; y += 1) {
@@ -62,16 +62,16 @@ function generateUnitMap(area: AreaVo) {
 export const Primary = Template.bind({});
 Primary.args = {
   area: {
-    from: { x: 3, y: 3 },
-    to: { x: 9, y: 9 },
+    from: new CoordinateVo(3, 3),
+    to: new CoordinateVo(9, 9),
   },
   areaOffset: {
     x: 0,
     y: 0,
   },
   unitMap: generateUnitMap({
-    from: { x: 3, y: 3 },
-    to: { x: 9, y: 9 },
+    from: new CoordinateVo(3, 3),
+    to: new CoordinateVo(9, 9),
   }),
   unitPattern: new UnitPatternVo([
     [false, false, false, false, false],

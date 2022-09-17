@@ -4,7 +4,7 @@ import { gameBackgroundColor } from '@/styles/colors';
 import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import type { AreaVo, UnitVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { AreaVo, UnitVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
@@ -43,10 +43,7 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
         return;
       }
 
-      const finalCoordinate = {
-        x: area.from.x + colIdx,
-        y: area.from.y + rowIdx,
-      };
+      const finalCoordinate = new CoordinateVo(area.from.getX() + colIdx, area.from.getY() + rowIdx);
 
       onUnitsRevive(finalCoordinate, unitPatternOffset, unitPattern);
     },
@@ -54,10 +51,7 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
   );
 
   const generateNewAreaAndTriggerUpdate = useCallback((from: CoordinateVo, areaWidth: number, areaHeight: number) => {
-    const to = {
-      x: from.x + areaWidth - 1,
-      y: from.y + areaHeight - 1,
-    };
+    const to = new CoordinateVo(from.getX() + areaWidth - 1, from.getY() + areaHeight - 1);
 
     onAreaUpdate({
       from,
@@ -67,7 +61,7 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
 
   useEffect(() => {
     if (area === null) {
-      generateNewAreaAndTriggerUpdate({ x: 0, y: 0 }, desiredAreaWidth, desiredAreaHeight);
+      generateNewAreaAndTriggerUpdate(new CoordinateVo(0, 0), desiredAreaWidth, desiredAreaHeight);
     } else {
       generateNewAreaAndTriggerUpdate(cloneDeep(area.from), desiredAreaWidth, desiredAreaHeight);
     }

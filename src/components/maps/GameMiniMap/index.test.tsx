@@ -1,4 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
+import { CoordinateVo } from '@/valueObjects';
 import GameMiniMap, { dataTestids } from '.';
 
 function renderGameMiniMap(): RenderResult {
@@ -6,7 +7,7 @@ function renderGameMiniMap(): RenderResult {
     <GameMiniMap
       width={300}
       mapSize={{ width: 100, height: 100 }}
-      area={{ from: { x: 0, y: 0 }, to: { x: 10, y: 10 } }}
+      area={{ from: new CoordinateVo(0, 0), to: new CoordinateVo(10, 10) }}
       onAreaUpdate={() => {}}
     />
   );

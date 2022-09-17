@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { MapSizeVo, AreaVo } from '@/valueObjects';
+import { MapSizeVo, AreaVo, CoordinateVo } from '@/valueObjects';
 import usePull from '@/hooks/usePull';
 import dataTestids from './dataTestids';
 
@@ -13,12 +13,12 @@ type Props = {
 function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
   const mapContentElemRef = useRef<HTMLDivElement>(null);
   const mapSizeRatio = mapSize.height / mapSize.width;
-  const areaWidth = area.to.x - area.from.x + 1;
-  const areaHeight = area.to.y - area.from.y + 1;
+  const areaWidth = area.to.getX() - area.from.getX() + 1;
+  const areaHeight = area.to.getY() - area.from.getY() + 1;
   const mapZoomedAreaWidthRatio = areaWidth / mapSize.width;
   const mapZoomedAreaHeightRatio = areaHeight / mapSize.height;
-  const offsetXRatio = area.from.x / mapSize.width;
-  const offsetYRatio = area.from.y / mapSize.height;
+  const offsetXRatio = area.from.getX() / mapSize.width;
+  const offsetYRatio = area.from.getY() / mapSize.height;
 
   const elemWidth = width;
   const elemHeight = elemWidth * mapSizeRatio;
@@ -48,14 +48,8 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
     }
 
     return {
-      from: {
-        x: adjustedX,
-        y: adjustedY,
-      },
-      to: {
-        x: adjustedX + areaWidth - 1,
-        y: adjustedY + areaHeight - 1,
-      },
+      from: new CoordinateVo(adjustedX, adjustedY),
+      to: new CoordinateVo(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1),
     };
   };
 
