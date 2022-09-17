@@ -1,9 +1,9 @@
-import UnitVO from './UnitVO';
-import CoordinateVO from './CoordinateVO';
-import OffsetVO from './OffsetVO';
-import AreaVO from './AreaVO';
-import UnitPatternVO from './UnitPatternVO';
-import MapSizeVO from './MapSizeVO';
+import UnitVo from './UnitVo';
+import CoordinateVo from './CoordinateVo';
+import OffsetVo from './OffsetVo';
+import AreaVo from './AreaVo';
+import UnitPatternVo from './UnitPatternVo';
+import MapSizeVo from './MapSizeVo';
 
 export default {};
-export type { UnitVO, CoordinateVO, OffsetVO, AreaVO, UnitPatternVO, MapSizeVO };
+export type { UnitVo, CoordinateVo, OffsetVo, AreaVo, UnitPatternVo, MapSizeVo };

@@ -1,8 +1,8 @@
-import CoordinateVO from './CoordinateVO';
+import CoordinateVo from './CoordinateVo';
 
-type AreaVO = {
-  from: CoordinateVO;
-  to: CoordinateVO;
+type AreaVo = {
+  from: CoordinateVo;
+  to: CoordinateVo;
 };
 
-export default AreaVO;
+export default AreaVo;

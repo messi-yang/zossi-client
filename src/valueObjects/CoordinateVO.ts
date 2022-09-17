@@ -1,6 +1,6 @@
-type CoordinateVO = {
+type CoordinateVo = {
   x: number;
   y: number;
 };
 
-export default CoordinateVO;
+export default CoordinateVo;

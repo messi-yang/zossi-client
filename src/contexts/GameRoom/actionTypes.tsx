@@ -1,4 +1,4 @@
-import { AreaDTO, CoordinateDTO } from '@/dto';
+import { AreaDto, CoordinateDto } from '@/dtos';
 
 enum ActionTypeEnum {
   ZoomArea = 'ZOOM_AREA',
@@ -8,7 +8,7 @@ enum ActionTypeEnum {
 type ZoomAreaAction = {
   type: ActionTypeEnum.ZoomArea;
   payload: {
-    area: AreaDTO;
+    area: AreaDto;
     actionedAt: string;
   };
 };
@@ -16,7 +16,7 @@ type ZoomAreaAction = {
 type ReviveUnitsAction = {
   type: ActionTypeEnum.ReviveUnits;
   payload: {
-    coordinates: CoordinateDTO[];
+    coordinates: CoordinateDto[];
     actionedAt: string;
   };
 };

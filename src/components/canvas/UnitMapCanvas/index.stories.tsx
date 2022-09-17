@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import type { UnitVO } from '@/valueObjects';
+import type { UnitVo } from '@/valueObjects';
 
 import UnitMapCanvas from '.';
 
@@ -14,8 +14,8 @@ const Template: ComponentStory<typeof UnitMapCanvas> = function Template(args) {
   return <UnitMapCanvas {...args} />;
 };
 
-function generateUnitMap(size: number): UnitVO[][] {
-  const unitMap: UnitVO[][] = [];
+function generateUnitMap(size: number): UnitVo[][] {
+  const unitMap: UnitVo[][] = [];
   for (let x = 0; x < size; x += 1) {
     unitMap.push([]);
     for (let y = 0; y < size; y += 1) {

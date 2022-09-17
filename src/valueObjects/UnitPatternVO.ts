@@ -1,2 +1,2 @@
-type UnitPatternVO = (true | null)[][];
-export default UnitPatternVO;
+type UnitPatternVo = (true | null)[][];
+export default UnitPatternVo;

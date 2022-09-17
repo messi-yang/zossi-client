@@ -4,10 +4,10 @@ import { gameBackgroundColor } from '@/styles/colors';
 import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import type { AreaVO, UnitVO, CoordinateVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
+import type { AreaVo, UnitVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
-function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
+function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
   return {
     x: -Math.floor(unitPattern.length / 2),
     y: -Math.floor(unitPattern[0] ? unitPattern[0].length / 2 : 0),
@@ -15,12 +15,12 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
 }
 
 type Props = {
-  zoomedArea: AreaVO | null;
-  zoomedAreaOffset: OffsetVO;
-  unitMap: UnitVO[][] | null;
-  unitPattern: UnitPatternVO;
-  onUnitsRevive: (coordinate: CoordinateVO, unitPatternOffset: OffsetVO, unitPattern: UnitPatternVO) => any;
-  onAreaUpdate: (newArea: AreaVO) => any;
+  zoomedArea: AreaVo | null;
+  zoomedAreaOffset: OffsetVo;
+  unitMap: UnitVo[][] | null;
+  unitPattern: UnitPatternVo;
+  onUnitsRevive: (coordinate: CoordinateVo, unitPatternOffset: OffsetVo, unitPattern: UnitPatternVo) => any;
+  onAreaUpdate: (newArea: AreaVo) => any;
 };
 
 function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
@@ -31,7 +31,7 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
     { width: rootElemRect.width, height: rootElemRect.height },
     squareSize
   );
-  const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVO>(calculateUnitPatternOffset(unitPattern));
+  const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVo>(calculateUnitPatternOffset(unitPattern));
 
   useEffect(() => {
     setUnitPatternOffset(calculateUnitPatternOffset(unitPattern));
@@ -53,7 +53,7 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
     [unitPattern, unitPatternOffset, onUnitsRevive, zoomedArea]
   );
 
-  const generateNewAreaAndTriggerUpdate = useCallback((from: CoordinateVO, areaWidth: number, areaHeight: number) => {
+  const generateNewAreaAndTriggerUpdate = useCallback((from: CoordinateVo, areaWidth: number, areaHeight: number) => {
     const to = {
       x: from.x + areaWidth - 1,
       y: from.y + areaHeight - 1,

@@ -1,6 +1,6 @@
-type MapSizeVO = {
+type MapSizeVo = {
   width: number;
   height: number;
 };
 
-export default MapSizeVO;
+export default MapSizeVo;

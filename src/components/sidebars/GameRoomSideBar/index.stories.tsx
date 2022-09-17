@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { UnitPatternVO } from '@/valueObjects';
+import { UnitPatternVo } from '@/valueObjects';
 
 import GameRoomSideBar from '.';
 
@@ -14,7 +14,7 @@ export default {
 const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args) {
   const { align } = args;
   const [, updateArgs] = useArgs();
-  const handleUnitPatternUpdate = (unitPattern: UnitPatternVO) => {
+  const handleUnitPatternUpdate = (unitPattern: UnitPatternVo) => {
     updateArgs({ unitPattern });
   };
 

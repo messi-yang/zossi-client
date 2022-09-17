@@ -1,8 +1,8 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
-import type { UnitVO } from '@/valueObjects';
+import type { UnitVo } from '@/valueObjects';
 
-function renderGameMap(unitMap: UnitVO[][]): RenderResult {
+function renderGameMap(unitMap: UnitVo[][]): RenderResult {
   return render(
     <GameMap
       zoomedArea={null}

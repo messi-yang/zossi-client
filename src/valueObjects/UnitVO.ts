@@ -1,6 +1,6 @@
-type UnitVO = {
+type UnitVo = {
   alive: boolean;
   age: number;
 };
 
-export default UnitVO;
+export default UnitVo;

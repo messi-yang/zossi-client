@@ -1,6 +1,6 @@
-type OffsetVO = {
+type OffsetVo = {
   x: number;
   y: number;
 };
 
-export default OffsetVO;
+export default OffsetVo;

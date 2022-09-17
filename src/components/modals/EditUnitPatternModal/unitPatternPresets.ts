@@ -1,8 +1,8 @@
-import { UnitPatternVO } from '@/valueObjects';
+import { UnitPatternVo } from '@/valueObjects';
 
 type UnitPatternPreset = {
   title: string;
-  pattern: UnitPatternVO;
+  pattern: UnitPatternVo;
 };
 
 const unitPatternPresets: UnitPatternPreset[] = [

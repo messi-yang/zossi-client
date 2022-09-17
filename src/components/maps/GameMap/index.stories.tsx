@@ -2,7 +2,7 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import type { UnitVO, CoordinateVO, AreaVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
+import type { UnitVo, CoordinateVo, AreaVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 
 import GameMap from '.';
 
@@ -15,7 +15,7 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { zoomedArea, unitMap } = args;
-  const handleUnitsRevive = (coordinate: CoordinateVO, patternOffset: OffsetVO, pattern: UnitPatternVO) => {
+  const handleUnitsRevive = (coordinate: CoordinateVo, patternOffset: OffsetVo, pattern: UnitPatternVo) => {
     if (!zoomedArea) {
       return;
     }
@@ -45,8 +45,8 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
   );
 };
 
-function generateUnitMap(area: AreaVO) {
-  const unitMap: UnitVO[][] = [];
+function generateUnitMap(area: AreaVo) {
+  const unitMap: UnitVo[][] = [];
   const width = area.to.x - area.from.x + 1;
   const height = area.to.y - area.from.y + 1;
   for (let x = 0; x < width; x += 1) {
