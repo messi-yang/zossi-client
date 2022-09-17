@@ -77,20 +77,19 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
     <section
       ref={rootRef}
       data-testid={dataTestids.root}
-      className="w-full h-full overflow-hidden"
+      className="relative w-full h-full overflow-hidden"
       style={{
         backgroundColor: gameBackgroundColor,
       }}
     >
-      <section className="absolute w-full h-full">
-        {/* <BlurredUnitMap width={desiredAreaWidth} height={desiredAreaHeight} squareSize={squareSize} /> */}
-      </section>
-      <section className="relative w-full h-full flex">
+      <section
+        className="relative w-full h-full flex"
+        style={{ left: zoomedAreaOffset.x * squareSize, top: zoomedAreaOffset.y * squareSize }}
+      >
         {unitMap && (
           <UnitMapCanvas
             unitMap={unitMap}
             unitSize={squareSize}
-            unitMapOffset={zoomedAreaOffset}
             unitPattern={unitPattern}
             onClick={handleUnitSquareClick}
           />

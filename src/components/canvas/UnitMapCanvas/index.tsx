@@ -60,12 +60,11 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
 type Props = {
   unitMap: UnitVO[][];
   unitSize: number;
-  unitMapOffset: OffsetVO;
   unitPattern: UnitPatternVO;
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
-function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick }: Props) {
+function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const [unitMapCanvasElem, setUnitMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [patternCanvasElem, setPatternCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
@@ -89,8 +88,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
   }, [mapSize, unitSize, canvasUnitSize]);
 
   const clean = useCallback((ctx: CanvasRenderingContext2D, newCanvasResolution: Resolution) => {
-    ctx.fillStyle = color.bgColor; // eslint-disable-line no-param-reassign
-    ctx.fillRect(0, 0, newCanvasResolution.width, newCanvasResolution.height);
+    ctx.clearRect(0, 0, newCanvasResolution.width, newCanvasResolution.height);
   }, []);
 
   const drawGrid = useCallback(
@@ -129,7 +127,6 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
       ctx: CanvasRenderingContext2D,
       newUnitMap: UnitVO[][],
       newUnitSize: number,
-      newUnitMapOffset: OffsetVO,
       newCanvasUnitSize: number,
       newBorderWidth: number
     ) => {
@@ -141,8 +138,8 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
 
           if (unit.alive) {
             ctx.fillStyle = unit.alive ? color.unitColor : color.bgColor; // eslint-disable-line no-param-reassign
-            const leftTopX = ((colIdx + newUnitMapOffset.x) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-            const leftTopY = ((rowIdx + newUnitMapOffset.y) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+            const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+            const leftTopY = (rowIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
             ctx.moveTo(leftTopX, leftTopY);
             ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
             ctx.lineTo(
@@ -163,7 +160,6 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
     (
       newUnitMap: UnitVO[][],
       newUnitSize: number,
-      newUnitMapOffset: OffsetVO,
       newMapSize: MapSizeVO,
       newCanvasResolution: Resolution,
       newCanvasUnitSize: number
@@ -179,12 +175,12 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
 
       clean(ctx, newCanvasResolution);
       drawGrid(ctx, newMapSize, newUnitSize, newCanvasResolution, newCanvasUnitSize);
-      drawUnits(ctx, newUnitMap, newUnitSize, newUnitMapOffset, newCanvasUnitSize, borderWidth);
+      drawUnits(ctx, newUnitMap, newUnitSize, newCanvasUnitSize, borderWidth);
     },
-    [unitMapCanvasElem, unitMap, unitSize, unitMapOffset, mapSize, canvasResolution, canvasUnitSize, borderWidth]
+    [unitMapCanvasElem, unitMap, unitSize, mapSize, canvasResolution, canvasUnitSize, borderWidth]
   );
 
-  draw(unitMap, unitSize, unitMapOffset, mapSize, canvasResolution, canvasUnitSize);
+  draw(unitMap, unitSize, mapSize, canvasResolution, canvasUnitSize);
 
   const onUnitMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
     setUnitMapCanvasElem(elem);
@@ -289,7 +285,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitMapOffset, unitPattern, onClick 
   );
 
   const handleDropPatternCanvasMouseMoveDebouncer = useCallback(
-    debounce(handleDropPatternCanvasMouseMove, 25, { maxWait: 25 }),
+    debounce(handleDropPatternCanvasMouseMove, 75, { maxWait: 75 }),
     [handleDropPatternCanvasMouseMove]
   );
 

@@ -3,13 +3,7 @@ import UnitMapCanvas, { dataTestids } from '.';
 
 function renderUnitMapCanvas(): RenderResult {
   return render(
-    <UnitMapCanvas
-      unitMap={[[{ alive: true, age: 0 }]]}
-      unitSize={20}
-      unitMapOffset={{ x: 0, y: 0 }}
-      unitPattern={[[true]]}
-      onClick={() => {}}
-    />
+    <UnitMapCanvas unitMap={[[{ alive: true, age: 0 }]]} unitSize={20} unitPattern={[[true]]} onClick={() => {}} />
   );
 }
 
