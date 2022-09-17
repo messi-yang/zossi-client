@@ -19,10 +19,7 @@ function generateUnitMap(size: number): UnitVo[][] {
   for (let x = 0; x < size; x += 1) {
     unitMap.push([]);
     for (let y = 0; y < size; y += 1) {
-      unitMap[x].push({
-        alive: Math.random() * 2 > 1,
-        age: 0,
-      });
+      unitMap[x].push(new UnitVo(Math.random() * 2 > 1, 0));
     }
   }
   return unitMap;

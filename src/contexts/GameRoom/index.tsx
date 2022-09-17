@@ -2,7 +2,7 @@ import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import useWebSocket from '@/hooks/useWebSocket';
-import type { AreaDto, UnitDto, CoordinateDto } from '@/dtos';
+import type { UnitDto, CoordinateDto } from '@/dtos';
 import { AreaVo, UnitVo, CoordinateVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
@@ -18,16 +18,8 @@ function calculateZoomedAreaOffset(zoomedArea: AreaVo | null, targetArea: AreaVo
   return new OffsetVo(zoomedArea.from.getX() - targetArea.from.getX(), zoomedArea.from.getY() - targetArea.from.getY());
 }
 
-function convertAreaAndUnitMapIntoUnitVoMap(area: AreaDto, unitMap: UnitDto[][]): UnitVo[][] {
-  const { from } = area;
-  return unitMap.map((unitCol, x) =>
-    unitCol.map((unit, y) => ({
-      key: `${x},${y}`,
-      coordinate: { x: from.x + x, y: from.y + y },
-      alive: unit.alive,
-      age: unit.age,
-    }))
-  );
+function convertAreaAndUnitMapIntoUnitVoMap(unitMap: UnitDto[][]): UnitVo[][] {
+  return unitMap.map((unitCol) => unitCol.map((unit) => new UnitVo(unit.alive, unit.age)));
 }
 
 type GameRoomContextValue = {
@@ -121,7 +113,7 @@ export function Provider({ children }: Props) {
     if (!isEqual(zoomedAreaSource.current, newArea)) {
       zoomedAreaSource.current = newArea;
     }
-    unitMapSource.current = convertAreaAndUnitMapIntoUnitVoMap(event.payload.area, event.payload.unitMap);
+    unitMapSource.current = convertAreaAndUnitMapIntoUnitVoMap(event.payload.unitMap);
     updateUnitMapAndOffsetsDebouncer.cancel();
     updateUnitMapAndOffsetsDebouncer();
   }, []);
@@ -135,7 +127,7 @@ export function Provider({ children }: Props) {
       zoomedAreaSource.current = newArea;
     }
 
-    unitMapSource.current = convertAreaAndUnitMapIntoUnitVoMap(event.payload.area, event.payload.unitMap);
+    unitMapSource.current = convertAreaAndUnitMapIntoUnitVoMap(event.payload.unitMap);
     updateUnitMapAndOffsetsDebouncer();
   }, []);
 

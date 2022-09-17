@@ -130,8 +130,8 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
         for (let rowIdx = 0; rowIdx < newUnitMap[colIdx].length; rowIdx += 1) {
           const unit = newUnitMap[colIdx][rowIdx];
 
-          if (unit.alive) {
-            ctx.fillStyle = unit.alive ? color.unitColor : color.bgColor; // eslint-disable-line no-param-reassign
+          if (unit.isAlive()) {
+            ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
             const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
             const leftTopY = (rowIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
             ctx.moveTo(leftTopX, leftTopY);

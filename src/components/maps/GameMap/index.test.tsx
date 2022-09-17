@@ -18,7 +18,7 @@ function renderGameMap(unitMap: UnitVo[][]): RenderResult {
 describe('GameMap', () => {
   it('Should render component successfully.', () => {
     try {
-      renderGameMap([[{ alive: true, age: 0 }]]);
+      renderGameMap([[new UnitVo(true, 0)]]);
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

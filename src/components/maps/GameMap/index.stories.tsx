@@ -26,7 +26,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
         const adjustedX = coordinate.getX() - area.from.getX() + colIdx + patternOffset.getX();
         const adjustedY = coordinate.getY() - area.from.getY() + rowIdx + patternOffset.getY();
         if (newUnitMap?.[adjustedX]?.[adjustedY]) {
-          newUnitMap[adjustedX][adjustedY].alive = true;
+          newUnitMap[adjustedX][adjustedY].setAlive(true);
         }
       }
     });
@@ -50,10 +50,7 @@ function generateUnitMap(area: AreaVo) {
   for (let x = 0; x < width; x += 1) {
     unitMap.push([]);
     for (let y = 0; y < height; y += 1) {
-      unitMap[x].push({
-        alive: false,
-        age: 0,
-      });
+      unitMap[x].push(new UnitVo(false, 0));
     }
   }
   return unitMap;
