@@ -1,6 +1,5 @@
 import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash/debounce';
-import isEqual from 'lodash/isEqual';
 import useWebSocket from '@/hooks/useWebSocket';
 import type { UnitDto, CoordinateDto } from '@/dtos';
 import { AreaVo, UnitVo, CoordinateVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
@@ -15,7 +14,7 @@ function calculateZoomedAreaOffset(zoomedArea: AreaVo | null, targetArea: AreaVo
   if (!zoomedArea || !targetArea) {
     return new OffsetVo(0, 0);
   }
-  return new OffsetVo(zoomedArea.from.getX() - targetArea.from.getX(), zoomedArea.from.getY() - targetArea.from.getY());
+  return zoomedArea.calculateOffset(targetArea);
 }
 
 function convertAreaAndUnitMapIntoUnitVoMap(unitMap: UnitDto[][]): UnitVo[][] {
@@ -110,7 +109,7 @@ export function Provider({ children }: Props) {
       new CoordinateVo(event.payload.area.from.x, event.payload.area.from.y),
       new CoordinateVo(event.payload.area.to.x, event.payload.area.to.y)
     );
-    if (!isEqual(zoomedAreaSource.current, newArea)) {
+    if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
       zoomedAreaSource.current = newArea;
     }
     unitMapSource.current = convertAreaAndUnitMapIntoUnitVoMap(event.payload.unitMap);
@@ -123,7 +122,7 @@ export function Provider({ children }: Props) {
       new CoordinateVo(event.payload.area.from.x, event.payload.area.from.y),
       new CoordinateVo(event.payload.area.to.x, event.payload.area.to.y)
     );
-    if (!isEqual(zoomedAreaSource.current, newArea)) {
+    if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
       zoomedAreaSource.current = newArea;
     }
 
@@ -227,8 +226,8 @@ export function Provider({ children }: Props) {
         type: ActionTypeEnum.ZoomArea,
         payload: {
           area: {
-            from: { x: newArea.from.getX(), y: newArea.from.getY() },
-            to: { x: newArea.to.getX(), y: newArea.to.getY() },
+            from: { x: newArea.getFrom().getX(), y: newArea.getFrom().getY() },
+            to: { x: newArea.getTo().getX(), y: newArea.getTo().getY() },
           },
           actionedAt: new Date().toISOString(),
         },

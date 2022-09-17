@@ -13,12 +13,12 @@ type Props = {
 function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
   const mapContentElemRef = useRef<HTMLDivElement>(null);
   const mapSizeRatio = mapSize.getRatio();
-  const areaWidth = area.to.getX() - area.from.getX() + 1;
-  const areaHeight = area.to.getY() - area.from.getY() + 1;
+  const areaWidth = area.getWidth();
+  const areaHeight = area.getHeight();
   const mapZoomedAreaWidthRatio = areaWidth / mapSize.getWidth();
   const mapZoomedAreaHeightRatio = areaHeight / mapSize.getHeight();
-  const offsetXRatio = area.from.getX() / mapSize.getWidth();
-  const offsetYRatio = area.from.getY() / mapSize.getHeight();
+  const offsetXRatio = area.getFrom().getX() / mapSize.getWidth();
+  const offsetYRatio = area.getFrom().getY() / mapSize.getHeight();
 
   const elemWidth = width;
   const elemHeight = elemWidth * mapSizeRatio;
@@ -47,10 +47,10 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
       adjustedY = 0;
     }
 
-    return {
-      from: new CoordinateVo(adjustedX, adjustedY),
-      to: new CoordinateVo(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1),
-    };
+    return new AreaVo(
+      new CoordinateVo(adjustedX, adjustedY),
+      new CoordinateVo(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1)
+    );
   };
 
   usePull(mapContentElemRef, {

@@ -8,6 +8,10 @@ class CoordinateVo {
     this.y = y;
   }
 
+  public isEqual(coordinate: CoordinateVo): boolean {
+    return this.x === coordinate.getX() && this.y === coordinate.getY();
+  }
+
   public getX(): number {
     return this.x;
   }

@@ -40,7 +40,7 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
         return;
       }
 
-      const finalCoordinate = new CoordinateVo(area.from.getX() + colIdx, area.from.getY() + rowIdx);
+      const finalCoordinate = new CoordinateVo(area.getFrom().getX() + colIdx, area.getFrom().getY() + rowIdx);
 
       onUnitsRevive(finalCoordinate, unitPatternOffset, unitPattern);
     },
@@ -50,17 +50,14 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
   const generateNewAreaAndTriggerUpdate = useCallback((from: CoordinateVo, areaWidth: number, areaHeight: number) => {
     const to = new CoordinateVo(from.getX() + areaWidth - 1, from.getY() + areaHeight - 1);
 
-    onAreaUpdate({
-      from,
-      to,
-    });
+    onAreaUpdate(new AreaVo(from, to));
   }, []);
 
   useEffect(() => {
     if (area === null) {
       generateNewAreaAndTriggerUpdate(new CoordinateVo(0, 0), desiredAreaWidth, desiredAreaHeight);
     } else {
-      generateNewAreaAndTriggerUpdate(cloneDeep(area.from), desiredAreaWidth, desiredAreaHeight);
+      generateNewAreaAndTriggerUpdate(cloneDeep(area.getFrom()), desiredAreaWidth, desiredAreaHeight);
     }
   }, [area === null, desiredAreaWidth, desiredAreaHeight]);
 
