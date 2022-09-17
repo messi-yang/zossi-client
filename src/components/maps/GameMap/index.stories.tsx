@@ -14,9 +14,9 @@ export default {
 
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const { zoomedArea, unitMap } = args;
+  const { area, unitMap } = args;
   const handleUnitsRevive = (coordinate: CoordinateVo, patternOffset: OffsetVo, pattern: UnitPatternVo) => {
-    if (!zoomedArea) {
+    if (!area) {
       return;
     }
 
@@ -24,8 +24,8 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     pattern.forEach((patternCol, colIdx) => {
       patternCol.forEach((isTruthy, rowIdx) => {
         if (isTruthy) {
-          const adjustedX = coordinate.x - zoomedArea.from.x + colIdx + patternOffset.x;
-          const adjustedY = coordinate.y - zoomedArea.from.y + rowIdx + patternOffset.y;
+          const adjustedX = coordinate.x - area.from.x + colIdx + patternOffset.x;
+          const adjustedY = coordinate.y - area.from.y + rowIdx + patternOffset.y;
           if (newUnitMap?.[adjustedX]?.[adjustedY]) {
             newUnitMap[adjustedX][adjustedY].alive = true;
           }
@@ -63,11 +63,11 @@ function generateUnitMap(area: AreaVo) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  zoomedArea: {
+  area: {
     from: { x: 3, y: 3 },
     to: { x: 9, y: 9 },
   },
-  zoomedAreaOffset: {
+  areaOffset: {
     x: 0,
     y: 0,
   },

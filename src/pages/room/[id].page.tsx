@@ -82,8 +82,8 @@ const Room: NextPage = function Room() {
             <section className="w-full h-full">
               {status === 'CONNECTED' && (
                 <GameMap
-                  zoomedArea={zoomedArea}
-                  zoomedAreaOffset={zoomedAreaOffset}
+                  area={zoomedArea}
+                  areaOffset={zoomedAreaOffset}
                   unitMap={unitMap}
                   unitPattern={unitPattern}
                   onUnitsRevive={reviveUnitsWithPattern}
@@ -110,8 +110,8 @@ const Room: NextPage = function Room() {
             <section className="w-full h-full">
               {status === 'CONNECTED' && (
                 <GameMap
-                  zoomedArea={zoomedArea}
-                  zoomedAreaOffset={zoomedAreaOffset}
+                  area={zoomedArea}
+                  areaOffset={zoomedAreaOffset}
                   unitMap={unitMap}
                   unitPattern={unitPattern}
                   onUnitsRevive={reviveUnitsWithPattern}

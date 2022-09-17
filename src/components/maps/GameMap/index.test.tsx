@@ -5,8 +5,8 @@ import type { UnitVo } from '@/valueObjects';
 function renderGameMap(unitMap: UnitVo[][]): RenderResult {
   return render(
     <GameMap
-      zoomedArea={null}
-      zoomedAreaOffset={{ x: 0, y: 0 }}
+      area={null}
+      areaOffset={{ x: 0, y: 0 }}
       unitMap={unitMap}
       unitPattern={[[true]]}
       onUnitsRevive={() => {}}

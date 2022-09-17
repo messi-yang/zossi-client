@@ -15,15 +15,15 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
 }
 
 type Props = {
-  zoomedArea: AreaVo | null;
-  zoomedAreaOffset: OffsetVo;
+  area: AreaVo | null;
+  areaOffset: OffsetVo;
   unitMap: UnitVo[][] | null;
   unitPattern: UnitPatternVo;
   onUnitsRevive: (coordinate: CoordinateVo, unitPatternOffset: OffsetVo, unitPattern: UnitPatternVo) => any;
   onAreaUpdate: (newArea: AreaVo) => any;
 };
 
-function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
   const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -39,18 +39,18 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!zoomedArea || !unitPattern) {
+      if (!area || !unitPattern) {
         return;
       }
 
       const finalCoordinate = {
-        x: zoomedArea.from.x + colIdx,
-        y: zoomedArea.from.y + rowIdx,
+        x: area.from.x + colIdx,
+        y: area.from.y + rowIdx,
       };
 
       onUnitsRevive(finalCoordinate, unitPatternOffset, unitPattern);
     },
-    [unitPattern, unitPatternOffset, onUnitsRevive, zoomedArea]
+    [unitPattern, unitPatternOffset, onUnitsRevive, area]
   );
 
   const generateNewAreaAndTriggerUpdate = useCallback((from: CoordinateVo, areaWidth: number, areaHeight: number) => {
@@ -66,12 +66,12 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
   }, []);
 
   useEffect(() => {
-    if (zoomedArea === null) {
+    if (area === null) {
       generateNewAreaAndTriggerUpdate({ x: 0, y: 0 }, desiredAreaWidth, desiredAreaHeight);
     } else {
-      generateNewAreaAndTriggerUpdate(cloneDeep(zoomedArea.from), desiredAreaWidth, desiredAreaHeight);
+      generateNewAreaAndTriggerUpdate(cloneDeep(area.from), desiredAreaWidth, desiredAreaHeight);
     }
-  }, [zoomedArea === null, desiredAreaWidth, desiredAreaHeight]);
+  }, [area === null, desiredAreaWidth, desiredAreaHeight]);
 
   return (
     <section
@@ -84,7 +84,7 @@ function GameMap({ zoomedArea, zoomedAreaOffset, unitMap, unitPattern, onUnitsRe
     >
       <section
         className="relative w-full h-full flex"
-        style={{ left: zoomedAreaOffset.x * squareSize, top: zoomedAreaOffset.y * squareSize }}
+        style={{ left: areaOffset.x * squareSize, top: areaOffset.y * squareSize }}
       >
         {unitMap && (
           <UnitMapCanvas
