@@ -26,18 +26,15 @@ type Resolution = {
 };
 
 function generateMapSize(unitMap: UnitVo[][]): MapSizeVo {
-  return {
-    width: unitMap.length,
-    height: unitMap[0].length,
-  };
+  return new MapSizeVo(unitMap.length, unitMap[0].length);
 }
 
 function generateCanvasElemSize(unitMap: UnitVo[][], unitSize: number): ElemSize {
   const mapSize = generateMapSize(unitMap);
 
   return {
-    width: mapSize.width * unitSize + 1,
-    height: mapSize.height * unitSize + 1,
+    width: mapSize.getWidth() * unitSize + 1,
+    height: mapSize.getHeight() * unitSize + 1,
   };
 }
 
@@ -100,14 +97,14 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       ctx.lineWidth = canvasUnitSize; // eslint-disable-line no-param-reassign
       ctx.beginPath();
 
-      for (let colIdx = 0; colIdx < newMapSize.width; colIdx += 1) {
+      for (let colIdx = 0; colIdx < newMapSize.getWidth(); colIdx += 1) {
         ctx.moveTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, 0);
         ctx.lineTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, newCanvasResolution.height);
       }
       ctx.moveTo(newCanvasResolution.width - newCanvasUnitSize / 2, 0);
       ctx.lineTo(newCanvasResolution.width - newCanvasUnitSize / 2, newCanvasResolution.height);
 
-      for (let rowIdx = 0; rowIdx < newMapSize.height; rowIdx += 1) {
+      for (let rowIdx = 0; rowIdx < newMapSize.getHeight(); rowIdx += 1) {
         ctx.moveTo(0, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
         ctx.lineTo(newCanvasResolution.width, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
       }
@@ -187,11 +184,11 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
     (relativeX: number, relativeY: number, newUnitSize: number, newMapSize: MapSizeVo): Indexes => {
       let colIdx = Math.floor(relativeX / newUnitSize);
       let rowIdx = Math.floor(relativeY / newUnitSize);
-      if (colIdx >= newMapSize.width) {
-        colIdx = newMapSize.width - 1;
+      if (colIdx >= newMapSize.getWidth()) {
+        colIdx = newMapSize.getWidth() - 1;
       }
-      if (rowIdx >= newMapSize.height) {
-        rowIdx = newMapSize.height - 1;
+      if (rowIdx >= newMapSize.getHeight()) {
+        rowIdx = newMapSize.getHeight() - 1;
       }
 
       return [colIdx, rowIdx];

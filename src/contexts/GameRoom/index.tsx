@@ -2,8 +2,8 @@ import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import useWebSocket from '@/hooks/useWebSocket';
-import type { AreaDto, UnitDto, MapSizeDto, CoordinateDto } from '@/dtos';
-import { AreaVo, UnitVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import type { AreaDto, UnitDto, CoordinateDto } from '@/dtos';
+import { AreaVo, UnitVo, CoordinateVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -32,7 +32,7 @@ function convertAreaAndUnitMapIntoUnitVoMap(area: AreaDto, unitMap: UnitDto[][])
 
 type GameRoomContextValue = {
   status: Status;
-  mapSize: MapSizeDto | null;
+  mapSize: MapSizeVo | null;
   zoomedArea: AreaVo | null;
   targetArea: AreaVo | null;
   unitMap: UnitVo[][] | null;
@@ -79,7 +79,7 @@ export function Provider({ children }: Props) {
   const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
 
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
-  const [mapSize, setMapSize] = useState<MapSizeDto | null>(initialGameRoomContextValue.mapSize);
+  const [mapSize, setMapSize] = useState<MapSizeVo | null>(initialGameRoomContextValue.mapSize);
 
   const zoomedAreaSource = useRef<AreaVo | null>(initialGameRoomContextValue.zoomedArea);
   const targetAreaSource = useRef<AreaVo | null>(initialGameRoomContextValue.targetArea);
@@ -140,7 +140,7 @@ export function Provider({ children }: Props) {
   }, []);
 
   const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
-    setMapSize(event.payload.mapSize);
+    setMapSize(new MapSizeVo(event.payload.mapSize.width, event.payload.mapSize.height));
   }, []);
 
   const handleSocketMessage = useCallback(
@@ -196,14 +196,14 @@ export function Provider({ children }: Props) {
         let normalizedX = c.x;
         let normalizedY = c.y;
         while (normalizedX < 0) {
-          normalizedX += mapSize.width;
+          normalizedX += mapSize.getWidth();
         }
         while (normalizedY < 0) {
-          normalizedY += mapSize.height;
+          normalizedY += mapSize.getHeight();
         }
         return {
-          x: normalizedX % mapSize.width,
-          y: normalizedY % mapSize.height,
+          x: normalizedX % mapSize.getWidth(),
+          y: normalizedY % mapSize.getHeight(),
         };
       };
 

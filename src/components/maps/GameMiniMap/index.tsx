@@ -12,13 +12,13 @@ type Props = {
 
 function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
   const mapContentElemRef = useRef<HTMLDivElement>(null);
-  const mapSizeRatio = mapSize.height / mapSize.width;
+  const mapSizeRatio = mapSize.getRatio();
   const areaWidth = area.to.getX() - area.from.getX() + 1;
   const areaHeight = area.to.getY() - area.from.getY() + 1;
-  const mapZoomedAreaWidthRatio = areaWidth / mapSize.width;
-  const mapZoomedAreaHeightRatio = areaHeight / mapSize.height;
-  const offsetXRatio = area.from.getX() / mapSize.width;
-  const offsetYRatio = area.from.getY() / mapSize.height;
+  const mapZoomedAreaWidthRatio = areaWidth / mapSize.getWidth();
+  const mapZoomedAreaHeightRatio = areaHeight / mapSize.getHeight();
+  const offsetXRatio = area.from.getX() / mapSize.getWidth();
+  const offsetYRatio = area.from.getY() / mapSize.getHeight();
 
   const elemWidth = width;
   const elemHeight = elemWidth * mapSizeRatio;
@@ -32,17 +32,17 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
     const rect = mapContentElemRef.current.getBoundingClientRect();
     const elemX = clientX - rect.left;
     const elemY = clientY - rect.top;
-    const standarizedX = Math.round(((elemX - areaElemWidth / 2) / elemWidth) * mapSize.width);
-    const standarizedY = Math.round(((elemY - areaElemHeight / 2) / elemHeight) * mapSize.height);
+    const standarizedX = Math.round(((elemX - areaElemWidth / 2) / elemWidth) * mapSize.getWidth());
+    const standarizedY = Math.round(((elemY - areaElemHeight / 2) / elemHeight) * mapSize.getHeight());
     let adjustedX = standarizedX;
     let adjustedY = standarizedY;
-    if (standarizedX + areaWidth - 1 > mapSize.width - 1) {
-      adjustedX = mapSize.width - areaWidth;
+    if (standarizedX + areaWidth - 1 > mapSize.getWidth() - 1) {
+      adjustedX = mapSize.getWidth() - areaWidth;
     } else if (standarizedX < 0) {
       adjustedX = 0;
     }
-    if (standarizedY + areaHeight - 1 > mapSize.height - 1) {
-      adjustedY = mapSize.height - areaHeight;
+    if (standarizedY + areaHeight - 1 > mapSize.getHeight() - 1) {
+      adjustedY = mapSize.getHeight() - areaHeight;
     } else if (standarizedY < 0) {
       adjustedY = 0;
     }
