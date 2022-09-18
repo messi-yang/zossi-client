@@ -3,19 +3,13 @@ import debounce from 'lodash/debounce';
 import useWebSocket from '@/hooks/useWebSocket';
 import type { UnitDto, CoordinateDto } from '@/dtos';
 import { AreaVo, UnitVo, CoordinateVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { generateAreaOffset } from '@/valueObjects/factories';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { ZoomAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
-
-function calculateZoomedAreaOffset(zoomedArea: AreaVo | null, targetArea: AreaVo | null): OffsetVo {
-  if (!zoomedArea || !targetArea) {
-    return new OffsetVo(0, 0);
-  }
-  return zoomedArea.calculateOffset(targetArea);
-}
 
 function convertAreaAndUnitMapIntoUnitVoMap(unitMap: UnitDto[][]): UnitVo[][] {
   return unitMap.map((unitCol) => unitCol.map((unit) => new UnitVo(unit.alive, unit.age)));
@@ -79,7 +73,7 @@ export function Provider({ children }: Props) {
   const [targetArea, setTargetArea] = useState<AreaVo | null>(targetAreaSource.current);
   const [unitMap, setUnitMap] = useState<UnitVo[][] | null>(unitMapSource.current);
   const [zoomedAreaOffset, setZoomedAreaOffset] = useState<OffsetVo>(
-    calculateZoomedAreaOffset(zoomedAreaSource.current, targetAreaSource.current)
+    generateAreaOffset(zoomedAreaSource.current, targetAreaSource.current)
   );
 
   const [unitPattern, setUnitPattern] = useState<UnitPatternVo>(initialGameRoomContextValue.unitPattern);
@@ -94,7 +88,7 @@ export function Provider({ children }: Props) {
     setUnitMap(unitMapSource.current);
     setTargetArea(targetAreaSource.current);
     setZoomedArea(zoomedAreaSource.current);
-    setZoomedAreaOffset(calculateZoomedAreaOffset(zoomedAreaSource.current, targetAreaSource.current));
+    setZoomedAreaOffset(generateAreaOffset(zoomedAreaSource.current, targetAreaSource.current));
   }, []);
   const updateUnitMapAndOffsetsDebouncer = useCallback(
     debounce(updateUnitMapAndOffsets, 150, {

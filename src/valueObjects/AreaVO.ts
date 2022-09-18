@@ -1,5 +1,4 @@
 import CoordinateVo from './CoordinateVo';
-import OffsetVo from './OffsetVo';
 
 class AreaVo {
   private from: CoordinateVo;
@@ -13,10 +12,6 @@ class AreaVo {
 
   public isEqual(area: AreaVo): Boolean {
     return this.from.isEqual(area.getFrom()) && this.to.isEqual(area.getTo());
-  }
-
-  public calculateOffset(area: AreaVo): OffsetVo {
-    return new OffsetVo(this.from.getX() - area.getFrom().getX(), this.from.getY() - area.getFrom().getY());
   }
 
   public getFrom(): CoordinateVo {

@@ -1,10 +1,10 @@
-import { memo, useRef, useState, useCallback, useEffect } from 'react';
-import cloneDeep from 'lodash/cloneDeep';
+import { memo, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { gameBackgroundColor } from '@/styles/colors';
 import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import { AreaVo, UnitVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { AreaVo, UnitVo, CoordinateVo, OffsetVo, UnitPatternVo, MapSizeVo } from '@/valueObjects';
+import { generateAreaWithCoordinateAndMapSize } from '@/valueObjects/factories';
 import dataTestids from './dataTestids';
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
@@ -28,6 +28,10 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
     { width: rootElemRect.width, height: rootElemRect.height },
     squareSize
   );
+  const desiredMapSize = useMemo(
+    () => new MapSizeVo(desiredAreaWidth, desiredAreaHeight),
+    [desiredAreaWidth, desiredAreaHeight]
+  );
   const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVo>(calculateUnitPatternOffset(unitPattern));
 
   useEffect(() => {
@@ -47,19 +51,15 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
     [unitPattern, unitPatternOffset, onUnitsRevive, area]
   );
 
-  const generateNewAreaAndTriggerUpdate = useCallback((from: CoordinateVo, areaWidth: number, areaHeight: number) => {
-    const to = new CoordinateVo(from.getX() + areaWidth - 1, from.getY() + areaHeight - 1);
-
-    onAreaUpdate(new AreaVo(from, to));
-  }, []);
-
   useEffect(() => {
     if (area === null) {
-      generateNewAreaAndTriggerUpdate(new CoordinateVo(0, 0), desiredAreaWidth, desiredAreaHeight);
+      const newArea = generateAreaWithCoordinateAndMapSize(new CoordinateVo(0, 0), desiredMapSize);
+      onAreaUpdate(newArea);
     } else {
-      generateNewAreaAndTriggerUpdate(cloneDeep(area.getFrom()), desiredAreaWidth, desiredAreaHeight);
+      const newArea = generateAreaWithCoordinateAndMapSize(area.getFrom(), desiredMapSize);
+      onAreaUpdate(newArea);
     }
-  }, [area === null, desiredAreaWidth, desiredAreaHeight]);
+  }, [area === null, desiredMapSize]);
 
   return (
     <section
