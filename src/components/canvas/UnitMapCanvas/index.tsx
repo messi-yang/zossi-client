@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, MouseEventHandler, useEffect } from 'react';
+import { useCallback, useState, MouseEventHandler, useEffect } from 'react';
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
@@ -68,7 +68,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const [mapSize, setMapSize] = useState(generateMapSize(unitMap));
   const [canvasElemSize, setCanvasElemSize] = useState(generateCanvasElemSize(unitMap, unitSize));
   const [canvasResolution, setCanvasResolution] = useState(generateCanvasResolution(unitMap, unitSize, canvasUnitSize));
-  const hoveredIndexes = useRef<Indexes>();
+  const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
   useEffect(() => {
     const newMapSize = generateMapSize(unitMap);
@@ -253,11 +253,6 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
   const handleDropPatternCanvasMouseMove: MouseEventHandler<HTMLCanvasElement> = useCallback(
     (event) => {
-      const ctx = patternCanvasElem?.getContext('2d');
-      if (!ctx) {
-        return;
-      }
-
       const eventTarget = event.target as Element;
       const eventTargetRect = eventTarget.getBoundingClientRect();
       const [posX, posY] = [
@@ -266,21 +261,34 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       ];
       const newHoveredIndexes = calculateIndexes(posX, posY, unitSize, mapSize);
 
-      if (!isEqual(newHoveredIndexes, hoveredIndexes.current)) {
-        if (hoveredIndexes.current) {
-          clearUnitPattern(ctx, hoveredIndexes.current, unitPattern, unitSize, borderWidth, canvasUnitSize);
-        }
-        drawUnitPattern(ctx, newHoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize);
-        hoveredIndexes.current = newHoveredIndexes;
+      if (!isEqual(newHoveredIndexes, hoveredIndexes)) {
+        setHoveredIndexes(newHoveredIndexes);
       }
     },
-    [patternCanvasElem, unitSize, mapSize, unitPattern, borderWidth, canvasUnitSize]
+    [hoveredIndexes, unitSize, mapSize, borderWidth]
   );
 
   const handleDropPatternCanvasMouseMoveDebouncer = useCallback(
     debounce(handleDropPatternCanvasMouseMove, 75, { maxWait: 75 }),
     [handleDropPatternCanvasMouseMove]
   );
+
+  useEffect(() => {
+    const ctx = patternCanvasElem?.getContext('2d');
+    if (!ctx) {
+      return () => {};
+    }
+
+    if (hoveredIndexes) {
+      drawUnitPattern(ctx, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize);
+    }
+
+    return () => {
+      if (hoveredIndexes) {
+        clearUnitPattern(ctx, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize);
+      }
+    };
+  }, [patternCanvasElem, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize]);
 
   const handleDropPatternCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;
