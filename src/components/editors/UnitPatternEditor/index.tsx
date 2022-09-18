@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { generateKeyFromIndex } from '@/utils/component/';
 import UnitSquare from './subComponents/UnitSquare';
-import type { UnitPatternVo } from '@/valueObjects';
+import { UnitPatternVo } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
