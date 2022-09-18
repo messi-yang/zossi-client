@@ -26,5 +26,5 @@ export const Primary = Template.bind({});
 Primary.args = {
   width: 300,
   mapSize: new MapSizeVo(300, 300),
-  area: new AreaVo(new CoordinateVo(0, 0), new CoordinateVo(0, 0)),
+  area: new AreaVo(new CoordinateVo(0, 0), new CoordinateVo(30, 30)),
 };
