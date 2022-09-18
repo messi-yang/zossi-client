@@ -273,6 +273,11 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
     [handleDropPatternCanvasMouseMove]
   );
 
+  const handleDropPatternCanvasMouseLeave = () => {
+    handleDropPatternCanvasMouseMoveDebouncer.cancel();
+    setHoveredIndexes(null);
+  };
+
   useEffect(() => {
     const ctx = patternCanvasElem?.getContext('2d');
     if (!ctx) {
@@ -324,6 +329,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
         height={canvasResolution.height}
         className="absolute left-0 top-0"
         onMouseMove={handleDropPatternCanvasMouseMoveDebouncer}
+        onMouseLeave={handleDropPatternCanvasMouseLeave}
         onClick={handleDropPatternCanvasClick}
         style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
       />
