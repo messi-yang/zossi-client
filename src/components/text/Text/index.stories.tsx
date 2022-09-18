@@ -1,5 +1,4 @@
 import React from 'react';
-import Head from 'next/head';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import Text from '.';
@@ -13,11 +12,6 @@ export default {
 const Template: ComponentStory<typeof Text> = function Template(args) {
   return (
     <div className="w-screen h-screen flex justify-center items-center">
-      <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap" rel="stylesheet" />
-      </Head>
       <Text {...args} />
     </div>
   );
