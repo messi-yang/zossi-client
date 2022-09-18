@@ -5,20 +5,20 @@ import BaseModal from '@/components/modals/BaseModal';
 import UnitPatternEditor from '@/components/editors/UnitPatternEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
-import { UnitPatternVO } from '@/valueObjects';
+import { UnitPatternValueObject } from '@/valueObjects';
 import { generateKeyFromIndex } from '@/utils/component';
 import unitPatternPresets from './unitPatternPresets';
 import dataTestids from './dataTestids';
 
 type Props = {
   opened: boolean;
-  unitPattern: UnitPatternVO;
-  onUpdate?: (unitPattern: UnitPatternVO) => any;
+  unitPattern: UnitPatternValueObject;
+  onUpdate?: (unitPattern: UnitPatternValueObject) => any;
   onCancel?: () => void;
 };
 
 function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCancel = () => {} }: Props) {
-  const [tmpUnitPattern, setTmpUnitPattern] = useState<UnitPatternVO>(cloneDeep(unitPattern));
+  const [tmpUnitPattern, setTmpUnitPattern] = useState<UnitPatternValueObject>(cloneDeep(unitPattern));
   useEffect(() => {
     setTmpUnitPattern(cloneDeep(unitPattern));
   }, [unitPattern]);
@@ -28,7 +28,7 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
   const handleOkClick = () => {
     onUpdate(tmpUnitPattern);
   };
-  const handleUnitPatternUpdate = (newUnitPattern: UnitPatternVO) => {
+  const handleUnitPatternUpdate = (newUnitPattern: UnitPatternValueObject) => {
     setTmpUnitPattern(newUnitPattern);
   };
 

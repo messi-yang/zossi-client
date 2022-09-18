@@ -1,10 +1,18 @@
-import UnitVO from '@/valueObjects/UnitVO';
-import UnitMapVO from '@/valueObjects/UnitMapVO';
-import CoordinateVO from '@/valueObjects/CoordinateVO';
-import OffsetVO from '@/valueObjects/OffsetVO';
-import AreaVO from '@/valueObjects/AreaVO';
-import UnitPatternVO from '@/valueObjects/UnitPatternVO';
-import MapSizeVO from '@/valueObjects/MapSizeVO';
+import UnitValueObject from '@/valueObjects/UnitValueObject';
+import UnitMapValueObject from '@/valueObjects/UnitMapValueObject';
+import CoordinateValueObject from '@/valueObjects/CoordinateValueObject';
+import OffsetValueObject from '@/valueObjects/OffsetValueObject';
+import AreaValueObject from '@/valueObjects/AreaValueObject';
+import UnitPatternValueObject from '@/valueObjects/UnitPatternValueObject';
+import MapSizeValueObject from '@/valueObjects/MapSizeValueObject';
 
 export default {};
-export { UnitVO, UnitMapVO, CoordinateVO, OffsetVO, AreaVO, UnitPatternVO, MapSizeVO };
+export {
+  UnitValueObject,
+  UnitMapValueObject,
+  CoordinateValueObject,
+  OffsetValueObject,
+  AreaValueObject,
+  UnitPatternValueObject,
+  MapSizeValueObject,
+};

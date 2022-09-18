@@ -2,7 +2,15 @@ import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import useWebSocket from '@/hooks/useWebSocket';
 import type { UnitDto, CoordinateDto } from '@/dtos';
-import { AreaVO, UnitVO, UnitMapVO, CoordinateVO, MapSizeVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
+import {
+  AreaValueObject,
+  UnitValueObject,
+  UnitMapValueObject,
+  CoordinateValueObject,
+  MapSizeValueObject,
+  OffsetValueObject,
+  UnitPatternValueObject,
+} from '@/valueObjects';
 import { generateAreaOffset } from '@/valueObjects/factories';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
@@ -11,23 +19,27 @@ import type { ZoomAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
-function convertUnitDtoMatrixToUnitMapVO(unitMap: UnitDto[][]): UnitMapVO {
-  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => new UnitVO(unit.alive, unit.age)));
-  return new UnitMapVO(unitMatrix);
+function convertUnitDtoMatrixToUnitMapValueObject(unitMap: UnitDto[][]): UnitMapValueObject {
+  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => new UnitValueObject(unit.alive, unit.age)));
+  return new UnitMapValueObject(unitMatrix);
 }
 
 type GameRoomContextValue = {
   status: Status;
-  mapSize: MapSizeVO | null;
-  zoomedArea: AreaVO | null;
-  targetArea: AreaVO | null;
-  unitMap: UnitMapVO | null;
-  zoomedAreaOffset: OffsetVO;
-  unitPattern: UnitPatternVO;
+  mapSize: MapSizeValueObject | null;
+  zoomedArea: AreaValueObject | null;
+  targetArea: AreaValueObject | null;
+  unitMap: UnitMapValueObject | null;
+  zoomedAreaOffset: OffsetValueObject;
+  unitPattern: UnitPatternValueObject;
   joinGame: () => void;
-  updateUnitPattern: (pattern: UnitPatternVO) => void;
-  reviveUnitsWithPattern: (coordinate: CoordinateVO, unitPatternOffset: OffsetVO, unitPattern: UnitPatternVO) => void;
-  zoomArea: (area: AreaVO) => void;
+  updateUnitPattern: (pattern: UnitPatternValueObject) => void;
+  reviveUnitsWithPattern: (
+    coordinate: CoordinateValueObject,
+    unitPatternOffset: OffsetValueObject,
+    unitPattern: UnitPatternValueObject
+  ) => void;
+  zoomArea: (area: AreaValueObject) => void;
   leaveGame: () => void;
 };
 
@@ -38,8 +50,8 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     zoomedArea: null,
     targetArea: null,
     unitMap: null,
-    zoomedAreaOffset: new OffsetVO(0, 0),
-    unitPattern: new UnitPatternVO([
+    zoomedAreaOffset: new OffsetValueObject(0, 0),
+    unitPattern: new UnitPatternValueObject([
       [false, false, false, false, false],
       [false, false, true, false, false],
       [false, true, false, true, false],
@@ -65,21 +77,21 @@ export function Provider({ children }: Props) {
   const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
 
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
-  const [mapSize, setMapSize] = useState<MapSizeVO | null>(initialGameRoomContextValue.mapSize);
+  const [mapSize, setMapSize] = useState<MapSizeValueObject | null>(initialGameRoomContextValue.mapSize);
 
-  const zoomedAreaSource = useRef<AreaVO | null>(initialGameRoomContextValue.zoomedArea);
-  const targetAreaSource = useRef<AreaVO | null>(initialGameRoomContextValue.targetArea);
-  const unitMapSource = useRef<UnitMapVO | null>(initialGameRoomContextValue.unitMap);
-  const [zoomedArea, setZoomedArea] = useState<AreaVO | null>(zoomedAreaSource.current);
-  const [targetArea, setTargetArea] = useState<AreaVO | null>(targetAreaSource.current);
-  const [unitMap, setUnitMap] = useState<UnitMapVO | null>(unitMapSource.current);
-  const [zoomedAreaOffset, setZoomedAreaOffset] = useState<OffsetVO>(
+  const zoomedAreaSource = useRef<AreaValueObject | null>(initialGameRoomContextValue.zoomedArea);
+  const targetAreaSource = useRef<AreaValueObject | null>(initialGameRoomContextValue.targetArea);
+  const unitMapSource = useRef<UnitMapValueObject | null>(initialGameRoomContextValue.unitMap);
+  const [zoomedArea, setZoomedArea] = useState<AreaValueObject | null>(zoomedAreaSource.current);
+  const [targetArea, setTargetArea] = useState<AreaValueObject | null>(targetAreaSource.current);
+  const [unitMap, setUnitMap] = useState<UnitMapValueObject | null>(unitMapSource.current);
+  const [zoomedAreaOffset, setZoomedAreaOffset] = useState<OffsetValueObject>(
     generateAreaOffset(zoomedAreaSource.current, targetAreaSource.current)
   );
 
-  const [unitPattern, setUnitPattern] = useState<UnitPatternVO>(initialGameRoomContextValue.unitPattern);
+  const [unitPattern, setUnitPattern] = useState<UnitPatternValueObject>(initialGameRoomContextValue.unitPattern);
 
-  const updateUnitPattern = useCallback((newUnitPattern: UnitPatternVO) => {
+  const updateUnitPattern = useCallback((newUnitPattern: UnitPatternValueObject) => {
     setUnitPattern(newUnitPattern);
   }, []);
 
@@ -100,33 +112,33 @@ export function Provider({ children }: Props) {
   );
 
   const handleAreaZoomedEvent = useCallback((event: AreaZoomedEvent) => {
-    const newArea = new AreaVO(
-      new CoordinateVO(event.payload.area.from.x, event.payload.area.from.y),
-      new CoordinateVO(event.payload.area.to.x, event.payload.area.to.y)
+    const newArea = new AreaValueObject(
+      new CoordinateValueObject(event.payload.area.from.x, event.payload.area.from.y),
+      new CoordinateValueObject(event.payload.area.to.x, event.payload.area.to.y)
     );
     if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
       zoomedAreaSource.current = newArea;
     }
-    unitMapSource.current = convertUnitDtoMatrixToUnitMapVO(event.payload.unitMap);
+    unitMapSource.current = convertUnitDtoMatrixToUnitMapValueObject(event.payload.unitMap);
     updateUnitMapAndOffsetsDebouncer.cancel();
     updateUnitMapAndOffsetsDebouncer();
   }, []);
 
   const handleZoomedAreaUpdatedEvent = useCallback((event: ZoomedAreaUpdatedEvent) => {
-    const newArea = new AreaVO(
-      new CoordinateVO(event.payload.area.from.x, event.payload.area.from.y),
-      new CoordinateVO(event.payload.area.to.x, event.payload.area.to.y)
+    const newArea = new AreaValueObject(
+      new CoordinateValueObject(event.payload.area.from.x, event.payload.area.from.y),
+      new CoordinateValueObject(event.payload.area.to.x, event.payload.area.to.y)
     );
     if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
       zoomedAreaSource.current = newArea;
     }
 
-    unitMapSource.current = convertUnitDtoMatrixToUnitMapVO(event.payload.unitMap);
+    unitMapSource.current = convertUnitDtoMatrixToUnitMapValueObject(event.payload.unitMap);
     updateUnitMapAndOffsetsDebouncer();
   }, []);
 
   const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
-    setMapSize(new MapSizeVO(event.payload.mapSize.width, event.payload.mapSize.height));
+    setMapSize(new MapSizeValueObject(event.payload.mapSize.width, event.payload.mapSize.height));
   }, []);
 
   const handleSocketMessage = useCallback(
@@ -174,7 +186,7 @@ export function Provider({ children }: Props) {
   }, [disconnect]);
 
   const reviveUnitsWithPattern = useCallback(
-    (coordinate: CoordinateVO, patternOffset: OffsetVO, pattern: UnitPatternVO) => {
+    (coordinate: CoordinateValueObject, patternOffset: OffsetValueObject, pattern: UnitPatternValueObject) => {
       const normalizeCoordinate = (c: CoordinateDto) => {
         if (!mapSize) {
           return c;
@@ -216,7 +228,7 @@ export function Provider({ children }: Props) {
   );
 
   const sendZoomAreaAction = useCallback(
-    (newArea: AreaVO) => {
+    (newArea: AreaValueObject) => {
       const action: ZoomAreaAction = {
         type: ActionTypeEnum.ZoomArea,
         payload: {
@@ -236,7 +248,7 @@ export function Provider({ children }: Props) {
     [sendZoomAreaAction]
   );
   const zoomArea = useCallback(
-    (newArea: AreaVO) => {
+    (newArea: AreaValueObject) => {
       targetAreaSource.current = newArea;
       updateUnitMapAndOffsetsDebouncer();
       sendZoomAreaActionDebouncer(newArea);

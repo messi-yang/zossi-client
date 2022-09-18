@@ -1,14 +1,14 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
-import { UnitVO, UnitMapVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
+import { UnitValueObject, UnitMapValueObject, OffsetValueObject, UnitPatternValueObject } from '@/valueObjects';
 
-function renderGameMap(unitMap: UnitMapVO): RenderResult {
+function renderGameMap(unitMap: UnitMapValueObject): RenderResult {
   return render(
     <GameMap
       area={null}
-      areaOffset={new OffsetVO(0, 0)}
+      areaOffset={new OffsetValueObject(0, 0)}
       unitMap={unitMap}
-      unitPattern={new UnitPatternVO([[true]])}
+      unitPattern={new UnitPatternValueObject([[true]])}
       onUnitsRevive={() => {}}
       onAreaUpdate={() => {}}
     />
@@ -18,8 +18,8 @@ function renderGameMap(unitMap: UnitMapVO): RenderResult {
 describe('GameMap', () => {
   it('Should render component successfully.', () => {
     try {
-      const unitMatrix = [[new UnitVO(true, 0)]];
-      renderGameMap(new UnitMapVO(unitMatrix));
+      const unitMatrix = [[new UnitValueObject(true, 0)]];
+      renderGameMap(new UnitMapValueObject(unitMatrix));
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

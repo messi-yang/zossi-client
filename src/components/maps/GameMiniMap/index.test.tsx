@@ -1,13 +1,13 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { CoordinateVO, MapSizeVO, AreaVO } from '@/valueObjects';
+import { CoordinateValueObject, MapSizeValueObject, AreaValueObject } from '@/valueObjects';
 import GameMiniMap, { dataTestids } from '.';
 
 function renderGameMiniMap(): RenderResult {
   return render(
     <GameMiniMap
       width={300}
-      mapSize={new MapSizeVO(100, 100)}
-      area={new AreaVO(new CoordinateVO(0, 0), new CoordinateVO(10, 10))}
+      mapSize={new MapSizeValueObject(100, 100)}
+      area={new AreaValueObject(new CoordinateValueObject(0, 0), new CoordinateValueObject(10, 10))}
       onAreaUpdate={() => {}}
     />
   );

@@ -2,7 +2,13 @@ import { useCallback, useState, MouseEventHandler, useEffect } from 'react';
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import { UnitVO, UnitMapVO, MapSizeVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
+import {
+  UnitValueObject,
+  UnitMapValueObject,
+  MapSizeValueObject,
+  OffsetValueObject,
+  UnitPatternValueObject,
+} from '@/valueObjects';
 import { generateMapSizeWithUnitMap } from '@/valueObjects/factories';
 
 import dataTestids from './dataTestids';
@@ -26,11 +32,11 @@ type Resolution = {
   height: number;
 };
 
-function generateMapSize(unitMap: UnitMapVO): MapSizeVO {
+function generateMapSize(unitMap: UnitMapValueObject): MapSizeValueObject {
   return generateMapSizeWithUnitMap(unitMap);
 }
 
-function generateCanvasElemSize(unitMap: UnitMapVO, unitSize: number): ElemSize {
+function generateCanvasElemSize(unitMap: UnitMapValueObject, unitSize: number): ElemSize {
   const mapSize = generateMapSize(unitMap);
 
   return {
@@ -39,7 +45,7 @@ function generateCanvasElemSize(unitMap: UnitMapVO, unitSize: number): ElemSize 
   };
 }
 
-function generateCanvasResolution(unitMap: UnitMapVO, unitSize: number, canvasUnitSize: number): Resolution {
+function generateCanvasResolution(unitMap: UnitMapValueObject, unitSize: number, canvasUnitSize: number): Resolution {
   const elemSize = generateCanvasElemSize(unitMap, unitSize);
 
   return {
@@ -48,14 +54,14 @@ function generateCanvasResolution(unitMap: UnitMapVO, unitSize: number, canvasUn
   };
 }
 
-function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
-  return new OffsetVO(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
+function calculateUnitPatternOffset(unitPattern: UnitPatternValueObject): OffsetValueObject {
+  return new OffsetValueObject(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
 }
 
 type Props = {
-  unitMap: UnitMapVO;
+  unitMap: UnitMapValueObject;
   unitSize: number;
-  unitPattern: UnitPatternVO;
+  unitPattern: UnitPatternValueObject;
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
@@ -89,7 +95,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const drawGrid = useCallback(
     (
       ctx: CanvasRenderingContext2D,
-      newMapSize: MapSizeVO,
+      newMapSize: MapSizeValueObject,
       newUnitSize: number,
       newCanvasResolution: Resolution,
       newCanvasUnitSize: number
@@ -122,14 +128,14 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const drawUnits = useCallback(
     (
       ctx: CanvasRenderingContext2D,
-      newUnitMap: UnitMapVO,
+      newUnitMap: UnitMapValueObject,
       newUnitSize: number,
       newCanvasUnitSize: number,
       newBorderWidth: number
     ) => {
       ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
-      newUnitMap.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVO) => {
+      newUnitMap.iterateUnit((colIdx: number, rowIdx: number, unit: UnitValueObject) => {
         if (unit.isAlive()) {
           ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
           const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
@@ -151,9 +157,9 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
   const draw = useCallback(
     (
-      newUnitMap: UnitMapVO,
+      newUnitMap: UnitMapValueObject,
       newUnitSize: number,
-      newMapSize: MapSizeVO,
+      newMapSize: MapSizeValueObject,
       newCanvasResolution: Resolution,
       newCanvasUnitSize: number
     ) => {
@@ -180,7 +186,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   }, []);
 
   const calculateIndexes = useCallback(
-    (relativeX: number, relativeY: number, newUnitSize: number, newMapSize: MapSizeVO): Indexes => {
+    (relativeX: number, relativeY: number, newUnitSize: number, newMapSize: MapSizeValueObject): Indexes => {
       let colIdx = Math.floor(relativeX / newUnitSize);
       let rowIdx = Math.floor(relativeY / newUnitSize);
       if (colIdx >= newMapSize.getWidth()) {
@@ -198,7 +204,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const drawUnitPattern = (
     ctx: CanvasRenderingContext2D,
     newHoveredIndexes: Indexes,
-    newUnitPattern: UnitPatternVO,
+    newUnitPattern: UnitPatternValueObject,
     newUnitSize: number,
     newBorderWidth: number,
     newCanvasUnitSize: number
@@ -230,7 +236,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const clearUnitPattern = (
     ctx: CanvasRenderingContext2D,
     newHoveredIndexes: Indexes,
-    newUnitPattern: UnitPatternVO,
+    newUnitPattern: UnitPatternValueObject,
     newUnitSize: number,
     newBorderWidth: number,
     newCanvasUnitSize: number

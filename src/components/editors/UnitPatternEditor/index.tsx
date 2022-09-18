@@ -1,13 +1,13 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { generateKeyFromIndex } from '@/utils/component/';
 import UnitSquare from './subComponents/UnitSquare';
-import { UnitPatternVO } from '@/valueObjects';
+import { UnitPatternValueObject } from '@/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
   unitSize: number;
-  unitPattern: UnitPatternVO;
-  onUpdate?: (unitPattern: UnitPatternVO) => any;
+  unitPattern: UnitPatternValueObject;
+  onUpdate?: (unitPattern: UnitPatternValueObject) => any;
 };
 
 function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props) {

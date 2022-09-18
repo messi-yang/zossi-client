@@ -1,6 +1,6 @@
 import range from 'lodash/range';
 
-export default class MapSizeVO {
+export default class MapSizeValueObject {
   private width: number;
 
   private height: number;
@@ -10,7 +10,7 @@ export default class MapSizeVO {
     this.height = height;
   }
 
-  public isEqual(mapSize: MapSizeVO): boolean {
+  public isEqual(mapSize: MapSizeValueObject): boolean {
     return this.width === mapSize.getWidth() && this.height === mapSize.getHeight();
   }
 

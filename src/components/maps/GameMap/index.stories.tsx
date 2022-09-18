@@ -2,7 +2,7 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { CoordinateVO, AreaVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
+import { CoordinateValueObject, AreaValueObject, OffsetValueObject, UnitPatternValueObject } from '@/valueObjects';
 import { generateMapSizeWithArea, generateEmptyUnitMapWithMapSize } from '@/valueObjects/factories';
 
 import GameMap from '.';
@@ -16,7 +16,11 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { area, unitMap } = args;
-  const handleUnitsRevive = (coordinate: CoordinateVO, patternOffset: OffsetVO, pattern: UnitPatternVO) => {
+  const handleUnitsRevive = (
+    coordinate: CoordinateValueObject,
+    patternOffset: OffsetValueObject,
+    pattern: UnitPatternValueObject
+  ) => {
     if (!area) {
       return;
     }
@@ -43,12 +47,12 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-const areaForPrimary = new AreaVO(new CoordinateVO(3, 3), new CoordinateVO(9, 9));
+const areaForPrimary = new AreaValueObject(new CoordinateValueObject(3, 3), new CoordinateValueObject(9, 9));
 Primary.args = {
   area: areaForPrimary,
-  areaOffset: new OffsetVO(0, 0),
+  areaOffset: new OffsetValueObject(0, 0),
   unitMap: generateEmptyUnitMapWithMapSize(generateMapSizeWithArea(areaForPrimary)),
-  unitPattern: new UnitPatternVO([
+  unitPattern: new UnitPatternValueObject([
     [false, false, false, false, false],
     [false, false, true, false, false],
     [false, false, true, false, false],

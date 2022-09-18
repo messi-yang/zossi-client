@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { AreaVO, CoordinateVO, MapSizeVO } from '@/valueObjects';
+import { AreaValueObject, CoordinateValueObject, MapSizeValueObject } from '@/valueObjects';
 
 import GameMiniMap from '.';
 
@@ -13,7 +13,7 @@ export default {
 
 const Template: ComponentStory<typeof GameMiniMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleAreaUpdate = (newArea: AreaVO) => {
+  const handleAreaUpdate = (newArea: AreaValueObject) => {
     updateArgs({
       area: newArea,
     });
@@ -25,6 +25,6 @@ const Template: ComponentStory<typeof GameMiniMap> = function Template(args) {
 export const Primary = Template.bind({});
 Primary.args = {
   width: 300,
-  mapSize: new MapSizeVO(300, 300),
-  area: new AreaVO(new CoordinateVO(0, 0), new CoordinateVO(30, 30)),
+  mapSize: new MapSizeValueObject(300, 300),
+  area: new AreaValueObject(new CoordinateValueObject(0, 0), new CoordinateValueObject(30, 30)),
 };

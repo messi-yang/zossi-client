@@ -2,7 +2,7 @@ import isEqual from 'lodash/isEqual';
 
 import flatten from 'lodash/flatten';
 
-export default class UnitPatternVO {
+export default class UnitPatternValueObject {
   private pattern: boolean[][];
 
   constructor(pattern: boolean[][]) {
@@ -13,7 +13,7 @@ export default class UnitPatternVO {
     return flatten(this.pattern).findIndex((alive) => alive) === -1;
   }
 
-  public isEqual(pattern: UnitPatternVO): boolean {
+  public isEqual(pattern: UnitPatternValueObject): boolean {
     return isEqual(this.pattern, pattern.pattern);
   }
 

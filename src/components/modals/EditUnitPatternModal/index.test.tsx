@@ -1,9 +1,9 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { UnitPatternVO } from '@/valueObjects';
+import { UnitPatternValueObject } from '@/valueObjects';
 import EditUnitPatternModal, { dataTestids } from '.';
 
 function renderEditUnitPatternModal(): RenderResult {
-  return render(<EditUnitPatternModal opened unitPattern={new UnitPatternVO([[]])} />);
+  return render(<EditUnitPatternModal opened unitPattern={new UnitPatternValueObject([[]])} />);
 }
 
 describe('EditUnitPatternModal', () => {
