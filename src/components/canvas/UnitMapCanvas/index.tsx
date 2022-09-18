@@ -2,7 +2,8 @@ import { useCallback, useRef, useState, MouseEventHandler, useEffect } from 'rea
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import { UnitVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { UnitMapVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { generateMapSizeWithUnitMap } from '@/valueObjects/factories';
 
 import dataTestids from './dataTestids';
 
@@ -25,11 +26,11 @@ type Resolution = {
   height: number;
 };
 
-function generateMapSize(unitMap: UnitVo[][]): MapSizeVo {
-  return new MapSizeVo(unitMap.length, unitMap[0].length);
+function generateMapSize(unitMap: UnitMapVo): MapSizeVo {
+  return generateMapSizeWithUnitMap(unitMap);
 }
 
-function generateCanvasElemSize(unitMap: UnitVo[][], unitSize: number): ElemSize {
+function generateCanvasElemSize(unitMap: UnitMapVo, unitSize: number): ElemSize {
   const mapSize = generateMapSize(unitMap);
 
   return {
@@ -38,7 +39,7 @@ function generateCanvasElemSize(unitMap: UnitVo[][], unitSize: number): ElemSize
   };
 }
 
-function generateCanvasResolution(unitMap: UnitVo[][], unitSize: number, canvasUnitSize: number): Resolution {
+function generateCanvasResolution(unitMap: UnitMapVo, unitSize: number, canvasUnitSize: number): Resolution {
   const elemSize = generateCanvasElemSize(unitMap, unitSize);
 
   return {
@@ -52,7 +53,7 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
 }
 
 type Props = {
-  unitMap: UnitVo[][];
+  unitMap: UnitMapVo;
   unitSize: number;
   unitPattern: UnitPatternVo;
   onClick: (colIdx: number, rowIdx: number) => void;
@@ -119,32 +120,28 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const drawUnits = useCallback(
     (
       ctx: CanvasRenderingContext2D,
-      newUnitMap: UnitVo[][],
+      newUnitMap: UnitMapVo,
       newUnitSize: number,
       newCanvasUnitSize: number,
       newBorderWidth: number
     ) => {
       ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
-      for (let colIdx = 0; colIdx < newUnitMap.length; colIdx += 1) {
-        for (let rowIdx = 0; rowIdx < newUnitMap[colIdx].length; rowIdx += 1) {
-          const unit = newUnitMap[colIdx][rowIdx];
-
-          if (unit.isAlive()) {
-            ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
-            const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-            const leftTopY = (rowIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-            ctx.moveTo(leftTopX, leftTopY);
-            ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
-            ctx.lineTo(
-              leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize,
-              leftTopY + (newUnitSize - newBorderWidth) * newCanvasUnitSize
-            );
-            ctx.lineTo(leftTopX, leftTopY + (newUnitSize - 1) * newCanvasUnitSize);
-            ctx.closePath();
-          }
+      newUnitMap.iterateUnit((colIdx, rowIdx, unit) => {
+        if (unit.isAlive()) {
+          ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
+          const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+          const leftTopY = (rowIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+          ctx.moveTo(leftTopX, leftTopY);
+          ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
+          ctx.lineTo(
+            leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize,
+            leftTopY + (newUnitSize - newBorderWidth) * newCanvasUnitSize
+          );
+          ctx.lineTo(leftTopX, leftTopY + (newUnitSize - 1) * newCanvasUnitSize);
+          ctx.closePath();
         }
-      }
+      });
       ctx.fill();
     },
     []
@@ -152,7 +149,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
   const draw = useCallback(
     (
-      newUnitMap: UnitVo[][],
+      newUnitMap: UnitMapVo,
       newUnitSize: number,
       newMapSize: MapSizeVo,
       newCanvasResolution: Resolution,

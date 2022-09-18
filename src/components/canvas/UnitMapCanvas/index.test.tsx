@@ -1,11 +1,12 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { UnitPatternVo, UnitVo } from '@/valueObjects';
+import { UnitPatternVo, MapSizeVo } from '@/valueObjects';
+import { generateEmptyUnitMapWithMapSize } from '@/valueObjects/factories';
 import UnitMapCanvas, { dataTestids } from '.';
 
 function renderUnitMapCanvas(): RenderResult {
   return render(
     <UnitMapCanvas
-      unitMap={[[new UnitVo(true, 0)]]}
+      unitMap={generateEmptyUnitMapWithMapSize(new MapSizeVo(1, 1))}
       unitSize={20}
       unitPattern={new UnitPatternVo([[true]])}
       onClick={() => {}}

@@ -1,8 +1,8 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
-import { UnitVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { UnitVo, UnitMapVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 
-function renderGameMap(unitMap: UnitVo[][]): RenderResult {
+function renderGameMap(unitMap: UnitMapVo): RenderResult {
   return render(
     <GameMap
       area={null}
@@ -18,7 +18,8 @@ function renderGameMap(unitMap: UnitVo[][]): RenderResult {
 describe('GameMap', () => {
   it('Should render component successfully.', () => {
     try {
-      renderGameMap([[new UnitVo(true, 0)]]);
+      const unitMatrix = [[new UnitVo(true, 0)]];
+      renderGameMap(new UnitMapVo(unitMatrix));
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

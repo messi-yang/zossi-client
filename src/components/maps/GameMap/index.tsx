@@ -3,7 +3,7 @@ import { gameBackgroundColor } from '@/styles/colors';
 import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import { AreaVo, UnitVo, CoordinateVo, OffsetVo, UnitPatternVo, MapSizeVo } from '@/valueObjects';
+import { AreaVo, UnitMapVo, CoordinateVo, OffsetVo, UnitPatternVo, MapSizeVo } from '@/valueObjects';
 import { generateAreaWithCoordinateAndMapSize } from '@/valueObjects/factories';
 import dataTestids from './dataTestids';
 
@@ -14,7 +14,7 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
 type Props = {
   area: AreaVo | null;
   areaOffset: OffsetVo;
-  unitMap: UnitVo[][] | null;
+  unitMap: UnitMapVo | null;
   unitPattern: UnitPatternVo;
   onUnitsRevive: (coordinate: CoordinateVo, unitPatternOffset: OffsetVo, unitPattern: UnitPatternVo) => any;
   onAreaUpdate: (newArea: AreaVo) => any;

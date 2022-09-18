@@ -2,7 +2,8 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { UnitVo, CoordinateVo, AreaVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { CoordinateVo, AreaVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { generateMapSizeWithArea, generateEmptyUnitMapWithMapSize } from '@/valueObjects/factories';
 
 import GameMap from '.';
 
@@ -25,9 +26,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
       if (alive) {
         const adjustedX = coordinate.getX() - area.getFrom().getX() + colIdx + patternOffset.getX();
         const adjustedY = coordinate.getY() - area.getFrom().getY() + rowIdx + patternOffset.getY();
-        if (newUnitMap?.[adjustedX]?.[adjustedY]) {
-          newUnitMap[adjustedX][adjustedY].setAlive(true);
-        }
+        newUnitMap?.setUnitAlive(adjustedX, adjustedY, true);
       }
     });
 
@@ -43,24 +42,12 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
   );
 };
 
-function generateUnitMap(area: AreaVo) {
-  const unitMap: UnitVo[][] = [];
-  const width = area.getWidth();
-  const height = area.getHeight();
-  for (let x = 0; x < width; x += 1) {
-    unitMap.push([]);
-    for (let y = 0; y < height; y += 1) {
-      unitMap[x].push(new UnitVo(false, 0));
-    }
-  }
-  return unitMap;
-}
-
 export const Primary = Template.bind({});
+const areaForPrimary = new AreaVo(new CoordinateVo(3, 3), new CoordinateVo(9, 9));
 Primary.args = {
-  area: new AreaVo(new CoordinateVo(3, 3), new CoordinateVo(9, 9)),
+  area: areaForPrimary,
   areaOffset: new OffsetVo(0, 0),
-  unitMap: generateUnitMap(new AreaVo(new CoordinateVo(3, 3), new CoordinateVo(9, 9))),
+  unitMap: generateEmptyUnitMapWithMapSize(generateMapSizeWithArea(areaForPrimary)),
   unitPattern: new UnitPatternVo([
     [false, false, false, false, false],
     [false, false, true, false, false],
