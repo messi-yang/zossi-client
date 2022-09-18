@@ -3,50 +3,50 @@ import isEqual from 'lodash/isEqual';
 import flatten from 'lodash/flatten';
 
 class UnitPatternVo {
-  private unitPattern: boolean[][];
+  private pattern: boolean[][];
 
-  constructor(unitPattern: boolean[][]) {
-    this.unitPattern = unitPattern;
+  constructor(pattern: boolean[][]) {
+    this.pattern = pattern;
   }
 
   public isEmpty(): boolean {
-    return flatten(this.unitPattern).findIndex((alive) => alive) === -1;
+    return flatten(this.pattern).findIndex((alive) => alive) === -1;
   }
 
-  public isEqual(unitPattern: UnitPatternVo): boolean {
-    return isEqual(this.unitPattern, unitPattern.unitPattern);
+  public isEqual(pattern: UnitPatternVo): boolean {
+    return isEqual(this.pattern, pattern.pattern);
   }
 
   public isAlive(colIdx: number, rowIdx: number): boolean {
-    return this.unitPattern?.[colIdx]?.[rowIdx] || false;
+    return this.pattern?.[colIdx]?.[rowIdx] || false;
   }
 
   public getWidth(): number {
-    return this.unitPattern.length;
+    return this.pattern.length;
   }
 
   public getHeight(): number {
-    return this.unitPattern?.[0].length || 0;
+    return this.pattern?.[0].length || 0;
   }
 
   public setPatternUnit(colIdx: number, rowIdx: number, alive: boolean): void {
-    this.unitPattern[colIdx][rowIdx] = alive;
+    this.pattern[colIdx][rowIdx] = alive;
   }
 
   public iterate(cb: (colIdx: number, rowIdx: number, alive: boolean) => void) {
-    for (let colIdx = 0; colIdx < this.unitPattern.length; colIdx += 1) {
-      for (let rowIdx = 0; rowIdx < this.unitPattern[0].length; rowIdx += 1) {
+    for (let colIdx = 0; colIdx < this.pattern.length; colIdx += 1) {
+      for (let rowIdx = 0; rowIdx < this.pattern[0].length; rowIdx += 1) {
         cb(colIdx, rowIdx, this.isAlive(colIdx, rowIdx));
       }
     }
   }
 
   public mapPatternColumn(cb: (colIdx: number, patternCol: boolean[]) => any) {
-    return this.unitPattern.map((unitPatternCol, colIdx) => cb(colIdx, unitPatternCol));
+    return this.pattern.map((patternCol, colIdx) => cb(colIdx, patternCol));
   }
 
   public mapPatternUnit(colIdx: number, cb: (rowIdx: number, alive: boolean) => any) {
-    return this.unitPattern[colIdx].map((alive, rowIdx) => cb(rowIdx, alive));
+    return this.pattern[colIdx].map((alive, rowIdx) => cb(rowIdx, alive));
   }
 }
 
