@@ -1,5 +1,6 @@
 import UnitVo from './UnitVo';
 import UnitMapVo from './UnitMapVo';
+import UnitPatternVo from './UnitPatternVo';
 import AreaVo from './AreaVo';
 import OffsetVo from './OffsetVo';
 import CoordinateVo from './CoordinateVo';
@@ -32,6 +33,12 @@ export function generateMapSizeWithArea(area: AreaVo): MapSizeVo {
 
 export function generateEmptyUnitMapWithMapSize(mapSize: MapSizeVo): UnitMapVo {
   const unitMap = mapSize.map<UnitVo>(() => new UnitVo(false, 0));
+  return new UnitMapVo(unitMap);
+}
+
+export function generateUnitMapWithUnitPattern(unitPattern: UnitPatternVo): UnitMapVo {
+  const unitMap = unitPattern.map((_, __, alive) => new UnitVo(alive, 0));
+
   return new UnitMapVo(unitMap);
 }
 

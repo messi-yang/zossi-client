@@ -41,6 +41,10 @@ class UnitPatternVo {
     }
   }
 
+  public map<T>(cb: (colIdx: number, rowIdx: number, alive: boolean) => T): T[][] {
+    return this.pattern.map((patternCol, colIdx) => patternCol.map((alive, rowIdx) => cb(colIdx, rowIdx, alive)));
+  }
+
   public mapPatternColumn(cb: (colIdx: number, patternCol: boolean[]) => any) {
     return this.pattern.map((patternCol, colIdx) => cb(colIdx, patternCol));
   }
