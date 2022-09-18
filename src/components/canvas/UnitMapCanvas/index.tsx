@@ -333,7 +333,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
         ref={onUnitPatternCanvasLoad}
         width={canvasResolution.width}
         height={canvasResolution.height}
-        className="absolute left-0 top-0"
+        className="absolute left-0 top-0 cursor-pointer"
         onMouseMove={handleDropPatternCanvasMouseMoveDebouncer}
         onMouseLeave={handleDropPatternCanvasMouseLeave}
         onClick={handleDropPatternCanvasClick}

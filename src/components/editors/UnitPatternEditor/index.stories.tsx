@@ -34,4 +34,5 @@ Primary.args = {
     [true, true, true],
   ]),
   unitSize: 40,
+  editable: true,
 };

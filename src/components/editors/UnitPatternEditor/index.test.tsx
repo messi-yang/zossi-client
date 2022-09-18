@@ -13,6 +13,7 @@ function renderUnitPatternEditor(): RenderResult {
           [true, true, true],
         ])
       }
+      editable
       onUpdate={() => {}}
     />
   );

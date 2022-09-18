@@ -49,6 +49,7 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
             <UnitPatternEditor
               unitSize={230 / (tmpUnitPattern.getHeight() || 1)}
               unitPattern={tmpUnitPattern}
+              editable
               onUpdate={handleUnitPatternUpdate}
             />
           </section>
@@ -70,11 +71,15 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
                     style={{
                       borderColor: tmpUnitPattern.isEqual(unitPatternPreset.pattern) ? '#01D6C9' : 'rgba(0,0,0,0)',
                     }}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
+                    onKeyPress={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
                   >
                     <UnitPatternEditor
                       unitSize={70 / (unitPatternPreset?.pattern.getHeight() || 1)}
                       unitPattern={unitPatternPreset.pattern}
-                      onUpdate={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
+                      editable={false}
                     />
                   </div>
                   <Text color="white" copy={unitPatternPreset.title} />

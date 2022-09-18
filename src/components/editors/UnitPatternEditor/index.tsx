@@ -1,16 +1,17 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { generateKeyFromIndex } from '@/utils/component/';
-import UnitSquare from './subComponents/UnitSquare';
+import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import { UnitPatternValueObject } from '@/valueObjects';
+import { generateUnitMapWithUnitPattern } from '@/valueObjects/factories';
 import dataTestids from './dataTestids';
 
 type Props = {
   unitSize: number;
   unitPattern: UnitPatternValueObject;
+  editable: boolean;
   onUpdate?: (unitPattern: UnitPatternValueObject) => any;
 };
 
-function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props) {
+function UnitPatternEditor({ unitSize, unitPattern, editable, onUpdate = () => {} }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
     const newUnitPattern = cloneDeep(unitPattern);
     newUnitPattern.setPatternUnit(colIdx, rowIdx, !newUnitPattern.isAlive(colIdx, rowIdx));
@@ -18,37 +19,16 @@ function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props
     onUpdate(newUnitPattern);
   };
 
+  const hoverUnitPattern = editable ? new UnitPatternValueObject([[true]]) : new UnitPatternValueObject([[]]);
+
   return (
-    <div data-testid={dataTestids.root} className="flex flex-row">
-      {unitPattern.mapPatternColumn((colIdx: number) => (
-        <div
-          key={generateKeyFromIndex(colIdx)}
-          className="flex flex-col"
-          style={{
-            width: unitSize,
-          }}
-        >
-          {unitPattern.mapPatternUnit(colIdx, (rowIdx: number, isAlive: boolean) => (
-            <div
-              key={generateKeyFromIndex(rowIdx)}
-              style={{
-                height: unitSize,
-              }}
-            >
-              <UnitSquare
-                alive={isAlive}
-                highlighted={false}
-                borderColor="#2C2C2C"
-                hasTopBorder
-                hasRightBorder={colIdx === unitPattern.getWidth() - 1}
-                hasBottomBorder={rowIdx === unitPattern.getHeight() - 1}
-                hasLeftBorder
-                onClick={() => handleSquareClick(colIdx, rowIdx)}
-              />
-            </div>
-          ))}
-        </div>
-      ))}
+    <div className="inline-flex" data-testid={dataTestids.root}>
+      <UnitMapCanvas
+        unitMap={generateUnitMapWithUnitPattern(unitPattern)}
+        unitSize={unitSize}
+        unitPattern={hoverUnitPattern}
+        onClick={editable ? handleSquareClick : () => {}}
+      />
     </div>
   );
 }
