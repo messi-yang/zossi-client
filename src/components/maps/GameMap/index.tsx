@@ -3,21 +3,21 @@ import { gameBackgroundColor } from '@/styles/colors';
 import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import { AreaVo, UnitMapVo, CoordinateVo, OffsetVo, UnitPatternVo, MapSizeVo } from '@/valueObjects';
+import { AreaVO, UnitMapVO, CoordinateVO, OffsetVO, UnitPatternVO, MapSizeVO } from '@/valueObjects';
 import { generateAreaWithCoordinateAndMapSize } from '@/valueObjects/factories';
 import dataTestids from './dataTestids';
 
-function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
-  return new OffsetVo(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
+function calculateUnitPatternOffset(unitPattern: UnitPatternVO): OffsetVO {
+  return new OffsetVO(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
 }
 
 type Props = {
-  area: AreaVo | null;
-  areaOffset: OffsetVo;
-  unitMap: UnitMapVo | null;
-  unitPattern: UnitPatternVo;
-  onUnitsRevive: (coordinate: CoordinateVo, unitPatternOffset: OffsetVo, unitPattern: UnitPatternVo) => any;
-  onAreaUpdate: (newArea: AreaVo) => any;
+  area: AreaVO | null;
+  areaOffset: OffsetVO;
+  unitMap: UnitMapVO | null;
+  unitPattern: UnitPatternVO;
+  onUnitsRevive: (coordinate: CoordinateVO, unitPatternOffset: OffsetVO, unitPattern: UnitPatternVO) => any;
+  onAreaUpdate: (newArea: AreaVO) => any;
 };
 
 function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
@@ -29,10 +29,10 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
     squareSize
   );
   const desiredMapSize = useMemo(
-    () => new MapSizeVo(desiredAreaWidth, desiredAreaHeight),
+    () => new MapSizeVO(desiredAreaWidth, desiredAreaHeight),
     [desiredAreaWidth, desiredAreaHeight]
   );
-  const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVo>(calculateUnitPatternOffset(unitPattern));
+  const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVO>(calculateUnitPatternOffset(unitPattern));
 
   useEffect(() => {
     setUnitPatternOffset(calculateUnitPatternOffset(unitPattern));
@@ -54,7 +54,7 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
 
   useEffect(() => {
     if (area === null) {
-      const newArea = generateAreaWithCoordinateAndMapSize(new CoordinateVo(0, 0), desiredMapSize);
+      const newArea = generateAreaWithCoordinateAndMapSize(new CoordinateVO(0, 0), desiredMapSize);
       onAreaUpdate(newArea);
     } else {
       const newArea = generateAreaWithCoordinateAndMapSize(area.getFrom(), desiredMapSize);

@@ -3,15 +3,15 @@ import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
 import EditUnitPatternModal from '@/components/modals/EditUnitPatternModal';
-import { UnitPatternVo } from '@/valueObjects';
+import { UnitPatternVO } from '@/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
 type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
-  unitPattern: UnitPatternVo;
-  onUnitPatternUpdate: (unitPattern: UnitPatternVo) => void;
+  unitPattern: UnitPatternVO;
+  onUnitPatternUpdate: (unitPattern: UnitPatternVO) => void;
   isMiniMapActive: boolean;
   onMiniMapClick: () => void;
 };
@@ -37,7 +37,7 @@ function GameRoomSideBar({
   const handleUnitPatternCancel = () => {
     setIsEditUnitPatternModalVisible(false);
   };
-  const handleUnitPatternUpdate = (newUnitPattern: UnitPatternVo) => {
+  const handleUnitPatternUpdate = (newUnitPattern: UnitPatternVO) => {
     onUnitPatternUpdate(newUnitPattern);
     setIsEditUnitPatternModalVisible(false);
   };

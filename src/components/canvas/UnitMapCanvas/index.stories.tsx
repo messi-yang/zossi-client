@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { UnitPatternVo, MapSizeVo } from '@/valueObjects';
+import { UnitPatternVO, MapSizeVO } from '@/valueObjects';
 import { generateEmptyUnitMapWithMapSize } from '@/valueObjects/factories';
 
 import UnitMapCanvas from '.';
@@ -17,7 +17,7 @@ const Template: ComponentStory<typeof UnitMapCanvas> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  unitMap: generateEmptyUnitMapWithMapSize(new MapSizeVo(30, 30)),
+  unitMap: generateEmptyUnitMapWithMapSize(new MapSizeVO(30, 30)),
   unitSize: 15,
-  unitPattern: new UnitPatternVo([[true]]),
+  unitPattern: new UnitPatternVO([[true]]),
 };

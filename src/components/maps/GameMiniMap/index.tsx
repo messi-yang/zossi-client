@@ -1,13 +1,13 @@
 import { useRef } from 'react';
-import { MapSizeVo, AreaVo, CoordinateVo } from '@/valueObjects';
+import { MapSizeVO, AreaVO, CoordinateVO } from '@/valueObjects';
 import usePull from '@/hooks/usePull';
 import dataTestids from './dataTestids';
 
 type Props = {
   width: number;
-  mapSize: MapSizeVo;
-  area: AreaVo;
-  onAreaUpdate: (newArea: AreaVo) => void;
+  mapSize: MapSizeVO;
+  area: AreaVO;
+  onAreaUpdate: (newArea: AreaVO) => void;
 };
 
 function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
@@ -25,7 +25,7 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
   const areaElemWidth = elemWidth * mapZoomedAreaWidthRatio;
   const areaElemHeight = elemHeight * mapZoomedAreaHeightRatio;
 
-  const calculateNewAreaFromMouseEvent = (clientX: number, clientY: number): AreaVo => {
+  const calculateNewAreaFromMouseEvent = (clientX: number, clientY: number): AreaVO => {
     if (!mapContentElemRef.current) {
       return area;
     }
@@ -47,9 +47,9 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
       adjustedY = 0;
     }
 
-    return new AreaVo(
-      new CoordinateVo(adjustedX, adjustedY),
-      new CoordinateVo(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1)
+    return new AreaVO(
+      new CoordinateVO(adjustedX, adjustedY),
+      new CoordinateVO(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1)
     );
   };
 

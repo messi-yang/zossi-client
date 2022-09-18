@@ -1,4 +1,4 @@
-export default class UnitVo {
+export default class UnitVO {
   private alive: boolean;
 
   private age: number;

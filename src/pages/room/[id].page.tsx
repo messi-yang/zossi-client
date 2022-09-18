@@ -8,7 +8,7 @@ import { gameBackgroundColor } from '@/styles/colors';
 import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
-import { AreaVo } from '@/valueObjects';
+import { AreaVO } from '@/valueObjects';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 import GameMiniMap from '@/components/maps/GameMiniMap';
@@ -51,7 +51,7 @@ const Room: NextPage = function Room() {
     router.push('/');
   };
 
-  const handleAreaUpdate = (newArea: AreaVo) => {
+  const handleAreaUpdate = (newArea: AreaVO) => {
     zoomArea(newArea);
   };
 

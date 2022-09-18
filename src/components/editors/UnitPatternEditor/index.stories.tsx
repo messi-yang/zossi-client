@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { UnitPatternVo } from '@/valueObjects';
+import { UnitPatternVO } from '@/valueObjects';
 
 import UnitPatternEditor from '.';
 
@@ -13,7 +13,7 @@ export default {
 
 const Template: ComponentStory<typeof UnitPatternEditor> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleUnitPatternUpdate = (unitPattern: UnitPatternVo) => {
+  const handleUnitPatternUpdate = (unitPattern: UnitPatternVO) => {
     updateArgs({
       unitPattern,
     });
@@ -28,7 +28,7 @@ const Template: ComponentStory<typeof UnitPatternEditor> = function Template(arg
 
 export const Primary = Template.bind({});
 Primary.args = {
-  unitPattern: new UnitPatternVo([
+  unitPattern: new UnitPatternVO([
     [true, true, true],
     [true, false, true],
     [true, true, true],

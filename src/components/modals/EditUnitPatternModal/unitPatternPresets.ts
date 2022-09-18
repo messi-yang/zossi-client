@@ -1,14 +1,14 @@
-import { UnitPatternVo } from '@/valueObjects';
+import { UnitPatternVO } from '@/valueObjects';
 
 type UnitPatternPreset = {
   title: string;
-  pattern: UnitPatternVo;
+  pattern: UnitPatternVO;
 };
 
 const unitPatternPresets: UnitPatternPreset[] = [
   {
     title: 'Block',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false],
       [false, true, true, false],
       [false, true, true, false],
@@ -17,7 +17,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Bee Hive',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false],
       [false, false, true, false, false],
       [false, true, false, true, false],
@@ -28,7 +28,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Loaf',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false, false],
       [false, false, true, false, false, false],
       [false, true, false, true, false, false],
@@ -39,7 +39,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Boat',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false],
       [false, true, true, false, false],
       [false, true, false, true, false],
@@ -49,7 +49,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Tub',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false],
       [false, false, true, false, false],
       [false, true, false, true, false],
@@ -59,7 +59,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Blinker1',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false],
       [false, false, false, false, false],
       [false, true, true, true, false],
@@ -69,7 +69,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Blinker2',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false],
       [false, false, true, false, false],
       [false, false, true, false, false],
@@ -79,7 +79,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Toad',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false, false],
       [false, false, true, true, false, false],
       [false, false, false, false, true, false],
@@ -90,7 +90,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Beacon',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false, false],
       [false, true, true, false, false, false],
       [false, true, false, false, false, false],
@@ -101,7 +101,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Glider',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false],
       [false, true, false, false, false],
       [false, false, true, true, false],
@@ -111,7 +111,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Untitled',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false, false],
       [false, false, true, false, false, false],
       [false, true, false, true, false, false],
@@ -122,7 +122,7 @@ const unitPatternPresets: UnitPatternPreset[] = [
   },
   {
     title: 'Untitled',
-    pattern: new UnitPatternVo([
+    pattern: new UnitPatternVO([
       [false, false, false, false, false, false, false, false, false, false, false],
       [false, false, false, false, false, true, false, false, false, false, false],
       [false, false, false, false, true, false, true, false, false, false, false],

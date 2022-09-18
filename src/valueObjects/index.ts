@@ -1,10 +1,10 @@
-import UnitVo from '@/valueObjects/UnitVo';
-import UnitMapVo from '@/valueObjects/UnitMapVo';
-import CoordinateVo from '@/valueObjects/CoordinateVo';
-import OffsetVo from '@/valueObjects/OffsetVo';
-import AreaVo from '@/valueObjects/AreaVo';
-import UnitPatternVo from '@/valueObjects/UnitPatternVo';
-import MapSizeVo from '@/valueObjects/MapSizeVo';
+import UnitVO from '@/valueObjects/UnitVO';
+import UnitMapVO from '@/valueObjects/UnitMapVO';
+import CoordinateVO from '@/valueObjects/CoordinateVO';
+import OffsetVO from '@/valueObjects/OffsetVO';
+import AreaVO from '@/valueObjects/AreaVO';
+import UnitPatternVO from '@/valueObjects/UnitPatternVO';
+import MapSizeVO from '@/valueObjects/MapSizeVO';
 
 export default {};
-export { UnitVo, UnitMapVo, CoordinateVo, OffsetVo, AreaVo, UnitPatternVo, MapSizeVo };
+export { UnitVO, UnitMapVO, CoordinateVO, OffsetVO, AreaVO, UnitPatternVO, MapSizeVO };

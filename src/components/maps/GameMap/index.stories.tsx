@@ -2,7 +2,7 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { CoordinateVo, AreaVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { CoordinateVO, AreaVO, OffsetVO, UnitPatternVO } from '@/valueObjects';
 import { generateMapSizeWithArea, generateEmptyUnitMapWithMapSize } from '@/valueObjects/factories';
 
 import GameMap from '.';
@@ -16,7 +16,7 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { area, unitMap } = args;
-  const handleUnitsRevive = (coordinate: CoordinateVo, patternOffset: OffsetVo, pattern: UnitPatternVo) => {
+  const handleUnitsRevive = (coordinate: CoordinateVO, patternOffset: OffsetVO, pattern: UnitPatternVO) => {
     if (!area) {
       return;
     }
@@ -43,12 +43,12 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-const areaForPrimary = new AreaVo(new CoordinateVo(3, 3), new CoordinateVo(9, 9));
+const areaForPrimary = new AreaVO(new CoordinateVO(3, 3), new CoordinateVO(9, 9));
 Primary.args = {
   area: areaForPrimary,
-  areaOffset: new OffsetVo(0, 0),
+  areaOffset: new OffsetVO(0, 0),
   unitMap: generateEmptyUnitMapWithMapSize(generateMapSizeWithArea(areaForPrimary)),
-  unitPattern: new UnitPatternVo([
+  unitPattern: new UnitPatternVO([
     [false, false, false, false, false],
     [false, false, true, false, false],
     [false, false, true, false, false],

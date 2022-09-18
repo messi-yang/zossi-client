@@ -1,4 +1,4 @@
-export default class CoordinateVo {
+export default class CoordinateVO {
   private x: number;
 
   private y: number;
@@ -8,7 +8,7 @@ export default class CoordinateVo {
     this.y = y;
   }
 
-  public isEqual(coordinate: CoordinateVo): boolean {
+  public isEqual(coordinate: CoordinateVO): boolean {
     return this.x === coordinate.getX() && this.y === coordinate.getY();
   }
 
@@ -20,7 +20,7 @@ export default class CoordinateVo {
     return this.y;
   }
 
-  public shift(x: number, y: number): CoordinateVo {
-    return new CoordinateVo(this.x + x, this.y + y);
+  public shift(x: number, y: number): CoordinateVO {
+    return new CoordinateVO(this.x + x, this.y + y);
   }
 }

@@ -1,13 +1,13 @@
-import UnitVo from '@/valueObjects/UnitVo';
+import UnitVO from '@/valueObjects/UnitVO';
 
-export default class UnitMapVo {
-  private unitMatrix: UnitVo[][];
+export default class UnitMapVO {
+  private unitMatrix: UnitVO[][];
 
-  constructor(unitMatrix: UnitVo[][]) {
+  constructor(unitMatrix: UnitVO[][]) {
     this.unitMatrix = unitMatrix;
   }
 
-  public getUnit(colIdx: number, rowIdx: number): UnitVo {
+  public getUnit(colIdx: number, rowIdx: number): UnitVO {
     return this.unitMatrix[colIdx][rowIdx];
   }
 
@@ -23,7 +23,7 @@ export default class UnitMapVo {
     this.unitMatrix[colIdx][rowIdx].setAlive(alive);
   }
 
-  public iterateUnit(cb: (colIdx: number, rowIdx: number, unit: UnitVo) => void) {
+  public iterateUnit(cb: (colIdx: number, rowIdx: number, unit: UnitVO) => void) {
     for (let colIdx = 0; colIdx < this.unitMatrix.length; colIdx += 1) {
       for (let rowIdx = 0; rowIdx < this.unitMatrix[colIdx].length; rowIdx += 1) {
         cb(colIdx, rowIdx, this.unitMatrix[colIdx][rowIdx]);

@@ -1,24 +1,24 @@
-import CoordinateVo from '@/valueObjects/CoordinateVo';
+import CoordinateVO from '@/valueObjects/CoordinateVO';
 
-export default class AreaVo {
-  private from: CoordinateVo;
+export default class AreaVO {
+  private from: CoordinateVO;
 
-  private to: CoordinateVo;
+  private to: CoordinateVO;
 
-  constructor(from: CoordinateVo, to: CoordinateVo) {
+  constructor(from: CoordinateVO, to: CoordinateVO) {
     this.from = from;
     this.to = to;
   }
 
-  public isEqual(area: AreaVo): Boolean {
+  public isEqual(area: AreaVO): Boolean {
     return this.from.isEqual(area.getFrom()) && this.to.isEqual(area.getTo());
   }
 
-  public getFrom(): CoordinateVo {
+  public getFrom(): CoordinateVO {
     return this.from;
   }
 
-  public getTo(): CoordinateVo {
+  public getTo(): CoordinateVO {
     return this.to;
   }
 
