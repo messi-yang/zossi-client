@@ -1,4 +1,4 @@
-class OffsetVo {
+export default class OffsetVo {
   private x: number;
 
   private y: number;
@@ -16,5 +16,3 @@ class OffsetVo {
     return this.y;
   }
 }
-
-export default OffsetVo;

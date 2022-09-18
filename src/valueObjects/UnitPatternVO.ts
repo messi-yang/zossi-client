@@ -2,7 +2,7 @@ import isEqual from 'lodash/isEqual';
 
 import flatten from 'lodash/flatten';
 
-class UnitPatternVo {
+export default class UnitPatternVo {
   private pattern: boolean[][];
 
   constructor(pattern: boolean[][]) {
@@ -53,5 +53,3 @@ class UnitPatternVo {
     return this.pattern[colIdx].map((alive, rowIdx) => cb(rowIdx, alive));
   }
 }
-
-export default UnitPatternVo;

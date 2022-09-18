@@ -194,7 +194,7 @@ export function Provider({ children }: Props) {
       };
 
       const coordinates: CoordinateDto[] = [];
-      pattern.iterate((colIdx, rowIdx, alive) => {
+      pattern.iterate((colIdx: number, rowIdx: number, alive: boolean) => {
         if (alive) {
           coordinates.push({
             x: coordinate.getX() + colIdx + patternOffset.getX(),

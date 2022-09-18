@@ -22,7 +22,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     }
 
     const newUnitMap = cloneDeep(unitMap);
-    pattern.iterate((colIdx, rowIdx, alive) => {
+    pattern.iterate((colIdx: number, rowIdx: number, alive: boolean) => {
       if (alive) {
         const adjustedX = coordinate.getX() - area.getFrom().getX() + colIdx + patternOffset.getX();
         const adjustedY = coordinate.getY() - area.getFrom().getY() + rowIdx + patternOffset.getY();

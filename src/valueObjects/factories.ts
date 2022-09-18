@@ -1,10 +1,10 @@
-import UnitVo from './UnitVo';
-import UnitMapVo from './UnitMapVo';
-import UnitPatternVo from './UnitPatternVo';
-import AreaVo from './AreaVo';
-import OffsetVo from './OffsetVo';
-import CoordinateVo from './CoordinateVo';
-import MapSizeVo from './MapSizeVo';
+import CoordinateVo from '@/valueObjects/CoordinateVo';
+import OffsetVo from '@/valueObjects/OffsetVo';
+import UnitVo from '@/valueObjects/UnitVo';
+import AreaVo from '@/valueObjects/AreaVo';
+import MapSizeVo from '@/valueObjects/MapSizeVo';
+import UnitMapVo from '@/valueObjects/UnitMapVo';
+import UnitPatternVo from '@/valueObjects/UnitPatternVo';
 
 export function generateAreaOffset(areaA: AreaVo | null, areaB: AreaVo | null): OffsetVo {
   if (!areaA || !areaB) {
@@ -37,7 +37,7 @@ export function generateEmptyUnitMapWithMapSize(mapSize: MapSizeVo): UnitMapVo {
 }
 
 export function generateUnitMapWithUnitPattern(unitPattern: UnitPatternVo): UnitMapVo {
-  const unitMap = unitPattern.map((_, __, alive) => new UnitVo(alive, 0));
+  const unitMap = unitPattern.map((_: number, __: number, alive: boolean) => new UnitVo(alive, 0));
 
   return new UnitMapVo(unitMap);
 }

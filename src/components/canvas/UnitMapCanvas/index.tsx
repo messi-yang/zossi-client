@@ -2,7 +2,7 @@ import { useCallback, useRef, useState, MouseEventHandler, useEffect } from 'rea
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import { UnitMapVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
+import { UnitVo, UnitMapVo, MapSizeVo, OffsetVo, UnitPatternVo } from '@/valueObjects';
 import { generateMapSizeWithUnitMap } from '@/valueObjects/factories';
 
 import dataTestids from './dataTestids';
@@ -98,7 +98,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       ctx.lineWidth = canvasUnitSize; // eslint-disable-line no-param-reassign
       ctx.beginPath();
 
-      newMapSize.iterateColumn((colIdx) => {
+      newMapSize.iterateColumn((colIdx: number) => {
         ctx.moveTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, 0);
         ctx.lineTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, newCanvasResolution.height);
       });
@@ -106,7 +106,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       ctx.moveTo(newCanvasResolution.width - newCanvasUnitSize / 2, 0);
       ctx.lineTo(newCanvasResolution.width - newCanvasUnitSize / 2, newCanvasResolution.height);
 
-      newMapSize.iterateRow((rowIdx) => {
+      newMapSize.iterateRow((rowIdx: number) => {
         ctx.moveTo(0, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
         ctx.lineTo(newCanvasResolution.width, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
       });
@@ -129,7 +129,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
     ) => {
       ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
-      newUnitMap.iterateUnit((colIdx, rowIdx, unit) => {
+      newUnitMap.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
         if (unit.isAlive()) {
           ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
           const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
@@ -207,7 +207,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
     ctx.fillStyle = color.hoverColor; // eslint-disable-line no-param-reassign
     ctx.beginPath();
-    newUnitPattern.iterate((colIdx, rowIdx, alive) => {
+    newUnitPattern.iterate((colIdx: number, rowIdx: number, alive: boolean) => {
       if (!alive) {
         return;
       }

@@ -1,6 +1,6 @@
-import CoordinateVo from './CoordinateVo';
+import CoordinateVo from '@/valueObjects/CoordinateVo';
 
-class AreaVo {
+export default class AreaVo {
   private from: CoordinateVo;
 
   private to: CoordinateVo;
@@ -30,5 +30,3 @@ class AreaVo {
     return this.to.getY() - this.from.getY() + 1;
   }
 }
-
-export default AreaVo;

@@ -1,4 +1,4 @@
-class UnitVo {
+export default class UnitVo {
   private alive: boolean;
 
   private age: number;
@@ -20,5 +20,3 @@ class UnitVo {
     this.alive = alive;
   }
 }
-
-export default UnitVo;

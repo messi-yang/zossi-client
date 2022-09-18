@@ -1,4 +1,4 @@
-class CoordinateVo {
+export default class CoordinateVo {
   private x: number;
 
   private y: number;
@@ -24,5 +24,3 @@ class CoordinateVo {
     return new CoordinateVo(this.x + x, this.y + y);
   }
 }
-
-export default CoordinateVo;

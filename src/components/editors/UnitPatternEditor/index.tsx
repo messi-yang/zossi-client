@@ -20,7 +20,7 @@ function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props
 
   return (
     <div data-testid={dataTestids.root} className="flex flex-row">
-      {unitPattern.mapPatternColumn((colIdx) => (
+      {unitPattern.mapPatternColumn((colIdx: number) => (
         <div
           key={generateKeyFromIndex(colIdx)}
           className="flex flex-col"
@@ -28,7 +28,7 @@ function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props
             width: unitSize,
           }}
         >
-          {unitPattern.mapPatternUnit(colIdx, (rowIdx, isAlive) => (
+          {unitPattern.mapPatternUnit(colIdx, (rowIdx: number, isAlive: boolean) => (
             <div
               key={generateKeyFromIndex(rowIdx)}
               style={{

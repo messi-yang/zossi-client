@@ -1,6 +1,6 @@
-import UnitVo from './UnitVo';
+import UnitVo from '@/valueObjects/UnitVo';
 
-class UnitMapVo {
+export default class UnitMapVo {
   private unitMatrix: UnitVo[][];
 
   constructor(unitMatrix: UnitVo[][]) {
@@ -31,5 +31,3 @@ class UnitMapVo {
     }
   }
 }
-
-export default UnitMapVo;

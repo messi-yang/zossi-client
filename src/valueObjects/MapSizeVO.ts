@@ -1,6 +1,6 @@
 import range from 'lodash/range';
 
-class MapSizeVo {
+export default class MapSizeVo {
   private width: number;
 
   private height: number;
@@ -38,5 +38,3 @@ class MapSizeVo {
     return range(this.width).map((colIdx) => range(this.height).map((rowIdx) => cb(colIdx, rowIdx)));
   }
 }
-
-export default MapSizeVo;
