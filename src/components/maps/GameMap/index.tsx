@@ -44,7 +44,8 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
         return;
       }
 
-      const finalCoordinate = new CoordinateVo(area.getFrom().getX() + colIdx, area.getFrom().getY() + rowIdx);
+      const originCoordinate = area.getFrom();
+      const finalCoordinate = originCoordinate.shift(colIdx, rowIdx);
 
       onUnitsRevive(finalCoordinate, unitPatternOffset, unitPattern);
     },

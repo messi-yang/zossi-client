@@ -19,6 +19,10 @@ class CoordinateVo {
   public getY(): number {
     return this.y;
   }
+
+  public shift(x: number, y: number): CoordinateVo {
+    return new CoordinateVo(this.x + x, this.y + y);
+  }
 }
 
 export default CoordinateVo;

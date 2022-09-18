@@ -72,7 +72,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
   useEffect(() => {
     const newMapSize = generateMapSize(unitMap);
-    if (!isEqual(newMapSize, mapSize)) {
+    if (!mapSize.isEqual(newMapSize)) {
       setMapSize(newMapSize);
     }
   }, [unitMap]);
@@ -98,17 +98,19 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       ctx.lineWidth = canvasUnitSize; // eslint-disable-line no-param-reassign
       ctx.beginPath();
 
-      for (let colIdx = 0; colIdx < newMapSize.getWidth(); colIdx += 1) {
+      newMapSize.iterateColumn((colIdx) => {
         ctx.moveTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, 0);
         ctx.lineTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, newCanvasResolution.height);
-      }
+      });
+
       ctx.moveTo(newCanvasResolution.width - newCanvasUnitSize / 2, 0);
       ctx.lineTo(newCanvasResolution.width - newCanvasUnitSize / 2, newCanvasResolution.height);
 
-      for (let rowIdx = 0; rowIdx < newMapSize.getHeight(); rowIdx += 1) {
+      newMapSize.iterateRow((rowIdx) => {
         ctx.moveTo(0, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
         ctx.lineTo(newCanvasResolution.width, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
-      }
+      });
+
       ctx.moveTo(0, newCanvasResolution.height - (1 * newCanvasUnitSize) / 2);
       ctx.lineTo(newCanvasResolution.width, newCanvasResolution.height - (1 * newCanvasUnitSize) / 2);
 

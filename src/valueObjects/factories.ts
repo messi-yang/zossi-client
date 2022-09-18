@@ -31,15 +31,7 @@ export function generateMapSizeWithArea(area: AreaVo): MapSizeVo {
 }
 
 export function generateEmptyUnitMapWithMapSize(mapSize: MapSizeVo): UnitMapVo {
-  const unitMap: UnitVo[][] = [];
-  const width = mapSize.getWidth();
-  const height = mapSize.getHeight();
-  for (let x = 0; x < width; x += 1) {
-    unitMap.push([]);
-    for (let y = 0; y < height; y += 1) {
-      unitMap[x].push(new UnitVo(false, 0));
-    }
-  }
+  const unitMap = mapSize.map<UnitVo>(() => new UnitVo(false, 0));
   return new UnitMapVo(unitMap);
 }
 
