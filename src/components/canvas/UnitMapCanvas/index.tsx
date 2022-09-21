@@ -70,7 +70,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const [patternCanvasElem, setPatternCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
   const [borderWidth] = useState(1);
-  const [canvasUnitSize] = useState(4);
+  const [canvasUnitSize] = useState(1);
   const [mapSize, setMapSize] = useState(generateMapSize(unitMap));
   const [canvasElemSize, setCanvasElemSize] = useState(generateCanvasElemSize(unitMap, unitSize));
   const [canvasResolution, setCanvasResolution] = useState(generateCanvasResolution(unitMap, unitSize, canvasUnitSize));
