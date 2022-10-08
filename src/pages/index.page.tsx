@@ -13,6 +13,7 @@ import Button from '@/components/buttons/Button';
 
 const Landing: NextPage = function Landing() {
   const windowSize = useWindowSize();
+  const deviceSize: 'large' | 'small' = windowSize.width > 475 ? 'large' : 'small';
   const { joinGame } = useContext(GameRoomContext);
 
   const router = useRouter();
@@ -31,7 +32,7 @@ const Landing: NextPage = function Landing() {
         backgroundColor: '#1E1E1E',
       }}
     >
-      <BigLogo />
+      <BigLogo width={deviceSize === 'large' ? undefined : windowSize.width * 0.8} />
       <div className="mt-[100px]">
         <Button text="Start" onClick={onStartClick} />
       </div>

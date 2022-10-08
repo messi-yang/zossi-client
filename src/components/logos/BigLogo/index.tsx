@@ -1,11 +1,14 @@
 import dataTestids from './dataTestids';
 
-function SmallLogo() {
+type Props = {
+  width?: number;
+};
+
+function SmallLogo({ width = 406 }: Props) {
   return (
     <svg
       data-testid={dataTestids.root}
-      width="406"
-      height="231"
+      width={width}
       viewBox="0 0 406 231"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
