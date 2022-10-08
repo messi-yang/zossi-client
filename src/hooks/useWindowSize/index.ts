@@ -8,8 +8,8 @@ type WindowSize = {
 function useWindowSize(): WindowSize {
   const [isSizeInitialized, setIsSizeInitialized] = useState<boolean>(false);
   const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: globalThis.innerWidth || 0,
-    height: globalThis.innerHeight || 0,
+    width: 0,
+    height: 0,
   });
 
   const handleWindowResize = () => {
