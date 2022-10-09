@@ -244,7 +244,7 @@ export function Provider({ children }: Props) {
     [sendMessage]
   );
   const sendZoomAreaActionDebouncer = useCallback(
-    debounce(sendZoomAreaAction, 50, { leading: true, maxWait: 250, trailing: true }),
+    debounce(sendZoomAreaAction, 150, { leading: true, maxWait: 500, trailing: true }),
     [sendZoomAreaAction]
   );
   const zoomArea = useCallback(
