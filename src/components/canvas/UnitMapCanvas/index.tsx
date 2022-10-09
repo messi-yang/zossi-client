@@ -32,12 +32,8 @@ type Resolution = {
   height: number;
 };
 
-function generateMapSize(unitMap: UnitMapValueObject): MapSizeValueObject {
-  return generateMapSizeWithUnitMap(unitMap);
-}
-
 function generateCanvasElemSize(unitMap: UnitMapValueObject, unitSize: number): ElemSize {
-  const mapSize = generateMapSize(unitMap);
+  const mapSize = generateMapSizeWithUnitMap(unitMap);
 
   return {
     width: mapSize.getWidth() * unitSize + 1,
@@ -71,13 +67,13 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
   const [borderWidth] = useState(1);
   const [canvasUnitSize] = useState(1);
-  const [mapSize, setMapSize] = useState(generateMapSize(unitMap));
+  const [mapSize, setMapSize] = useState(generateMapSizeWithUnitMap(unitMap));
   const [canvasElemSize, setCanvasElemSize] = useState(generateCanvasElemSize(unitMap, unitSize));
   const [canvasResolution, setCanvasResolution] = useState(generateCanvasResolution(unitMap, unitSize, canvasUnitSize));
   const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
   useEffect(() => {
-    const newMapSize = generateMapSize(unitMap);
+    const newMapSize = generateMapSizeWithUnitMap(unitMap);
     if (!mapSize.isEqual(newMapSize)) {
       setMapSize(newMapSize);
     }
@@ -233,30 +229,6 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
     ctx.fill();
   };
 
-  const clearUnitPattern = (
-    ctx: CanvasRenderingContext2D,
-    newHoveredIndexes: Indexes,
-    newUnitPattern: UnitPatternValueObject,
-    newUnitSize: number,
-    newBorderWidth: number,
-    newCanvasUnitSize: number
-  ) => {
-    const unitPatternOffset = calculateUnitPatternOffset(newUnitPattern);
-    const newUnitPatternWidth = newUnitPattern.getWidth();
-    const newUnitPatternHeight = newUnitPattern.getHeight();
-    ctx.beginPath();
-    const leftTopX =
-      ((newHoveredIndexes[0] + unitPatternOffset.getX()) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-    const leftTopY =
-      ((newHoveredIndexes[1] + unitPatternOffset.getY()) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-    ctx.clearRect(
-      leftTopX,
-      leftTopY,
-      (newUnitPatternWidth * newUnitSize - newBorderWidth) * newCanvasUnitSize,
-      (newUnitPatternHeight * newUnitSize - newBorderWidth) * newCanvasUnitSize
-    );
-  };
-
   const handleDropPatternCanvasMouseMove: MouseEventHandler<HTMLCanvasElement> = useCallback(
     (event) => {
       const eventTarget = event.target as Element;
@@ -296,10 +268,10 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
     return () => {
       if (hoveredIndexes) {
-        clearUnitPattern(ctx, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize);
+        clean(ctx, canvasResolution);
       }
     };
-  }, [patternCanvasElem, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize]);
+  }, [patternCanvasElem, canvasResolution, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize]);
 
   const handleDropPatternCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;
