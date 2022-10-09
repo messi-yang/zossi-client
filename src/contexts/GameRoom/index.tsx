@@ -4,14 +4,22 @@ import useWebSocket from '@/hooks/useWebSocket';
 import type { UnitDto, CoordinateDto } from '@/dtos';
 import {
   AreaValueObject,
-  UnitValueObject,
   UnitMapValueObject,
   CoordinateValueObject,
   MapSizeValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
 } from '@/valueObjects';
-import { generateAreaOffset } from '@/valueObjects/factories';
+import {
+  createCoordinate,
+  createArea,
+  createMapSize,
+  createOffset,
+  createUnit,
+  createUnitMap,
+  createUnitPattern,
+  createOffsetOfTwoAreas,
+} from '@/valueObjects/factories';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -20,8 +28,8 @@ import type { ZoomAreaAction, ReviveUnitsAction } from './actionTypes';
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
 function convertUnitDtoMatrixToUnitMapValueObject(unitMap: UnitDto[][]): UnitMapValueObject {
-  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => new UnitValueObject(unit.alive, unit.age)));
-  return new UnitMapValueObject(unitMatrix);
+  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => createUnit(unit.alive, unit.age)));
+  return createUnitMap(unitMatrix);
 }
 
 type GameRoomContextValue = {
@@ -50,8 +58,8 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     zoomedArea: null,
     targetArea: null,
     unitMap: null,
-    zoomedAreaOffset: new OffsetValueObject(0, 0),
-    unitPattern: new UnitPatternValueObject([
+    zoomedAreaOffset: createOffset(0, 0),
+    unitPattern: createUnitPattern([
       [false, false, false, false, false],
       [false, false, true, false, false],
       [false, true, false, true, false],
@@ -86,7 +94,7 @@ export function Provider({ children }: Props) {
   const [targetArea, setTargetArea] = useState<AreaValueObject | null>(targetAreaSource.current);
   const [unitMap, setUnitMap] = useState<UnitMapValueObject | null>(unitMapSource.current);
   const [zoomedAreaOffset, setZoomedAreaOffset] = useState<OffsetValueObject>(
-    generateAreaOffset(zoomedAreaSource.current, targetAreaSource.current)
+    createOffsetOfTwoAreas(zoomedAreaSource.current, targetAreaSource.current)
   );
 
   const [unitPattern, setUnitPattern] = useState<UnitPatternValueObject>(initialGameRoomContextValue.unitPattern);
@@ -101,7 +109,7 @@ export function Provider({ children }: Props) {
     setUnitMap(unitMapSource.current);
     setTargetArea(targetAreaSource.current);
     setZoomedArea(zoomedAreaSource.current);
-    setZoomedAreaOffset(generateAreaOffset(zoomedAreaSource.current, targetAreaSource.current));
+    setZoomedAreaOffset(createOffsetOfTwoAreas(zoomedAreaSource.current, targetAreaSource.current));
   }, []);
   const updateUnitMapAndOffsetsDebouncer = useCallback(
     debounce(updateUnitMapAndOffsets, 50, {
@@ -112,9 +120,9 @@ export function Provider({ children }: Props) {
   );
 
   const handleAreaZoomedEvent = useCallback((event: AreaZoomedEvent) => {
-    const newArea = new AreaValueObject(
-      new CoordinateValueObject(event.payload.area.from.x, event.payload.area.from.y),
-      new CoordinateValueObject(event.payload.area.to.x, event.payload.area.to.y)
+    const newArea = createArea(
+      createCoordinate(event.payload.area.from.x, event.payload.area.from.y),
+      createCoordinate(event.payload.area.to.x, event.payload.area.to.y)
     );
     if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
       zoomedAreaSource.current = newArea;
@@ -125,9 +133,9 @@ export function Provider({ children }: Props) {
   }, []);
 
   const handleZoomedAreaUpdatedEvent = useCallback((event: ZoomedAreaUpdatedEvent) => {
-    const newArea = new AreaValueObject(
-      new CoordinateValueObject(event.payload.area.from.x, event.payload.area.from.y),
-      new CoordinateValueObject(event.payload.area.to.x, event.payload.area.to.y)
+    const newArea = createArea(
+      createCoordinate(event.payload.area.from.x, event.payload.area.from.y),
+      createCoordinate(event.payload.area.to.x, event.payload.area.to.y)
     );
     if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
       zoomedAreaSource.current = newArea;
@@ -138,7 +146,7 @@ export function Provider({ children }: Props) {
   }, []);
 
   const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
-    setMapSize(new MapSizeValueObject(event.payload.mapSize.width, event.payload.mapSize.height));
+    setMapSize(createMapSize(event.payload.mapSize.width, event.payload.mapSize.height));
   }, []);
 
   const handleSocketMessage = useCallback(

@@ -2,6 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 import { UnitPatternValueObject } from '@/valueObjects';
+import { createUnitPattern } from '@/valueObjects/factories';
 
 import GameRoomSideBar from '.';
 
@@ -28,7 +29,7 @@ const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args)
 export const Primary = Template.bind({});
 Primary.args = {
   align: 'column',
-  unitPattern: new UnitPatternValueObject([
+  unitPattern: createUnitPattern([
     [false, false, false, false, false],
     [false, false, false, false, false],
     [false, true, true, true, false],

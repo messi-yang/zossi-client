@@ -2,6 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 import { UnitPatternValueObject } from '@/valueObjects';
+import { createUnitPattern } from '@/valueObjects/factories';
 
 import UnitPatternEditor from '.';
 
@@ -28,7 +29,7 @@ const Template: ComponentStory<typeof UnitPatternEditor> = function Template(arg
 
 export const Primary = Template.bind({});
 Primary.args = {
-  unitPattern: new UnitPatternValueObject([
+  unitPattern: createUnitPattern([
     [true, true, true],
     [true, false, true],
     [true, true, true],

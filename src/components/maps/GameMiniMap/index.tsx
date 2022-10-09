@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { MapSizeValueObject, AreaValueObject, CoordinateValueObject } from '@/valueObjects';
+import { MapSizeValueObject, AreaValueObject } from '@/valueObjects';
+import { createCoordinate, createArea } from '@/valueObjects/factories';
 import usePull from '@/hooks/usePull';
 import dataTestids from './dataTestids';
 
@@ -47,9 +48,9 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
       adjustedY = 0;
     }
 
-    return new AreaValueObject(
-      new CoordinateValueObject(adjustedX, adjustedY),
-      new CoordinateValueObject(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1)
+    return createArea(
+      createCoordinate(adjustedX, adjustedY),
+      createCoordinate(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1)
     );
   };
 

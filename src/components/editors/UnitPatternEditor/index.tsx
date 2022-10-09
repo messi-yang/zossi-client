@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import { UnitPatternValueObject } from '@/valueObjects';
-import { generateUnitMapWithUnitPattern } from '@/valueObjects/factories';
+import { createUnitPattern, createUnitMapByUnitPattern } from '@/valueObjects/factories';
 import dataTestids from './dataTestids';
 
 type Props = {
@@ -19,12 +19,12 @@ function UnitPatternEditor({ unitSize, unitPattern, editable, onUpdate = () => {
     onUpdate(newUnitPattern);
   };
 
-  const hoverUnitPattern = editable ? new UnitPatternValueObject([[true]]) : new UnitPatternValueObject([[]]);
+  const hoverUnitPattern = editable ? createUnitPattern([[true]]) : createUnitPattern([[]]);
 
   return (
     <div className="inline-flex" data-testid={dataTestids.root}>
       <UnitMapCanvas
-        unitMap={generateUnitMapWithUnitPattern(unitPattern)}
+        unitMap={createUnitMapByUnitPattern(unitPattern)}
         unitSize={unitSize}
         unitPattern={hoverUnitPattern}
         onClick={editable ? handleSquareClick : () => {}}

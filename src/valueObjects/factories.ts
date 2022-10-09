@@ -6,7 +6,38 @@ import MapSizeValueObject from '@/valueObjects/MapSizeValueObject';
 import UnitMapValueObject from '@/valueObjects/UnitMapValueObject';
 import UnitPatternValueObject from '@/valueObjects/UnitPatternValueObject';
 
-export function generateAreaOffset(areaA: AreaValueObject | null, areaB: AreaValueObject | null): OffsetValueObject {
+export function createArea(from: CoordinateValueObject, to: CoordinateValueObject): AreaValueObject {
+  return new AreaValueObject(from, to);
+}
+
+export function createCoordinate(x: number, y: number): CoordinateValueObject {
+  return new CoordinateValueObject(x, y);
+}
+
+export function createMapSize(width: number, height: number): MapSizeValueObject {
+  return new MapSizeValueObject(width, height);
+}
+
+export function createOffset(x: number, y: number): OffsetValueObject {
+  return new OffsetValueObject(x, y);
+}
+
+export function createUnitMap(unitMatrix: UnitValueObject[][]): UnitMapValueObject {
+  return new UnitMapValueObject(unitMatrix);
+}
+
+export function createUnitPattern(pattern: boolean[][]): UnitPatternValueObject {
+  return new UnitPatternValueObject(pattern);
+}
+
+export function createUnit(alive: boolean, age: number): UnitValueObject {
+  return new UnitValueObject(alive, age);
+}
+
+export function createOffsetOfTwoAreas(
+  areaA: AreaValueObject | null,
+  areaB: AreaValueObject | null
+): OffsetValueObject {
   if (!areaA || !areaB) {
     return new OffsetValueObject(0, 0);
   }
@@ -16,33 +47,30 @@ export function generateAreaOffset(areaA: AreaValueObject | null, areaB: AreaVal
   );
 }
 
-export function generateAreaWithCoordinateAndMapSize(
+export function createAreaByCoordinateAndMapSize(
   coordinate: CoordinateValueObject,
   mapSize: MapSizeValueObject
 ): AreaValueObject {
-  return new AreaValueObject(
-    coordinate,
-    new CoordinateValueObject(coordinate.getX() + mapSize.getWidth(), coordinate.getY() + mapSize.getHeight())
-  );
+  return createArea(coordinate, coordinate.shift(mapSize.getWidth(), mapSize.getHeight()));
 }
 
-export function generateMapSizeWithUnitMap(unitMap: UnitMapValueObject): MapSizeValueObject {
-  return new MapSizeValueObject(unitMap.getWidth(), unitMap.getHeight());
+export function createMapSizeByUnitMap(unitMap: UnitMapValueObject): MapSizeValueObject {
+  return createMapSize(unitMap.getWidth(), unitMap.getHeight());
 }
 
-export function generateMapSizeWithArea(area: AreaValueObject): MapSizeValueObject {
-  return new MapSizeValueObject(
+export function createMapSizeByArea(area: AreaValueObject): MapSizeValueObject {
+  return createMapSize(
     area.getTo().getX() - area.getFrom().getX() + 1,
     area.getTo().getY() - area.getFrom().getY() + 1
   );
 }
 
-export function generateEmptyUnitMapWithMapSize(mapSize: MapSizeValueObject): UnitMapValueObject {
+export function createUnitMapByMapSize(mapSize: MapSizeValueObject): UnitMapValueObject {
   const unitMap = mapSize.map<UnitValueObject>(() => new UnitValueObject(false, 0));
   return new UnitMapValueObject(unitMap);
 }
 
-export function generateUnitMapWithUnitPattern(unitPattern: UnitPatternValueObject): UnitMapValueObject {
+export function createUnitMapByUnitPattern(unitPattern: UnitPatternValueObject): UnitMapValueObject {
   const unitMap = unitPattern.map((_: number, __: number, alive: boolean) => new UnitValueObject(alive, 0));
 
   return new UnitMapValueObject(unitMap);

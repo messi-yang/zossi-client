@@ -9,13 +9,17 @@ import {
   CoordinateValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
-  MapSizeValueObject,
 } from '@/valueObjects';
-import { generateAreaWithCoordinateAndMapSize } from '@/valueObjects/factories';
+import {
+  createCoordinate,
+  createMapSize,
+  createOffset,
+  createAreaByCoordinateAndMapSize,
+} from '@/valueObjects/factories';
 import dataTestids from './dataTestids';
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternValueObject): OffsetValueObject {
-  return new OffsetValueObject(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
+  return createOffset(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
 }
 
 type Props = {
@@ -40,7 +44,7 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
     squareSize
   );
   const desiredMapSize = useMemo(
-    () => new MapSizeValueObject(desiredAreaWidth, desiredAreaHeight),
+    () => createMapSize(desiredAreaWidth, desiredAreaHeight),
     [desiredAreaWidth, desiredAreaHeight]
   );
   const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetValueObject>(
@@ -67,10 +71,10 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
 
   useEffect(() => {
     if (area === null) {
-      const newArea = generateAreaWithCoordinateAndMapSize(new CoordinateValueObject(0, 0), desiredMapSize);
+      const newArea = createAreaByCoordinateAndMapSize(createCoordinate(0, 0), desiredMapSize);
       onAreaUpdate(newArea);
     } else {
-      const newArea = generateAreaWithCoordinateAndMapSize(area.getFrom(), desiredMapSize);
+      const newArea = createAreaByCoordinateAndMapSize(area.getFrom(), desiredMapSize);
       onAreaUpdate(newArea);
     }
   }, [area === null, desiredMapSize]);

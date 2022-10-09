@@ -9,7 +9,7 @@ import {
   OffsetValueObject,
   UnitPatternValueObject,
 } from '@/valueObjects';
-import { generateMapSizeWithUnitMap } from '@/valueObjects/factories';
+import { createOffset, createMapSizeByUnitMap } from '@/valueObjects/factories';
 
 import dataTestids from './dataTestids';
 
@@ -33,7 +33,7 @@ type Resolution = {
 };
 
 function generateCanvasElemSize(unitMap: UnitMapValueObject, unitSize: number): ElemSize {
-  const mapSize = generateMapSizeWithUnitMap(unitMap);
+  const mapSize = createMapSizeByUnitMap(unitMap);
 
   return {
     width: mapSize.getWidth() * unitSize + 1,
@@ -51,7 +51,7 @@ function generateCanvasResolution(unitMap: UnitMapValueObject, unitSize: number,
 }
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternValueObject): OffsetValueObject {
-  return new OffsetValueObject(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
+  return createOffset(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
 }
 
 type Props = {
@@ -67,13 +67,13 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
   const [borderWidth] = useState(1);
   const [canvasUnitSize] = useState(1);
-  const [mapSize, setMapSize] = useState(generateMapSizeWithUnitMap(unitMap));
+  const [mapSize, setMapSize] = useState(createMapSizeByUnitMap(unitMap));
   const [canvasElemSize, setCanvasElemSize] = useState(generateCanvasElemSize(unitMap, unitSize));
   const [canvasResolution, setCanvasResolution] = useState(generateCanvasResolution(unitMap, unitSize, canvasUnitSize));
   const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
   useEffect(() => {
-    const newMapSize = generateMapSizeWithUnitMap(unitMap);
+    const newMapSize = createMapSizeByUnitMap(unitMap);
     if (!mapSize.isEqual(newMapSize)) {
       setMapSize(newMapSize);
     }
