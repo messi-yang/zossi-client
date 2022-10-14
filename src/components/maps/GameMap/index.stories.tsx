@@ -1,5 +1,4 @@
 import React from 'react';
-import cloneDeep from 'lodash/cloneDeep';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 import { CoordinateValueObject, OffsetValueObject, UnitPatternValueObject } from '@/valueObjects';
@@ -7,6 +6,7 @@ import {
   createCoordinate,
   createArea,
   createOffset,
+  createUnitMap,
   createUnitPattern,
   createMapSizeByArea,
   createUnitMapByMapSize,
@@ -31,18 +31,21 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     if (!area) {
       return;
     }
+    if (!unitMap) {
+      return;
+    }
 
-    const newUnitMap = cloneDeep(unitMap);
+    const unitMatrix = unitMap.getUnitMatrix();
     pattern.iterate((colIdx: number, rowIdx: number, alive: boolean) => {
       if (alive) {
         const adjustedX = coordinate.getX() - area.getFrom().getX() + colIdx + patternOffset.getX();
         const adjustedY = coordinate.getY() - area.getFrom().getY() + rowIdx + patternOffset.getY();
-        newUnitMap?.setUnitAlive(adjustedX, adjustedY, true);
+        unitMatrix[adjustedX][adjustedY] = unitMatrix[adjustedX][adjustedY].setAlive(true);
       }
     });
 
     updateArgs({
-      unitMap: newUnitMap,
+      unitMap: createUnitMap(unitMatrix),
     });
   };
 

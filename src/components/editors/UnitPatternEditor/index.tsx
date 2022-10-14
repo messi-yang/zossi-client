@@ -1,4 +1,3 @@
-import cloneDeep from 'lodash/cloneDeep';
 import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import { UnitPatternValueObject } from '@/valueObjects';
 import { createUnitPattern, createUnitMapByUnitPattern } from '@/valueObjects/factories';
@@ -13,8 +12,7 @@ type Props = {
 
 function UnitPatternEditor({ unitSize, unitPattern, editable, onUpdate = () => {} }: Props) {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
-    const newUnitPattern = cloneDeep(unitPattern);
-    newUnitPattern.setPatternUnit(colIdx, rowIdx, !newUnitPattern.isAlive(colIdx, rowIdx));
+    const newUnitPattern = unitPattern.setPatternUnit(colIdx, rowIdx, !unitPattern.isAlive(colIdx, rowIdx));
 
     onUpdate(newUnitPattern);
   };

@@ -16,7 +16,7 @@ export default class UnitValueObject {
     return this.age;
   }
 
-  public setAlive(alive: boolean): void {
-    this.alive = alive;
+  public setAlive(alive: boolean): UnitValueObject {
+    return new UnitValueObject(alive, this.age);
   }
 }

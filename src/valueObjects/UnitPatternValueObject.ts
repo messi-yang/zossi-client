@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-
+import cloneDeep from 'lodash/cloneDeep';
 import flatten from 'lodash/flatten';
 
 export default class UnitPatternValueObject {
@@ -29,8 +29,10 @@ export default class UnitPatternValueObject {
     return this.pattern?.[0].length || 0;
   }
 
-  public setPatternUnit(colIdx: number, rowIdx: number, alive: boolean): void {
-    this.pattern[colIdx][rowIdx] = alive;
+  public setPatternUnit(colIdx: number, rowIdx: number, alive: boolean): UnitPatternValueObject {
+    const newPattern = cloneDeep(this.pattern);
+    newPattern[colIdx][rowIdx] = alive;
+    return new UnitPatternValueObject(newPattern);
   }
 
   public iterate(cb: (colIdx: number, rowIdx: number, alive: boolean) => void) {

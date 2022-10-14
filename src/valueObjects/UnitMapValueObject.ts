@@ -1,3 +1,5 @@
+import cloneDeep from 'lodash/cloneDeep';
+
 import UnitValueObject from '@/valueObjects/UnitValueObject';
 
 export default class UnitMapValueObject {
@@ -19,8 +21,8 @@ export default class UnitMapValueObject {
     return this.unitMatrix[0].length;
   }
 
-  public setUnitAlive(colIdx: number, rowIdx: number, alive: boolean): void {
-    this.unitMatrix[colIdx][rowIdx].setAlive(alive);
+  public getUnitMatrix(): UnitValueObject[][] {
+    return cloneDeep(this.unitMatrix);
   }
 
   public iterateUnit(cb: (colIdx: number, rowIdx: number, unit: UnitValueObject) => void) {
