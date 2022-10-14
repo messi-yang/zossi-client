@@ -33,63 +33,62 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
   };
 
   return (
-    <BaseModal width="560px" height="auto" opened={opened}>
-      <section data-testid={dataTestids.root} className="relative p-2">
-        <section
-          className="relative pt-8 px-6 pb-10 flex flex-col items-center border-4 border-solid border-white"
-          style={{
-            backgroundColor: '#121212',
-          }}
-        >
-          <div className="absolute top-5 right-5 flex justify-end">
-            <IconButton icon="cross" onClick={onCancel} />
-          </div>
-          <Text color="white" copy="PATTERN" size={18} />
-          <section className="mt-9 flex justify-center">
-            <UnitPatternEditor
-              unitSize={230 / (tmpUnitPattern.getHeight() || 1)}
-              unitPattern={tmpUnitPattern}
-              editable
-              onUpdate={handleUnitPatternUpdate}
-            />
-          </section>
-          <section className="mt-6 w-full overflow-auto">
-            <section className="flex">
-              {unitPatternPresets.map((unitPatternPreset, unitPatternPresetIdx) => (
-                <section
-                  key={generateKeyFromIndex(unitPatternPresetIdx)}
-                  className={[
-                    unitPatternPresetIdx !== 0 && 'ml-3',
-                    'shrink-0',
-                    'inline-flex',
-                    'items-center',
-                    'flex-col',
-                  ].join(' ')}
+    <BaseModal width={560} opened={opened}>
+      <section
+        data-testid={dataTestids.root}
+        className="relative pt-8 px-6 pb-10 w-full h-full flex flex-col items-center border-4 border-solid border-white"
+        style={{
+          backgroundColor: '#121212',
+        }}
+      >
+        <div className="absolute top-5 right-5 flex justify-end">
+          <IconButton icon="cross" onClick={onCancel} />
+        </div>
+        <Text color="white" copy="PATTERN" size={18} />
+        <section className="mt-9 flex justify-center">
+          <UnitPatternEditor
+            unitSize={230 / (tmpUnitPattern.getHeight() || 1)}
+            unitPattern={tmpUnitPattern}
+            editable
+            onUpdate={handleUnitPatternUpdate}
+          />
+        </section>
+        <section className="mt-6 w-full overflow-auto">
+          <section className="flex">
+            {unitPatternPresets.map((unitPatternPreset, unitPatternPresetIdx) => (
+              <section
+                key={generateKeyFromIndex(unitPatternPresetIdx)}
+                className={[
+                  unitPatternPresetIdx !== 0 && 'ml-3',
+                  'shrink-0',
+                  'inline-flex',
+                  'items-center',
+                  'flex-col',
+                ].join(' ')}
+              >
+                <div
+                  className={['border-4', 'border-solid'].join(' ')}
+                  style={{
+                    borderColor: tmpUnitPattern.isEqual(unitPatternPreset.pattern) ? '#01D6C9' : 'rgba(0,0,0,0)',
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
+                  onKeyPress={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
                 >
-                  <div
-                    className={['border-4', 'border-solid'].join(' ')}
-                    style={{
-                      borderColor: tmpUnitPattern.isEqual(unitPatternPreset.pattern) ? '#01D6C9' : 'rgba(0,0,0,0)',
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
-                    onKeyPress={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
-                  >
-                    <UnitPatternEditor
-                      unitSize={70 / (unitPatternPreset?.pattern.getHeight() || 1)}
-                      unitPattern={unitPatternPreset.pattern}
-                      editable={false}
-                    />
-                  </div>
-                  <Text color="white" copy={unitPatternPreset.title} />
-                </section>
-              ))}
-            </section>
+                  <UnitPatternEditor
+                    unitSize={70 / (unitPatternPreset?.pattern.getHeight() || 1)}
+                    unitPattern={unitPatternPreset.pattern}
+                    editable={false}
+                  />
+                </div>
+                <Text color="white" copy={unitPatternPreset.title} />
+              </section>
+            ))}
           </section>
-          <section className="mt-9 flex justify-center">
-            <Button text="Ok" onClick={handleOkClick} />
-          </section>
+        </section>
+        <section className="mt-9 flex justify-center">
+          <Button text="Ok" onClick={handleOkClick} />
         </section>
       </section>
     </BaseModal>

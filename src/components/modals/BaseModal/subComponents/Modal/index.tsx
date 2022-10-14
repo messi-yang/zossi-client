@@ -1,6 +1,6 @@
 type ModalProps = {
-  width: string;
-  height: string;
+  width: number;
+  height?: number;
   children: JSX.Element;
 };
 

@@ -25,6 +25,6 @@ const Template: ComponentStory<typeof BaseModal> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  width: '100%',
-  height: '100%',
+  width: 300,
+  height: 300,
 };

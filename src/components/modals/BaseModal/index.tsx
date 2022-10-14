@@ -3,8 +3,8 @@ import Background from './subComponents/Background';
 import Modal from './subComponents/Modal';
 
 type BaseModalProps = {
-  width: string;
-  height: string;
+  width: number;
+  height?: number;
   opened: boolean;
   children: JSX.Element;
   onBackgroundClick?: () => void;

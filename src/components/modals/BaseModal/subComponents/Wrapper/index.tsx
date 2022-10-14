@@ -19,7 +19,6 @@ export default function Wrapper({ visible, children }: WrapperProps) {
         visible ? 'flex' : 'hidden',
         'justify-center',
         'items-center',
-        'p-6',
         'overflow-hidden',
         'z-10',
       ].join(' ')}
