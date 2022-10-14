@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import { UnitPatternValueObject } from '@/valueObjects';
 import { createUnitPattern, createUnitMapByUnitPattern } from '@/valueObjects/factories';
@@ -14,15 +15,21 @@ function UnitPatternEditor({ unitSize, unitPattern, editable, onUpdate = () => {
   const handleSquareClick = (colIdx: number, rowIdx: number) => {
     const newUnitPattern = unitPattern.setPatternUnit(colIdx, rowIdx, !unitPattern.isAlive(colIdx, rowIdx));
 
-    onUpdate(newUnitPattern);
+    const newUnitPatternWithFillterBorder = newUnitPattern.addFillerBorder();
+
+    onUpdate(newUnitPatternWithFillterBorder);
   };
 
-  const hoverUnitPattern = editable ? createUnitPattern([[true]]) : createUnitPattern([[]]);
+  const hoverUnitPattern = useMemo(
+    () => (editable ? createUnitPattern([[true]]) : createUnitPattern([[]])),
+    [editable]
+  );
+  const unitMap = useMemo(() => createUnitMapByUnitPattern(unitPattern), [unitPattern]);
 
   return (
     <div className="inline-flex" data-testid={dataTestids.root}>
       <UnitMapCanvas
-        unitMap={createUnitMapByUnitPattern(unitPattern)}
+        unitMap={unitMap}
         unitSize={unitSize}
         unitPattern={hoverUnitPattern}
         onClick={editable ? handleSquareClick : () => {}}

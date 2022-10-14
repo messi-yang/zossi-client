@@ -1,4 +1,4 @@
-import { useCallback, useState, MouseEventHandler, useEffect } from 'react';
+import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 'react';
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
@@ -68,9 +68,13 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const [borderWidth] = useState(1);
   const [canvasUnitSize] = useState(1);
   const [mapSize, setMapSize] = useState(createMapSizeByUnitMap(unitMap));
-  const [canvasElemSize, setCanvasElemSize] = useState(generateCanvasElemSize(unitMap, unitSize));
-  const [canvasResolution, setCanvasResolution] = useState(generateCanvasResolution(unitMap, unitSize, canvasUnitSize));
   const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
+
+  const canvasResolution = useMemo(
+    () => generateCanvasResolution(unitMap, unitSize, canvasUnitSize),
+    [unitMap, unitSize, canvasUnitSize]
+  );
+  const canvasElemSize = useMemo(() => generateCanvasElemSize(unitMap, unitSize), [unitMap, unitSize]);
 
   useEffect(() => {
     const newMapSize = createMapSizeByUnitMap(unitMap);
@@ -79,46 +83,38 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
     }
   }, [unitMap]);
 
-  useEffect(() => {
-    setCanvasElemSize(generateCanvasElemSize(unitMap, unitSize));
-    setCanvasResolution(generateCanvasResolution(unitMap, unitSize, canvasUnitSize));
-  }, [mapSize, unitSize, canvasUnitSize]);
-
-  const clean = useCallback((ctx: CanvasRenderingContext2D, newCanvasResolution: Resolution) => {
-    ctx.clearRect(0, 0, newCanvasResolution.width, newCanvasResolution.height);
-  }, []);
+  const clean = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      ctx.clearRect(0, 0, canvasResolution.width, canvasResolution.height);
+    },
+    [canvasResolution]
+  );
 
   const drawGrid = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      newMapSize: MapSizeValueObject,
-      newUnitSize: number,
-      newCanvasResolution: Resolution,
-      newCanvasUnitSize: number
-    ) => {
+    (ctx: CanvasRenderingContext2D, newMapSize: MapSizeValueObject, newUnitSize: number, newCanvasUnitSize: number) => {
       ctx.strokeStyle = color.borderColor; // eslint-disable-line no-param-reassign
       ctx.lineWidth = canvasUnitSize; // eslint-disable-line no-param-reassign
       ctx.beginPath();
 
       newMapSize.iterateColumn((colIdx: number) => {
         ctx.moveTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, 0);
-        ctx.lineTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, newCanvasResolution.height);
+        ctx.lineTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, canvasResolution.height);
       });
 
-      ctx.moveTo(newCanvasResolution.width - newCanvasUnitSize / 2, 0);
-      ctx.lineTo(newCanvasResolution.width - newCanvasUnitSize / 2, newCanvasResolution.height);
+      ctx.moveTo(canvasResolution.width - newCanvasUnitSize / 2, 0);
+      ctx.lineTo(canvasResolution.width - newCanvasUnitSize / 2, canvasResolution.height);
 
       newMapSize.iterateRow((rowIdx: number) => {
         ctx.moveTo(0, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
-        ctx.lineTo(newCanvasResolution.width, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
+        ctx.lineTo(canvasResolution.width, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
       });
 
-      ctx.moveTo(0, newCanvasResolution.height - (1 * newCanvasUnitSize) / 2);
-      ctx.lineTo(newCanvasResolution.width, newCanvasResolution.height - (1 * newCanvasUnitSize) / 2);
+      ctx.moveTo(0, canvasResolution.height - (1 * newCanvasUnitSize) / 2);
+      ctx.lineTo(canvasResolution.width, canvasResolution.height - (1 * newCanvasUnitSize) / 2);
 
       ctx.stroke();
     },
-    []
+    [canvasResolution]
   );
 
   const drawUnits = useCallback(
@@ -156,26 +152,21 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       newUnitMap: UnitMapValueObject,
       newUnitSize: number,
       newMapSize: MapSizeValueObject,
-      newCanvasResolution: Resolution,
       newCanvasUnitSize: number
     ) => {
-      if (!unitMapCanvasElem) {
-        return;
-      }
-
-      const ctx = unitMapCanvasElem.getContext('2d');
+      const ctx = unitMapCanvasElem?.getContext('2d');
       if (!ctx) {
         return;
       }
 
-      clean(ctx, newCanvasResolution);
-      drawGrid(ctx, newMapSize, newUnitSize, newCanvasResolution, newCanvasUnitSize);
+      clean(ctx);
+      drawGrid(ctx, newMapSize, newUnitSize, newCanvasUnitSize);
       drawUnits(ctx, newUnitMap, newUnitSize, newCanvasUnitSize, borderWidth);
     },
-    [unitMapCanvasElem, unitMap, unitSize, mapSize, canvasResolution, canvasUnitSize, borderWidth]
+    [unitMapCanvasElem, unitMap, unitSize, mapSize, canvasUnitSize, borderWidth]
   );
 
-  draw(unitMap, unitSize, mapSize, canvasResolution, canvasUnitSize);
+  draw(unitMap, unitSize, mapSize, canvasUnitSize);
 
   const onUnitMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
     setUnitMapCanvasElem(elem);
@@ -268,10 +259,10 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
     return () => {
       if (hoveredIndexes) {
-        clean(ctx, canvasResolution);
+        clean(ctx);
       }
     };
-  }, [patternCanvasElem, canvasResolution, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize]);
+  }, [patternCanvasElem, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize]);
 
   const handleDropPatternCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;
