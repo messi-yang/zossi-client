@@ -1,18 +1,17 @@
 import { useMemo } from 'react';
-import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
 import { UnitPatternValueObject } from '@/valueObjects';
-import { createUnitPattern, createUnitMapByUnitPattern } from '@/valueObjects/factories';
+import { createUnitMapByUnitPattern } from '@/valueObjects/factories';
+import UnitBoard from '@/components/boards/UnitBoard';
 import dataTestids from './dataTestids';
 
 type Props = {
   unitSize: number;
   unitPattern: UnitPatternValueObject;
-  editable: boolean;
-  onUpdate?: (unitPattern: UnitPatternValueObject) => any;
+  onUpdate: (unitPattern: UnitPatternValueObject) => any;
 };
 
-function UnitPatternEditor({ unitSize, unitPattern, editable, onUpdate = () => {} }: Props) {
-  const handleSquareClick = (colIdx: number, rowIdx: number) => {
+function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props) {
+  const handleUnitClick = (colIdx: number, rowIdx: number) => {
     const newUnitPattern = unitPattern.setPatternUnit(colIdx, rowIdx, !unitPattern.isAlive(colIdx, rowIdx));
 
     const newUnitPatternWithFillterBorder = newUnitPattern.addFillerBorder();
@@ -20,20 +19,11 @@ function UnitPatternEditor({ unitSize, unitPattern, editable, onUpdate = () => {
     onUpdate(newUnitPatternWithFillterBorder);
   };
 
-  const hoverUnitPattern = useMemo(
-    () => (editable ? createUnitPattern([[true]]) : createUnitPattern([[]])),
-    [editable]
-  );
   const unitMap = useMemo(() => createUnitMapByUnitPattern(unitPattern), [unitPattern]);
 
   return (
-    <div className="inline-flex" data-testid={dataTestids.root}>
-      <UnitMapCanvas
-        unitMap={unitMap}
-        unitSize={unitSize}
-        unitPattern={hoverUnitPattern}
-        onClick={editable ? handleSquareClick : () => {}}
-      />
+    <div data-testid={dataTestids.root}>
+      <UnitBoard unitMap={unitMap} unitSize={unitSize} onUnitClick={handleUnitClick} />
     </div>
   );
 }

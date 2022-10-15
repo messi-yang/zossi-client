@@ -5,7 +5,9 @@ import BaseModal from '@/components/modals/BaseModal';
 import UnitPatternEditor from '@/components/editors/UnitPatternEditor';
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
+import UnitBoard from '@/components/boards/UnitBoard';
 import { UnitPatternValueObject } from '@/valueObjects';
+import { createUnitMapByUnitPattern } from '@/valueObjects/factories';
 import { generateKeyFromIndex } from '@/utils/component';
 import unitPatternPresets from './unitPatternPresets';
 import dataTestids from './dataTestids';
@@ -49,7 +51,6 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
           <UnitPatternEditor
             unitSize={230 / (tmpUnitPattern.getHeight() || 1)}
             unitPattern={tmpUnitPattern}
-            editable
             onUpdate={handleUnitPatternUpdate}
           />
         </section>
@@ -76,10 +77,9 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
                   onClick={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
                   onKeyPress={() => handleUnitPatternUpdate(unitPatternPreset.pattern)}
                 >
-                  <UnitPatternEditor
+                  <UnitBoard
                     unitSize={70 / (unitPatternPreset?.pattern.getHeight() || 1)}
-                    unitPattern={unitPatternPreset.pattern}
-                    editable={false}
+                    unitMap={createUnitMapByUnitPattern(unitPatternPreset.pattern)}
                   />
                 </div>
                 <Text color="white" copy={unitPatternPreset.title} />

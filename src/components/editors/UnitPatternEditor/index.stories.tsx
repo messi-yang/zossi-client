@@ -30,10 +30,11 @@ const Template: ComponentStory<typeof UnitPatternEditor> = function Template(arg
 export const Primary = Template.bind({});
 Primary.args = {
   unitPattern: createUnitPattern([
-    [true, true, true],
-    [true, false, true],
-    [true, true, true],
+    [false, false, false, false, false],
+    [false, true, true, true, false],
+    [false, true, false, true, false],
+    [false, true, true, true, false],
+    [false, false, false, false, false],
   ]),
   unitSize: 40,
-  editable: true,
 };
