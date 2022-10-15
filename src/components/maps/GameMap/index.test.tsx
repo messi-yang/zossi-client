@@ -19,7 +19,7 @@ function renderGameMap(unitMap: UnitMapValueObject): RenderResult {
 describe('GameMap', () => {
   it('Should render component successfully.', () => {
     try {
-      const unitMatrix = [[createUnit(true, 0)]];
+      const unitMatrix = [[createUnit(true)]];
       renderGameMap(createUnitMap(unitMatrix));
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();

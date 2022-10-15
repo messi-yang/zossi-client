@@ -30,8 +30,8 @@ export function createUnitPattern(pattern: boolean[][]): UnitPatternValueObject 
   return new UnitPatternValueObject(pattern);
 }
 
-export function createUnit(alive: boolean, age: number): UnitValueObject {
-  return new UnitValueObject(alive, age);
+export function createUnit(alive: boolean): UnitValueObject {
+  return new UnitValueObject(alive);
 }
 
 export function createOffsetOfTwoAreas(
@@ -66,12 +66,12 @@ export function createMapSizeByArea(area: AreaValueObject): MapSizeValueObject {
 }
 
 export function createUnitMapByMapSize(mapSize: MapSizeValueObject): UnitMapValueObject {
-  const unitMap = mapSize.map<UnitValueObject>(() => new UnitValueObject(false, 0));
+  const unitMap = mapSize.map<UnitValueObject>(() => new UnitValueObject(false));
   return new UnitMapValueObject(unitMap);
 }
 
 export function createUnitMapByUnitPattern(unitPattern: UnitPatternValueObject): UnitMapValueObject {
-  const unitMap = unitPattern.map((_: number, __: number, alive: boolean) => new UnitValueObject(alive, 0));
+  const unitMap = unitPattern.map((_: number, __: number, alive: boolean) => new UnitValueObject(alive));
 
   return new UnitMapValueObject(unitMap);
 }

@@ -32,9 +32,9 @@ const Template: ComponentStory<typeof UnitBoard> = function Template(args) {
 export const Primary = Template.bind({});
 Primary.args = {
   unitMap: createUnitMap([
-    [createUnit(true, 0), createUnit(true, 0), createUnit(true, 0)],
-    [createUnit(true, 0), createUnit(false, 0), createUnit(true, 0)],
-    [createUnit(true, 0), createUnit(true, 0), createUnit(true, 0)],
+    [createUnit(true), createUnit(true), createUnit(true)],
+    [createUnit(true), createUnit(false), createUnit(true)],
+    [createUnit(true), createUnit(true), createUnit(true)],
   ]),
   unitSize: 40,
 };

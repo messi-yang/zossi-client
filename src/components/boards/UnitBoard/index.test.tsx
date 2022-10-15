@@ -3,7 +3,7 @@ import { createUnitMap, createUnit } from '@/valueObjects/factories';
 import UnitBoard, { dataTestids } from '.';
 
 function renderUnitBoard(): RenderResult {
-  return render(<UnitBoard unitMap={createUnitMap([[createUnit(true, 0)]])} unitSize={20} onUnitClick={() => {}} />);
+  return render(<UnitBoard unitMap={createUnitMap([[createUnit(true)]])} unitSize={20} onUnitClick={() => {}} />);
 }
 
 describe('UnitBoard', () => {

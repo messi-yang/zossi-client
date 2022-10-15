@@ -6,6 +6,7 @@ import {
   createCoordinate,
   createArea,
   createOffset,
+  createUnit,
   createUnitMap,
   createUnitPattern,
   createMapSizeByArea,
@@ -40,7 +41,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
       if (alive) {
         const adjustedX = coordinate.getX() - area.getFrom().getX() + colIdx + patternOffset.getX();
         const adjustedY = coordinate.getY() - area.getFrom().getY() + rowIdx + patternOffset.getY();
-        unitMatrix[adjustedX][adjustedY] = unitMatrix[adjustedX][adjustedY].setAlive(true);
+        unitMatrix[adjustedX][adjustedY] = createUnit(true);
       }
     });
 

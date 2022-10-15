@@ -28,7 +28,7 @@ import type { ZoomAreaAction, ReviveUnitsAction } from './actionTypes';
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
 function convertUnitDtoMatrixToUnitMapValueObject(unitMap: UnitDto[][]): UnitMapValueObject {
-  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => createUnit(unit.alive, unit.age)));
+  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => createUnit(unit.alive)));
   return createUnitMap(unitMatrix);
 }
 

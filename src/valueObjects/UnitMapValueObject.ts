@@ -13,10 +13,6 @@ export default class UnitMapValueObject {
     return this.unitMatrix[colIdx][rowIdx];
   }
 
-  public getUnitAge(colIdx: number, rowIdx: number): number {
-    return this.unitMatrix[colIdx][rowIdx].getAge();
-  }
-
   public getWidth(): number {
     return this.unitMatrix.length;
   }
@@ -31,7 +27,7 @@ export default class UnitMapValueObject {
 
   public setUnitAlive(colIdx: number, rowIdx: number, alive: boolean): UnitMapValueObject {
     const newUnitMatrix = cloneDeep(this.unitMatrix);
-    newUnitMatrix[colIdx][rowIdx] = new UnitValueObject(alive, this.getUnitAge(colIdx, rowIdx));
+    newUnitMatrix[colIdx][rowIdx] = new UnitValueObject(alive);
     return new UnitMapValueObject(newUnitMatrix);
   }
 
