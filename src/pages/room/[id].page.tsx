@@ -8,10 +8,11 @@ import { gameBackgroundColor } from '@/styles/colors';
 import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
-import { AreaValueObject } from '@/valueObjects';
+import { AreaValueObject, UnitPatternValueObject } from '@/valueObjects';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 import GameMiniMap from '@/components/maps/GameMiniMap';
+import EditUnitPatternModal from '@/components/modals/EditUnitPatternModal';
 
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
@@ -31,6 +32,7 @@ const Room: NextPage = function Room() {
     updateUnitPattern,
   } = useContext(GameRoomContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
+  const [isEditUnitPatternModalVisible, setIsEditUnitPatternModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     if (deviceSize === 'large') {
@@ -59,16 +61,35 @@ const Room: NextPage = function Room() {
     setIsMiniMapVisible(!isMiniMapVisible);
   };
 
+  const handleUnitPatternClick = () => {
+    setIsEditUnitPatternModalVisible(true);
+  };
+  const handleEditUnitPatternCancel = () => {
+    setIsEditUnitPatternModalVisible(false);
+  };
+
+  const handleUnitPatternEdit = (newUnitPattern: UnitPatternValueObject) => {
+    updateUnitPattern(newUnitPattern);
+    setIsEditUnitPatternModalVisible(false);
+  };
+
   return (
     <>
       {deviceSize === 'large' && (
         <main className="flex" style={{ width: windowSize.width, height: windowSize.height }}>
+          <EditUnitPatternModal
+            width={560}
+            opened={isEditUnitPatternModalVisible}
+            unitPattern={unitPattern}
+            onUpdate={handleUnitPatternEdit}
+            onCancel={handleEditUnitPatternCancel}
+          />
           <section className="shrink-0">
             <GameRoomSideBar
               align="column"
               onLogoClick={handleLogoClick}
               unitPattern={unitPattern}
-              onUnitPatternUpdate={updateUnitPattern}
+              onUnitPatternClick={handleUnitPatternClick}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
             />
@@ -101,6 +122,13 @@ const Room: NextPage = function Room() {
       )}
       {deviceSize === 'small' && (
         <main className="flex flex-col" style={{ width: windowSize.width, height: windowSize.height }}>
+          <EditUnitPatternModal
+            width={windowSize.width}
+            opened={isEditUnitPatternModalVisible}
+            unitPattern={unitPattern}
+            onUpdate={handleUnitPatternEdit}
+            onCancel={handleEditUnitPatternCancel}
+          />
           <section
             className="relative grow overflow-hidden"
             style={{
@@ -135,7 +163,7 @@ const Room: NextPage = function Room() {
               align="row"
               onLogoClick={handleLogoClick}
               unitPattern={unitPattern}
-              onUnitPatternUpdate={updateUnitPattern}
+              onUnitPatternClick={handleUnitPatternClick}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
             />

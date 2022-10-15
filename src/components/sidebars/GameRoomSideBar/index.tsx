@@ -2,7 +2,6 @@ import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
-import EditUnitPatternModal from '@/components/modals/EditUnitPatternModal';
 import { UnitPatternValueObject } from '@/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
@@ -11,7 +10,7 @@ type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
   unitPattern: UnitPatternValueObject;
-  onUnitPatternUpdate: (unitPattern: UnitPatternValueObject) => void;
+  onUnitPatternClick: () => void;
   isMiniMapActive: boolean;
   onMiniMapClick: () => void;
 };
@@ -20,27 +19,15 @@ function GameRoomSideBar({
   align,
   onLogoClick,
   unitPattern,
-  onUnitPatternUpdate,
+  onUnitPatternClick,
   isMiniMapActive,
   onMiniMapClick,
 }: Props) {
   const [isUnitPatternHovered, setIsUnitPatternHovered] = useState<boolean>(false);
-  const [isEditUnitPatternModalVisible, setIsEditUnitPatternModalVisible] = useState<boolean>(false);
 
   const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
 
   const isUnitPatternEmpty = unitPattern.isEmpty();
-
-  const handleUnitPatternItemClick = () => {
-    setIsEditUnitPatternModalVisible(true);
-  };
-  const handleUnitPatternCancel = () => {
-    setIsEditUnitPatternModalVisible(false);
-  };
-  const handleUnitPatternUpdate = (newUnitPattern: UnitPatternValueObject) => {
-    onUnitPatternUpdate(newUnitPattern);
-    setIsEditUnitPatternModalVisible(false);
-  };
 
   return (
     <section
@@ -63,7 +50,7 @@ function GameRoomSideBar({
         highlighted={isUnitPatternHovered}
         active={!isUnitPatternEmpty}
         hovered={isUnitPatternHovered}
-        onClick={handleUnitPatternItemClick}
+        onClick={onUnitPatternClick}
         onMouseEnter={() => {
           setIsUnitPatternHovered(true);
         }}
@@ -88,12 +75,6 @@ function GameRoomSideBar({
       >
         <MapMarkerIcon highlighted={isMiniMapHovered} active={isMiniMapActive} />
       </ItemWrapper>
-      <EditUnitPatternModal
-        opened={isEditUnitPatternModalVisible}
-        unitPattern={unitPattern}
-        onUpdate={handleUnitPatternUpdate}
-        onCancel={handleUnitPatternCancel}
-      />
     </section>
   );
 }

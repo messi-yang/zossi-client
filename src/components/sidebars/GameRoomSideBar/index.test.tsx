@@ -7,7 +7,7 @@ function renderGameRoomSideBar(): RenderResult {
     <GameRoomSideBar
       align="column"
       unitPattern={createUnitPattern([[true]])}
-      onUnitPatternUpdate={() => {}}
+      onUnitPatternClick={() => {}}
       onLogoClick={() => {}}
       isMiniMapActive
       onMiniMapClick={() => {}}

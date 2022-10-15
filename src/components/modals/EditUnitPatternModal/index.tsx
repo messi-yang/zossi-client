@@ -14,12 +14,13 @@ import dataTestids from './dataTestids';
 
 type Props = {
   opened: boolean;
+  width: number;
   unitPattern: UnitPatternValueObject;
   onUpdate?: (unitPattern: UnitPatternValueObject) => any;
   onCancel?: () => void;
 };
 
-function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCancel = () => {} }: Props) {
+function EditUnitPatternModal({ opened, width, unitPattern, onUpdate = () => {}, onCancel = () => {} }: Props) {
   const [tmpUnitPattern, setTmpUnitPattern] = useState<UnitPatternValueObject>(cloneDeep(unitPattern));
   useEffect(() => {
     setTmpUnitPattern(cloneDeep(unitPattern));
@@ -35,7 +36,7 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
   };
 
   return (
-    <BaseModal width={560} opened={opened}>
+    <BaseModal width={width} opened={opened}>
       <section
         data-testid={dataTestids.root}
         className="relative pt-8 px-6 pb-10 w-full h-full flex flex-col items-center border-4 border-solid border-white"
@@ -48,11 +49,7 @@ function EditUnitPatternModal({ opened, unitPattern, onUpdate = () => {}, onCanc
         </div>
         <Text color="white" copy="PATTERN" size={18} />
         <section className="mt-9 flex justify-center">
-          <UnitPatternEditor
-            unitSize={230 / (tmpUnitPattern.getHeight() || 1)}
-            unitPattern={tmpUnitPattern}
-            onUpdate={handleUnitPatternUpdate}
-          />
+          <UnitPatternEditor unitSize={width / 15} unitPattern={tmpUnitPattern} onUpdate={handleUnitPatternUpdate} />
         </section>
         <section className="mt-6 w-full overflow-auto">
           <section className="flex">

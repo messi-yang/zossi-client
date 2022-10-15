@@ -3,7 +3,7 @@ import { createUnitPattern } from '@/valueObjects/factories';
 import EditUnitPatternModal, { dataTestids } from '.';
 
 function renderEditUnitPatternModal(): RenderResult {
-  return render(<EditUnitPatternModal opened unitPattern={createUnitPattern([[]])} />);
+  return render(<EditUnitPatternModal opened width={100} unitPattern={createUnitPattern([[]])} />);
 }
 
 describe('EditUnitPatternModal', () => {

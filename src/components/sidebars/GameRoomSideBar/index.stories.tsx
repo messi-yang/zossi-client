@@ -1,7 +1,5 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { useArgs } from '@storybook/client-api';
-import { UnitPatternValueObject } from '@/valueObjects';
 import { createUnitPattern } from '@/valueObjects/factories';
 
 import GameRoomSideBar from '.';
@@ -14,14 +12,10 @@ export default {
 
 const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args) {
   const { align } = args;
-  const [, updateArgs] = useArgs();
-  const handleUnitPatternUpdate = (unitPattern: UnitPatternValueObject) => {
-    updateArgs({ unitPattern });
-  };
 
   return (
     <section className={[align === 'column' ? 'h-screen' : '', align === 'row' ? 'w-screen' : undefined].join(' ')}>
-      <GameRoomSideBar {...args} onUnitPatternUpdate={handleUnitPatternUpdate} />
+      <GameRoomSideBar {...args} />
     </section>
   );
 };
