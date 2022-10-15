@@ -59,22 +59,10 @@ const unitPatternPresets: UnitPatternPreset[] = [
     ]),
   },
   {
-    title: 'Blinker1',
+    title: 'Blinker',
     pattern: createUnitPattern([
-      [false, false, false, false, false],
       [false, false, false, false, false],
       [false, true, true, true, false],
-      [false, false, false, false, false],
-      [false, false, false, false, false],
-    ]),
-  },
-  {
-    title: 'Blinker2',
-    pattern: createUnitPattern([
-      [false, false, false, false, false],
-      [false, false, true, false, false],
-      [false, false, true, false, false],
-      [false, false, true, false, false],
       [false, false, false, false, false],
     ]),
   },
@@ -108,17 +96,6 @@ const unitPatternPresets: UnitPatternPreset[] = [
       [false, false, true, true, false],
       [false, true, true, false, false],
       [false, false, false, false, false],
-    ]),
-  },
-  {
-    title: 'Untitled',
-    pattern: createUnitPattern([
-      [false, false, false, false, false, false],
-      [false, false, true, false, false, false],
-      [false, true, false, true, false, false],
-      [false, false, true, false, true, false],
-      [false, false, false, true, false, false],
-      [false, false, false, false, false, false],
     ]),
   },
   {
