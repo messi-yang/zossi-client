@@ -93,6 +93,21 @@ const removeRightEmptyRows = (pattern: boolean[][]) => {
   }
 };
 
+const addFillerBorder = (pattern: boolean[][]): boolean[][] => {
+  const newPattern = cloneDeep(pattern);
+  removeTopEmptyRows(newPattern);
+  removeBottomEmptyRows(newPattern);
+  removeLeftEmptyRows(newPattern);
+  removeRightEmptyRows(newPattern);
+
+  addTopEmptyRow(newPattern);
+  addBottomEmptyRow(newPattern);
+  addLeftEmptyRow(newPattern);
+  addRightEmptyRow(newPattern);
+
+  return newPattern;
+};
+
 export default class UnitPatternValueObject {
   private pattern: boolean[][];
 
@@ -127,16 +142,7 @@ export default class UnitPatternValueObject {
   }
 
   public addFillerBorder(): UnitPatternValueObject {
-    const newPattern = cloneDeep(this.pattern);
-    removeTopEmptyRows(newPattern);
-    removeBottomEmptyRows(newPattern);
-    removeLeftEmptyRows(newPattern);
-    removeRightEmptyRows(newPattern);
-
-    addTopEmptyRow(newPattern);
-    addBottomEmptyRow(newPattern);
-    addLeftEmptyRow(newPattern);
-    addRightEmptyRow(newPattern);
+    const newPattern = addFillerBorder(this.pattern);
     return new UnitPatternValueObject(newPattern);
   }
 
