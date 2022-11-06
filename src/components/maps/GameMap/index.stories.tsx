@@ -9,8 +9,8 @@ import {
   createUnit,
   createUnitMap,
   createUnitPattern,
-  createMapSizeByArea,
-  createUnitMapByMapSize,
+  createDimensionByArea,
+  createUnitMapByDimension,
 } from '@/valueObjects/factories';
 
 import GameMap from '.';
@@ -62,7 +62,7 @@ const areaForPrimary = createArea(createCoordinate(3, 3), createCoordinate(9, 9)
 Primary.args = {
   area: areaForPrimary,
   areaOffset: createOffset(0, 0),
-  unitMap: createUnitMapByMapSize(createMapSizeByArea(areaForPrimary)),
+  unitMap: createUnitMapByDimension(createDimensionByArea(areaForPrimary)),
   unitPattern: createUnitPattern([
     [false, false, false, false, false],
     [false, false, true, false, false],

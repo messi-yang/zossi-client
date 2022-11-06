@@ -4,7 +4,7 @@ import CoordinateValueObject from '@/valueObjects/CoordinateValueObject';
 import OffsetValueObject from '@/valueObjects/OffsetValueObject';
 import AreaValueObject from '@/valueObjects/AreaValueObject';
 import UnitPatternValueObject from '@/valueObjects/UnitPatternValueObject';
-import MapSizeValueObject from '@/valueObjects/MapSizeValueObject';
+import DimensionValueObject from '@/valueObjects/DimensionValueObject';
 
 export default {};
 export {
@@ -14,5 +14,5 @@ export {
   OffsetValueObject,
   AreaValueObject,
   UnitPatternValueObject,
-  MapSizeValueObject,
+  DimensionValueObject,
 };

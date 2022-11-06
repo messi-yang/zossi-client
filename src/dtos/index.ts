@@ -1,8 +1,8 @@
 import type AreaDto from './AreaDto';
 import type CoordinateDto from './CoordinateDto';
-import type MapSizeDto from './MapSizeDto';
+import type DimensionDto from './DimensionDto';
 import type UnitDto from './UnitDto';
 
-export type { AreaDto, CoordinateDto, MapSizeDto, UnitDto };
+export type { AreaDto, CoordinateDto, DimensionDto, UnitDto };
 
 export default {};

@@ -2,7 +2,7 @@ import CoordinateValueObject from '@/valueObjects/CoordinateValueObject';
 import OffsetValueObject from '@/valueObjects/OffsetValueObject';
 import UnitValueObject from '@/valueObjects/UnitValueObject';
 import AreaValueObject from '@/valueObjects/AreaValueObject';
-import MapSizeValueObject from '@/valueObjects/MapSizeValueObject';
+import DimensionValueObject from '@/valueObjects/DimensionValueObject';
 import UnitMapValueObject from '@/valueObjects/UnitMapValueObject';
 import UnitPatternValueObject from '@/valueObjects/UnitPatternValueObject';
 
@@ -14,8 +14,8 @@ export function createCoordinate(x: number, y: number): CoordinateValueObject {
   return new CoordinateValueObject(x, y);
 }
 
-export function createMapSize(width: number, height: number): MapSizeValueObject {
-  return new MapSizeValueObject(width, height);
+export function createDimension(width: number, height: number): DimensionValueObject {
+  return new DimensionValueObject(width, height);
 }
 
 export function createOffset(x: number, y: number): OffsetValueObject {
@@ -47,26 +47,26 @@ export function createOffsetOfTwoAreas(
   );
 }
 
-export function createAreaByCoordinateAndMapSize(
+export function createAreaByCoordinateAndDimension(
   coordinate: CoordinateValueObject,
-  mapSize: MapSizeValueObject
+  dimension: DimensionValueObject
 ): AreaValueObject {
-  return createArea(coordinate, coordinate.shift(mapSize.getWidth(), mapSize.getHeight()));
+  return createArea(coordinate, coordinate.shift(dimension.getWidth(), dimension.getHeight()));
 }
 
-export function createMapSizeByUnitMap(unitMap: UnitMapValueObject): MapSizeValueObject {
-  return createMapSize(unitMap.getWidth(), unitMap.getHeight());
+export function createDimensionByUnitMap(unitMap: UnitMapValueObject): DimensionValueObject {
+  return createDimension(unitMap.getWidth(), unitMap.getHeight());
 }
 
-export function createMapSizeByArea(area: AreaValueObject): MapSizeValueObject {
-  return createMapSize(
+export function createDimensionByArea(area: AreaValueObject): DimensionValueObject {
+  return createDimension(
     area.getTo().getX() - area.getFrom().getX() + 1,
     area.getTo().getY() - area.getFrom().getY() + 1
   );
 }
 
-export function createUnitMapByMapSize(mapSize: MapSizeValueObject): UnitMapValueObject {
-  const unitMap = mapSize.map<UnitValueObject>(() => new UnitValueObject(false));
+export function createUnitMapByDimension(dimension: DimensionValueObject): UnitMapValueObject {
+  const unitMap = dimension.map<UnitValueObject>(() => new UnitValueObject(false));
   return new UnitMapValueObject(unitMap);
 }
 

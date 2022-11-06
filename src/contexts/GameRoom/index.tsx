@@ -6,14 +6,14 @@ import {
   AreaValueObject,
   UnitMapValueObject,
   CoordinateValueObject,
-  MapSizeValueObject,
+  DimensionValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
 } from '@/valueObjects';
 import {
   createCoordinate,
   createArea,
-  createMapSize,
+  createDimension,
   createOffset,
   createUnit,
   createUnitMap,
@@ -34,7 +34,7 @@ function convertUnitDtoMatrixToUnitMapValueObject(unitMap: UnitDto[][]): UnitMap
 
 type GameRoomContextValue = {
   status: Status;
-  mapSize: MapSizeValueObject | null;
+  dimension: DimensionValueObject | null;
   zoomedArea: AreaValueObject | null;
   targetArea: AreaValueObject | null;
   unitMap: UnitMapValueObject | null;
@@ -54,7 +54,7 @@ type GameRoomContextValue = {
 function createInitialGameRoomContextValue(): GameRoomContextValue {
   return {
     status: 'CLOSED',
-    mapSize: null,
+    dimension: null,
     zoomedArea: null,
     targetArea: null,
     unitMap: null,
@@ -85,7 +85,7 @@ export function Provider({ children }: Props) {
   const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
 
   const initialGameRoomContextValue = createInitialGameRoomContextValue();
-  const [mapSize, setMapSize] = useState<MapSizeValueObject | null>(initialGameRoomContextValue.mapSize);
+  const [dimension, setDimension] = useState<DimensionValueObject | null>(initialGameRoomContextValue.dimension);
 
   const zoomedAreaSource = useRef<AreaValueObject | null>(initialGameRoomContextValue.zoomedArea);
   const targetAreaSource = useRef<AreaValueObject | null>(initialGameRoomContextValue.targetArea);
@@ -146,7 +146,7 @@ export function Provider({ children }: Props) {
   }, []);
 
   const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
-    setMapSize(createMapSize(event.payload.mapSize.width, event.payload.mapSize.height));
+    setDimension(createDimension(event.payload.dimension.width, event.payload.dimension.height));
   }, []);
 
   const handleSocketMessage = useCallback(
@@ -164,7 +164,7 @@ export function Provider({ children }: Props) {
   );
 
   const resetContext = useCallback(() => {
-    setMapSize(initialGameRoomContextValue.mapSize);
+    setDimension(initialGameRoomContextValue.dimension);
     setTargetArea(initialGameRoomContextValue.targetArea);
 
     zoomedAreaSource.current = initialGameRoomContextValue.zoomedArea;
@@ -196,20 +196,20 @@ export function Provider({ children }: Props) {
   const reviveUnitsWithPattern = useCallback(
     (coordinate: CoordinateValueObject, patternOffset: OffsetValueObject, pattern: UnitPatternValueObject) => {
       const normalizeCoordinate = (c: CoordinateDto) => {
-        if (!mapSize) {
+        if (!dimension) {
           return c;
         }
         let normalizedX = c.x;
         let normalizedY = c.y;
         while (normalizedX < 0) {
-          normalizedX += mapSize.getWidth();
+          normalizedX += dimension.getWidth();
         }
         while (normalizedY < 0) {
-          normalizedY += mapSize.getHeight();
+          normalizedY += dimension.getHeight();
         }
         return {
-          x: normalizedX % mapSize.getWidth(),
-          y: normalizedY % mapSize.getHeight(),
+          x: normalizedX % dimension.getWidth(),
+          y: normalizedY % dimension.getHeight(),
         };
       };
 
@@ -232,7 +232,7 @@ export function Provider({ children }: Props) {
       };
       sendMessage(action);
     },
-    [mapSize, sendMessage]
+    [dimension, sendMessage]
   );
 
   const sendZoomAreaAction = useCallback(
@@ -267,7 +267,7 @@ export function Provider({ children }: Props) {
   const gameRoomContextValue = useMemo<GameRoomContextValue>(
     () => ({
       status,
-      mapSize,
+      dimension,
       zoomedArea,
       zoomedAreaOffset,
       targetArea,
@@ -281,7 +281,7 @@ export function Provider({ children }: Props) {
     }),
     [
       status,
-      mapSize,
+      dimension,
       zoomedArea,
       zoomedAreaOffset,
       targetArea,

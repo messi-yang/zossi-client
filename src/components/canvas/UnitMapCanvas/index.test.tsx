@@ -1,11 +1,11 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createMapSize, createUnitPattern, createUnitMapByMapSize } from '@/valueObjects/factories';
+import { createDimension, createUnitPattern, createUnitMapByDimension } from '@/valueObjects/factories';
 import UnitMapCanvas, { dataTestids } from '.';
 
 function renderUnitMapCanvas(): RenderResult {
   return render(
     <UnitMapCanvas
-      unitMap={createUnitMapByMapSize(createMapSize(1, 1))}
+      unitMap={createUnitMapByDimension(createDimension(1, 1))}
       unitSize={20}
       unitPattern={createUnitPattern([[true]])}
       onClick={() => {}}

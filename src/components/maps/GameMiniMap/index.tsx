@@ -1,28 +1,28 @@
 import { useRef } from 'react';
-import { MapSizeValueObject, AreaValueObject } from '@/valueObjects';
+import { DimensionValueObject, AreaValueObject } from '@/valueObjects';
 import { createCoordinate, createArea } from '@/valueObjects/factories';
 import usePull from '@/hooks/usePull';
 import dataTestids from './dataTestids';
 
 type Props = {
   width: number;
-  mapSize: MapSizeValueObject;
+  dimension: DimensionValueObject;
   area: AreaValueObject;
   onAreaUpdate: (newArea: AreaValueObject) => void;
 };
 
-function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
+function GameMiniMap({ width, dimension, area, onAreaUpdate }: Props) {
   const mapContentElemRef = useRef<HTMLDivElement>(null);
-  const mapSizeRatio = mapSize.getRatio();
+  const dimensionRatio = dimension.getRatio();
   const areaWidth = area.getWidth();
   const areaHeight = area.getHeight();
-  const mapZoomedAreaWidthRatio = areaWidth / mapSize.getWidth();
-  const mapZoomedAreaHeightRatio = areaHeight / mapSize.getHeight();
-  const offsetXRatio = area.getFrom().getX() / mapSize.getWidth();
-  const offsetYRatio = area.getFrom().getY() / mapSize.getHeight();
+  const mapZoomedAreaWidthRatio = areaWidth / dimension.getWidth();
+  const mapZoomedAreaHeightRatio = areaHeight / dimension.getHeight();
+  const offsetXRatio = area.getFrom().getX() / dimension.getWidth();
+  const offsetYRatio = area.getFrom().getY() / dimension.getHeight();
 
   const elemWidth = width;
-  const elemHeight = elemWidth * mapSizeRatio;
+  const elemHeight = elemWidth * dimensionRatio;
   const areaElemWidth = elemWidth * mapZoomedAreaWidthRatio;
   const areaElemHeight = elemHeight * mapZoomedAreaHeightRatio;
 
@@ -33,17 +33,17 @@ function GameMiniMap({ width, mapSize, area, onAreaUpdate }: Props) {
     const rect = mapContentElemRef.current.getBoundingClientRect();
     const elemX = clientX - rect.left;
     const elemY = clientY - rect.top;
-    const standarizedX = Math.round(((elemX - areaElemWidth / 2) / elemWidth) * mapSize.getWidth());
-    const standarizedY = Math.round(((elemY - areaElemHeight / 2) / elemHeight) * mapSize.getHeight());
+    const standarizedX = Math.round(((elemX - areaElemWidth / 2) / elemWidth) * dimension.getWidth());
+    const standarizedY = Math.round(((elemY - areaElemHeight / 2) / elemHeight) * dimension.getHeight());
     let adjustedX = standarizedX;
     let adjustedY = standarizedY;
-    if (standarizedX + areaWidth - 1 > mapSize.getWidth() - 1) {
-      adjustedX = mapSize.getWidth() - areaWidth;
+    if (standarizedX + areaWidth - 1 > dimension.getWidth() - 1) {
+      adjustedX = dimension.getWidth() - areaWidth;
     } else if (standarizedX < 0) {
       adjustedX = 0;
     }
-    if (standarizedY + areaHeight - 1 > mapSize.getHeight() - 1) {
-      adjustedY = mapSize.getHeight() - areaHeight;
+    if (standarizedY + areaHeight - 1 > dimension.getHeight() - 1) {
+      adjustedY = dimension.getHeight() - areaHeight;
     } else if (standarizedY < 0) {
       adjustedY = 0;
     }

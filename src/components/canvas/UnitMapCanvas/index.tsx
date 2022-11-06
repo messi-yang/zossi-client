@@ -5,11 +5,11 @@ import debounce from 'lodash/debounce';
 import {
   UnitValueObject,
   UnitMapValueObject,
-  MapSizeValueObject,
+  DimensionValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
 } from '@/valueObjects';
-import { createOffset, createMapSizeByUnitMap } from '@/valueObjects/factories';
+import { createOffset, createDimensionByUnitMap } from '@/valueObjects/factories';
 
 import dataTestids from './dataTestids';
 
@@ -33,11 +33,11 @@ type Resolution = {
 };
 
 function generateCanvasElemSize(unitMap: UnitMapValueObject, unitSize: number): ElemSize {
-  const mapSize = createMapSizeByUnitMap(unitMap);
+  const dimension = createDimensionByUnitMap(unitMap);
 
   return {
-    width: mapSize.getWidth() * unitSize + 1,
-    height: mapSize.getHeight() * unitSize + 1,
+    width: dimension.getWidth() * unitSize + 1,
+    height: dimension.getHeight() * unitSize + 1,
   };
 }
 
@@ -67,7 +67,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
   const [borderWidth] = useState(1);
   const [canvasUnitSize] = useState(1);
-  const [mapSize, setMapSize] = useState(createMapSizeByUnitMap(unitMap));
+  const [dimension, setDimension] = useState(createDimensionByUnitMap(unitMap));
   const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
   const canvasResolution = useMemo(
@@ -77,9 +77,9 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const canvasElemSize = useMemo(() => generateCanvasElemSize(unitMap, unitSize), [unitMap, unitSize]);
 
   useEffect(() => {
-    const newMapSize = createMapSizeByUnitMap(unitMap);
-    if (!mapSize.isEqual(newMapSize)) {
-      setMapSize(newMapSize);
+    const newDimension = createDimensionByUnitMap(unitMap);
+    if (!dimension.isEqual(newDimension)) {
+      setDimension(newDimension);
     }
   }, [unitMap]);
 
@@ -91,12 +91,17 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   );
 
   const drawGrid = useCallback(
-    (ctx: CanvasRenderingContext2D, newMapSize: MapSizeValueObject, newUnitSize: number, newCanvasUnitSize: number) => {
+    (
+      ctx: CanvasRenderingContext2D,
+      newDimension: DimensionValueObject,
+      newUnitSize: number,
+      newCanvasUnitSize: number
+    ) => {
       ctx.strokeStyle = color.borderColor; // eslint-disable-line no-param-reassign
       ctx.lineWidth = canvasUnitSize; // eslint-disable-line no-param-reassign
       ctx.beginPath();
 
-      newMapSize.iterateColumn((colIdx: number) => {
+      newDimension.iterateColumn((colIdx: number) => {
         ctx.moveTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, 0);
         ctx.lineTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, canvasResolution.height);
       });
@@ -104,7 +109,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       ctx.moveTo(canvasResolution.width - newCanvasUnitSize / 2, 0);
       ctx.lineTo(canvasResolution.width - newCanvasUnitSize / 2, canvasResolution.height);
 
-      newMapSize.iterateRow((rowIdx: number) => {
+      newDimension.iterateRow((rowIdx: number) => {
         ctx.moveTo(0, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
         ctx.lineTo(canvasResolution.width, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
       });
@@ -151,7 +156,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
     (
       newUnitMap: UnitMapValueObject,
       newUnitSize: number,
-      newMapSize: MapSizeValueObject,
+      newDimension: DimensionValueObject,
       newCanvasUnitSize: number
     ) => {
       const ctx = unitMapCanvasElem?.getContext('2d');
@@ -160,27 +165,27 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       }
 
       clean(ctx);
-      drawGrid(ctx, newMapSize, newUnitSize, newCanvasUnitSize);
+      drawGrid(ctx, newDimension, newUnitSize, newCanvasUnitSize);
       drawUnits(ctx, newUnitMap, newUnitSize, newCanvasUnitSize, borderWidth);
     },
-    [unitMapCanvasElem, unitMap, unitSize, mapSize, canvasUnitSize, borderWidth]
+    [unitMapCanvasElem, unitMap, unitSize, dimension, canvasUnitSize, borderWidth]
   );
 
-  draw(unitMap, unitSize, mapSize, canvasUnitSize);
+  draw(unitMap, unitSize, dimension, canvasUnitSize);
 
   const onUnitMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
     setUnitMapCanvasElem(elem);
   }, []);
 
   const calculateIndexes = useCallback(
-    (relativeX: number, relativeY: number, newUnitSize: number, newMapSize: MapSizeValueObject): Indexes => {
+    (relativeX: number, relativeY: number, newUnitSize: number, newDimension: DimensionValueObject): Indexes => {
       let colIdx = Math.floor(relativeX / newUnitSize);
       let rowIdx = Math.floor(relativeY / newUnitSize);
-      if (colIdx >= newMapSize.getWidth()) {
-        colIdx = newMapSize.getWidth() - 1;
+      if (colIdx >= newDimension.getWidth()) {
+        colIdx = newDimension.getWidth() - 1;
       }
-      if (rowIdx >= newMapSize.getHeight()) {
-        rowIdx = newMapSize.getHeight() - 1;
+      if (rowIdx >= newDimension.getHeight()) {
+        rowIdx = newDimension.getHeight() - 1;
       }
 
       return [colIdx, rowIdx];
@@ -228,13 +233,13 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
         event.clientX - eventTargetRect.left - borderWidth,
         event.clientY - eventTargetRect.top - borderWidth,
       ];
-      const newHoveredIndexes = calculateIndexes(posX, posY, unitSize, mapSize);
+      const newHoveredIndexes = calculateIndexes(posX, posY, unitSize, dimension);
 
       if (!isEqual(newHoveredIndexes, hoveredIndexes)) {
         setHoveredIndexes(newHoveredIndexes);
       }
     },
-    [hoveredIndexes, unitSize, mapSize, borderWidth]
+    [hoveredIndexes, unitSize, dimension, borderWidth]
   );
 
   const handleDropPatternCanvasMouseMoveDebouncer = useCallback(
@@ -271,7 +276,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       event.clientX - eventTargetRect.left - borderWidth,
       event.clientY - eventTargetRect.top - borderWidth,
     ];
-    const clickedIndexes = calculateIndexes(posX, posY, unitSize, mapSize);
+    const clickedIndexes = calculateIndexes(posX, posY, unitSize, dimension);
     onClick(clickedIndexes[0], clickedIndexes[1]);
   };
 

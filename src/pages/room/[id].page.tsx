@@ -19,7 +19,7 @@ const Room: NextPage = function Room() {
   const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
   const router = useRouter();
   const {
-    mapSize,
+    dimension,
     zoomedArea,
     zoomedAreaOffset,
     targetArea,
@@ -112,9 +112,9 @@ const Room: NextPage = function Room() {
                 />
               )}
             </section>
-            {mapSize && targetArea && isMiniMapVisible && (
+            {dimension && targetArea && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
-                <GameMiniMap width={300} mapSize={mapSize} area={targetArea} onAreaUpdate={handleAreaUpdate} />
+                <GameMiniMap width={300} dimension={dimension} area={targetArea} onAreaUpdate={handleAreaUpdate} />
               </section>
             )}
           </section>
@@ -147,11 +147,11 @@ const Room: NextPage = function Room() {
                 />
               )}
             </section>
-            {mapSize && targetArea && isMiniMapVisible && (
+            {dimension && targetArea && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={windowSize.width * 0.8}
-                  mapSize={mapSize}
+                  dimension={dimension}
                   area={targetArea}
                   onAreaUpdate={handleAreaUpdate}
                 />

@@ -12,9 +12,9 @@ import {
 } from '@/valueObjects';
 import {
   createCoordinate,
-  createMapSize,
+  createDimension,
   createOffset,
-  createAreaByCoordinateAndMapSize,
+  createAreaByCoordinateAndDimension,
 } from '@/valueObjects/factories';
 import dataTestids from './dataTestids';
 
@@ -43,8 +43,8 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
     { width: rootElemRect.width, height: rootElemRect.height },
     squareSize
   );
-  const desiredMapSize = useMemo(
-    () => createMapSize(desiredAreaWidth, desiredAreaHeight),
+  const desiredDimension = useMemo(
+    () => createDimension(desiredAreaWidth, desiredAreaHeight),
     [desiredAreaWidth, desiredAreaHeight]
   );
   const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetValueObject>(
@@ -71,13 +71,13 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
 
   useEffect(() => {
     if (area === null) {
-      const newArea = createAreaByCoordinateAndMapSize(createCoordinate(0, 0), desiredMapSize);
+      const newArea = createAreaByCoordinateAndDimension(createCoordinate(0, 0), desiredDimension);
       onAreaUpdate(newArea);
     } else {
-      const newArea = createAreaByCoordinateAndMapSize(area.getFrom(), desiredMapSize);
+      const newArea = createAreaByCoordinateAndDimension(area.getFrom(), desiredDimension);
       onAreaUpdate(newArea);
     }
-  }, [area === null, desiredMapSize]);
+  }, [area === null, desiredDimension]);
 
   return (
     <section

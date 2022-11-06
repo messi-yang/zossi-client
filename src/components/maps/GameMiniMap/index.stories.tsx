@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 import { AreaValueObject } from '@/valueObjects';
-import { createCoordinate, createArea, createMapSize } from '@/valueObjects/factories';
+import { createCoordinate, createArea, createDimension } from '@/valueObjects/factories';
 
 import GameMiniMap from '.';
 
@@ -26,6 +26,6 @@ const Template: ComponentStory<typeof GameMiniMap> = function Template(args) {
 export const Primary = Template.bind({});
 Primary.args = {
   width: 300,
-  mapSize: createMapSize(300, 300),
+  dimension: createDimension(300, 300),
   area: createArea(createCoordinate(0, 0), createCoordinate(30, 30)),
 };

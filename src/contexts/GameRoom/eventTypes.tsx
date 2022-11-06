@@ -1,4 +1,4 @@
-import type { AreaDto, MapSizeDto, UnitDto } from '@/dtos';
+import type { AreaDto, DimensionDto, UnitDto } from '@/dtos';
 
 enum EventTypeEnum {
   InformationUpdated = 'INFORMATION_UPDATED',
@@ -9,7 +9,7 @@ enum EventTypeEnum {
 type InformationUpdatedEvent = {
   type: EventTypeEnum.InformationUpdated;
   payload: {
-    mapSize: MapSizeDto;
+    dimension: DimensionDto;
   };
 };
 

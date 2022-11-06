@@ -1,12 +1,12 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createCoordinate, createArea, createMapSize } from '@/valueObjects/factories';
+import { createCoordinate, createArea, createDimension } from '@/valueObjects/factories';
 import GameMiniMap, { dataTestids } from '.';
 
 function renderGameMiniMap(): RenderResult {
   return render(
     <GameMiniMap
       width={300}
-      mapSize={createMapSize(100, 100)}
+      dimension={createDimension(100, 100)}
       area={createArea(createCoordinate(0, 0), createCoordinate(10, 10))}
       onAreaUpdate={() => {}}
     />
