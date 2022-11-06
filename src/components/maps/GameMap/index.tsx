@@ -1,11 +1,11 @@
 import { memo, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { gameBackgroundColor } from '@/styles/colors';
-import UnitMapCanvas from '@/components/canvas/UnitMapCanvas';
+import UnitBlockCanvas from '@/components/canvas/UnitBlockCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
 import {
   AreaValueObject,
-  UnitMapValueObject,
+  UnitBlockValueObject,
   CoordinateValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
@@ -25,7 +25,7 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternValueObject): Offset
 type Props = {
   area: AreaValueObject | null;
   areaOffset: OffsetValueObject;
-  unitMap: UnitMapValueObject | null;
+  unitBlock: UnitBlockValueObject | null;
   unitPattern: UnitPatternValueObject;
   onUnitsRevive: (
     coordinate: CoordinateValueObject,
@@ -35,7 +35,7 @@ type Props = {
   onAreaUpdate: (newArea: AreaValueObject) => any;
 };
 
-function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({ area, areaOffset, unitBlock, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
   const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -92,9 +92,9 @@ function GameMap({ area, areaOffset, unitMap, unitPattern, onUnitsRevive, onArea
         className="relative w-full h-full flex"
         style={{ left: areaOffset.getX() * squareSize, top: areaOffset.getY() * squareSize }}
       >
-        {unitMap && (
-          <UnitMapCanvas
-            unitMap={unitMap}
+        {unitBlock && (
+          <UnitBlockCanvas
+            unitBlock={unitBlock}
             unitSize={squareSize}
             unitPattern={unitPattern}
             onClick={handleUnitSquareClick}

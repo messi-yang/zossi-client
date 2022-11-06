@@ -4,12 +4,12 @@ import debounce from 'lodash/debounce';
 
 import {
   UnitValueObject,
-  UnitMapValueObject,
+  UnitBlockValueObject,
   DimensionValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
 } from '@/valueObjects';
-import { createOffset, createDimensionByUnitMap } from '@/valueObjects/factories';
+import { createOffset, createDimensionByUnitBlock } from '@/valueObjects/factories';
 
 import dataTestids from './dataTestids';
 
@@ -32,8 +32,8 @@ type Resolution = {
   height: number;
 };
 
-function generateCanvasElemSize(unitMap: UnitMapValueObject, unitSize: number): ElemSize {
-  const dimension = createDimensionByUnitMap(unitMap);
+function generateCanvasElemSize(unitBlock: UnitBlockValueObject, unitSize: number): ElemSize {
+  const dimension = createDimensionByUnitBlock(unitBlock);
 
   return {
     width: dimension.getWidth() * unitSize + 1,
@@ -41,8 +41,12 @@ function generateCanvasElemSize(unitMap: UnitMapValueObject, unitSize: number): 
   };
 }
 
-function generateCanvasResolution(unitMap: UnitMapValueObject, unitSize: number, canvasUnitSize: number): Resolution {
-  const elemSize = generateCanvasElemSize(unitMap, unitSize);
+function generateCanvasResolution(
+  unitBlock: UnitBlockValueObject,
+  unitSize: number,
+  canvasUnitSize: number
+): Resolution {
+  const elemSize = generateCanvasElemSize(unitBlock, unitSize);
 
   return {
     width: elemSize.width * canvasUnitSize,
@@ -55,33 +59,33 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternValueObject): Offset
 }
 
 type Props = {
-  unitMap: UnitMapValueObject;
+  unitBlock: UnitBlockValueObject;
   unitSize: number;
   unitPattern: UnitPatternValueObject;
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
-function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
-  const [unitMapCanvasElem, setUnitMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
+function UnitBlockCanvas({ unitBlock, unitSize, unitPattern, onClick }: Props) {
+  const [unitBlockCanvasElem, setUnitBlockCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [patternCanvasElem, setPatternCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
   const [borderWidth] = useState(1);
   const [canvasUnitSize] = useState(1);
-  const [dimension, setDimension] = useState(createDimensionByUnitMap(unitMap));
+  const [dimension, setDimension] = useState(createDimensionByUnitBlock(unitBlock));
   const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
   const canvasResolution = useMemo(
-    () => generateCanvasResolution(unitMap, unitSize, canvasUnitSize),
-    [unitMap, unitSize, canvasUnitSize]
+    () => generateCanvasResolution(unitBlock, unitSize, canvasUnitSize),
+    [unitBlock, unitSize, canvasUnitSize]
   );
-  const canvasElemSize = useMemo(() => generateCanvasElemSize(unitMap, unitSize), [unitMap, unitSize]);
+  const canvasElemSize = useMemo(() => generateCanvasElemSize(unitBlock, unitSize), [unitBlock, unitSize]);
 
   useEffect(() => {
-    const newDimension = createDimensionByUnitMap(unitMap);
+    const newDimension = createDimensionByUnitBlock(unitBlock);
     if (!dimension.isEqual(newDimension)) {
       setDimension(newDimension);
     }
-  }, [unitMap]);
+  }, [unitBlock]);
 
   const clean = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -125,14 +129,14 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   const drawUnits = useCallback(
     (
       ctx: CanvasRenderingContext2D,
-      newUnitMap: UnitMapValueObject,
+      newUnitBlock: UnitBlockValueObject,
       newUnitSize: number,
       newCanvasUnitSize: number,
       newBorderWidth: number
     ) => {
       ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
-      newUnitMap.iterateUnit((colIdx: number, rowIdx: number, unit: UnitValueObject) => {
+      newUnitBlock.iterateUnit((colIdx: number, rowIdx: number, unit: UnitValueObject) => {
         if (unit.isAlive()) {
           ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
           const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
@@ -154,27 +158,27 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
 
   const draw = useCallback(
     (
-      newUnitMap: UnitMapValueObject,
+      newUnitBlock: UnitBlockValueObject,
       newUnitSize: number,
       newDimension: DimensionValueObject,
       newCanvasUnitSize: number
     ) => {
-      const ctx = unitMapCanvasElem?.getContext('2d');
+      const ctx = unitBlockCanvasElem?.getContext('2d');
       if (!ctx) {
         return;
       }
 
       clean(ctx);
       drawGrid(ctx, newDimension, newUnitSize, newCanvasUnitSize);
-      drawUnits(ctx, newUnitMap, newUnitSize, newCanvasUnitSize, borderWidth);
+      drawUnits(ctx, newUnitBlock, newUnitSize, newCanvasUnitSize, borderWidth);
     },
-    [unitMapCanvasElem, unitMap, unitSize, dimension, canvasUnitSize, borderWidth]
+    [unitBlockCanvasElem, unitBlock, unitSize, dimension, canvasUnitSize, borderWidth]
   );
 
-  draw(unitMap, unitSize, dimension, canvasUnitSize);
+  draw(unitBlock, unitSize, dimension, canvasUnitSize);
 
-  const onUnitMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
-    setUnitMapCanvasElem(elem);
+  const onUnitBlockCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
+    setUnitBlockCanvasElem(elem);
   }, []);
 
   const calculateIndexes = useCallback(
@@ -291,7 +295,7 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
       className="relative box-border"
     >
       <canvas
-        ref={onUnitMapCanvasLoad}
+        ref={onUnitBlockCanvasLoad}
         width={canvasResolution.width}
         height={canvasResolution.height}
         className="absolute left-0 top-0 bg-black z-0"
@@ -311,5 +315,5 @@ function UnitMapCanvas({ unitMap, unitSize, unitPattern, onClick }: Props) {
   );
 }
 
-export default UnitMapCanvas;
+export default UnitBlockCanvas;
 export { dataTestids };

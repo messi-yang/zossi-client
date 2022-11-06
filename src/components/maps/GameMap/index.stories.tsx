@@ -7,10 +7,10 @@ import {
   createArea,
   createOffset,
   createUnit,
-  createUnitMap,
+  createUnitBlock,
   createUnitPattern,
   createDimensionByArea,
-  createUnitMapByDimension,
+  createUnitBlockByDimension,
 } from '@/valueObjects/factories';
 
 import GameMap from '.';
@@ -23,7 +23,7 @@ export default {
 
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const { area, unitMap } = args;
+  const { area, unitBlock } = args;
   const handleUnitsRevive = (
     coordinate: CoordinateValueObject,
     patternOffset: OffsetValueObject,
@@ -32,11 +32,11 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     if (!area) {
       return;
     }
-    if (!unitMap) {
+    if (!unitBlock) {
       return;
     }
 
-    const unitMatrix = unitMap.getUnitMatrix();
+    const unitMatrix = unitBlock.getUnitMatrix();
     pattern.iterate((colIdx: number, rowIdx: number, alive: boolean) => {
       if (alive) {
         const adjustedX = coordinate.getX() - area.getFrom().getX() + colIdx + patternOffset.getX();
@@ -46,7 +46,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     });
 
     updateArgs({
-      unitMap: createUnitMap(unitMatrix),
+      unitBlock: createUnitBlock(unitMatrix),
     });
   };
 
@@ -62,7 +62,7 @@ const areaForPrimary = createArea(createCoordinate(3, 3), createCoordinate(9, 9)
 Primary.args = {
   area: areaForPrimary,
   areaOffset: createOffset(0, 0),
-  unitMap: createUnitMapByDimension(createDimensionByArea(areaForPrimary)),
+  unitBlock: createUnitBlockByDimension(createDimensionByArea(areaForPrimary)),
   unitPattern: createUnitPattern([
     [false, false, false, false, false],
     [false, false, true, false, false],

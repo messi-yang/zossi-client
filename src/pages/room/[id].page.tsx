@@ -23,7 +23,7 @@ const Room: NextPage = function Room() {
     zoomedArea,
     zoomedAreaOffset,
     targetArea,
-    unitMap,
+    unitBlock,
     status,
     unitPattern,
     leaveGame,
@@ -105,7 +105,7 @@ const Room: NextPage = function Room() {
                 <GameMap
                   area={zoomedArea}
                   areaOffset={zoomedAreaOffset}
-                  unitMap={unitMap}
+                  unitBlock={unitBlock}
                   unitPattern={unitPattern}
                   onUnitsRevive={reviveUnitsWithPattern}
                   onAreaUpdate={zoomArea}
@@ -140,7 +140,7 @@ const Room: NextPage = function Room() {
                 <GameMap
                   area={zoomedArea}
                   areaOffset={zoomedAreaOffset}
-                  unitMap={unitMap}
+                  unitBlock={unitBlock}
                   unitPattern={unitPattern}
                   onUnitsRevive={reviveUnitsWithPattern}
                   onAreaUpdate={zoomArea}

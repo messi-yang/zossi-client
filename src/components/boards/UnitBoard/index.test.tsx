@@ -1,9 +1,9 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createUnitMap, createUnit } from '@/valueObjects/factories';
+import { createUnitBlock, createUnit } from '@/valueObjects/factories';
 import UnitBoard, { dataTestids } from '.';
 
 function renderUnitBoard(): RenderResult {
-  return render(<UnitBoard unitMap={createUnitMap([[createUnit(true)]])} unitSize={20} onUnitClick={() => {}} />);
+  return render(<UnitBoard unitBlock={createUnitBlock([[createUnit(true)]])} unitSize={20} onUnitClick={() => {}} />);
 }
 
 describe('UnitBoard', () => {

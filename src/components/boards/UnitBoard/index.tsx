@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
 import { generateKeyFromIndex } from '@/utils/component';
-import { UnitMapValueObject } from '@/valueObjects';
+import { UnitBlockValueObject } from '@/valueObjects';
 import UnitSquare from './subComponents/UnitSquare';
 import dataTestids from './dataTestids';
 
 type Props = {
-  unitMap: UnitMapValueObject;
+  unitBlock: UnitBlockValueObject;
   unitSize: number;
   onUnitClick?: (colIdx: number, rowIdx: number) => void;
 };
 
-function UnitBoard({ unitMap, unitSize, onUnitClick }: Props) {
-  const unitMatrix = useMemo(() => unitMap.getUnitMatrix(), [unitMap]);
+function UnitBoard({ unitBlock, unitSize, onUnitClick }: Props) {
+  const unitMatrix = useMemo(() => unitBlock.getUnitMatrix(), [unitBlock]);
 
   return (
     <div data-testid={dataTestids.root} className="flex flex-row">
@@ -33,8 +33,8 @@ function UnitBoard({ unitMap, unitSize, onUnitClick }: Props) {
               <UnitSquare
                 alive={unit.getAlive()}
                 hasTopBorder
-                hasRightBorder={colIdx === unitMap.getWidth() - 1}
-                hasBottomBorder={rowIdx === unitMap.getHeight() - 1}
+                hasRightBorder={colIdx === unitBlock.getWidth() - 1}
+                hasBottomBorder={rowIdx === unitBlock.getHeight() - 1}
                 hasLeftBorder
                 onClick={() => onUnitClick?.(colIdx, rowIdx)}
               />

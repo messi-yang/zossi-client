@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { UnitPatternValueObject } from '@/valueObjects';
-import { createUnitMapByUnitPattern } from '@/valueObjects/factories';
+import { createUnitBlockByUnitPattern } from '@/valueObjects/factories';
 import UnitBoard from '@/components/boards/UnitBoard';
 import dataTestids from './dataTestids';
 
@@ -19,11 +19,11 @@ function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props
     onUpdate(newUnitPatternWithFillterBorder);
   };
 
-  const unitMap = useMemo(() => createUnitMapByUnitPattern(unitPattern), [unitPattern]);
+  const unitBlock = useMemo(() => createUnitBlockByUnitPattern(unitPattern), [unitPattern]);
 
   return (
     <div data-testid={dataTestids.root}>
-      <UnitBoard unitMap={unitMap} unitSize={unitSize} onUnitClick={handleUnitClick} />
+      <UnitBoard unitBlock={unitBlock} unitSize={unitSize} onUnitClick={handleUnitClick} />
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { createUnitMap, createUnit } from '@/valueObjects/factories';
+import { createUnitBlock, createUnit } from '@/valueObjects/factories';
 
 import UnitBoard from '.';
-import { UnitMapValueObject } from '@/valueObjects';
+import { UnitBlockValueObject } from '@/valueObjects';
 
 export default {
   title: 'Editor/UnitBoard',
@@ -15,10 +15,10 @@ export default {
 const Template: ComponentStory<typeof UnitBoard> = function Template(args) {
   const [currentArgs, updateArgs] = useArgs();
   const handleUnitClick = (colIdx: number, rowIdx: number) => {
-    let newUnitMap: UnitMapValueObject = currentArgs.unitMap;
-    newUnitMap = newUnitMap.setUnitAlive(colIdx, rowIdx, true);
+    let newUnitBlock: UnitBlockValueObject = currentArgs.unitBlock;
+    newUnitBlock = newUnitBlock.setUnitAlive(colIdx, rowIdx, true);
     updateArgs({
-      uniMap: newUnitMap,
+      uniMap: newUnitBlock,
     });
   };
 
@@ -31,7 +31,7 @@ const Template: ComponentStory<typeof UnitBoard> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  unitMap: createUnitMap([
+  unitBlock: createUnitBlock([
     [createUnit(true), createUnit(true), createUnit(true)],
     [createUnit(true), createUnit(false), createUnit(true)],
     [createUnit(true), createUnit(true), createUnit(true)],

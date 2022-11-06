@@ -1,11 +1,11 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createDimension, createUnitPattern, createUnitMapByDimension } from '@/valueObjects/factories';
-import UnitMapCanvas, { dataTestids } from '.';
+import { createDimension, createUnitPattern, createUnitBlockByDimension } from '@/valueObjects/factories';
+import UnitBlockCanvas, { dataTestids } from '.';
 
-function renderUnitMapCanvas(): RenderResult {
+function renderUnitBlockCanvas(): RenderResult {
   return render(
-    <UnitMapCanvas
-      unitMap={createUnitMapByDimension(createDimension(1, 1))}
+    <UnitBlockCanvas
+      unitBlock={createUnitBlockByDimension(createDimension(1, 1))}
       unitSize={20}
       unitPattern={createUnitPattern([[true]])}
       onClick={() => {}}
@@ -13,10 +13,10 @@ function renderUnitMapCanvas(): RenderResult {
   );
 }
 
-describe('UnitMapCanvas', () => {
+describe('UnitBlockCanvas', () => {
   it('Should render component successfully.', () => {
     try {
-      renderUnitMapCanvas();
+      renderUnitBlockCanvas();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

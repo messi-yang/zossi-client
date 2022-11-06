@@ -4,7 +4,7 @@ import useWebSocket from '@/hooks/useWebSocket';
 import type { UnitDto, CoordinateDto } from '@/dtos';
 import {
   AreaValueObject,
-  UnitMapValueObject,
+  UnitBlockValueObject,
   CoordinateValueObject,
   DimensionValueObject,
   OffsetValueObject,
@@ -16,7 +16,7 @@ import {
   createDimension,
   createOffset,
   createUnit,
-  createUnitMap,
+  createUnitBlock,
   createUnitPattern,
   createOffsetOfTwoAreas,
 } from '@/valueObjects/factories';
@@ -27,9 +27,9 @@ import type { ZoomAreaAction, ReviveUnitsAction } from './actionTypes';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
-function convertUnitDtoMatrixToUnitMapValueObject(unitMap: UnitDto[][]): UnitMapValueObject {
-  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => createUnit(unit.alive)));
-  return createUnitMap(unitMatrix);
+function convertUnitDtoMatrixToUnitBlockValueObject(unitBlock: UnitDto[][]): UnitBlockValueObject {
+  const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => createUnit(unit.alive)));
+  return createUnitBlock(unitMatrix);
 }
 
 type GameRoomContextValue = {
@@ -37,7 +37,7 @@ type GameRoomContextValue = {
   dimension: DimensionValueObject | null;
   zoomedArea: AreaValueObject | null;
   targetArea: AreaValueObject | null;
-  unitMap: UnitMapValueObject | null;
+  unitBlock: UnitBlockValueObject | null;
   zoomedAreaOffset: OffsetValueObject;
   unitPattern: UnitPatternValueObject;
   joinGame: () => void;
@@ -57,7 +57,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     dimension: null,
     zoomedArea: null,
     targetArea: null,
-    unitMap: null,
+    unitBlock: null,
     zoomedAreaOffset: createOffset(0, 0),
     unitPattern: createUnitPattern([
       [false, false, false, false, false],
@@ -89,10 +89,10 @@ export function Provider({ children }: Props) {
 
   const zoomedAreaSource = useRef<AreaValueObject | null>(initialGameRoomContextValue.zoomedArea);
   const targetAreaSource = useRef<AreaValueObject | null>(initialGameRoomContextValue.targetArea);
-  const unitMapSource = useRef<UnitMapValueObject | null>(initialGameRoomContextValue.unitMap);
+  const unitBlockSource = useRef<UnitBlockValueObject | null>(initialGameRoomContextValue.unitBlock);
   const [zoomedArea, setZoomedArea] = useState<AreaValueObject | null>(zoomedAreaSource.current);
   const [targetArea, setTargetArea] = useState<AreaValueObject | null>(targetAreaSource.current);
-  const [unitMap, setUnitMap] = useState<UnitMapValueObject | null>(unitMapSource.current);
+  const [unitBlock, setUnitBlock] = useState<UnitBlockValueObject | null>(unitBlockSource.current);
   const [zoomedAreaOffset, setZoomedAreaOffset] = useState<OffsetValueObject>(
     createOffsetOfTwoAreas(zoomedAreaSource.current, targetAreaSource.current)
   );
@@ -105,14 +105,14 @@ export function Provider({ children }: Props) {
 
   const handleSocketOpen = useCallback(() => {}, []);
 
-  const updateUnitMapAndOffsets = useCallback(() => {
-    setUnitMap(unitMapSource.current);
+  const updateUnitBlockAndOffsets = useCallback(() => {
+    setUnitBlock(unitBlockSource.current);
     setTargetArea(targetAreaSource.current);
     setZoomedArea(zoomedAreaSource.current);
     setZoomedAreaOffset(createOffsetOfTwoAreas(zoomedAreaSource.current, targetAreaSource.current));
   }, []);
-  const updateUnitMapAndOffsetsDebouncer = useCallback(
-    debounce(updateUnitMapAndOffsets, 50, {
+  const updateUnitBlockAndOffsetsDebouncer = useCallback(
+    debounce(updateUnitBlockAndOffsets, 50, {
       leading: true,
       maxWait: 50,
     }),
@@ -127,9 +127,9 @@ export function Provider({ children }: Props) {
     if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
       zoomedAreaSource.current = newArea;
     }
-    unitMapSource.current = convertUnitDtoMatrixToUnitMapValueObject(event.payload.unitMap);
-    updateUnitMapAndOffsetsDebouncer.cancel();
-    updateUnitMapAndOffsetsDebouncer();
+    unitBlockSource.current = convertUnitDtoMatrixToUnitBlockValueObject(event.payload.unitBlock);
+    updateUnitBlockAndOffsetsDebouncer.cancel();
+    updateUnitBlockAndOffsetsDebouncer();
   }, []);
 
   const handleZoomedAreaUpdatedEvent = useCallback((event: ZoomedAreaUpdatedEvent) => {
@@ -141,8 +141,8 @@ export function Provider({ children }: Props) {
       zoomedAreaSource.current = newArea;
     }
 
-    unitMapSource.current = convertUnitDtoMatrixToUnitMapValueObject(event.payload.unitMap);
-    updateUnitMapAndOffsetsDebouncer();
+    unitBlockSource.current = convertUnitDtoMatrixToUnitBlockValueObject(event.payload.unitBlock);
+    updateUnitBlockAndOffsetsDebouncer();
   }, []);
 
   const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
@@ -160,7 +160,7 @@ export function Provider({ children }: Props) {
         handleInformationUpdatedEvent(newMsg);
       }
     },
-    [unitMap, handleAreaZoomedEvent, handleZoomedAreaUpdatedEvent, handleInformationUpdatedEvent]
+    [unitBlock, handleAreaZoomedEvent, handleZoomedAreaUpdatedEvent, handleInformationUpdatedEvent]
   );
 
   const resetContext = useCallback(() => {
@@ -169,8 +169,8 @@ export function Provider({ children }: Props) {
 
     zoomedAreaSource.current = initialGameRoomContextValue.zoomedArea;
     targetAreaSource.current = initialGameRoomContextValue.targetArea;
-    unitMapSource.current = initialGameRoomContextValue.unitMap;
-    updateUnitMapAndOffsetsDebouncer();
+    unitBlockSource.current = initialGameRoomContextValue.unitBlock;
+    updateUnitBlockAndOffsetsDebouncer();
 
     setUnitPattern(initialGameRoomContextValue.unitPattern);
   }, []);
@@ -258,7 +258,7 @@ export function Provider({ children }: Props) {
   const zoomArea = useCallback(
     (newArea: AreaValueObject) => {
       targetAreaSource.current = newArea;
-      updateUnitMapAndOffsetsDebouncer();
+      updateUnitBlockAndOffsetsDebouncer();
       sendZoomAreaActionDebouncer(newArea);
     },
     [sendZoomAreaActionDebouncer]
@@ -271,7 +271,7 @@ export function Provider({ children }: Props) {
       zoomedArea,
       zoomedAreaOffset,
       targetArea,
-      unitMap,
+      unitBlock,
       unitPattern,
       joinGame,
       leaveGame,
@@ -285,7 +285,7 @@ export function Provider({ children }: Props) {
       zoomedArea,
       zoomedAreaOffset,
       targetArea,
-      unitMap,
+      unitBlock,
       unitPattern,
       joinGame,
       leaveGame,

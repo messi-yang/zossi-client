@@ -1,5 +1,5 @@
 import UnitValueObject from '@/valueObjects/UnitValueObject';
-import UnitMapValueObject from '@/valueObjects/UnitMapValueObject';
+import UnitBlockValueObject from '@/valueObjects/UnitBlockValueObject';
 import CoordinateValueObject from '@/valueObjects/CoordinateValueObject';
 import OffsetValueObject from '@/valueObjects/OffsetValueObject';
 import AreaValueObject from '@/valueObjects/AreaValueObject';
@@ -9,7 +9,7 @@ import DimensionValueObject from '@/valueObjects/DimensionValueObject';
 export default {};
 export {
   UnitValueObject,
-  UnitMapValueObject,
+  UnitBlockValueObject,
   CoordinateValueObject,
   OffsetValueObject,
   AreaValueObject,

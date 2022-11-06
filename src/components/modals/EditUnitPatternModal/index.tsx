@@ -7,7 +7,7 @@ import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
 import UnitBoard from '@/components/boards/UnitBoard';
 import { UnitPatternValueObject } from '@/valueObjects';
-import { createUnitMapByUnitPattern } from '@/valueObjects/factories';
+import { createUnitBlockByUnitPattern } from '@/valueObjects/factories';
 import { generateKeyFromIndex } from '@/utils/component';
 import unitPatternPresets from './unitPatternPresets';
 import dataTestids from './dataTestids';
@@ -76,7 +76,7 @@ function EditUnitPatternModal({ opened, width, unitPattern, onUpdate = () => {},
                 >
                   <UnitBoard
                     unitSize={70 / (unitPatternPreset?.pattern.getHeight() || 1)}
-                    unitMap={createUnitMapByUnitPattern(unitPatternPreset.pattern)}
+                    unitBlock={createUnitBlockByUnitPattern(unitPatternPreset.pattern)}
                   />
                 </div>
                 <Text color="white" copy={unitPatternPreset.title} />

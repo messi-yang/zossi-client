@@ -3,7 +3,7 @@ import OffsetValueObject from '@/valueObjects/OffsetValueObject';
 import UnitValueObject from '@/valueObjects/UnitValueObject';
 import AreaValueObject from '@/valueObjects/AreaValueObject';
 import DimensionValueObject from '@/valueObjects/DimensionValueObject';
-import UnitMapValueObject from '@/valueObjects/UnitMapValueObject';
+import UnitBlockValueObject from '@/valueObjects/UnitBlockValueObject';
 import UnitPatternValueObject from '@/valueObjects/UnitPatternValueObject';
 
 export function createArea(from: CoordinateValueObject, to: CoordinateValueObject): AreaValueObject {
@@ -22,8 +22,8 @@ export function createOffset(x: number, y: number): OffsetValueObject {
   return new OffsetValueObject(x, y);
 }
 
-export function createUnitMap(unitMatrix: UnitValueObject[][]): UnitMapValueObject {
-  return new UnitMapValueObject(unitMatrix);
+export function createUnitBlock(unitMatrix: UnitValueObject[][]): UnitBlockValueObject {
+  return new UnitBlockValueObject(unitMatrix);
 }
 
 export function createUnitPattern(pattern: boolean[][]): UnitPatternValueObject {
@@ -54,8 +54,8 @@ export function createAreaByCoordinateAndDimension(
   return createArea(coordinate, coordinate.shift(dimension.getWidth(), dimension.getHeight()));
 }
 
-export function createDimensionByUnitMap(unitMap: UnitMapValueObject): DimensionValueObject {
-  return createDimension(unitMap.getWidth(), unitMap.getHeight());
+export function createDimensionByUnitBlock(unitBlock: UnitBlockValueObject): DimensionValueObject {
+  return createDimension(unitBlock.getWidth(), unitBlock.getHeight());
 }
 
 export function createDimensionByArea(area: AreaValueObject): DimensionValueObject {
@@ -65,15 +65,15 @@ export function createDimensionByArea(area: AreaValueObject): DimensionValueObje
   );
 }
 
-export function createUnitMapByDimension(dimension: DimensionValueObject): UnitMapValueObject {
-  const unitMap = dimension.map<UnitValueObject>(() => new UnitValueObject(false));
-  return new UnitMapValueObject(unitMap);
+export function createUnitBlockByDimension(dimension: DimensionValueObject): UnitBlockValueObject {
+  const unitBlock = dimension.map<UnitValueObject>(() => new UnitValueObject(false));
+  return new UnitBlockValueObject(unitBlock);
 }
 
-export function createUnitMapByUnitPattern(unitPattern: UnitPatternValueObject): UnitMapValueObject {
-  const unitMap = unitPattern.map((_: number, __: number, alive: boolean) => new UnitValueObject(alive));
+export function createUnitBlockByUnitPattern(unitPattern: UnitPatternValueObject): UnitBlockValueObject {
+  const unitBlock = unitPattern.map((_: number, __: number, alive: boolean) => new UnitValueObject(alive));
 
-  return new UnitMapValueObject(unitMap);
+  return new UnitBlockValueObject(unitBlock);
 }
 
 export default {};

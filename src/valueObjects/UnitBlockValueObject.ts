@@ -2,7 +2,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import UnitValueObject from '@/valueObjects/UnitValueObject';
 
-export default class UnitMapValueObject {
+export default class UnitBlockValueObject {
   private unitMatrix: UnitValueObject[][];
 
   constructor(unitMatrix: UnitValueObject[][]) {
@@ -25,10 +25,10 @@ export default class UnitMapValueObject {
     return cloneDeep(this.unitMatrix);
   }
 
-  public setUnitAlive(colIdx: number, rowIdx: number, alive: boolean): UnitMapValueObject {
+  public setUnitAlive(colIdx: number, rowIdx: number, alive: boolean): UnitBlockValueObject {
     const newUnitMatrix = cloneDeep(this.unitMatrix);
     newUnitMatrix[colIdx][rowIdx] = new UnitValueObject(alive);
-    return new UnitMapValueObject(newUnitMatrix);
+    return new UnitBlockValueObject(newUnitMatrix);
   }
 
   public iterateUnit(cb: (colIdx: number, rowIdx: number, unit: UnitValueObject) => void) {
