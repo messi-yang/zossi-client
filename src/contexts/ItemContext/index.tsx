@@ -1,6 +1,6 @@
 import { createContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { ItemApi } from '@/apis';
-import { ItemAggregate } from '@/aggregates';
+import { ItemAggregate } from '@/models/aggregates';
 
 type ItemContextValue = {
   items: ItemAggregate[] | null;

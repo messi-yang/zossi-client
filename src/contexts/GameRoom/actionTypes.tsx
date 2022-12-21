@@ -1,4 +1,4 @@
-import { AreaDto, CoordinateDto } from '@/dtos';
+import { AreaDto, CoordinateDto } from '@/models/dtos';
 
 enum ActionTypeEnum {
   ZoomArea = 'ZOOM_AREA',

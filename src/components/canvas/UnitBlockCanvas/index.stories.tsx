@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { createDimension, createUnitPattern, createUnitBlockByDimension } from '@/valueObjects/factories';
+import { createDimension, createUnitPattern, createUnitBlockByDimension } from '@/models/valueObjects/factories';
 
 import UnitBlockCanvas from '.';
 

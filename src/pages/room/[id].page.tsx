@@ -9,7 +9,7 @@ import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
 import ItemContext from '@/contexts/ItemContext';
-import { AreaValueObject, UnitPatternValueObject, CoordinateValueObject } from '@/valueObjects';
+import { AreaValueObject, UnitPatternValueObject, CoordinateValueObject } from '@/models/valueObjects';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 import GameMiniMap from '@/components/maps/GameMiniMap';

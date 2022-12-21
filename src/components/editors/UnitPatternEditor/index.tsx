@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { UnitPatternValueObject } from '@/valueObjects';
-import { createUnitBlockByUnitPattern } from '@/valueObjects/factories';
+import { UnitPatternValueObject } from '@/models/valueObjects';
+import { createUnitBlockByUnitPattern } from '@/models/valueObjects/factories';
 import UnitBoard from '@/components/boards/UnitBoard';
 import dataTestids from './dataTestids';
 

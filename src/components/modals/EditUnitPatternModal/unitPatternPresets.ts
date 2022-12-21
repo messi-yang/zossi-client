@@ -1,5 +1,5 @@
-import { UnitPatternValueObject } from '@/valueObjects';
-import { createUnitPattern } from '@/valueObjects/factories';
+import { UnitPatternValueObject } from '@/models/valueObjects';
+import { createUnitPattern } from '@/models/valueObjects/factories';
 
 type UnitPatternPreset = {
   title: string;

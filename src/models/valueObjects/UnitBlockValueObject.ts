@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 
-import UnitValueObject from '@/valueObjects/UnitValueObject';
+import UnitValueObject from '@/models/valueObjects/UnitValueObject';
 
 export default class UnitBlockValueObject {
   private unitMatrix: UnitValueObject[][];

@@ -9,13 +9,13 @@ import {
   CoordinateValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
-} from '@/valueObjects';
+} from '@/models/valueObjects';
 import {
   createCoordinate,
   createDimension,
   createOffset,
   createAreaByCoordinateAndDimension,
-} from '@/valueObjects/factories';
+} from '@/models/valueObjects/factories';
 import dataTestids from './dataTestids';
 
 function calculateUnitPatternOffset(unitPattern: UnitPatternValueObject): OffsetValueObject {

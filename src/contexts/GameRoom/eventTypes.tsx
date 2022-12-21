@@ -1,4 +1,4 @@
-import type { AreaDto, DimensionDto, UnitDto } from '@/dtos';
+import type { AreaDto, DimensionDto, UnitDto } from '@/models/dtos';
 
 enum EventTypeEnum {
   InformationUpdated = 'INFORMATION_UPDATED',

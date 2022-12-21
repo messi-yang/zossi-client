@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { CoordinateValueObject, OffsetValueObject, UnitPatternValueObject } from '@/valueObjects';
+import { CoordinateValueObject, OffsetValueObject, UnitPatternValueObject } from '@/models/valueObjects';
 import {
   createCoordinate,
   createArea,
@@ -11,7 +11,7 @@ import {
   createUnitPattern,
   createDimensionByArea,
   createUnitBlockByDimension,
-} from '@/valueObjects/factories';
+} from '@/models/valueObjects/factories';
 
 import GameMap from '.';
 

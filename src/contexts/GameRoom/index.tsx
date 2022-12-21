@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import useWebSocket from '@/hooks/useWebSocket';
-import type { UnitDto } from '@/dtos';
+import type { UnitDto } from '@/models/dtos';
 import {
   AreaValueObject,
   UnitBlockValueObject,
@@ -9,7 +9,7 @@ import {
   DimensionValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
-} from '@/valueObjects';
+} from '@/models/valueObjects';
 import {
   createCoordinate,
   createArea,
@@ -19,7 +19,7 @@ import {
   createUnitBlock,
   createUnitPattern,
   createOffsetOfTwoAreas,
-} from '@/valueObjects/factories';
+} from '@/models/valueObjects/factories';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';

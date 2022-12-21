@@ -1,4 +1,4 @@
-import CoordinateValueObject from '@/valueObjects/CoordinateValueObject';
+import CoordinateValueObject from '@/models/valueObjects/CoordinateValueObject';
 
 export default class AreaValueObject {
   private from: CoordinateValueObject;

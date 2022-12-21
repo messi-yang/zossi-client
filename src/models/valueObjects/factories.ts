@@ -1,10 +1,10 @@
-import CoordinateValueObject from '@/valueObjects/CoordinateValueObject';
-import OffsetValueObject from '@/valueObjects/OffsetValueObject';
-import UnitValueObject from '@/valueObjects/UnitValueObject';
-import AreaValueObject from '@/valueObjects/AreaValueObject';
-import DimensionValueObject from '@/valueObjects/DimensionValueObject';
-import UnitBlockValueObject from '@/valueObjects/UnitBlockValueObject';
-import UnitPatternValueObject from '@/valueObjects/UnitPatternValueObject';
+import CoordinateValueObject from '@/models/valueObjects/CoordinateValueObject';
+import OffsetValueObject from '@/models/valueObjects/OffsetValueObject';
+import UnitValueObject from '@/models/valueObjects/UnitValueObject';
+import AreaValueObject from '@/models/valueObjects/AreaValueObject';
+import DimensionValueObject from '@/models/valueObjects/DimensionValueObject';
+import UnitBlockValueObject from '@/models/valueObjects/UnitBlockValueObject';
+import UnitPatternValueObject from '@/models/valueObjects/UnitPatternValueObject';
 
 export function createArea(from: CoordinateValueObject, to: CoordinateValueObject): AreaValueObject {
   return new AreaValueObject(from, to);

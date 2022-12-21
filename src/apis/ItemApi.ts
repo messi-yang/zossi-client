@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Axios } from 'axios';
-import { ItemAggregate } from '@/aggregates';
-import { ItemDto } from '@/dtos';
+import { ItemAggregate } from '@/models/aggregates';
+import { ItemDto } from '@/models/dtos';
 
 export default class ItemApi {
   private axios: Axios;

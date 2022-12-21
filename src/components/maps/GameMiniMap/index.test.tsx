@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createCoordinate, createArea, createDimension } from '@/valueObjects/factories';
+import { createCoordinate, createArea, createDimension } from '@/models/valueObjects/factories';
 import GameMiniMap, { dataTestids } from '.';
 
 function renderGameMiniMap(): RenderResult {

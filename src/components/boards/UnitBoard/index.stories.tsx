@@ -1,10 +1,10 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { createUnitBlock, createUnit } from '@/valueObjects/factories';
+import { createUnitBlock, createUnit } from '@/models/valueObjects/factories';
 
 import UnitBoard from '.';
-import { UnitBlockValueObject } from '@/valueObjects';
+import { UnitBlockValueObject } from '@/models/valueObjects';
 
 export default {
   title: 'Editor/UnitBoard',

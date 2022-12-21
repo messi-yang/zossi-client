@@ -8,8 +8,8 @@ import {
   DimensionValueObject,
   OffsetValueObject,
   UnitPatternValueObject,
-} from '@/valueObjects';
-import { createOffset, createDimensionByUnitBlock } from '@/valueObjects/factories';
+} from '@/models/valueObjects';
+import { createOffset, createDimensionByUnitBlock } from '@/models/valueObjects/factories';
 
 import dataTestids from './dataTestids';
 

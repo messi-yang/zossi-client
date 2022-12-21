@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createUnitPattern } from '@/valueObjects/factories';
+import { createUnitPattern } from '@/models/valueObjects/factories';
 import GameRoomSideBar, { dataTestids } from '.';
 
 function renderGameRoomSideBar(): RenderResult {

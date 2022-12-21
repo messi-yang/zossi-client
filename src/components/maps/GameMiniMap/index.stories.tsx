@@ -1,8 +1,8 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { AreaValueObject } from '@/valueObjects';
-import { createCoordinate, createArea, createDimension } from '@/valueObjects/factories';
+import { AreaValueObject } from '@/models/valueObjects';
+import { createCoordinate, createArea, createDimension } from '@/models/valueObjects/factories';
 
 import GameMiniMap from '.';
 

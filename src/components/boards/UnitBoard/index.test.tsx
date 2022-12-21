@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createUnitBlock, createUnit } from '@/valueObjects/factories';
+import { createUnitBlock, createUnit } from '@/models/valueObjects/factories';
 import UnitBoard, { dataTestids } from '.';
 
 function renderUnitBoard(): RenderResult {

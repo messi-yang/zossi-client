@@ -1,6 +1,6 @@
 import { useRef } from 'react';
-import { DimensionValueObject, AreaValueObject } from '@/valueObjects';
-import { createCoordinate, createArea } from '@/valueObjects/factories';
+import { DimensionValueObject, AreaValueObject } from '@/models/valueObjects';
+import { createCoordinate, createArea } from '@/models/valueObjects/factories';
 import usePull from '@/hooks/usePull';
 import dataTestids from './dataTestids';
 

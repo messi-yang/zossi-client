@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { createUnitPattern } from '@/valueObjects/factories';
+import { createUnitPattern } from '@/models/valueObjects/factories';
 
 import EditUnitPatternModal from '.';
 

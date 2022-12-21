@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
-import { UnitPatternValueObject } from '@/valueObjects';
+import { UnitPatternValueObject } from '@/models/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 

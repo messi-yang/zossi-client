@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createDimension, createUnitPattern, createUnitBlockByDimension } from '@/valueObjects/factories';
+import { createDimension, createUnitPattern, createUnitBlockByDimension } from '@/models/valueObjects/factories';
 import UnitBlockCanvas, { dataTestids } from '.';
 
 function renderUnitBlockCanvas(): RenderResult {
