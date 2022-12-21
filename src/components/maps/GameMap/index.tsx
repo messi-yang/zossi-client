@@ -1,5 +1,4 @@
 import { memo, useRef, useState, useCallback, useEffect, useMemo } from 'react';
-import { gameBackgroundColor } from '@/styles/colors';
 import UnitBlockCanvas from '@/components/canvas/UnitBlockCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
@@ -80,14 +79,7 @@ function GameMap({ area, areaOffset, unitBlock, unitPattern, onUnitsRevive, onAr
   }, [area === null, desiredDimension]);
 
   return (
-    <section
-      ref={rootRef}
-      data-testid={dataTestids.root}
-      className="relative w-full h-full overflow-hidden"
-      style={{
-        backgroundColor: gameBackgroundColor,
-      }}
-    >
+    <section ref={rootRef} data-testid={dataTestids.root} className="relative w-full h-full overflow-hidden bg-black">
       <section
         className="relative w-full h-full flex"
         style={{ left: areaOffset.getX() * squareSize, top: areaOffset.getY() * squareSize }}

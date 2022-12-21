@@ -3,8 +3,6 @@ import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-import { wrapper } from '@/stores';
-import { gameBackgroundColor } from '@/styles/colors';
 import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
@@ -108,12 +106,7 @@ const Room: NextPage = function Room() {
               onMiniMapClick={handleMiniMapClick}
             />
           </section>
-          <section
-            className="relative grow overflow-hidden"
-            style={{
-              backgroundColor: gameBackgroundColor,
-            }}
-          >
+          <section className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               {status === 'CONNECTED' && (
                 <GameMap
@@ -143,12 +136,7 @@ const Room: NextPage = function Room() {
             onUpdate={handleUnitPatternEdit}
             onCancel={handleEditUnitPatternCancel}
           />
-          <section
-            className="relative grow overflow-hidden"
-            style={{
-              backgroundColor: gameBackgroundColor,
-            }}
-          >
+          <section className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               {status === 'CONNECTED' && (
                 <GameMap
@@ -193,10 +181,10 @@ export const getStaticPaths: GetStaticPaths = async () => ({
   fallback: true,
 });
 
-export const getStaticProps: GetStaticProps = wrapper.getStaticProps(() => async ({ locale }) => ({
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
     ...(await serverSideTranslations(getInitialLocale(locale), ['room'])),
   },
-}));
+});
 
 export default Room;

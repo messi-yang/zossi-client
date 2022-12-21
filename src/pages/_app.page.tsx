@@ -1,7 +1,6 @@
 import '@/styles/tailwind.css';
 import type { AppProps } from 'next/app';
 import { appWithTranslation } from 'next-i18next';
-import { wrapper } from '@/stores';
 import { Provider as GameRoomProvider } from '@/contexts/GameRoom';
 import { Provider as ItemContextProvider } from '@/contexts/ItemContext';
 
@@ -15,4 +14,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default wrapper.withRedux(appWithTranslation(MyApp));
+export default appWithTranslation(MyApp);

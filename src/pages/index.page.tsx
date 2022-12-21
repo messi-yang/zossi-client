@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import useWindowSize from '@/hooks/useWindowSize';
-import { wrapper } from '@/stores';
 import { getInitialLocale } from '@/utils/i18n';
 import GameRoomContext from '@/contexts/GameRoom';
 
@@ -40,10 +39,10 @@ const Landing: NextPage = function Landing() {
   );
 };
 
-export const getStaticProps: GetStaticProps = wrapper.getStaticProps(() => async ({ locale }) => ({
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
     ...(await serverSideTranslations(getInitialLocale(locale), ['index'])),
   },
-}));
+});
 
 export default Landing;
