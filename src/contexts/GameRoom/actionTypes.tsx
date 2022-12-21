@@ -2,7 +2,7 @@ import { AreaDto, CoordinateDto } from '@/dtos';
 
 enum ActionTypeEnum {
   ZoomArea = 'ZOOM_AREA',
-  ReviveUnits = 'REVIVE_UNITS',
+  BuildItem = 'BUILD_ITEM',
 }
 
 type ZoomAreaAction = {
@@ -13,14 +13,15 @@ type ZoomAreaAction = {
   };
 };
 
-type ReviveUnitsAction = {
-  type: ActionTypeEnum.ReviveUnits;
+type BuildItemAction = {
+  type: ActionTypeEnum.BuildItem;
   payload: {
-    coordinates: CoordinateDto[];
+    coordinate: CoordinateDto;
+    itemId: string;
     actionedAt: string;
   };
 };
 
 export { ActionTypeEnum };
 
-export type { ZoomAreaAction, ReviveUnitsAction };
+export type { ZoomAreaAction, BuildItemAction };

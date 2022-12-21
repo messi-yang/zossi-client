@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useCallback } from 'react';
 import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -8,7 +8,8 @@ import { gameBackgroundColor } from '@/styles/colors';
 import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
-import { AreaValueObject, UnitPatternValueObject } from '@/valueObjects';
+import ItemContext from '@/contexts/ItemContext';
+import { AreaValueObject, UnitPatternValueObject, CoordinateValueObject } from '@/valueObjects';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 import GameMiniMap from '@/components/maps/GameMiniMap';
@@ -27,10 +28,11 @@ const Room: NextPage = function Room() {
     status,
     unitPattern,
     leaveGame,
-    reviveUnitsWithPattern,
+    buildItem,
     zoomArea,
     updateUnitPattern,
   } = useContext(GameRoomContext);
+  const { items } = useContext(ItemContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isEditUnitPatternModalVisible, setIsEditUnitPatternModalVisible] = useState<boolean>(false);
 
@@ -73,6 +75,18 @@ const Room: NextPage = function Room() {
     setIsEditUnitPatternModalVisible(false);
   };
 
+  const handleUnitsRevive = useCallback(
+    (coordinate: CoordinateValueObject) => {
+      if (!items || !items[0]) {
+        return;
+      }
+      console.log(items[0]);
+
+      buildItem(coordinate, items[0].getId());
+    },
+    [items]
+  );
+
   return (
     <>
       {deviceSize === 'large' && (
@@ -107,7 +121,7 @@ const Room: NextPage = function Room() {
                   areaOffset={zoomedAreaOffset}
                   unitBlock={unitBlock}
                   unitPattern={unitPattern}
-                  onUnitsRevive={reviveUnitsWithPattern}
+                  onUnitsRevive={handleUnitsRevive}
                   onAreaUpdate={zoomArea}
                 />
               )}
@@ -142,7 +156,7 @@ const Room: NextPage = function Room() {
                   areaOffset={zoomedAreaOffset}
                   unitBlock={unitBlock}
                   unitPattern={unitPattern}
-                  onUnitsRevive={reviveUnitsWithPattern}
+                  onUnitsRevive={handleUnitsRevive}
                   onAreaUpdate={zoomArea}
                 />
               )}

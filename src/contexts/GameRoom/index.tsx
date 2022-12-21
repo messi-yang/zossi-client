@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import useWebSocket from '@/hooks/useWebSocket';
-import type { UnitDto, CoordinateDto } from '@/dtos';
+import type { UnitDto } from '@/dtos';
 import {
   AreaValueObject,
   UnitBlockValueObject,
@@ -23,7 +23,7 @@ import {
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { ZoomAreaAction, ReviveUnitsAction } from './actionTypes';
+import type { ZoomAreaAction, BuildItemAction } from './actionTypes';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
 
@@ -42,11 +42,7 @@ type GameRoomContextValue = {
   unitPattern: UnitPatternValueObject;
   joinGame: () => void;
   updateUnitPattern: (pattern: UnitPatternValueObject) => void;
-  reviveUnitsWithPattern: (
-    coordinate: CoordinateValueObject,
-    unitPatternOffset: OffsetValueObject,
-    unitPattern: UnitPatternValueObject
-  ) => void;
+  buildItem: (coordinate: CoordinateValueObject, itemId: string) => void;
   zoomArea: (area: AreaValueObject) => void;
   leaveGame: () => void;
 };
@@ -68,7 +64,7 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     ]),
     joinGame: () => {},
     updateUnitPattern: () => {},
-    reviveUnitsWithPattern: () => {},
+    buildItem: () => {},
     zoomArea: () => {},
     leaveGame: () => {},
   };
@@ -194,46 +190,19 @@ export function Provider({ children }: Props) {
     disconnect();
   }, [disconnect]);
 
-  const reviveUnitsWithPattern = useCallback(
-    (coordinate: CoordinateValueObject, patternOffset: OffsetValueObject, pattern: UnitPatternValueObject) => {
-      const normalizeCoordinate = (c: CoordinateDto) => {
-        if (!dimension) {
-          return c;
-        }
-        let normalizedX = c.x;
-        let normalizedY = c.y;
-        while (normalizedX < 0) {
-          normalizedX += dimension.getWidth();
-        }
-        while (normalizedY < 0) {
-          normalizedY += dimension.getHeight();
-        }
-        return {
-          x: normalizedX % dimension.getWidth(),
-          y: normalizedY % dimension.getHeight(),
-        };
-      };
-
-      const coordinates: CoordinateDto[] = [];
-      pattern.iterate((colIdx: number, rowIdx: number, alive: boolean) => {
-        if (alive) {
-          coordinates.push({
-            x: coordinate.getX() + colIdx + patternOffset.getX(),
-            y: coordinate.getY() + rowIdx + patternOffset.getY(),
-          });
-        }
-      });
-
-      const action: ReviveUnitsAction = {
-        type: ActionTypeEnum.ReviveUnits,
+  const buildItem = useCallback(
+    (coordinate: CoordinateValueObject, itemId: string) => {
+      const action: BuildItemAction = {
+        type: ActionTypeEnum.BuildItem,
         payload: {
-          coordinates: coordinates.map(normalizeCoordinate),
+          coordinate: { x: coordinate.getX(), y: coordinate.getY() },
+          itemId,
           actionedAt: new Date().toISOString(),
         },
       };
       sendMessage(action);
     },
-    [dimension, sendMessage]
+    [sendMessage]
   );
 
   const sendZoomAreaAction = useCallback(
@@ -277,7 +246,7 @@ export function Provider({ children }: Props) {
       joinGame,
       leaveGame,
       updateUnitPattern,
-      reviveUnitsWithPattern,
+      buildItem,
       zoomArea,
     }),
     [
@@ -291,7 +260,7 @@ export function Provider({ children }: Props) {
       joinGame,
       leaveGame,
       updateUnitPattern,
-      reviveUnitsWithPattern,
+      buildItem,
       zoomArea,
     ]
   );

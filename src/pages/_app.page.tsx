@@ -3,12 +3,15 @@ import type { AppProps } from 'next/app';
 import { appWithTranslation } from 'next-i18next';
 import { wrapper } from '@/stores';
 import { Provider as GameRoomProvider } from '@/contexts/GameRoom';
+import { Provider as ItemContextProvider } from '@/contexts/ItemContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <GameRoomProvider>
-      <Component {...pageProps} />
-    </GameRoomProvider>
+    <ItemContextProvider>
+      <GameRoomProvider>
+        <Component {...pageProps} />
+      </GameRoomProvider>
+    </ItemContextProvider>
   );
 }
 
