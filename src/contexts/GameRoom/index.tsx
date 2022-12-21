@@ -152,6 +152,7 @@ export function Provider({ children }: Props) {
   const handleSocketMessage = useCallback(
     (msg: any) => {
       const newMsg: Event = msg;
+      console.log(newMsg);
       if (newMsg.type === EventTypeEnum.AreaZoomed) {
         handleAreaZoomedEvent(newMsg);
       } else if (newMsg.type === EventTypeEnum.ZoomedAreaUpdated) {
