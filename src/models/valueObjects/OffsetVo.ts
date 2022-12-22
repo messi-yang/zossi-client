@@ -1,4 +1,4 @@
-export default class OffsetValueObject {
+export default class OffsetVo {
   private x: number;
 
   private y: number;

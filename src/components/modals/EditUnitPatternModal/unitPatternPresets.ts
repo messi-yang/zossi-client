@@ -1,9 +1,9 @@
-import { UnitPatternValueObject } from '@/models/valueObjects';
+import { UnitPatternVo } from '@/models/valueObjects';
 import { createUnitPattern } from '@/models/valueObjects/factories';
 
 type UnitPatternPreset = {
   title: string;
-  pattern: UnitPatternValueObject;
+  pattern: UnitPatternVo;
 };
 
 const unitPatternPresets: UnitPatternPreset[] = [

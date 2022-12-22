@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { CoordinateValueObject, OffsetValueObject, UnitPatternValueObject } from '@/models/valueObjects';
+import { CoordinateVo, OffsetVo, UnitPatternVo } from '@/models/valueObjects';
 import {
   createCoordinate,
   createArea,
@@ -24,11 +24,7 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { area, unitBlock } = args;
-  const handleUnitsRevive = (
-    coordinate: CoordinateValueObject,
-    patternOffset: OffsetValueObject,
-    pattern: UnitPatternValueObject
-  ) => {
+  const handleUnitsRevive = (coordinate: CoordinateVo, patternOffset: OffsetVo, pattern: UnitPatternVo) => {
     if (!area) {
       return;
     }

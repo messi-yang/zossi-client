@@ -1,9 +1,9 @@
 import { createContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { ItemApi } from '@/apis';
-import { ItemAggregate } from '@/models/aggregates';
+import { ItemAgg } from '@/models/aggregates';
 
 type ItemContextValue = {
-  items: ItemAggregate[] | null;
+  items: ItemAgg[] | null;
 };
 
 function createInitialItemContextValue(): ItemContextValue {
@@ -19,7 +19,7 @@ type Props = {
 export function Provider({ children }: Props) {
   const itemApi = ItemApi.newItemApi();
 
-  const [items, setItems] = useState<ItemAggregate[] | null>(null);
+  const [items, setItems] = useState<ItemAgg[] | null>(null);
 
   const fetchItems = useCallback(async () => {
     const returnedItems = await itemApi.fetchItems();

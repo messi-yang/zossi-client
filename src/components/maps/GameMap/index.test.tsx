@@ -1,9 +1,9 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
-import { UnitBlockValueObject } from '@/models/valueObjects';
+import { UnitBlockVo } from '@/models/valueObjects';
 import { createOffset, createUnit, createUnitBlock, createUnitPattern } from '@/models/valueObjects/factories';
 
-function renderGameMap(unitBlock: UnitBlockValueObject): RenderResult {
+function renderGameMap(unitBlock: UnitBlockVo): RenderResult {
   return render(
     <GameMap
       area={null}

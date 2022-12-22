@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
-import { UnitPatternValueObject } from '@/models/valueObjects';
+import { UnitPatternVo } from '@/models/valueObjects';
 import { createUnitBlockByUnitPattern } from '@/models/valueObjects/factories';
 import UnitBoard from '@/components/boards/UnitBoard';
 import dataTestids from './dataTestids';
 
 type Props = {
   unitSize: number;
-  unitPattern: UnitPatternValueObject;
-  onUpdate: (unitPattern: UnitPatternValueObject) => any;
+  unitPattern: UnitPatternVo;
+  onUpdate: (unitPattern: UnitPatternVo) => any;
 };
 
 function UnitPatternEditor({ unitSize, unitPattern, onUpdate = () => {} }: Props) {

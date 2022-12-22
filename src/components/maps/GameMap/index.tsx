@@ -2,13 +2,7 @@ import { memo, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import UnitBlockCanvas from '@/components/canvas/UnitBlockCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import {
-  AreaValueObject,
-  UnitBlockValueObject,
-  CoordinateValueObject,
-  OffsetValueObject,
-  UnitPatternValueObject,
-} from '@/models/valueObjects';
+import { AreaVo, UnitBlockVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/models/valueObjects';
 import {
   createCoordinate,
   createDimension,
@@ -17,21 +11,17 @@ import {
 } from '@/models/valueObjects/factories';
 import dataTestids from './dataTestids';
 
-function calculateUnitPatternOffset(unitPattern: UnitPatternValueObject): OffsetValueObject {
+function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
   return createOffset(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
 }
 
 type Props = {
-  area: AreaValueObject | null;
-  areaOffset: OffsetValueObject;
-  unitBlock: UnitBlockValueObject | null;
-  unitPattern: UnitPatternValueObject;
-  onUnitsRevive: (
-    coordinate: CoordinateValueObject,
-    unitPatternOffset: OffsetValueObject,
-    unitPattern: UnitPatternValueObject
-  ) => any;
-  onAreaUpdate: (newArea: AreaValueObject) => any;
+  area: AreaVo | null;
+  areaOffset: OffsetVo;
+  unitBlock: UnitBlockVo | null;
+  unitPattern: UnitPatternVo;
+  onUnitsRevive: (coordinate: CoordinateVo, unitPatternOffset: OffsetVo, unitPattern: UnitPatternVo) => any;
+  onAreaUpdate: (newArea: AreaVo) => any;
 };
 
 function GameMap({ area, areaOffset, unitBlock, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
@@ -46,9 +36,7 @@ function GameMap({ area, areaOffset, unitBlock, unitPattern, onUnitsRevive, onAr
     () => createDimension(desiredAreaWidth, desiredAreaHeight),
     [desiredAreaWidth, desiredAreaHeight]
   );
-  const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetValueObject>(
-    calculateUnitPatternOffset(unitPattern)
-  );
+  const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVo>(calculateUnitPatternOffset(unitPattern));
 
   useEffect(() => {
     setUnitPatternOffset(calculateUnitPatternOffset(unitPattern));

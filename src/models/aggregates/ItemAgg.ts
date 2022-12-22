@@ -1,4 +1,4 @@
-export default class ItemAggregate {
+export default class ItemAgg {
   private id: string;
 
   private name: string;
@@ -8,8 +8,8 @@ export default class ItemAggregate {
     this.name = params.name;
   }
 
-  static newItemAggregate(params: { id: string; name: string }) {
-    return new ItemAggregate(params);
+  static newItemAgg(params: { id: string; name: string }) {
+    return new ItemAgg(params);
   }
 
   public getId(): string {

@@ -4,7 +4,7 @@ import { useArgs } from '@storybook/client-api';
 import { createUnitBlock, createUnit } from '@/models/valueObjects/factories';
 
 import UnitBoard from '.';
-import { UnitBlockValueObject } from '@/models/valueObjects';
+import { UnitBlockVo } from '@/models/valueObjects';
 
 export default {
   title: 'Editor/UnitBoard',
@@ -15,7 +15,7 @@ export default {
 const Template: ComponentStory<typeof UnitBoard> = function Template(args) {
   const [currentArgs, updateArgs] = useArgs();
   const handleUnitClick = (colIdx: number, rowIdx: number) => {
-    let newUnitBlock: UnitBlockValueObject = currentArgs.unitBlock;
+    let newUnitBlock: UnitBlockVo = currentArgs.unitBlock;
     newUnitBlock = newUnitBlock.setUnitAlive(colIdx, rowIdx, true);
     updateArgs({
       uniMap: newUnitBlock,

@@ -7,7 +7,7 @@ import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
 import ItemContext from '@/contexts/ItemContext';
-import { AreaValueObject, UnitPatternValueObject, CoordinateValueObject } from '@/models/valueObjects';
+import { AreaVo, UnitPatternVo, CoordinateVo } from '@/models/valueObjects';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 import GameMiniMap from '@/components/maps/GameMiniMap';
@@ -53,7 +53,7 @@ const Room: NextPage = function Room() {
     router.push('/');
   };
 
-  const handleAreaUpdate = (newArea: AreaValueObject) => {
+  const handleAreaUpdate = (newArea: AreaVo) => {
     zoomArea(newArea);
   };
 
@@ -68,13 +68,13 @@ const Room: NextPage = function Room() {
     setIsEditUnitPatternModalVisible(false);
   };
 
-  const handleUnitPatternEdit = (newUnitPattern: UnitPatternValueObject) => {
+  const handleUnitPatternEdit = (newUnitPattern: UnitPatternVo) => {
     updateUnitPattern(newUnitPattern);
     setIsEditUnitPatternModalVisible(false);
   };
 
   const handleUnitsRevive = useCallback(
-    (coordinate: CoordinateValueObject) => {
+    (coordinate: CoordinateVo) => {
       if (!items || !items[0]) {
         return;
       }

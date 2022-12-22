@@ -1,4 +1,4 @@
-export default class UnitValueObject {
+export default class UnitVo {
   private alive: boolean;
 
   constructor(alive: boolean) {

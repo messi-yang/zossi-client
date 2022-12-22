@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { Axios } from 'axios';
-import { ItemAggregate } from '@/models/aggregates';
+import { ItemAgg } from '@/models/aggregates';
 import { ItemDto } from '@/models/dtos';
 
 export default class ItemApi {
@@ -17,9 +17,9 @@ export default class ItemApi {
     return new ItemApi();
   }
 
-  public async fetchItems(): Promise<ItemAggregate[]> {
+  public async fetchItems(): Promise<ItemAgg[]> {
     const { data } = await this.axios.get<ItemDto[]>('/items');
 
-    return data.map((itemDto) => ItemAggregate.newItemAggregate({ id: itemDto.id, name: itemDto.name }));
+    return data.map((itemDto) => ItemAgg.newItemAgg({ id: itemDto.id, name: itemDto.name }));
   }
 }

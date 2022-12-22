@@ -108,7 +108,7 @@ const addFillerBorder = (pattern: boolean[][]): boolean[][] => {
   return newPattern;
 };
 
-export default class UnitPatternValueObject {
+export default class UnitPatternVo {
   private pattern: boolean[][];
 
   constructor(pattern: boolean[][]) {
@@ -119,7 +119,7 @@ export default class UnitPatternValueObject {
     return flatten(this.pattern).findIndex((alive) => alive) === -1;
   }
 
-  public isEqual(pattern: UnitPatternValueObject): boolean {
+  public isEqual(pattern: UnitPatternVo): boolean {
     return isEqual(this.pattern, pattern.pattern);
   }
 
@@ -135,15 +135,15 @@ export default class UnitPatternValueObject {
     return this.pattern?.[0].length || 0;
   }
 
-  public setPatternUnit(colIdx: number, rowIdx: number, alive: boolean): UnitPatternValueObject {
+  public setPatternUnit(colIdx: number, rowIdx: number, alive: boolean): UnitPatternVo {
     const newPattern = cloneDeep(this.pattern);
     newPattern[colIdx][rowIdx] = alive;
-    return new UnitPatternValueObject(newPattern);
+    return new UnitPatternVo(newPattern);
   }
 
-  public addFillerBorder(): UnitPatternValueObject {
+  public addFillerBorder(): UnitPatternVo {
     const newPattern = addFillerBorder(this.pattern);
-    return new UnitPatternValueObject(newPattern);
+    return new UnitPatternVo(newPattern);
   }
 
   public iterate(cb: (colIdx: number, rowIdx: number, alive: boolean) => void) {

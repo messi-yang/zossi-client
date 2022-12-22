@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { generateKeyFromIndex } from '@/utils/component';
-import { UnitBlockValueObject } from '@/models/valueObjects';
+import { UnitBlockVo } from '@/models/valueObjects';
 import UnitSquare from './subComponents/UnitSquare';
 import dataTestids from './dataTestids';
 
 type Props = {
-  unitBlock: UnitBlockValueObject;
+  unitBlock: UnitBlockVo;
   unitSize: number;
   onUnitClick?: (colIdx: number, rowIdx: number) => void;
 };

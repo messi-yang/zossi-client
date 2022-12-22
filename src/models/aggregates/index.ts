@@ -1,4 +1,4 @@
-import ItemAggregate from './ItemAggregate';
+import ItemAgg from './ItemAgg';
 
-export { ItemAggregate };
+export { ItemAgg };
 export default {};

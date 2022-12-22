@@ -2,14 +2,14 @@ import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
-import { UnitPatternValueObject } from '@/models/valueObjects';
+import { UnitPatternVo } from '@/models/valueObjects';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
 type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
-  unitPattern: UnitPatternValueObject;
+  unitPattern: UnitPatternVo;
   onUnitPatternClick: () => void;
   isMiniMapActive: boolean;
   onMiniMapClick: () => void;

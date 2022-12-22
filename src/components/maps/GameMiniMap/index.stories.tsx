@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { AreaValueObject } from '@/models/valueObjects';
+import { AreaVo } from '@/models/valueObjects';
 import { createCoordinate, createArea, createDimension } from '@/models/valueObjects/factories';
 
 import GameMiniMap from '.';
@@ -14,7 +14,7 @@ export default {
 
 const Template: ComponentStory<typeof GameMiniMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleAreaUpdate = (newArea: AreaValueObject) => {
+  const handleAreaUpdate = (newArea: AreaVo) => {
     updateArgs({
       area: newArea,
     });

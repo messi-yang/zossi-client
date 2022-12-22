@@ -1,6 +1,6 @@
 import range from 'lodash/range';
 
-export default class DimensionValueObject {
+export default class DimensionVo {
   private width: number;
 
   private height: number;
@@ -10,7 +10,7 @@ export default class DimensionValueObject {
     this.height = height;
   }
 
-  public isEqual(dimension: DimensionValueObject): boolean {
+  public isEqual(dimension: DimensionVo): boolean {
     return this.width === dimension.getWidth() && this.height === dimension.getHeight();
   }
 

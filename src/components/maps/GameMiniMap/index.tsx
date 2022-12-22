@@ -1,14 +1,14 @@
 import { useRef } from 'react';
-import { DimensionValueObject, AreaValueObject } from '@/models/valueObjects';
+import { DimensionVo, AreaVo } from '@/models/valueObjects';
 import { createCoordinate, createArea } from '@/models/valueObjects/factories';
 import usePull from '@/hooks/usePull';
 import dataTestids from './dataTestids';
 
 type Props = {
   width: number;
-  dimension: DimensionValueObject;
-  area: AreaValueObject;
-  onAreaUpdate: (newArea: AreaValueObject) => void;
+  dimension: DimensionVo;
+  area: AreaVo;
+  onAreaUpdate: (newArea: AreaVo) => void;
 };
 
 function GameMiniMap({ width, dimension, area, onAreaUpdate }: Props) {
@@ -26,7 +26,7 @@ function GameMiniMap({ width, dimension, area, onAreaUpdate }: Props) {
   const areaElemWidth = elemWidth * mapZoomedAreaWidthRatio;
   const areaElemHeight = elemHeight * mapZoomedAreaHeightRatio;
 
-  const calculateNewAreaFromMouseEvent = (clientX: number, clientY: number): AreaValueObject => {
+  const calculateNewAreaFromMouseEvent = (clientX: number, clientY: number): AreaVo => {
     if (!mapContentElemRef.current) {
       return area;
     }

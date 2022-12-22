@@ -2,13 +2,7 @@ import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 're
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import {
-  UnitValueObject,
-  UnitBlockValueObject,
-  DimensionValueObject,
-  OffsetValueObject,
-  UnitPatternValueObject,
-} from '@/models/valueObjects';
+import { UnitVo, UnitBlockVo, DimensionVo, OffsetVo, UnitPatternVo } from '@/models/valueObjects';
 import { createOffset, createDimensionByUnitBlock } from '@/models/valueObjects/factories';
 
 import dataTestids from './dataTestids';
@@ -32,7 +26,7 @@ type Resolution = {
   height: number;
 };
 
-function generateCanvasElemSize(unitBlock: UnitBlockValueObject, unitSize: number): ElemSize {
+function generateCanvasElemSize(unitBlock: UnitBlockVo, unitSize: number): ElemSize {
   const dimension = createDimensionByUnitBlock(unitBlock);
 
   return {
@@ -41,11 +35,7 @@ function generateCanvasElemSize(unitBlock: UnitBlockValueObject, unitSize: numbe
   };
 }
 
-function generateCanvasResolution(
-  unitBlock: UnitBlockValueObject,
-  unitSize: number,
-  canvasUnitSize: number
-): Resolution {
+function generateCanvasResolution(unitBlock: UnitBlockVo, unitSize: number, canvasUnitSize: number): Resolution {
   const elemSize = generateCanvasElemSize(unitBlock, unitSize);
 
   return {
@@ -54,14 +44,14 @@ function generateCanvasResolution(
   };
 }
 
-function calculateUnitPatternOffset(unitPattern: UnitPatternValueObject): OffsetValueObject {
+function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
   return createOffset(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
 }
 
 type Props = {
-  unitBlock: UnitBlockValueObject;
+  unitBlock: UnitBlockVo;
   unitSize: number;
-  unitPattern: UnitPatternValueObject;
+  unitPattern: UnitPatternVo;
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
@@ -95,12 +85,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, unitPattern, onClick }: Props) {
   );
 
   const drawGrid = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      newDimension: DimensionValueObject,
-      newUnitSize: number,
-      newCanvasUnitSize: number
-    ) => {
+    (ctx: CanvasRenderingContext2D, newDimension: DimensionVo, newUnitSize: number, newCanvasUnitSize: number) => {
       ctx.strokeStyle = color.borderColor; // eslint-disable-line no-param-reassign
       ctx.lineWidth = canvasUnitSize; // eslint-disable-line no-param-reassign
       ctx.beginPath();
@@ -129,14 +114,14 @@ function UnitBlockCanvas({ unitBlock, unitSize, unitPattern, onClick }: Props) {
   const drawUnits = useCallback(
     (
       ctx: CanvasRenderingContext2D,
-      newUnitBlock: UnitBlockValueObject,
+      newUnitBlock: UnitBlockVo,
       newUnitSize: number,
       newCanvasUnitSize: number,
       newBorderWidth: number
     ) => {
       ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
-      newUnitBlock.iterateUnit((colIdx: number, rowIdx: number, unit: UnitValueObject) => {
+      newUnitBlock.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
         if (unit.isAlive()) {
           ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
           const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
@@ -157,12 +142,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, unitPattern, onClick }: Props) {
   );
 
   const draw = useCallback(
-    (
-      newUnitBlock: UnitBlockValueObject,
-      newUnitSize: number,
-      newDimension: DimensionValueObject,
-      newCanvasUnitSize: number
-    ) => {
+    (newUnitBlock: UnitBlockVo, newUnitSize: number, newDimension: DimensionVo, newCanvasUnitSize: number) => {
       const ctx = unitBlockCanvasElem?.getContext('2d');
       if (!ctx) {
         return;
@@ -182,7 +162,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, unitPattern, onClick }: Props) {
   }, []);
 
   const calculateIndexes = useCallback(
-    (relativeX: number, relativeY: number, newUnitSize: number, newDimension: DimensionValueObject): Indexes => {
+    (relativeX: number, relativeY: number, newUnitSize: number, newDimension: DimensionVo): Indexes => {
       let colIdx = Math.floor(relativeX / newUnitSize);
       let rowIdx = Math.floor(relativeY / newUnitSize);
       if (colIdx >= newDimension.getWidth()) {
@@ -200,7 +180,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, unitPattern, onClick }: Props) {
   const drawUnitPattern = (
     ctx: CanvasRenderingContext2D,
     newHoveredIndexes: Indexes,
-    newUnitPattern: UnitPatternValueObject,
+    newUnitPattern: UnitPatternVo,
     newUnitSize: number,
     newBorderWidth: number,
     newCanvasUnitSize: number

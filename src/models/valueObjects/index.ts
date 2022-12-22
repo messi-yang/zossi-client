@@ -1,18 +1,10 @@
-import UnitValueObject from '@/models/valueObjects/UnitValueObject';
-import UnitBlockValueObject from '@/models/valueObjects/UnitBlockValueObject';
-import CoordinateValueObject from '@/models/valueObjects/CoordinateValueObject';
-import OffsetValueObject from '@/models/valueObjects/OffsetValueObject';
-import AreaValueObject from '@/models/valueObjects/AreaValueObject';
-import UnitPatternValueObject from '@/models/valueObjects/UnitPatternValueObject';
-import DimensionValueObject from '@/models/valueObjects/DimensionValueObject';
+import UnitVo from '@/models/valueObjects/UnitVo';
+import UnitBlockVo from '@/models/valueObjects/UnitBlockVo';
+import CoordinateVo from '@/models/valueObjects/CoordinateVo';
+import OffsetVo from '@/models/valueObjects/OffsetVo';
+import AreaVo from '@/models/valueObjects/AreaVo';
+import UnitPatternVo from '@/models/valueObjects/UnitPatternVo';
+import DimensionVo from '@/models/valueObjects/DimensionVo';
 
 export default {};
-export {
-  UnitValueObject,
-  UnitBlockValueObject,
-  CoordinateValueObject,
-  OffsetValueObject,
-  AreaValueObject,
-  UnitPatternValueObject,
-  DimensionValueObject,
-};
+export { UnitVo, UnitBlockVo, CoordinateVo, OffsetVo, AreaVo, UnitPatternVo, DimensionVo };
