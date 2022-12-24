@@ -2,8 +2,8 @@ import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 're
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import { UnitVo, UnitBlockVo, DimensionVo, OffsetVo, UnitPatternVo } from '@/models/valueObjects';
-import { createOffset, createDimensionByUnitBlock, createUnitPattern } from '@/models/valueObjects/factories';
+import { UnitVo, UnitBlockVo, DimensionVo } from '@/models/valueObjects';
+import { createDimensionByUnitBlock } from '@/models/valueObjects/factories';
 
 import dataTestids from './dataTestids';
 
@@ -44,10 +44,6 @@ function generateCanvasResolution(unitBlock: UnitBlockVo, unitSize: number, canv
   };
 }
 
-function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
-  return createOffset(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
-}
-
 type Props = {
   unitBlock: UnitBlockVo;
   unitSize: number;
@@ -55,7 +51,6 @@ type Props = {
 };
 
 function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
-  const [unitPattern] = useState<UnitPatternVo>(createUnitPattern([[true]]));
   const [unitBlockCanvasElem, setUnitBlockCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [patternCanvasElem, setPatternCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
@@ -180,31 +175,21 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
   const drawUnitPattern = (
     ctx: CanvasRenderingContext2D,
     newHoveredIndexes: Indexes,
-    newUnitPattern: UnitPatternVo,
     newUnitSize: number,
     newBorderWidth: number,
     newCanvasUnitSize: number
   ) => {
-    const unitPatternOffset = calculateUnitPatternOffset(newUnitPattern);
-
     ctx.fillStyle = color.hoverColor; // eslint-disable-line no-param-reassign
     ctx.beginPath();
-    newUnitPattern.iterate((colIdx: number, rowIdx: number, alive: boolean) => {
-      if (!alive) {
-        return;
-      }
-      const leftTopX =
-        ((newHoveredIndexes[0] + colIdx + unitPatternOffset.getX()) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-      const leftTopY =
-        ((newHoveredIndexes[1] + rowIdx + unitPatternOffset.getY()) * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-      ctx.moveTo(leftTopX, leftTopY);
-      ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
-      ctx.lineTo(
-        leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize,
-        leftTopY + (newUnitSize - newBorderWidth) * newCanvasUnitSize
-      );
-      ctx.lineTo(leftTopX, leftTopY + (newUnitSize - 1) * newCanvasUnitSize);
-    });
+    const leftTopX = (newHoveredIndexes[0] * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+    const leftTopY = (newHoveredIndexes[1] * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+    ctx.moveTo(leftTopX, leftTopY);
+    ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
+    ctx.lineTo(
+      leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize,
+      leftTopY + (newUnitSize - newBorderWidth) * newCanvasUnitSize
+    );
+    ctx.lineTo(leftTopX, leftTopY + (newUnitSize - 1) * newCanvasUnitSize);
     ctx.closePath();
     ctx.fill();
   };
@@ -243,7 +228,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
     }
 
     if (hoveredIndexes) {
-      drawUnitPattern(ctx, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize);
+      drawUnitPattern(ctx, hoveredIndexes, unitSize, borderWidth, canvasUnitSize);
     }
 
     return () => {
@@ -251,7 +236,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
         clean(ctx);
       }
     };
-  }, [patternCanvasElem, hoveredIndexes, unitPattern, unitSize, borderWidth, canvasUnitSize]);
+  }, [patternCanvasElem, hoveredIndexes, unitSize, borderWidth, canvasUnitSize]);
 
   const handleDropPatternCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;

@@ -4,7 +4,6 @@ import UnitVo from '@/models/valueObjects/UnitVo';
 import AreaVo from '@/models/valueObjects/AreaVo';
 import DimensionVo from '@/models/valueObjects/DimensionVo';
 import UnitBlockVo from '@/models/valueObjects/UnitBlockVo';
-import UnitPatternVo from '@/models/valueObjects/UnitPatternVo';
 
 export function createArea(from: CoordinateVo, to: CoordinateVo): AreaVo {
   return new AreaVo(from, to);
@@ -24,10 +23,6 @@ export function createOffset(x: number, y: number): OffsetVo {
 
 export function createUnitBlock(unitMatrix: UnitVo[][]): UnitBlockVo {
   return new UnitBlockVo(unitMatrix);
-}
-
-export function createUnitPattern(pattern: boolean[][]): UnitPatternVo {
-  return new UnitPatternVo(pattern);
 }
 
 export function createUnit(alive: boolean): UnitVo {
@@ -58,12 +53,6 @@ export function createDimensionByArea(area: AreaVo): DimensionVo {
 
 export function createUnitBlockByDimension(dimension: DimensionVo): UnitBlockVo {
   const unitBlock = dimension.map<UnitVo>(() => new UnitVo(false));
-  return new UnitBlockVo(unitBlock);
-}
-
-export function createUnitBlockByUnitPattern(unitPattern: UnitPatternVo): UnitBlockVo {
-  const unitBlock = unitPattern.map((_: number, __: number, alive: boolean) => new UnitVo(alive));
-
   return new UnitBlockVo(unitBlock);
 }
 

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
 import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
 import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
-import { createUnitPattern } from '@/models/valueObjects/factories';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
@@ -19,8 +18,7 @@ function GameRoomSideBar({ align, onLogoClick, onUnitPatternClick, isMiniMapActi
 
   const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
 
-  const unitPattern = createUnitPattern([[true]]);
-  const isUnitPatternEmpty = unitPattern.isEmpty();
+  const isUnitPatternActive = true;
 
   return (
     <section
@@ -41,7 +39,7 @@ function GameRoomSideBar({ align, onLogoClick, onUnitPatternClick, isMiniMapActi
       <ItemWrapper
         label="Pattern"
         highlighted={isUnitPatternHovered}
-        active={!isUnitPatternEmpty}
+        active={isUnitPatternActive}
         hovered={isUnitPatternHovered}
         onClick={onUnitPatternClick}
         onMouseEnter={() => {
@@ -51,7 +49,7 @@ function GameRoomSideBar({ align, onLogoClick, onUnitPatternClick, isMiniMapActi
           setIsUnitPatternHovered(false);
         }}
       >
-        <UnitPatternIcon highlighted={isUnitPatternHovered} active={!isUnitPatternEmpty} />
+        <UnitPatternIcon highlighted={isUnitPatternHovered} active={isUnitPatternActive} />
       </ItemWrapper>
       <ItemWrapper
         label="Map"
