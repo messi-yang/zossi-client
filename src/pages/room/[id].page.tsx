@@ -2,7 +2,7 @@ import { useContext, useState, useEffect, useCallback } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/hooks/useWindowSize';
-import GameRoomContext from '@/contexts/GameRoom';
+import GameContext from '@/contexts/GameContext';
 import { AreaVo, CoordinateVo } from '@/models/valueObjects';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
@@ -28,7 +28,7 @@ const Room: NextPage = function Room() {
     leaveGame,
     buildItem,
     zoomArea,
-  } = useContext(GameRoomContext);
+  } = useContext(GameContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
 
