@@ -22,6 +22,7 @@ const Room: NextPage = function Room() {
     unitBlock,
     status,
     unitPattern,
+    joinGame,
     leaveGame,
     buildItem,
     zoomArea,
@@ -44,6 +45,11 @@ const Room: NextPage = function Room() {
       router.push('/');
     }
   }, [status]);
+
+  const joinGameOnInitializationEffect = useCallback(() => {
+    joinGame();
+  }, [joinGame]);
+  useEffect(joinGameOnInitializationEffect, [joinGameOnInitializationEffect]);
 
   const handleRouterLeaveEffect = useCallback(() => {
     const handleRouterChangeStart = () => {

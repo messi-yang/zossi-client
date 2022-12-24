@@ -1,9 +1,7 @@
-import { useContext } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import useWindowSize from '@/hooks/useWindowSize';
-import GameRoomContext from '@/contexts/GameRoom';
 
 import BigLogo from '@/components/logos/BigLogo';
 import Button from '@/components/buttons/Button';
@@ -11,12 +9,10 @@ import Button from '@/components/buttons/Button';
 const Landing: NextPage = function Landing() {
   const windowSize = useWindowSize();
   const deviceSize: 'large' | 'small' = windowSize.width > 475 ? 'large' : 'small';
-  const { joinGame } = useContext(GameRoomContext);
 
   const router = useRouter();
 
   const onStartClick = () => {
-    joinGame();
     router.push('/room/a');
   };
 
