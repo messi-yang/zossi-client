@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { CoordinateVo, OffsetVo, UnitPatternVo } from '@/models/valueObjects';
+import { CoordinateVo } from '@/models/valueObjects';
 import {
   createCoordinate,
   createArea,
@@ -23,7 +23,7 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { area, unitBlock } = args;
-  const handleUnitsRevive = (coordinate: CoordinateVo, patternOffset: OffsetVo, pattern: UnitPatternVo) => {
+  const handleUnitsRevive = (coordinate: CoordinateVo) => {
     if (!area) {
       return;
     }
@@ -32,13 +32,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     }
 
     const unitMatrix = unitBlock.getUnitMatrix();
-    pattern.iterate((colIdx: number, rowIdx: number, alive: boolean) => {
-      if (alive) {
-        const adjustedX = coordinate.getX() - area.getFrom().getX() + colIdx + patternOffset.getX();
-        const adjustedY = coordinate.getY() - area.getFrom().getY() + rowIdx + patternOffset.getY();
-        unitMatrix[adjustedX][adjustedY] = createUnit(true);
-      }
-    });
+    unitMatrix[coordinate.getX()][coordinate.getY()] = createUnit(true);
 
     updateArgs({
       unitBlock: createUnitBlock(unitMatrix),

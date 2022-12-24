@@ -2,30 +2,19 @@ import { memo, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import UnitBlockCanvas from '@/components/canvas/UnitBlockCanvas';
 import useDomRect from '@/hooks/useDomRect';
 import useResolutionCalculator from '@/hooks/useResolutionCalculator';
-import { AreaVo, UnitBlockVo, CoordinateVo, OffsetVo, UnitPatternVo } from '@/models/valueObjects';
-import {
-  createCoordinate,
-  createDimension,
-  createOffset,
-  createAreaByCoordinateAndDimension,
-  createUnitPattern,
-} from '@/models/valueObjects/factories';
+import { AreaVo, UnitBlockVo, CoordinateVo, OffsetVo } from '@/models/valueObjects';
+import { createCoordinate, createDimension, createAreaByCoordinateAndDimension } from '@/models/valueObjects/factories';
 import dataTestids from './dataTestids';
-
-function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
-  return createOffset(-Math.floor(unitPattern.getWidth() / 2), -Math.floor(unitPattern.getHeight() / 2));
-}
 
 type Props = {
   area: AreaVo | null;
   areaOffset: OffsetVo;
   unitBlock: UnitBlockVo | null;
-  onUnitsRevive: (coordinate: CoordinateVo, unitPatternOffset: OffsetVo, unitPattern: UnitPatternVo) => any;
+  onUnitsRevive: (coordinate: CoordinateVo) => any;
   onAreaUpdate: (newArea: AreaVo) => any;
 };
 
 function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: Props) {
-  const unitPattern = createUnitPattern([[true]]);
   const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -37,7 +26,6 @@ function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: P
     () => createDimension(desiredAreaWidth, desiredAreaHeight),
     [desiredAreaWidth, desiredAreaHeight]
   );
-  const [unitPatternOffset] = useState<OffsetVo>(calculateUnitPatternOffset(unitPattern));
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
@@ -48,9 +36,9 @@ function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: P
       const originCoordinate = area.getFrom();
       const finalCoordinate = originCoordinate.shift(colIdx, rowIdx);
 
-      onUnitsRevive(finalCoordinate, unitPatternOffset, unitPattern);
+      onUnitsRevive(finalCoordinate);
     },
-    [unitPatternOffset, onUnitsRevive, area]
+    [onUnitsRevive, area]
   );
 
   useEffect(() => {
@@ -69,14 +57,7 @@ function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: P
         className="relative w-full h-full flex"
         style={{ left: areaOffset.getX() * squareSize, top: areaOffset.getY() * squareSize }}
       >
-        {unitBlock && (
-          <UnitBlockCanvas
-            unitBlock={unitBlock}
-            unitSize={squareSize}
-            unitPattern={unitPattern}
-            onClick={handleUnitSquareClick}
-          />
-        )}
+        {unitBlock && <UnitBlockCanvas unitBlock={unitBlock} unitSize={squareSize} onClick={handleUnitSquareClick} />}
       </section>
     </section>
   );

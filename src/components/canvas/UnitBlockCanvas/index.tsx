@@ -3,7 +3,7 @@ import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
 import { UnitVo, UnitBlockVo, DimensionVo, OffsetVo, UnitPatternVo } from '@/models/valueObjects';
-import { createOffset, createDimensionByUnitBlock } from '@/models/valueObjects/factories';
+import { createOffset, createDimensionByUnitBlock, createUnitPattern } from '@/models/valueObjects/factories';
 
 import dataTestids from './dataTestids';
 
@@ -51,11 +51,11 @@ function calculateUnitPatternOffset(unitPattern: UnitPatternVo): OffsetVo {
 type Props = {
   unitBlock: UnitBlockVo;
   unitSize: number;
-  unitPattern: UnitPatternVo;
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
-function UnitBlockCanvas({ unitBlock, unitSize, unitPattern, onClick }: Props) {
+function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
+  const [unitPattern] = useState<UnitPatternVo>(createUnitPattern([[true]]));
   const [unitBlockCanvasElem, setUnitBlockCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [patternCanvasElem, setPatternCanvasElem] = useState<HTMLCanvasElement | null>(null);
 

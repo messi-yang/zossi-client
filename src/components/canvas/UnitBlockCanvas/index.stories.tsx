@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { createDimension, createUnitPattern, createUnitBlockByDimension } from '@/models/valueObjects/factories';
+import { createDimension, createUnitBlockByDimension } from '@/models/valueObjects/factories';
 
 import UnitBlockCanvas from '.';
 
@@ -18,5 +18,4 @@ export const Primary = Template.bind({});
 Primary.args = {
   unitBlock: createUnitBlockByDimension(createDimension(30, 30)),
   unitSize: 15,
-  unitPattern: createUnitPattern([[true]]),
 };
