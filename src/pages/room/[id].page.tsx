@@ -3,12 +3,12 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
-import ItemContext from '@/contexts/ItemContext';
 import { AreaVo, CoordinateVo } from '@/models/valueObjects';
 import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
 import GameMap from '@/components/maps/GameMap';
 import GameMiniMap from '@/components/maps/GameMiniMap';
 import SelectItemModal from '@/components/modals/SelectItemModal';
+import { ItemAgg } from '@/models/aggregates';
 
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
@@ -20,13 +20,15 @@ const Room: NextPage = function Room() {
     zoomedAreaOffset,
     targetArea,
     unitBlock,
+    items,
+    selectedItem,
     status,
+    selectItem,
     joinGame,
     leaveGame,
     buildItem,
     zoomArea,
   } = useContext(GameRoomContext);
-  const { items } = useContext(ItemContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
 
@@ -82,15 +84,19 @@ const Room: NextPage = function Room() {
     setIsSelectItemModalVisible(false);
   };
 
+  const handleItemSelect = (item: ItemAgg) => {
+    selectItem(item);
+  };
+
   const handleUnitsRevive = useCallback(
     (coordinate: CoordinateVo) => {
-      if (!items || !items[0]) {
+      if (!selectedItem) {
         return;
       }
 
-      buildItem(coordinate, items[0].getId());
+      buildItem(coordinate, selectedItem.getId());
     },
-    [items]
+    [selectedItem]
   );
 
   return (
@@ -100,8 +106,9 @@ const Room: NextPage = function Room() {
           <SelectItemModal
             opened={isSelectItemModalVisible}
             width={560}
-            selectedItemId={null}
+            selectedItem={selectedItem}
             items={items || []}
+            onSelect={handleItemSelect}
             onDone={handleSelectItemDone}
           />
           <section className="shrink-0">
@@ -138,8 +145,10 @@ const Room: NextPage = function Room() {
           <SelectItemModal
             opened={isSelectItemModalVisible}
             width={windowSize.width}
-            selectedItemId={null}
+            selectedItem={selectedItem}
             items={items || []}
+            onSelect={handleItemSelect}
+            onDone={handleSelectItemDone}
           />
           <section className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">

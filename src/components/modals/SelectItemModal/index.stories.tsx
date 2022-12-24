@@ -15,19 +15,21 @@ export default {
 const Template: ComponentStory<typeof SelectItemModal> = function Template(args) {
   const [, updateArgs] = useArgs();
 
-  const handleItemSelect = (itemId: string) => {
+  const handleItemSelect = (item: ItemAgg) => {
     updateArgs({
-      selectedItemId: itemId,
+      selectedItem: item,
     });
   };
 
   return <SelectItemModal {...args} onSelect={handleItemSelect} />;
 };
 
+const items = range(10).map((num) => ItemAgg.newItemAgg({ id: `sample-${num + 1}`, name: `Sample ${num + 1}` }));
+
 export const Primary = Template.bind({});
 Primary.args = {
   opened: true,
   width: 300,
-  selectedItemId: 'sample-1',
-  items: range(10).map((num) => ItemAgg.newItemAgg({ id: `sample-${num + 1}`, name: `Sample ${num + 1}` })),
+  items,
+  selectedItem: items[0],
 };

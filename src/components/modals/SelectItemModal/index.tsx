@@ -9,17 +9,15 @@ import dataTestids from './dataTestids';
 type Props = {
   opened: boolean;
   width: number;
-  selectedItemId: string | null;
+  selectedItem: ItemAgg | null;
   items: ItemAgg[];
-  onSelect?: (itemId: string) => void;
+  onSelect?: (item: ItemAgg) => void;
   onDone?: () => void;
 };
 
-function SelectItemModal({ opened, width, selectedItemId, items, onSelect = () => {}, onDone = () => {} }: Props) {
-  const selectedItem = items.find((item) => item.getId() === selectedItemId);
-
+function SelectItemModal({ opened, width, selectedItem, items, onSelect = () => {}, onDone = () => {} }: Props) {
   const handleItemSelect = (item: ItemAgg) => {
-    onSelect(item.getId());
+    onSelect(item);
   };
 
   return (
@@ -38,7 +36,11 @@ function SelectItemModal({ opened, width, selectedItemId, items, onSelect = () =
           <section className="flex">
             {items.map((item) => (
               <div key={item.getId()} className={classnames('w-[70px]', 'h-[70px]', 'shrink-0', 'mr-2')}>
-                <ItemBox item={item} active={selectedItemId === item.getId()} onClick={() => handleItemSelect(item)} />
+                <ItemBox
+                  item={item}
+                  active={selectedItem?.getId() === item.getId()}
+                  onClick={() => handleItemSelect(item)}
+                />
               </div>
             ))}
           </section>

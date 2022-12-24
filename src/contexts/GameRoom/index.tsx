@@ -1,8 +1,10 @@
-import { createContext, useCallback, useState, useMemo, useRef } from 'react';
+import { createContext, useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import debounce from 'lodash/debounce';
+import { ItemApi } from '@/apis';
 import useWebSocket from '@/hooks/useWebSocket';
 import type { UnitDto } from '@/models/dtos';
 import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo, OffsetVo } from '@/models/valueObjects';
+import { ItemAgg } from '@/models/aggregates';
 import {
   createCoordinate,
   createArea,
@@ -30,7 +32,10 @@ type ContextValue = {
   zoomedArea: AreaVo | null;
   targetArea: AreaVo | null;
   unitBlock: UnitBlockVo | null;
+  items: ItemAgg[] | null;
+  selectedItem: ItemAgg | null;
   zoomedAreaOffset: OffsetVo;
+  selectItem: (item: ItemAgg) => void;
   joinGame: () => void;
   buildItem: (coordinate: CoordinateVo, itemId: string) => void;
   zoomArea: (area: AreaVo) => void;
@@ -44,7 +49,10 @@ function createInitialContextValue(): ContextValue {
     zoomedArea: null,
     targetArea: null,
     unitBlock: null,
+    items: null,
+    selectedItem: null,
     zoomedAreaOffset: createOffset(0, 0),
+    selectItem: () => {},
     joinGame: () => {},
     buildItem: () => {},
     zoomArea: () => {},
@@ -59,11 +67,28 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
+  const itemApi = ItemApi.newItemApi();
+
   const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
   const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
 
   const initialContextValue = createInitialContextValue();
   const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
+
+  const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
+  const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(initialContextValue.selectedItem);
+  const fetchItems = useCallback(async () => {
+    const returnedItems = await itemApi.fetchItems();
+    setItems(returnedItems);
+    setSelectedItem(returnedItems[0]);
+  }, []);
+  const fetchItemsOnInitializationEffect = useCallback(() => {
+    fetchItems();
+  }, [fetchItems]);
+  useEffect(fetchItemsOnInitializationEffect, [fetchItemsOnInitializationEffect]);
+  const selectItem = useCallback((item: ItemAgg) => {
+    setSelectedItem(item);
+  }, []);
 
   const zoomedAreaSource = useRef<AreaVo | null>(initialContextValue.zoomedArea);
   const targetAreaSource = useRef<AreaVo | null>(initialContextValue.targetArea);
@@ -217,6 +242,9 @@ export function Provider({ children }: Props) {
           zoomedAreaOffset,
           targetArea,
           unitBlock,
+          items,
+          selectedItem,
+          selectItem,
           joinGame,
           leaveGame,
           buildItem,
@@ -229,6 +257,9 @@ export function Provider({ children }: Props) {
           zoomedAreaOffset,
           targetArea,
           unitBlock,
+          items,
+          selectedItem,
+          selectItem,
           joinGame,
           leaveGame,
           buildItem,
