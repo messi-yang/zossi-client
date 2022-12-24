@@ -1,7 +1,7 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
 import { UnitBlockVo } from '@/models/valueObjects';
-import { createOffset, createUnit, createUnitBlock, createUnitPattern } from '@/models/valueObjects/factories';
+import { createOffset, createUnit, createUnitBlock } from '@/models/valueObjects/factories';
 
 function renderGameMap(unitBlock: UnitBlockVo): RenderResult {
   return render(
@@ -9,7 +9,6 @@ function renderGameMap(unitBlock: UnitBlockVo): RenderResult {
       area={null}
       areaOffset={createOffset(0, 0)}
       unitBlock={unitBlock}
-      unitPattern={createUnitPattern([[true]])}
       onUnitsRevive={() => {}}
       onAreaUpdate={() => {}}
     />

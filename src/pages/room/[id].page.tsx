@@ -21,7 +21,6 @@ const Room: NextPage = function Room() {
     targetArea,
     unitBlock,
     status,
-    unitPattern,
     joinGame,
     leaveGame,
     buildItem,
@@ -98,20 +97,17 @@ const Room: NextPage = function Room() {
     <>
       {deviceSize === 'large' && (
         <main className="flex" style={{ width: windowSize.width, height: windowSize.height }}>
-          {items && (
-            <SelectItemModal
-              opened={isSelectItemModalVisible}
-              width={560}
-              selectedItemId={items[0].getId()}
-              items={items}
-              onDone={handleSelectItemDone}
-            />
-          )}
+          <SelectItemModal
+            opened={isSelectItemModalVisible}
+            width={560}
+            selectedItemId={null}
+            items={items || []}
+            onDone={handleSelectItemDone}
+          />
           <section className="shrink-0">
             <GameRoomSideBar
               align="column"
               onLogoClick={handleLogoClick}
-              unitPattern={unitPattern}
               onUnitPatternClick={handleUnitPatternClick}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
@@ -124,7 +120,6 @@ const Room: NextPage = function Room() {
                   area={zoomedArea}
                   areaOffset={zoomedAreaOffset}
                   unitBlock={unitBlock}
-                  unitPattern={unitPattern}
                   onUnitsRevive={handleUnitsRevive}
                   onAreaUpdate={zoomArea}
                 />
@@ -140,14 +135,12 @@ const Room: NextPage = function Room() {
       )}
       {deviceSize === 'small' && (
         <main className="flex flex-col" style={{ width: windowSize.width, height: windowSize.height }}>
-          {items && (
-            <SelectItemModal
-              opened={isSelectItemModalVisible}
-              width={windowSize.width}
-              selectedItemId={items[0].getId()}
-              items={items}
-            />
-          )}
+          <SelectItemModal
+            opened={isSelectItemModalVisible}
+            width={windowSize.width}
+            selectedItemId={null}
+            items={items || []}
+          />
           <section className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               {status === 'CONNECTED' && (
@@ -155,7 +148,6 @@ const Room: NextPage = function Room() {
                   area={zoomedArea}
                   areaOffset={zoomedAreaOffset}
                   unitBlock={unitBlock}
-                  unitPattern={unitPattern}
                   onUnitsRevive={handleUnitsRevive}
                   onAreaUpdate={zoomArea}
                 />
@@ -176,7 +168,6 @@ const Room: NextPage = function Room() {
             <GameRoomSideBar
               align="row"
               onLogoClick={handleLogoClick}
-              unitPattern={unitPattern}
               onUnitPatternClick={handleUnitPatternClick}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}

@@ -9,7 +9,7 @@ import dataTestids from './dataTestids';
 type Props = {
   opened: boolean;
   width: number;
-  selectedItemId: string;
+  selectedItemId: string | null;
   items: ItemAgg[];
   onSelect?: (itemId: string) => void;
   onDone?: () => void;
@@ -30,7 +30,9 @@ function SelectItemModal({ opened, width, selectedItemId, items, onSelect = () =
       >
         <Text color="white" copy="Select Item" size={18} />
         <div className="mt-9 w-full flex justify-center">
-          <div className="w-[150px] h-[150px]">{selectedItem && <ItemBox item={selectedItem} />}</div>
+          <div className="w-[150px] h-[150px]">
+            <ItemBox item={selectedItem || ItemAgg.newItemAgg({ id: '', name: 'Empty' })} />
+          </div>
         </div>
         <section className="mt-6 w-full overflow-auto">
           <section className="flex">

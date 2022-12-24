@@ -1,12 +1,10 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createUnitPattern } from '@/models/valueObjects/factories';
 import GameRoomSideBar, { dataTestids } from '.';
 
 function renderGameRoomSideBar(): RenderResult {
   return render(
     <GameRoomSideBar
       align="column"
-      unitPattern={createUnitPattern([[true]])}
       onUnitPatternClick={() => {}}
       onLogoClick={() => {}}
       isMiniMapActive

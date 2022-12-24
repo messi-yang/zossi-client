@@ -31,7 +31,6 @@ function useWebSocket(url: string, { onOpen, onClose, onMessage }: Actions): Ret
 
   const sendMessage = useCallback(
     async (msg: Object) => {
-      console.log(socket, status);
       if (!socket) {
         return;
       }
@@ -61,7 +60,6 @@ function useWebSocket(url: string, { onOpen, onClose, onMessage }: Actions): Ret
       return;
     }
 
-    console.log('HEY!');
     socket.onopen = () => {
       onOpen();
       setStatus('CONNECTED');

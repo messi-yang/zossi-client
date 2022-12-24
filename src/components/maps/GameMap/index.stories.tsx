@@ -8,7 +8,6 @@ import {
   createOffset,
   createUnit,
   createUnitBlock,
-  createUnitPattern,
   createDimensionByArea,
   createUnitBlockByDimension,
 } from '@/models/valueObjects/factories';
@@ -59,11 +58,4 @@ Primary.args = {
   area: areaForPrimary,
   areaOffset: createOffset(0, 0),
   unitBlock: createUnitBlockByDimension(createDimensionByArea(areaForPrimary)),
-  unitPattern: createUnitPattern([
-    [false, false, false, false, false],
-    [false, false, true, false, false],
-    [false, false, true, false, false],
-    [false, false, true, false, false],
-    [false, false, false, false, false],
-  ]),
 };

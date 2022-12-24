@@ -2,7 +2,7 @@ import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import useWebSocket from '@/hooks/useWebSocket';
 import type { UnitDto } from '@/models/dtos';
-import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo, OffsetVo, UnitPatternVo } from '@/models/valueObjects';
+import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo, OffsetVo } from '@/models/valueObjects';
 import {
   createCoordinate,
   createArea,
@@ -10,7 +10,6 @@ import {
   createOffset,
   createUnit,
   createUnitBlock,
-  createUnitPattern,
   createOffsetOfTwoAreas,
 } from '@/models/valueObjects/factories';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
@@ -25,22 +24,20 @@ function convertUnitDtoMatrixToUnitBlockVo(unitBlock: UnitDto[][]): UnitBlockVo 
   return createUnitBlock(unitMatrix);
 }
 
-type GameRoomContextValue = {
+type ContextValue = {
   status: Status;
   dimension: DimensionVo | null;
   zoomedArea: AreaVo | null;
   targetArea: AreaVo | null;
   unitBlock: UnitBlockVo | null;
   zoomedAreaOffset: OffsetVo;
-  unitPattern: UnitPatternVo;
   joinGame: () => void;
-  updateUnitPattern: (pattern: UnitPatternVo) => void;
   buildItem: (coordinate: CoordinateVo, itemId: string) => void;
   zoomArea: (area: AreaVo) => void;
   leaveGame: () => void;
 };
 
-function createInitialGameRoomContextValue(): GameRoomContextValue {
+function createInitialContextValue(): ContextValue {
   return {
     status: 'CLOSED',
     dimension: null,
@@ -48,22 +45,14 @@ function createInitialGameRoomContextValue(): GameRoomContextValue {
     targetArea: null,
     unitBlock: null,
     zoomedAreaOffset: createOffset(0, 0),
-    unitPattern: createUnitPattern([
-      [false, false, false, false, false],
-      [false, false, true, false, false],
-      [false, true, false, true, false],
-      [false, false, true, false, false],
-      [false, false, false, false, false],
-    ]),
     joinGame: () => {},
-    updateUnitPattern: () => {},
     buildItem: () => {},
     zoomArea: () => {},
     leaveGame: () => {},
   };
 }
 
-const GameRoomContext = createContext<GameRoomContextValue>(createInitialGameRoomContextValue());
+const Context = createContext<ContextValue>(createInitialContextValue());
 
 type Props = {
   children: JSX.Element;
@@ -73,24 +62,18 @@ export function Provider({ children }: Props) {
   const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
   const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
 
-  const initialGameRoomContextValue = createInitialGameRoomContextValue();
-  const [dimension, setDimension] = useState<DimensionVo | null>(initialGameRoomContextValue.dimension);
+  const initialContextValue = createInitialContextValue();
+  const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
 
-  const zoomedAreaSource = useRef<AreaVo | null>(initialGameRoomContextValue.zoomedArea);
-  const targetAreaSource = useRef<AreaVo | null>(initialGameRoomContextValue.targetArea);
-  const unitBlockSource = useRef<UnitBlockVo | null>(initialGameRoomContextValue.unitBlock);
+  const zoomedAreaSource = useRef<AreaVo | null>(initialContextValue.zoomedArea);
+  const targetAreaSource = useRef<AreaVo | null>(initialContextValue.targetArea);
+  const unitBlockSource = useRef<UnitBlockVo | null>(initialContextValue.unitBlock);
   const [zoomedArea, setZoomedArea] = useState<AreaVo | null>(zoomedAreaSource.current);
   const [targetArea, setTargetArea] = useState<AreaVo | null>(targetAreaSource.current);
   const [unitBlock, setUnitBlock] = useState<UnitBlockVo | null>(unitBlockSource.current);
   const [zoomedAreaOffset, setZoomedAreaOffset] = useState<OffsetVo>(
     createOffsetOfTwoAreas(zoomedAreaSource.current, targetAreaSource.current)
   );
-
-  const [unitPattern, setUnitPattern] = useState<UnitPatternVo>(initialGameRoomContextValue.unitPattern);
-
-  const updateUnitPattern = useCallback((newUnitPattern: UnitPatternVo) => {
-    setUnitPattern(newUnitPattern);
-  }, []);
 
   const handleSocketOpen = useCallback(() => {}, []);
 
@@ -154,15 +137,13 @@ export function Provider({ children }: Props) {
   );
 
   const resetContext = useCallback(() => {
-    setDimension(initialGameRoomContextValue.dimension);
-    setTargetArea(initialGameRoomContextValue.targetArea);
+    setDimension(initialContextValue.dimension);
+    setTargetArea(initialContextValue.targetArea);
 
-    zoomedAreaSource.current = initialGameRoomContextValue.zoomedArea;
-    targetAreaSource.current = initialGameRoomContextValue.targetArea;
-    unitBlockSource.current = initialGameRoomContextValue.unitBlock;
+    zoomedAreaSource.current = initialContextValue.zoomedArea;
+    targetAreaSource.current = initialContextValue.targetArea;
+    unitBlockSource.current = initialContextValue.unitBlock;
     updateUnitBlockAndOffsetsDebouncer();
-
-    setUnitPattern(initialGameRoomContextValue.unitPattern);
   }, []);
 
   const handleSocketClose = () => {
@@ -193,7 +174,6 @@ export function Provider({ children }: Props) {
           actionedAt: new Date().toISOString(),
         },
       };
-      console.log(action);
       sendMessage(action);
     },
     [sendMessage]
@@ -227,39 +207,38 @@ export function Provider({ children }: Props) {
     },
     [sendZoomAreaActionDebouncer]
   );
-
-  const gameRoomContextValue = useMemo<GameRoomContextValue>(
-    () => ({
-      status,
-      dimension,
-      zoomedArea,
-      zoomedAreaOffset,
-      targetArea,
-      unitBlock,
-      unitPattern,
-      joinGame,
-      leaveGame,
-      updateUnitPattern,
-      buildItem,
-      zoomArea,
-    }),
-    [
-      status,
-      dimension,
-      zoomedArea,
-      zoomedAreaOffset,
-      targetArea,
-      unitBlock,
-      unitPattern,
-      joinGame,
-      leaveGame,
-      updateUnitPattern,
-      buildItem,
-      zoomArea,
-    ]
+  return (
+    <Context.Provider
+      value={useMemo<ContextValue>(
+        () => ({
+          status,
+          dimension,
+          zoomedArea,
+          zoomedAreaOffset,
+          targetArea,
+          unitBlock,
+          joinGame,
+          leaveGame,
+          buildItem,
+          zoomArea,
+        }),
+        [
+          status,
+          dimension,
+          zoomedArea,
+          zoomedAreaOffset,
+          targetArea,
+          unitBlock,
+          joinGame,
+          leaveGame,
+          buildItem,
+          zoomArea,
+        ]
+      )}
+    >
+      {children}
+    </Context.Provider>
   );
-
-  return <GameRoomContext.Provider value={gameRoomContextValue}>{children}</GameRoomContext.Provider>;
 }
 
-export default GameRoomContext;
+export default Context;

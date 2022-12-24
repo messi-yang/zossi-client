@@ -8,6 +8,7 @@ import {
   createDimension,
   createOffset,
   createAreaByCoordinateAndDimension,
+  createUnitPattern,
 } from '@/models/valueObjects/factories';
 import dataTestids from './dataTestids';
 
@@ -19,12 +20,12 @@ type Props = {
   area: AreaVo | null;
   areaOffset: OffsetVo;
   unitBlock: UnitBlockVo | null;
-  unitPattern: UnitPatternVo;
   onUnitsRevive: (coordinate: CoordinateVo, unitPatternOffset: OffsetVo, unitPattern: UnitPatternVo) => any;
   onAreaUpdate: (newArea: AreaVo) => any;
 };
 
-function GameMap({ area, areaOffset, unitBlock, unitPattern, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: Props) {
+  const unitPattern = createUnitPattern([[true]]);
   const [squareSize] = useState<number>(15);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -36,15 +37,11 @@ function GameMap({ area, areaOffset, unitBlock, unitPattern, onUnitsRevive, onAr
     () => createDimension(desiredAreaWidth, desiredAreaHeight),
     [desiredAreaWidth, desiredAreaHeight]
   );
-  const [unitPatternOffset, setUnitPatternOffset] = useState<OffsetVo>(calculateUnitPatternOffset(unitPattern));
-
-  useEffect(() => {
-    setUnitPatternOffset(calculateUnitPatternOffset(unitPattern));
-  }, [unitPattern]);
+  const [unitPatternOffset] = useState<OffsetVo>(calculateUnitPatternOffset(unitPattern));
 
   const handleUnitSquareClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!area || !unitPattern) {
+      if (!area) {
         return;
       }
 
@@ -53,7 +50,7 @@ function GameMap({ area, areaOffset, unitBlock, unitPattern, onUnitsRevive, onAr
 
       onUnitsRevive(finalCoordinate, unitPatternOffset, unitPattern);
     },
-    [unitPattern, unitPatternOffset, onUnitsRevive, area]
+    [unitPatternOffset, onUnitsRevive, area]
   );
 
   useEffect(() => {
