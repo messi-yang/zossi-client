@@ -1,9 +1,6 @@
 import { useContext, useState, useEffect, useCallback } from 'react';
-import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
+import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-
-import { getInitialLocale } from '@/utils/i18n';
 import useWindowSize from '@/hooks/useWindowSize';
 import GameRoomContext from '@/contexts/GameRoom';
 import ItemContext from '@/contexts/ItemContext';
@@ -48,8 +45,20 @@ const Room: NextPage = function Room() {
     }
   }, [status]);
 
+  const handleRouterLeaveEffect = useCallback(() => {
+    const handleRouterChangeStart = () => {
+      leaveGame();
+    };
+
+    router.events.on('routeChangeStart', handleRouterChangeStart);
+
+    return () => {
+      router.events.off('routeChangeStart', handleRouterChangeStart);
+    };
+  }, [leaveGame]);
+  useEffect(handleRouterLeaveEffect, [handleRouterLeaveEffect]);
+
   const handleLogoClick = () => {
-    leaveGame();
     router.push('/');
   };
 
@@ -175,16 +184,5 @@ const Room: NextPage = function Room() {
     </>
   );
 };
-
-export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: [{ params: { id: 'a' } }],
-  fallback: true,
-});
-
-export const getStaticProps: GetStaticProps = async ({ locale }) => ({
-  props: {
-    ...(await serverSideTranslations(getInitialLocale(locale), ['room'])),
-  },
-});
 
 export default Room;

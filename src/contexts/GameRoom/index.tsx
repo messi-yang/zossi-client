@@ -193,6 +193,7 @@ export function Provider({ children }: Props) {
           actionedAt: new Date().toISOString(),
         },
       };
+      console.log(action);
       sendMessage(action);
     },
     [sendMessage]

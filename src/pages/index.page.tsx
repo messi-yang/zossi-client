@@ -1,10 +1,8 @@
 import { useContext } from 'react';
-import type { NextPage, GetStaticProps } from 'next';
+import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import useWindowSize from '@/hooks/useWindowSize';
-import { getInitialLocale } from '@/utils/i18n';
 import GameRoomContext from '@/contexts/GameRoom';
 
 import BigLogo from '@/components/logos/BigLogo';
@@ -38,11 +36,5 @@ const Landing: NextPage = function Landing() {
     </main>
   );
 };
-
-export const getStaticProps: GetStaticProps = async ({ locale }) => ({
-  props: {
-    ...(await serverSideTranslations(getInitialLocale(locale), ['index'])),
-  },
-});
 
 export default Landing;
