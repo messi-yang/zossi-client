@@ -1,9 +1,12 @@
 import { memo, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import UnitBlockCanvas from '@/ui/components/canvas/UnitBlockCanvas';
 import useDomRect from '@/ui/hooks/useDomRect';
-import useResolutionCalculator from '@/ui/hooks/useResolutionCalculator';
 import { AreaVo, UnitBlockVo, CoordinateVo, OffsetVo } from '@/models/valueObjects';
-import { createCoordinate, createDimension, createAreaByCoordinateAndDimension } from '@/models/valueObjects/factories';
+import {
+  createCoordinate,
+  createAreaByCoordinateAndDimension,
+  calculateDimensionByResolutionAndUnitSideLength,
+} from '@/models/valueObjects/factories';
 import dataTestids from './dataTestids';
 
 type Props = {
@@ -15,16 +18,16 @@ type Props = {
 };
 
 function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: Props) {
-  const [squareSize] = useState<number>(15);
+  const [unitSideLength] = useState<number>(30);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
-  const [desiredAreaWidth, desiredAreaHeight] = useResolutionCalculator(
-    { width: rootElemRect.width, height: rootElemRect.height },
-    squareSize
-  );
   const desiredDimension = useMemo(
-    () => createDimension(desiredAreaWidth, desiredAreaHeight),
-    [desiredAreaWidth, desiredAreaHeight]
+    () =>
+      calculateDimensionByResolutionAndUnitSideLength(
+        { width: rootElemRect.width, height: rootElemRect.height },
+        unitSideLength
+      ),
+    [rootElemRect.width, rootElemRect.height]
   );
 
   const handleUnitSquareClick = useCallback(
@@ -52,12 +55,18 @@ function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: P
   }, [area === null, desiredDimension]);
 
   return (
-    <section ref={rootRef} data-testid={dataTestids.root} className="relative w-full h-full overflow-hidden bg-black">
+    <section
+      ref={rootRef}
+      data-testid={dataTestids.root}
+      className="relative w-full h-full flex items-center justify-center overflow-hidden bg-black"
+    >
       <section
-        className="relative w-full h-full flex"
-        style={{ left: areaOffset.getX() * squareSize, top: areaOffset.getY() * squareSize }}
+        className="relative flex"
+        style={{ left: areaOffset.getX() * unitSideLength, top: areaOffset.getY() * unitSideLength }}
       >
-        {unitBlock && <UnitBlockCanvas unitBlock={unitBlock} unitSize={squareSize} onClick={handleUnitSquareClick} />}
+        {unitBlock && (
+          <UnitBlockCanvas unitBlock={unitBlock} unitSize={unitSideLength} onClick={handleUnitSquareClick} />
+        )}
       </section>
     </section>
   );

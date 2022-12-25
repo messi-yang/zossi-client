@@ -37,15 +37,24 @@ export function createOffsetOfTwoAreas(areaA: AreaVo | null, areaB: AreaVo | nul
 }
 
 export function createAreaByCoordinateAndDimension(coordinate: CoordinateVo, dimension: DimensionVo): AreaVo {
-  return createArea(coordinate, coordinate.shift(dimension.getWidth(), dimension.getHeight()));
+  return new AreaVo(coordinate, coordinate.shift(dimension.getWidth() - 1, dimension.getHeight() - 1));
+}
+
+export function calculateDimensionByResolutionAndUnitSideLength(
+  resolution: { width: number; height: number },
+  unitSideLength: number
+): DimensionVo {
+  const width = Math.floor(resolution.width / unitSideLength) || 1;
+  const height = Math.floor(resolution.height / unitSideLength) || 1;
+  return new DimensionVo(width, height);
 }
 
 export function createDimensionByUnitBlock(unitBlock: UnitBlockVo): DimensionVo {
-  return createDimension(unitBlock.getWidth(), unitBlock.getHeight());
+  return new DimensionVo(unitBlock.getWidth(), unitBlock.getHeight());
 }
 
 export function createDimensionByArea(area: AreaVo): DimensionVo {
-  return createDimension(
+  return new DimensionVo(
     area.getTo().getX() - area.getFrom().getX() + 1,
     area.getTo().getY() - area.getFrom().getY() + 1
   );
