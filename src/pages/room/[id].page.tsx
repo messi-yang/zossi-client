@@ -34,19 +34,25 @@ const Room: NextPage = function Room() {
 
   const isBuildItemActive = !!selectedItem;
 
-  useEffect(() => {
-    if (deviceSize === 'large') {
-      setIsMiniMapVisible(true);
-      return;
-    }
-    setIsMiniMapVisible(false);
-  }, [deviceSize]);
+  useEffect(
+    function onDeviceSizeChangeEffect() {
+      if (deviceSize === 'large') {
+        setIsMiniMapVisible(true);
+        return;
+      }
+      setIsMiniMapVisible(false);
+    },
+    [deviceSize]
+  );
 
-  useEffect(() => {
-    if (status === 'CLOSED') {
-      router.push('/');
-    }
-  }, [status]);
+  useEffect(
+    function onStatusChangeEffect() {
+      if (status === 'CLOSED') {
+        router.push('/');
+      }
+    },
+    [status]
+  );
 
   const joinGameOnInitializationEffect = useCallback(() => {
     joinGame();
