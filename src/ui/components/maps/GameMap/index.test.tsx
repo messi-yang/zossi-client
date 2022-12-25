@@ -9,7 +9,7 @@ function renderGameMap(unitBlock: UnitBlockVo): RenderResult {
       area={null}
       areaOffset={createOffset(0, 0)}
       unitBlock={unitBlock}
-      onUnitsRevive={() => {}}
+      onUnitClick={() => {}}
       onAreaUpdate={() => {}}
     />
   );

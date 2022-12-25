@@ -13,11 +13,11 @@ type Props = {
   area: AreaVo | null;
   areaOffset: OffsetVo;
   unitBlock: UnitBlockVo | null;
-  onUnitsRevive: (coordinate: CoordinateVo) => any;
+  onUnitClick: (coordinate: CoordinateVo) => any;
   onAreaUpdate: (newArea: AreaVo) => any;
 };
 
-function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: Props) {
+function GameMap({ area, areaOffset, unitBlock, onUnitClick, onAreaUpdate }: Props) {
   const [unitSideLength] = useState<number>(30);
   const rootRef = useRef<HTMLElement>(null);
   const rootElemRect = useDomRect(rootRef);
@@ -30,7 +30,7 @@ function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: P
     [rootElemRect.width, rootElemRect.height]
   );
 
-  const handleUnitSquareClick = useCallback(
+  const handleUnitClick = useCallback(
     (colIdx: number, rowIdx: number) => {
       if (!area) {
         return;
@@ -39,9 +39,9 @@ function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: P
       const originCoordinate = area.getFrom();
       const finalCoordinate = originCoordinate.shift(colIdx, rowIdx);
 
-      onUnitsRevive(finalCoordinate);
+      onUnitClick(finalCoordinate);
     },
-    [onUnitsRevive, area]
+    [onUnitClick, area]
   );
 
   useEffect(() => {
@@ -64,9 +64,7 @@ function GameMap({ area, areaOffset, unitBlock, onUnitsRevive, onAreaUpdate }: P
         className="relative flex"
         style={{ left: areaOffset.getX() * unitSideLength, top: areaOffset.getY() * unitSideLength }}
       >
-        {unitBlock && (
-          <UnitBlockCanvas unitBlock={unitBlock} unitSize={unitSideLength} onClick={handleUnitSquareClick} />
-        )}
+        {unitBlock && <UnitBlockCanvas unitBlock={unitBlock} unitSize={unitSideLength} onClick={handleUnitClick} />}
       </section>
     </section>
   );

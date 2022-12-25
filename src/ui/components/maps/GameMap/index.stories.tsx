@@ -23,7 +23,7 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { area, unitBlock } = args;
-  const handleUnitsRevive = (coordinate: CoordinateVo) => {
+  const handleUnitClick = (coordinate: CoordinateVo) => {
     if (!area) {
       return;
     }
@@ -41,7 +41,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
 
   return (
     <div className="inline-flex w-24 h-24">
-      <GameMap {...args} onUnitsRevive={handleUnitsRevive} />
+      <GameMap {...args} onUnitClick={handleUnitClick} />
     </div>
   );
 };

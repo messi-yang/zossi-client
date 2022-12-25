@@ -96,7 +96,7 @@ const Room: NextPage = function Room() {
     selectItem(item);
   };
 
-  const handleUnitsRevive = useCallback(
+  const handleUnitClick = useCallback(
     (coordinate: CoordinateVo) => {
       if (!selectedItem) {
         return;
@@ -136,7 +136,7 @@ const Room: NextPage = function Room() {
                   area={zoomedArea}
                   areaOffset={zoomedAreaOffset}
                   unitBlock={unitBlock}
-                  onUnitsRevive={handleUnitsRevive}
+                  onUnitClick={handleUnitClick}
                   onAreaUpdate={zoomArea}
                 />
               )}
@@ -166,7 +166,7 @@ const Room: NextPage = function Room() {
                   area={zoomedArea}
                   areaOffset={zoomedAreaOffset}
                   unitBlock={unitBlock}
-                  onUnitsRevive={handleUnitsRevive}
+                  onUnitClick={handleUnitClick}
                   onAreaUpdate={zoomArea}
                 />
               )}
