@@ -5,8 +5,9 @@ function renderGameRoomSideBar(): RenderResult {
   return render(
     <GameRoomSideBar
       align="column"
-      onUnitPatternClick={() => {}}
       onLogoClick={() => {}}
+      isBuildItemActive
+      onBuildItemClick={() => {}}
       isMiniMapActive
       onMiniMapClick={() => {}}
     />

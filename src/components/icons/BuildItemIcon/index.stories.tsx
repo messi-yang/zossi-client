@@ -1,11 +1,11 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import UnitPatternIcon from '.';
+import BuildItemIcon from '.';
 
 export default {
-  title: 'Icon/UnitPatternIcon',
-  component: UnitPatternIcon,
+  title: 'Icon/BuildItemIcon',
+  component: BuildItemIcon,
   argTypes: {
     highlighted: {
       control: 'boolean',
@@ -14,10 +14,10 @@ export default {
       control: 'boolean',
     },
   },
-} as ComponentMeta<typeof UnitPatternIcon>;
+} as ComponentMeta<typeof BuildItemIcon>;
 
-const Template: ComponentStory<typeof UnitPatternIcon> = function Template(args) {
-  return <UnitPatternIcon {...args} />;
+const Template: ComponentStory<typeof BuildItemIcon> = function Template(args) {
+  return <BuildItemIcon {...args} />;
 };
 
 export const Primary = Template.bind({});

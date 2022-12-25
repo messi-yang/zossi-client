@@ -172,7 +172,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
     []
   );
 
-  const drawUnitPattern = (
+  const drawHoverMask = (
     ctx: CanvasRenderingContext2D,
     newHoveredIndexes: Indexes,
     newUnitSize: number,
@@ -228,7 +228,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
     }
 
     if (hoveredIndexes) {
-      drawUnitPattern(ctx, hoveredIndexes, unitSize, borderWidth, canvasUnitSize);
+      drawHoverMask(ctx, hoveredIndexes, unitSize, borderWidth, canvasUnitSize);
     }
 
     return () => {
@@ -249,7 +249,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
     onClick(clickedIndexes[0], clickedIndexes[1]);
   };
 
-  const onUnitPatternCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
+  const onHoverMaskCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
     setPatternCanvasElem(elem);
   }, []);
 
@@ -267,7 +267,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
         style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
       />
       <canvas
-        ref={onUnitPatternCanvasLoad}
+        ref={onHoverMaskCanvasLoad}
         width={canvasResolution.width}
         height={canvasResolution.height}
         className="absolute left-0 top-0 cursor-pointer"

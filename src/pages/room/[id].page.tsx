@@ -32,6 +32,8 @@ const Room: NextPage = function Room() {
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
 
+  const isBuildItemActive = !!selectedItem;
+
   useEffect(() => {
     if (deviceSize === 'large') {
       setIsMiniMapVisible(true);
@@ -76,7 +78,7 @@ const Room: NextPage = function Room() {
     setIsMiniMapVisible(!isMiniMapVisible);
   };
 
-  const handleUnitPatternClick = () => {
+  const handleBuildItemClick = () => {
     setIsSelectItemModalVisible(true);
   };
 
@@ -115,7 +117,8 @@ const Room: NextPage = function Room() {
             <GameRoomSideBar
               align="column"
               onLogoClick={handleLogoClick}
-              onUnitPatternClick={handleUnitPatternClick}
+              isBuildItemActive={isBuildItemActive}
+              onBuildItemClick={handleBuildItemClick}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
             />
@@ -177,7 +180,8 @@ const Room: NextPage = function Room() {
             <GameRoomSideBar
               align="row"
               onLogoClick={handleLogoClick}
-              onUnitPatternClick={handleUnitPatternClick}
+              isBuildItemActive={isBuildItemActive}
+              onBuildItemClick={handleBuildItemClick}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
             />

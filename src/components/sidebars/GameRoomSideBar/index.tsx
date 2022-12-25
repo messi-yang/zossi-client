@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import SmallLogo from '@/components/logos/SmallLogo/';
-import UnitPatternIcon from '@/components/icons/UnitPatternIcon';
+import BuildItemIcon from '@/components/icons/BuildItemIcon';
 import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
@@ -8,17 +8,23 @@ import dataTestids from './dataTestids';
 type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
-  onUnitPatternClick: () => void;
+  isBuildItemActive: boolean;
+  onBuildItemClick: () => void;
   isMiniMapActive: boolean;
   onMiniMapClick: () => void;
 };
 
-function GameRoomSideBar({ align, onLogoClick, onUnitPatternClick, isMiniMapActive, onMiniMapClick }: Props) {
-  const [isUnitPatternHovered, setIsUnitPatternHovered] = useState<boolean>(false);
+function GameRoomSideBar({
+  align,
+  onLogoClick,
+  isBuildItemActive,
+  onBuildItemClick,
+  isMiniMapActive,
+  onMiniMapClick,
+}: Props) {
+  const [isBuildItemMenuHovered, setIsBuildItemMenuHovered] = useState<boolean>(false);
 
   const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
-
-  const isUnitPatternActive = true;
 
   return (
     <section
@@ -38,18 +44,18 @@ function GameRoomSideBar({ align, onLogoClick, onUnitPatternClick, isMiniMapActi
       </ItemWrapper>
       <ItemWrapper
         label="Pattern"
-        highlighted={isUnitPatternHovered}
-        active={isUnitPatternActive}
-        hovered={isUnitPatternHovered}
-        onClick={onUnitPatternClick}
+        highlighted={isBuildItemMenuHovered}
+        active={isBuildItemActive}
+        hovered={isBuildItemMenuHovered}
+        onClick={onBuildItemClick}
         onMouseEnter={() => {
-          setIsUnitPatternHovered(true);
+          setIsBuildItemMenuHovered(true);
         }}
         onMouseLeave={() => {
-          setIsUnitPatternHovered(false);
+          setIsBuildItemMenuHovered(false);
         }}
       >
-        <UnitPatternIcon highlighted={isUnitPatternHovered} active={isUnitPatternActive} />
+        <BuildItemIcon highlighted={isBuildItemMenuHovered} active={isBuildItemActive} />
       </ItemWrapper>
       <ItemWrapper
         label="Map"

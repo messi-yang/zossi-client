@@ -5,7 +5,7 @@ type Props = {
   active: boolean;
 };
 
-function UnitPatternIcon({ highlighted, active }: Props) {
+function BuildItemIcon({ highlighted, active }: Props) {
   const fill = active || highlighted ? '#01D6C9' : 'white';
   return (
     <svg
@@ -31,5 +31,5 @@ function UnitPatternIcon({ highlighted, active }: Props) {
   );
 }
 
-export default UnitPatternIcon;
+export default BuildItemIcon;
 export { dataTestids };
