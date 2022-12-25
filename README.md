@@ -20,12 +20,6 @@ With [jest](https://jestjs.io/) and [React Testing Library](https://testing-libr
 
 Worrying about commiting shit code by accident ? [Husky](https://typicode.github.io/husky/#/) is right here for you, with it you can easily create git hooks, e.g: Building a **"pre-commit"** hook.
 
-### i18n
-
-i18n, A.K.A [Internationalization and localization](https://en.wikipedia.org/wiki/Internationalization_and_localization), is a **"must-to-implement"** feature in your application when you want to target customers in different languages.
-
-In this repository, we use [next-i18next](https://github.com/isaachinman/next-i18next) that helps implement i18n in next.js!
-
 ### Redux
 
 Loose-coupling is always a goal we want to achieve in software development, with [Redux](https://redux.js.org/), you can keep your data flow out of box but still make your data accessible by your components.

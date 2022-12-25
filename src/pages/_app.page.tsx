@@ -1,7 +1,6 @@
 import './tailwind.css';
 import type { AppProps } from 'next/app';
-import { appWithTranslation } from 'next-i18next';
-import { Provider as GameRoomProvider } from '@/contexts/GameContext';
+import { Provider as GameRoomProvider } from '@/ui/contexts/GameContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -11,4 +10,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default appWithTranslation(MyApp);
+export default MyApp;

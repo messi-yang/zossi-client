@@ -1,10 +1,10 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import useWindowSize from '@/hooks/useWindowSize';
+import useWindowSize from '@/ui/hooks/useWindowSize';
 
-import BigLogo from '@/components/logos/BigLogo';
-import Button from '@/components/buttons/Button';
+import BigLogo from '@/ui/components/logos/BigLogo';
+import Button from '@/ui/components/buttons/Button';
 
 const Landing: NextPage = function Landing() {
   const windowSize = useWindowSize();

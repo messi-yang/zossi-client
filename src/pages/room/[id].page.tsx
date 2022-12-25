@@ -1,13 +1,13 @@
 import { useContext, useState, useEffect, useCallback } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import useWindowSize from '@/hooks/useWindowSize';
-import GameContext from '@/contexts/GameContext';
+import useWindowSize from '@/ui/hooks/useWindowSize';
+import GameContext from '@/ui/contexts/GameContext';
 import { AreaVo, CoordinateVo } from '@/models/valueObjects';
-import GameRoomSideBar from '@/components/sidebars/GameRoomSideBar';
-import GameMap from '@/components/maps/GameMap';
-import GameMiniMap from '@/components/maps/GameMiniMap';
-import SelectItemModal from '@/components/modals/SelectItemModal';
+import GameRoomSideBar from '@/ui/components/sidebars/GameRoomSideBar';
+import GameMap from '@/ui/components/maps/GameMap';
+import GameMiniMap from '@/ui/components/maps/GameMiniMap';
+import SelectItemModal from '@/ui/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
 
 const Room: NextPage = function Room() {
