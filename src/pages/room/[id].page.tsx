@@ -45,15 +45,6 @@ const Room: NextPage = function Room() {
     [deviceSize]
   );
 
-  useEffect(
-    function onStatusChangeEffect() {
-      if (status === 'CLOSED') {
-        router.push('/');
-      }
-    },
-    [status]
-  );
-
   const joinGameOnInitializationEffect = useCallback(() => {
     joinGame();
   }, [joinGame]);
@@ -65,7 +56,6 @@ const Room: NextPage = function Room() {
     };
 
     router.events.on('routeChangeStart', handleRouterChangeStart);
-
     return () => {
       router.events.off('routeChangeStart', handleRouterChangeStart);
     };

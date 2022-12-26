@@ -1,30 +1,12 @@
 import { createContext, useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { ItemHttpApi } from '@/apis/httpApis';
-import useWebSocket from '@/ui/hooks/useWebSocket';
-import type { UnitDto } from '@/apis/dtos';
+import { GameSocketConnection } from '@/apis/socketConnections';
 import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo, OffsetVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
-import {
-  createCoordinate,
-  createArea,
-  createDimension,
-  createOffset,
-  createUnit,
-  createUnitBlock,
-  createOffsetOfTwoAreas,
-} from '@/models/valueObjects/factories';
-import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
-import type { Event } from './eventTypes';
-import { ActionTypeEnum } from './actionTypes';
-import type { ZoomAreaAction, BuildItemAction } from './actionTypes';
+import { createOffset, createOffsetOfTwoAreas } from '@/models/valueObjects/factories';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
-
-function convertUnitDtoMatrixToUnitBlockVo(unitBlock: UnitDto[][]): UnitBlockVo {
-  const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => createUnit(unit.alive)));
-  return createUnitBlock(unitMatrix);
-}
 
 type ContextValue = {
   status: Status;
@@ -68,9 +50,8 @@ type Props = {
 
 export function Provider({ children }: Props) {
   const itemHttpApi = ItemHttpApi.newItemHttpApi();
-
-  const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
-  const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
+  const [gameSocketConnection, setGameSocketConnection] = useState<GameSocketConnection | null>(null);
+  const [status, setStatus] = useState<Status>('CLOSED');
 
   const initialContextValue = createInitialContextValue();
   const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
@@ -100,8 +81,6 @@ export function Provider({ children }: Props) {
     createOffsetOfTwoAreas(zoomedAreaSource.current, targetAreaSource.current)
   );
 
-  const handleSocketOpen = useCallback(() => {}, []);
-
   const updateUnitBlockAndOffsets = useCallback(() => {
     setUnitBlock(unitBlockSource.current);
     setTargetArea(targetAreaSource.current);
@@ -116,109 +95,63 @@ export function Provider({ children }: Props) {
     []
   );
 
-  const handleAreaZoomedEvent = useCallback((event: AreaZoomedEvent) => {
-    const newArea = createArea(
-      createCoordinate(event.payload.area.from.x, event.payload.area.from.y),
-      createCoordinate(event.payload.area.to.x, event.payload.area.to.y)
-    );
-    if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
-      zoomedAreaSource.current = newArea;
-    }
-    unitBlockSource.current = convertUnitDtoMatrixToUnitBlockVo(event.payload.unitBlock);
-    updateUnitBlockAndOffsetsDebouncer.cancel();
-    updateUnitBlockAndOffsetsDebouncer();
-  }, []);
-
-  const handleZoomedAreaUpdatedEvent = useCallback((event: ZoomedAreaUpdatedEvent) => {
-    const newArea = createArea(
-      createCoordinate(event.payload.area.from.x, event.payload.area.from.y),
-      createCoordinate(event.payload.area.to.x, event.payload.area.to.y)
-    );
-    if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
-      zoomedAreaSource.current = newArea;
-    }
-
-    unitBlockSource.current = convertUnitDtoMatrixToUnitBlockVo(event.payload.unitBlock);
-    updateUnitBlockAndOffsetsDebouncer();
-  }, []);
-
-  const handleInformationUpdatedEvent = useCallback((event: InformationUpdatedEvent) => {
-    setDimension(createDimension(event.payload.dimension.width, event.payload.dimension.height));
-  }, []);
-
-  const handleSocketMessage = useCallback(
-    (msg: any) => {
-      const newMsg: Event = msg;
-      console.log(newMsg);
-      if (newMsg.type === EventTypeEnum.AreaZoomed) {
-        handleAreaZoomedEvent(newMsg);
-      } else if (newMsg.type === EventTypeEnum.ZoomedAreaUpdated) {
-        handleZoomedAreaUpdatedEvent(newMsg);
-      } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
-        handleInformationUpdatedEvent(newMsg);
-      }
-    },
-    [unitBlock, handleAreaZoomedEvent, handleZoomedAreaUpdatedEvent, handleInformationUpdatedEvent]
-  );
-
-  const resetContext = useCallback(() => {
-    setDimension(initialContextValue.dimension);
-    setTargetArea(initialContextValue.targetArea);
-
-    zoomedAreaSource.current = initialContextValue.zoomedArea;
-    targetAreaSource.current = initialContextValue.targetArea;
-    unitBlockSource.current = initialContextValue.unitBlock;
-    updateUnitBlockAndOffsetsDebouncer();
-  }, []);
-
-  const handleSocketClose = () => {
-    resetContext();
-  };
-
-  const { status, connect, sendMessage, disconnect } = useWebSocket(socketUrl, {
-    onOpen: handleSocketOpen,
-    onMessage: handleSocketMessage,
-    onClose: handleSocketClose,
-  });
-
   const joinGame = useCallback(() => {
-    connect();
-  }, [connect]);
+    setStatus('CONNECTING');
+    const newGameSocketConnection = GameSocketConnection.newGameSocketConnection({
+      onAreaZoomed: (newArea: AreaVo, newUnitBlock: UnitBlockVo) => {
+        if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
+          zoomedAreaSource.current = newArea;
+        }
+        unitBlockSource.current = newUnitBlock;
+        updateUnitBlockAndOffsetsDebouncer.cancel();
+        updateUnitBlockAndOffsetsDebouncer();
+      },
+      onZoomedAreaUpdated: (newArea: AreaVo, newUnitBlock: UnitBlockVo) => {
+        if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
+          zoomedAreaSource.current = newArea;
+        }
+
+        unitBlockSource.current = newUnitBlock;
+        updateUnitBlockAndOffsetsDebouncer();
+      },
+      onInformationUpdated: (newDimension: DimensionVo) => {
+        setDimension(newDimension);
+      },
+      onOpen: () => {
+        setStatus('CONNECTED');
+      },
+      onClose: () => {
+        setStatus('CLOSED');
+        setGameSocketConnection(null);
+        setDimension(initialContextValue.dimension);
+        setTargetArea(initialContextValue.targetArea);
+
+        zoomedAreaSource.current = initialContextValue.zoomedArea;
+        targetAreaSource.current = initialContextValue.targetArea;
+        unitBlockSource.current = initialContextValue.unitBlock;
+        updateUnitBlockAndOffsetsDebouncer();
+      },
+    });
+    setGameSocketConnection(newGameSocketConnection);
+  }, []);
 
   const leaveGame = useCallback(() => {
-    disconnect();
-  }, [disconnect]);
+    setStatus('CLOSING');
+    gameSocketConnection?.disconnect();
+  }, [gameSocketConnection]);
 
   const buildItem = useCallback(
     (coordinate: CoordinateVo, itemId: string) => {
-      const action: BuildItemAction = {
-        type: ActionTypeEnum.BuildItem,
-        payload: {
-          coordinate: { x: coordinate.getX(), y: coordinate.getY() },
-          itemId,
-          actionedAt: new Date().toISOString(),
-        },
-      };
-      sendMessage(action);
+      gameSocketConnection?.buildItem(coordinate, itemId);
     },
-    [sendMessage]
+    [gameSocketConnection]
   );
 
   const sendZoomAreaAction = useCallback(
     (newArea: AreaVo) => {
-      const action: ZoomAreaAction = {
-        type: ActionTypeEnum.ZoomArea,
-        payload: {
-          area: {
-            from: { x: newArea.getFrom().getX(), y: newArea.getFrom().getY() },
-            to: { x: newArea.getTo().getX(), y: newArea.getTo().getY() },
-          },
-          actionedAt: new Date().toISOString(),
-        },
-      };
-      sendMessage(action);
+      gameSocketConnection?.zoomArea(newArea);
     },
-    [sendMessage]
+    [gameSocketConnection]
   );
   const sendZoomAreaActionDebouncer = useCallback(
     debounce(sendZoomAreaAction, 150, { leading: true, maxWait: 500, trailing: true }),
@@ -232,6 +165,7 @@ export function Provider({ children }: Props) {
     },
     [sendZoomAreaActionDebouncer]
   );
+
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
