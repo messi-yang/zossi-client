@@ -1,18 +1,23 @@
-import { useContext, useState, useEffect, useCallback } from 'react';
+import { useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
 import GameContext from '@/ui/contexts/GameContext';
 import { AreaVo, CoordinateVo } from '@/models/valueObjects';
+import {
+  calculateDimensionByResolutionAndUnitSideLength,
+  createCoordinate,
+  createAreaByCoordinateAndDimension,
+} from '@/models/valueObjects/factories';
 import GameRoomSideBar from '@/ui/components/sidebars/GameRoomSideBar';
 import GameMap from '@/ui/components/maps/GameMap';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
 import SelectItemModal from '@/ui/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
+import useDomRect from '@/ui/hooks/useDomRect';
 
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
-  const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
   const router = useRouter();
   const {
     dimension,
@@ -32,8 +37,33 @@ const Room: NextPage = function Room() {
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
 
-  const isBuildItemActive = !!selectedItem;
+  const gameMapWrapperElemRef = useRef<HTMLElement>(null);
+  const gameMapWrapperElemRect = useDomRect(gameMapWrapperElemRef);
+  const desiredDimension = useMemo(
+    () =>
+      calculateDimensionByResolutionAndUnitSideLength(
+        { width: gameMapWrapperElemRect.width, height: gameMapWrapperElemRect.height },
+        30
+      ),
+    [gameMapWrapperElemRect]
+  );
+  useEffect(
+    function handleDesiredDimensionUpdateEffect() {
+      if (status !== 'CONNECTED') {
+        return;
+      }
+      if (zoomedArea === null) {
+        const newArea = createAreaByCoordinateAndDimension(createCoordinate(0, 0), desiredDimension);
+        zoomArea(newArea);
+      } else {
+        const newArea = createAreaByCoordinateAndDimension(zoomedArea.getFrom(), desiredDimension);
+        zoomArea(newArea);
+      }
+    },
+    [zoomedArea === null, desiredDimension, status]
+  );
 
+  const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
   useEffect(
     function onDeviceSizeChangeEffect() {
       if (deviceSize === 'large') {
@@ -45,22 +75,23 @@ const Room: NextPage = function Room() {
     [deviceSize]
   );
 
-  const joinGameOnInitializationEffect = useCallback(() => {
+  useEffect(function joinGameOnInitializationEffect() {
     joinGame();
-  }, [joinGame]);
-  useEffect(joinGameOnInitializationEffect, [joinGameOnInitializationEffect]);
+  }, []);
 
-  const handleRouterLeaveEffect = useCallback(() => {
-    const handleRouterChangeStart = () => {
-      leaveGame();
-    };
+  useEffect(
+    function handleRouterLeaveEffect() {
+      const handleRouterChangeStart = () => {
+        leaveGame();
+      };
 
-    router.events.on('routeChangeStart', handleRouterChangeStart);
-    return () => {
-      router.events.off('routeChangeStart', handleRouterChangeStart);
-    };
-  }, [leaveGame]);
-  useEffect(handleRouterLeaveEffect, [handleRouterLeaveEffect]);
+      router.events.on('routeChangeStart', handleRouterChangeStart);
+      return () => {
+        router.events.off('routeChangeStart', handleRouterChangeStart);
+      };
+    },
+    [leaveGame]
+  );
 
   const handleLogoClick = () => {
     router.push('/');
@@ -97,6 +128,8 @@ const Room: NextPage = function Room() {
     [selectedItem, buildItem]
   );
 
+  const isBuildItemActive = !!selectedItem;
+
   return (
     <>
       {deviceSize === 'large' && (
@@ -120,16 +153,13 @@ const Room: NextPage = function Room() {
             />
           </section>
           <section className="relative grow overflow-hidden bg-black">
-            <section className="w-full h-full">
-              {status === 'CONNECTED' && (
-                <GameMap
-                  area={zoomedArea}
-                  areaOffset={zoomedAreaOffset}
-                  unitBlock={unitBlock}
-                  onUnitClick={handleUnitClick}
-                  onAreaUpdate={zoomArea}
-                />
-              )}
+            <section ref={gameMapWrapperElemRef} className="w-full h-full">
+              <GameMap
+                area={zoomedArea}
+                areaOffset={zoomedAreaOffset}
+                unitBlock={unitBlock}
+                onUnitClick={handleUnitClick}
+              />
             </section>
             {dimension && targetArea && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
@@ -150,16 +180,13 @@ const Room: NextPage = function Room() {
             onDone={handleSelectItemDone}
           />
           <section className="relative grow overflow-hidden bg-black">
-            <section className="w-full h-full">
-              {status === 'CONNECTED' && (
-                <GameMap
-                  area={zoomedArea}
-                  areaOffset={zoomedAreaOffset}
-                  unitBlock={unitBlock}
-                  onUnitClick={handleUnitClick}
-                  onAreaUpdate={zoomArea}
-                />
-              )}
+            <section ref={gameMapWrapperElemRef} className="w-full h-full">
+              <GameMap
+                area={zoomedArea}
+                areaOffset={zoomedAreaOffset}
+                unitBlock={unitBlock}
+                onUnitClick={handleUnitClick}
+              />
             </section>
             {dimension && targetArea && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">

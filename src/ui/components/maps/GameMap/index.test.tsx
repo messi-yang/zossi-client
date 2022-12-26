@@ -4,15 +4,7 @@ import { UnitBlockVo } from '@/models/valueObjects';
 import { createOffset, createUnit, createUnitBlock } from '@/models/valueObjects/factories';
 
 function renderGameMap(unitBlock: UnitBlockVo): RenderResult {
-  return render(
-    <GameMap
-      area={null}
-      areaOffset={createOffset(0, 0)}
-      unitBlock={unitBlock}
-      onUnitClick={() => {}}
-      onAreaUpdate={() => {}}
-    />
-  );
+  return render(<GameMap area={null} areaOffset={createOffset(0, 0)} unitBlock={unitBlock} onUnitClick={() => {}} />);
 }
 
 describe('GameMap', () => {
