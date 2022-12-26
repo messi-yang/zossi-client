@@ -52,7 +52,7 @@ type Props = {
 
 function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
   const [unitBlockCanvasElem, setUnitBlockCanvasElem] = useState<HTMLCanvasElement | null>(null);
-  const [patternCanvasElem, setPatternCanvasElem] = useState<HTMLCanvasElement | null>(null);
+  const [hoverMaskCanvasElem, HoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
   const [borderWidth] = useState(1);
   const [canvasUnitSize] = useState(1);
@@ -194,7 +194,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
     ctx.fill();
   };
 
-  const handleDropPatternCanvasMouseMove: MouseEventHandler<HTMLCanvasElement> = useCallback(
+  const handleHoverMaskCanvasMouseMove: MouseEventHandler<HTMLCanvasElement> = useCallback(
     (event) => {
       const eventTarget = event.target as Element;
       const eventTargetRect = eventTarget.getBoundingClientRect();
@@ -211,18 +211,18 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
     [hoveredIndexes, unitSize, dimension, borderWidth]
   );
 
-  const handleDropPatternCanvasMouseMoveDebouncer = useCallback(
-    debounce(handleDropPatternCanvasMouseMove, 75, { maxWait: 75 }),
-    [handleDropPatternCanvasMouseMove]
+  const handleHoverMaskCanvasMouseMoveDebouncer = useCallback(
+    debounce(handleHoverMaskCanvasMouseMove, 75, { maxWait: 75 }),
+    [handleHoverMaskCanvasMouseMove]
   );
 
-  const handleDropPatternCanvasMouseLeave = () => {
-    handleDropPatternCanvasMouseMoveDebouncer.cancel();
+  const handleHoverMaskCanvasMouseLeave = () => {
+    handleHoverMaskCanvasMouseMoveDebouncer.cancel();
     setHoveredIndexes(null);
   };
 
   useEffect(() => {
-    const ctx = patternCanvasElem?.getContext('2d');
+    const ctx = hoverMaskCanvasElem?.getContext('2d');
     if (!ctx) {
       return () => {};
     }
@@ -236,9 +236,9 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
         clean(ctx);
       }
     };
-  }, [patternCanvasElem, hoveredIndexes, unitSize, borderWidth, canvasUnitSize]);
+  }, [hoverMaskCanvasElem, hoveredIndexes, unitSize, borderWidth, canvasUnitSize]);
 
-  const handleDropPatternCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
+  const handleHoverMaskCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;
     const eventTargetRect = eventTarget.getBoundingClientRect();
     const [posX, posY] = [
@@ -250,7 +250,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
   };
 
   const onHoverMaskCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
-    setPatternCanvasElem(elem);
+    HoverMaskCanvasElem(elem);
   }, []);
 
   return (
@@ -271,9 +271,9 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
         width={canvasResolution.width}
         height={canvasResolution.height}
         className="absolute left-0 top-0 cursor-pointer"
-        onMouseMove={handleDropPatternCanvasMouseMoveDebouncer}
-        onMouseLeave={handleDropPatternCanvasMouseLeave}
-        onClick={handleDropPatternCanvasClick}
+        onMouseMove={handleHoverMaskCanvasMouseMoveDebouncer}
+        onMouseLeave={handleHoverMaskCanvasMouseLeave}
+        onClick={handleHoverMaskCanvasClick}
         style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
       />
     </div>
