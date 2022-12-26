@@ -94,7 +94,7 @@ const Room: NextPage = function Room() {
 
       buildItem(coordinate, selectedItem.getId());
     },
-    [selectedItem]
+    [selectedItem, buildItem]
   );
 
   return (

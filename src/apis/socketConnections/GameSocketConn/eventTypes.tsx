@@ -13,33 +13,24 @@ type InformationUpdatedEvent = {
   };
 };
 
-type AreaZoomedEventPayload = {
-  area: AreaDto;
-  unitBlock: UnitDto[][];
-};
 type AreaZoomedEvent = {
   type: EventTypeEnum.AreaZoomed;
-  payload: AreaZoomedEventPayload;
+  payload: {
+    area: AreaDto;
+    unitBlock: UnitDto[][];
+  };
 };
 
-type ZoomedAreaUpdatedEventPayload = {
-  area: AreaDto;
-  unitBlock: UnitDto[][];
-  updatedAt: string;
-};
 type ZoomedAreaUpdatedEvent = {
   type: EventTypeEnum.ZoomedAreaUpdated;
-  payload: ZoomedAreaUpdatedEventPayload;
+  payload: {
+    area: AreaDto;
+    unitBlock: UnitDto[][];
+    updatedAt: string;
+  };
 };
 
 type Event = InformationUpdatedEvent | AreaZoomedEvent | ZoomedAreaUpdatedEvent;
 
 export { EventTypeEnum };
-export type {
-  Event,
-  InformationUpdatedEvent,
-  AreaZoomedEvent,
-  AreaZoomedEventPayload,
-  ZoomedAreaUpdatedEvent,
-  ZoomedAreaUpdatedEventPayload,
-};
+export type { Event, InformationUpdatedEvent, AreaZoomedEvent, ZoomedAreaUpdatedEvent };

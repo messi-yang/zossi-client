@@ -40,7 +40,7 @@ function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [Dimensio
   return [createDimension(event.payload.dimension.width, event.payload.dimension.height)];
 }
 
-export default class GameSocketConnection {
+export default class GameSocketConn {
   private socket: WebSocket;
 
   constructor(params: {
@@ -83,14 +83,14 @@ export default class GameSocketConnection {
     this.socket = socket;
   }
 
-  static newGameSocketConnection(params: {
+  static newGameSocketConn(params: {
     onAreaZoomed: (area: AreaVo, unitBlock: UnitBlockVo) => void;
     onZoomedAreaUpdated: (area: AreaVo, unitBlock: UnitBlockVo) => void;
     onInformationUpdated: (dimension: DimensionVo) => void;
     onClose: () => void;
     onOpen: () => void;
-  }): GameSocketConnection {
-    return new GameSocketConnection(params);
+  }): GameSocketConn {
+    return new GameSocketConn(params);
   }
 
   public disconnect() {

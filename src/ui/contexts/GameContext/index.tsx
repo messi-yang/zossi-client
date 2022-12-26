@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { ItemHttpApi } from '@/apis/httpApis';
-import { GameSocketConnection } from '@/apis/socketConnections';
+import { GameSocketConn } from '@/apis/socketConnections';
 import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo, OffsetVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 import { createOffset, createOffsetOfTwoAreas } from '@/models/valueObjects/factories';
@@ -50,7 +50,7 @@ type Props = {
 
 export function Provider({ children }: Props) {
   const itemHttpApi = ItemHttpApi.newItemHttpApi();
-  const [gameSocketConnection, setGameSocketConnection] = useState<GameSocketConnection | null>(null);
+  const [gameSocketConn, setGameSocketConn] = useState<GameSocketConn | null>(null);
   const [status, setStatus] = useState<Status>('CLOSED');
 
   const initialContextValue = createInitialContextValue();
@@ -97,7 +97,7 @@ export function Provider({ children }: Props) {
 
   const joinGame = useCallback(() => {
     setStatus('CONNECTING');
-    const newGameSocketConnection = GameSocketConnection.newGameSocketConnection({
+    const newGameSocketConn = GameSocketConn.newGameSocketConn({
       onAreaZoomed: (newArea: AreaVo, newUnitBlock: UnitBlockVo) => {
         if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
           zoomedAreaSource.current = newArea;
@@ -122,7 +122,7 @@ export function Provider({ children }: Props) {
       },
       onClose: () => {
         setStatus('CLOSED');
-        setGameSocketConnection(null);
+        setGameSocketConn(null);
         setDimension(initialContextValue.dimension);
         setTargetArea(initialContextValue.targetArea);
 
@@ -132,26 +132,26 @@ export function Provider({ children }: Props) {
         updateUnitBlockAndOffsetsDebouncer();
       },
     });
-    setGameSocketConnection(newGameSocketConnection);
+    setGameSocketConn(newGameSocketConn);
   }, []);
 
   const leaveGame = useCallback(() => {
     setStatus('CLOSING');
-    gameSocketConnection?.disconnect();
-  }, [gameSocketConnection]);
+    gameSocketConn?.disconnect();
+  }, [gameSocketConn]);
 
   const buildItem = useCallback(
     (coordinate: CoordinateVo, itemId: string) => {
-      gameSocketConnection?.buildItem(coordinate, itemId);
+      gameSocketConn?.buildItem(coordinate, itemId);
     },
-    [gameSocketConnection]
+    [gameSocketConn]
   );
 
   const sendZoomAreaAction = useCallback(
     (newArea: AreaVo) => {
-      gameSocketConnection?.zoomArea(newArea);
+      gameSocketConn?.zoomArea(newArea);
     },
-    [gameSocketConnection]
+    [gameSocketConn]
   );
   const sendZoomAreaActionDebouncer = useCallback(
     debounce(sendZoomAreaAction, 150, { leading: true, maxWait: 500, trailing: true }),

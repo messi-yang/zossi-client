@@ -1,3 +1,3 @@
-import GameSocketConnection from './GameSocketConnection';
+import GameSocketConn from './GameSocketConn';
 
-export { GameSocketConnection };
+export { GameSocketConn };
