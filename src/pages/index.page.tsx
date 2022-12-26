@@ -18,11 +18,10 @@ const Landing: NextPage = function Landing() {
 
   return (
     <main
-      className="w-screen h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1E1E1E]"
       style={{
         width: windowSize.width,
         height: windowSize.height,
-        backgroundColor: '#1E1E1E',
       }}
     >
       <BigLogo width={deviceSize === 'large' ? undefined : windowSize.width * 0.8} />

@@ -7,11 +7,10 @@ type ModalProps = {
 export default function Modal({ width, height, children }: ModalProps) {
   return (
     <section
-      className="overflow-hidden"
+      className="overflow-hidden bg-[#121212]"
       style={{
         width,
         height,
-        backgroundColor: '#121212',
       }}
     >
       {children}

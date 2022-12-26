@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import Text from '@/ui/components/text/Text';
 
 type Props = {
@@ -23,10 +24,17 @@ function ItemWrapper({
 }: Props) {
   return (
     <section
-      className="w-full h-full basis-[78px] flex flex-col items-center justify-center cursor-pointer"
-      style={{
-        backgroundColor: hovered ? '#575757' : 'unset',
-      }}
+      className={classnames(
+        'w-full',
+        'h-full',
+        'basis-[78px]',
+        'flex',
+        'flex-col',
+        'items-center',
+        'justify-center',
+        'cursor-pointer',
+        hovered && 'bg-[#575757]'
+      )}
       role="button"
       tabIndex={0}
       onClick={onClick}

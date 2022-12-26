@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import classnames from 'classnames';
 import SmallLogo from '@/ui/components/logos/SmallLogo';
 import BuildItemIcon from '@/ui/components/icons/BuildItemIcon';
 import MapMarkerIcon from '@/ui/components/icons/MapMarkerIcon';
@@ -29,21 +30,19 @@ function GameRoomSideBar({
   return (
     <section
       data-testid={dataTestids.root}
-      className={[
+      className={classnames(
         align === 'column' ? 'w-[78px]' : 'w-full',
         align === 'row' ? 'h-[78px]' : 'h-full',
         'flex',
         align === 'column' ? 'flex-col' : 'flex-row',
-      ].join(' ')}
-      style={{
-        backgroundColor: '#1C1C1C',
-      }}
+        'bg-[#1C1C1C]'
+      )}
     >
       <ItemWrapper highlighted={false} active={false} hovered={false} onClick={onLogoClick}>
         <SmallLogo />
       </ItemWrapper>
       <ItemWrapper
-        label="Pattern"
+        label="Build"
         highlighted={isBuildItemMenuHovered}
         active={isBuildItemActive}
         hovered={isBuildItemMenuHovered}

@@ -78,11 +78,10 @@ function GameMiniMap({ width, dimension, area, onAreaUpdate }: Props) {
         tabIndex={0}
       >
         <section
-          className="absolute box-border border border-solid"
+          className="absolute box-border border border-solid border-[#01D6C9]"
           style={{
             left: `${offsetXRatio * 100}%`,
             top: `${offsetYRatio * 100}%`,
-            borderColor: '#01D6C9',
             width: areaElemWidth,
             height: areaElemHeight,
           }}
