@@ -1,9 +1,9 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import GameRoomSideBar, { dataTestids } from '.';
+import GameSideBar, { dataTestids } from '.';
 
-function renderGameRoomSideBar(): RenderResult {
+function renderGameSideBar(): RenderResult {
   return render(
-    <GameRoomSideBar
+    <GameSideBar
       align="column"
       onLogoClick={() => {}}
       isBuildItemActive
@@ -14,10 +14,10 @@ function renderGameRoomSideBar(): RenderResult {
   );
 }
 
-describe('GameRoomSideBar', () => {
+describe('GameSideBar', () => {
   it('Should render component successfully.', () => {
     try {
-      renderGameRoomSideBar();
+      renderGameSideBar();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

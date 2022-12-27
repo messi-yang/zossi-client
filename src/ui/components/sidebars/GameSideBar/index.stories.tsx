@@ -1,20 +1,20 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import GameRoomSideBar from '.';
+import GameSideBar from '.';
 
 export default {
-  title: 'Sidebar/GameRoomSideBar',
-  component: GameRoomSideBar,
+  title: 'Sidebar/GameSideBar',
+  component: GameSideBar,
   argTypes: {},
-} as ComponentMeta<typeof GameRoomSideBar>;
+} as ComponentMeta<typeof GameSideBar>;
 
-const Template: ComponentStory<typeof GameRoomSideBar> = function Template(args) {
+const Template: ComponentStory<typeof GameSideBar> = function Template(args) {
   const { align } = args;
 
   return (
     <section className={[align === 'column' ? 'h-screen' : '', align === 'row' ? 'w-screen' : undefined].join(' ')}>
-      <GameRoomSideBar {...args} />
+      <GameSideBar {...args} />
     </section>
   );
 };

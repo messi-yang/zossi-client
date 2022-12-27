@@ -9,7 +9,7 @@ import {
   createCoordinate,
   createAreaByCoordinateAndDimension,
 } from '@/models/valueObjects/factories';
-import GameRoomSideBar from '@/ui/components/sidebars/GameRoomSideBar';
+import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import GameMap from '@/ui/components/maps/GameMap';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
 import SelectItemModal from '@/ui/components/modals/SelectItemModal';
@@ -136,7 +136,7 @@ const Room: NextPage = function Room() {
             onDone={handleSelectItemDone}
           />
           <section className="shrink-0">
-            <GameRoomSideBar
+            <GameSideBar
               align="column"
               onLogoClick={handleLogoClick}
               isBuildItemActive={isBuildItemActive}
@@ -193,7 +193,7 @@ const Room: NextPage = function Room() {
             )}
           </section>
           <section className="shrink-0">
-            <GameRoomSideBar
+            <GameSideBar
               align="row"
               onLogoClick={handleLogoClick}
               isBuildItemActive={isBuildItemActive}

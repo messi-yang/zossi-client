@@ -15,7 +15,7 @@ type Props = {
   onMiniMapClick: () => void;
 };
 
-function GameRoomSideBar({
+function GameSideBar({
   align,
   onLogoClick,
   isBuildItemActive,
@@ -75,5 +75,5 @@ function GameRoomSideBar({
   );
 }
 
-export default GameRoomSideBar;
+export default GameSideBar;
 export { dataTestids };
