@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState, useMemo, useRef, useEffect } from 'react';
+import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { ItemHttpApi } from '@/apis/httpApis';
 import { GameSocketConn } from '@/apis/socketConnections';
@@ -57,10 +57,8 @@ export function Provider({ children }: Props) {
   }, [fetchItems]);
   useEffect(fetchItemsOnInitializationEffect, [fetchItemsOnInitializationEffect]);
 
-  const zoomedAreaSource = useRef<AreaVo | null>(initialContextValue.zoomedArea);
-  const unitBlockSource = useRef<UnitBlockVo | null>(initialContextValue.unitBlock);
-  const [zoomedArea, setZoomedArea] = useState<AreaVo | null>(zoomedAreaSource.current);
-  const [unitBlock, setUnitBlock] = useState<UnitBlockVo | null>(unitBlockSource.current);
+  const [zoomedArea, setZoomedArea] = useState<AreaVo | null>(initialContextValue.zoomedArea);
+  const [unitBlock, setUnitBlock] = useState<UnitBlockVo | null>(initialContextValue.unitBlock);
 
   const joinGame = useCallback(() => {
     const hasUncleanedConnection = !!gameSocketConn;
