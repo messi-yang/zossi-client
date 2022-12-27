@@ -20,7 +20,7 @@ import useDomRect from '@/ui/hooks/useDomRect';
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
   const router = useRouter();
-  const { dimension, zoomedArea, unitBlock, items, status, joinGame, leaveGame, buildItem, zoomArea } =
+  const { dimension, zoomedArea, unitBlock, items, status, joinGame, leaveGame, buildItem, destroyItem, zoomArea } =
     useContext(GameContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
@@ -110,13 +110,17 @@ const Room: NextPage = function Room() {
 
   const handleUnitClick = useCallback(
     (coordinate: CoordinateVo) => {
-      if (!selectedItem) {
-        return;
-      }
+      if (isDestroyingItem) {
+        destroyItem(coordinate);
+      } else if (isBuildindItem) {
+        if (!selectedItem) {
+          return;
+        }
 
-      buildItem(coordinate, selectedItem.getId());
+        buildItem(coordinate, selectedItem.getId());
+      }
     },
-    [selectedItem, buildItem]
+    [isDestroyingItem, isBuildindItem, selectedItem, buildItem, destroyItem]
   );
 
   return (

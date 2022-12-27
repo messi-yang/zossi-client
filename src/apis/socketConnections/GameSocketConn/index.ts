@@ -11,7 +11,7 @@ import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo } from '@/models/valueOb
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { ZoomAreaAction, BuildItemAction } from './actionTypes';
+import type { ZoomAreaAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 
 function convertUnitDtoMatrixToUnitBlockVo(unitBlock: UnitDto[][]): UnitBlockVo {
   const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => createUnit(unit.alive)));
@@ -53,8 +53,6 @@ export default class GameSocketConn {
     const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
     const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
     const socket = new WebSocket(socketUrl);
-
-    console.log('JOIN!');
 
     socket.onmessage = async ({ data }: any) => {
       const decompressedBlob = await ungzipBlob(data as Blob);
@@ -116,6 +114,17 @@ export default class GameSocketConn {
       payload: {
         coordinate: { x: coordinate.getX(), y: coordinate.getY() },
         itemId,
+        actionedAt: new Date().toISOString(),
+      },
+    };
+    this.sendMessage(action);
+  }
+
+  public destroyItem(coordinate: CoordinateVo) {
+    const action: DestroyItemAction = {
+      type: ActionTypeEnum.DestroyItem,
+      payload: {
+        coordinate: { x: coordinate.getX(), y: coordinate.getY() },
         actionedAt: new Date().toISOString(),
       },
     };

@@ -15,6 +15,7 @@ type ContextValue = {
   items: ItemAgg[] | null;
   joinGame: () => void;
   buildItem: (coordinate: CoordinateVo, itemId: string) => void;
+  destroyItem: (coordinate: CoordinateVo) => void;
   zoomArea: (area: AreaVo) => void;
   leaveGame: () => void;
 };
@@ -28,6 +29,7 @@ function createInitialContextValue(): ContextValue {
     items: null,
     joinGame: () => {},
     buildItem: () => {},
+    destroyItem: () => {},
     zoomArea: () => {},
     leaveGame: () => {},
   };
@@ -107,6 +109,13 @@ export function Provider({ children }: Props) {
     [gameSocketConn]
   );
 
+  const destroyItem = useCallback(
+    (coordinate: CoordinateVo) => {
+      gameSocketConn?.destroyItem(coordinate);
+    },
+    [gameSocketConn]
+  );
+
   const zoomArea = useCallback(
     debounce(
       (newArea: AreaVo) => {
@@ -130,6 +139,7 @@ export function Provider({ children }: Props) {
           joinGame,
           leaveGame,
           buildItem,
+          destroyItem,
           zoomArea,
         }),
         [status, dimension, zoomedArea, unitBlock, items, joinGame, leaveGame, buildItem, zoomArea]
