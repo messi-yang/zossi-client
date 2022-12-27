@@ -54,6 +54,8 @@ export default class GameSocketConn {
     const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
     const socket = new WebSocket(socketUrl);
 
+    console.log('JOIN!');
+
     socket.onmessage = async ({ data }: any) => {
       const decompressedBlob = await ungzipBlob(data as Blob);
       const eventJsonString = await decompressedBlob.text();
@@ -101,6 +103,10 @@ export default class GameSocketConn {
     const jsonString = JSON.stringify(msg);
     const jsonBlob = new Blob([jsonString]);
     const compressedJsonBlob = await gzipBlob(jsonBlob);
+
+    if (this.socket.readyState !== this.socket.OPEN) {
+      return;
+    }
     this.socket.send(compressedJsonBlob);
   }
 

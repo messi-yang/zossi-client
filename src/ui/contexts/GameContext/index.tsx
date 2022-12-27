@@ -6,7 +6,7 @@ import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo, OffsetVo } from '@/mode
 import { ItemAgg } from '@/models/aggregates';
 import { createOffset, createOffsetOfTwoAreas } from '@/models/valueObjects/factories';
 
-type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'CONNECTED';
+type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'OPEN';
 
 type ContextValue = {
   status: Status;
@@ -96,7 +96,13 @@ export function Provider({ children }: Props) {
   );
 
   const joinGame = useCallback(() => {
+    const hasUncleanedConnection = !!gameSocketConn;
+    if (hasUncleanedConnection) {
+      return;
+    }
+
     setStatus('CONNECTING');
+
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
       onAreaZoomed: (newArea: AreaVo, newUnitBlock: UnitBlockVo) => {
         if (!zoomedAreaSource.current || !zoomedAreaSource.current.isEqual(newArea)) {
@@ -118,7 +124,7 @@ export function Provider({ children }: Props) {
         setDimension(newDimension);
       },
       onOpen: () => {
-        setStatus('CONNECTED');
+        setStatus('OPEN');
       },
       onClose: () => {
         setStatus('CLOSED');
@@ -133,7 +139,7 @@ export function Provider({ children }: Props) {
       },
     });
     setGameSocketConn(newGameSocketConn);
-  }, []);
+  }, [gameSocketConn]);
 
   const leaveGame = useCallback(() => {
     setStatus('CLOSING');

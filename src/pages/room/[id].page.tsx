@@ -49,7 +49,7 @@ const Room: NextPage = function Room() {
   );
   useEffect(
     function handleDesiredDimensionUpdateEffect() {
-      if (status !== 'CONNECTED') {
+      if (status !== 'OPEN') {
         return;
       }
       if (zoomedArea === null) {
@@ -75,19 +75,12 @@ const Room: NextPage = function Room() {
     [deviceSize]
   );
 
-  useEffect(function joinGameOnInitializationEffect() {
-    joinGame();
-  }, []);
-
   useEffect(
-    function handleRouterLeaveEffect() {
-      const handleRouterChangeStart = () => {
-        leaveGame();
-      };
+    function joinGameOnInitializationEffect() {
+      joinGame();
 
-      router.events.on('routeChangeStart', handleRouterChangeStart);
       return () => {
-        router.events.off('routeChangeStart', handleRouterChangeStart);
+        leaveGame();
       };
     },
     [leaveGame]
