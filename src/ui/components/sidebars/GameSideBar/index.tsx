@@ -11,6 +11,8 @@ type Props = {
   onLogoClick: () => void;
   isBuildItemActive: boolean;
   onBuildItemClick: () => void;
+  isDestroyActive: boolean;
+  onDestroyClick: () => void;
   isMiniMapActive: boolean;
   onMiniMapClick: () => void;
 };
@@ -20,11 +22,13 @@ function GameSideBar({
   onLogoClick,
   isBuildItemActive,
   onBuildItemClick,
+  isDestroyActive,
+  onDestroyClick,
   isMiniMapActive,
   onMiniMapClick,
 }: Props) {
   const [isBuildItemMenuHovered, setIsBuildItemMenuHovered] = useState<boolean>(false);
-
+  const [isDestroyMenuHovered, setIsDestroyMenuHovered] = useState<boolean>(false);
   const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
 
   return (
@@ -55,6 +59,21 @@ function GameSideBar({
         }}
       >
         <BuildItemIcon highlighted={isBuildItemMenuHovered} active={isBuildItemActive} />
+      </ItemWrapper>
+      <ItemWrapper
+        label="Destroy"
+        highlighted={isDestroyMenuHovered}
+        active={isDestroyActive}
+        hovered={isDestroyMenuHovered}
+        onClick={onDestroyClick}
+        onMouseEnter={() => {
+          setIsDestroyMenuHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsDestroyMenuHovered(false);
+        }}
+      >
+        <BuildItemIcon highlighted={isDestroyMenuHovered} active={isDestroyActive} />
       </ItemWrapper>
       <ItemWrapper
         label="Map"

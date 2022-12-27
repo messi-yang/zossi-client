@@ -15,9 +15,7 @@ type ContextValue = {
   targetArea: AreaVo | null;
   unitBlock: UnitBlockVo | null;
   items: ItemAgg[] | null;
-  selectedItem: ItemAgg | null;
   zoomedAreaOffset: OffsetVo;
-  selectItem: (item: ItemAgg) => void;
   joinGame: () => void;
   buildItem: (coordinate: CoordinateVo, itemId: string) => void;
   zoomArea: (area: AreaVo) => void;
@@ -32,9 +30,7 @@ function createInitialContextValue(): ContextValue {
     targetArea: null,
     unitBlock: null,
     items: null,
-    selectedItem: null,
     zoomedAreaOffset: createOffset(0, 0),
-    selectItem: () => {},
     joinGame: () => {},
     buildItem: () => {},
     zoomArea: () => {},
@@ -57,19 +53,14 @@ export function Provider({ children }: Props) {
   const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
 
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(initialContextValue.selectedItem);
   const fetchItems = useCallback(async () => {
     const returnedItems = await itemHttpApi.fetchItems();
     setItems(returnedItems);
-    setSelectedItem(returnedItems[0]);
   }, []);
   const fetchItemsOnInitializationEffect = useCallback(() => {
     fetchItems();
   }, [fetchItems]);
   useEffect(fetchItemsOnInitializationEffect, [fetchItemsOnInitializationEffect]);
-  const selectItem = useCallback((item: ItemAgg) => {
-    setSelectedItem(item);
-  }, []);
 
   const zoomedAreaSource = useRef<AreaVo | null>(initialContextValue.zoomedArea);
   const targetAreaSource = useRef<AreaVo | null>(initialContextValue.targetArea);
@@ -183,8 +174,6 @@ export function Provider({ children }: Props) {
           targetArea,
           unitBlock,
           items,
-          selectedItem,
-          selectItem,
           joinGame,
           leaveGame,
           buildItem,
@@ -198,8 +187,6 @@ export function Provider({ children }: Props) {
           targetArea,
           unitBlock,
           items,
-          selectedItem,
-          selectItem,
           joinGame,
           leaveGame,
           buildItem,

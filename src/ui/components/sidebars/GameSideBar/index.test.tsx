@@ -8,6 +8,8 @@ function renderGameSideBar(): RenderResult {
       onLogoClick={() => {}}
       isBuildItemActive
       onBuildItemClick={() => {}}
+      isDestroyActive
+      onDestroyClick={() => {}}
       isMiniMapActive
       onMiniMapClick={() => {}}
     />

@@ -26,9 +26,7 @@ const Room: NextPage = function Room() {
     targetArea,
     unitBlock,
     items,
-    selectedItem,
     status,
-    selectItem,
     joinGame,
     leaveGame,
     buildItem,
@@ -36,6 +34,9 @@ const Room: NextPage = function Room() {
   } = useContext(GameContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
+  const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
+  const isBuildindItem = !!selectedItem;
+  const isDestroyingItem = !isBuildindItem;
 
   const gameMapWrapperElemRef = useRef<HTMLElement>(null);
   const gameMapWrapperElemRect = useDomRect(gameMapWrapperElemRef);
@@ -102,12 +103,16 @@ const Room: NextPage = function Room() {
     setIsSelectItemModalVisible(true);
   };
 
+  const handleDestroyClick = () => {
+    setSelectedItem(null);
+  };
+
   const handleSelectItemDone = () => {
     setIsSelectItemModalVisible(false);
   };
 
   const handleItemSelect = (item: ItemAgg) => {
-    selectItem(item);
+    setSelectedItem(item);
   };
 
   const handleUnitClick = useCallback(
@@ -120,8 +125,6 @@ const Room: NextPage = function Room() {
     },
     [selectedItem, buildItem]
   );
-
-  const isBuildItemActive = !!selectedItem;
 
   return (
     <>
@@ -139,8 +142,10 @@ const Room: NextPage = function Room() {
             <GameSideBar
               align="column"
               onLogoClick={handleLogoClick}
-              isBuildItemActive={isBuildItemActive}
+              isBuildItemActive={isBuildindItem}
               onBuildItemClick={handleBuildItemClick}
+              isDestroyActive={isDestroyingItem}
+              onDestroyClick={handleDestroyClick}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
             />
@@ -196,8 +201,10 @@ const Room: NextPage = function Room() {
             <GameSideBar
               align="row"
               onLogoClick={handleLogoClick}
-              isBuildItemActive={isBuildItemActive}
+              isBuildItemActive={isBuildindItem}
               onBuildItemClick={handleBuildItemClick}
+              isDestroyActive={isDestroyingItem}
+              onDestroyClick={handleDestroyClick}
               isMiniMapActive={isMiniMapVisible}
               onMiniMapClick={handleMiniMapClick}
             />
