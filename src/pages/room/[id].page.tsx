@@ -8,6 +8,7 @@ import {
   calculateDimensionByResolutionAndUnitSideLength,
   createCoordinate,
   createAreaByCoordinateAndDimension,
+  createOffsetOfTwoAreas,
 } from '@/models/valueObjects/factories';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import GameMap from '@/ui/components/maps/GameMap';
@@ -19,24 +20,16 @@ import useDomRect from '@/ui/hooks/useDomRect';
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
   const router = useRouter();
-  const {
-    dimension,
-    zoomedArea,
-    zoomedAreaOffset,
-    targetArea,
-    unitBlock,
-    items,
-    status,
-    joinGame,
-    leaveGame,
-    buildItem,
-    zoomArea,
-  } = useContext(GameContext);
+  const { dimension, zoomedArea, unitBlock, items, status, joinGame, leaveGame, buildItem, zoomArea } =
+    useContext(GameContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
+
+  const [targetArea, setTargetArea] = useState<AreaVo | null>(zoomedArea);
+  const zoomedAreaOffset = useMemo(() => createOffsetOfTwoAreas(zoomedArea, targetArea), [zoomedArea, targetArea]);
 
   const gameMapWrapperElemRef = useRef<HTMLElement>(null);
   const gameMapWrapperElemRect = useDomRect(gameMapWrapperElemRef);
@@ -53,13 +46,12 @@ const Room: NextPage = function Room() {
       if (status !== 'OPEN') {
         return;
       }
-      if (zoomedArea === null) {
-        const newArea = createAreaByCoordinateAndDimension(createCoordinate(0, 0), desiredDimension);
-        zoomArea(newArea);
-      } else {
-        const newArea = createAreaByCoordinateAndDimension(zoomedArea.getFrom(), desiredDimension);
-        zoomArea(newArea);
-      }
+      const newArea = createAreaByCoordinateAndDimension(
+        zoomedArea ? zoomedArea.getFrom() : createCoordinate(0, 0),
+        desiredDimension
+      );
+      setTargetArea(newArea);
+      zoomArea(newArea);
     },
     [zoomedArea === null, desiredDimension, status]
   );
@@ -92,6 +84,7 @@ const Room: NextPage = function Room() {
   };
 
   const handleAreaUpdate = (newArea: AreaVo) => {
+    setTargetArea(newArea);
     zoomArea(newArea);
   };
 
