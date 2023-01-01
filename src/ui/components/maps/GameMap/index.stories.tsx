@@ -1,16 +1,8 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { CoordinateVo } from '@/models/valueObjects';
-import {
-  createCoordinate,
-  createArea,
-  createOffset,
-  createUnit,
-  createUnitBlock,
-  createDimensionByArea,
-  createUnitBlockByDimension,
-} from '@/models/valueObjects/factories';
+import { CoordinateVo, AreaVo, OffsetVo, UnitVo, UnitBlockVo } from '@/models/valueObjects';
+import { createDimensionByArea, createUnitBlockByDimension } from '@/models/valueObjects/factories';
 
 import GameMap from '.';
 
@@ -32,10 +24,10 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     }
 
     const unitMatrix = unitBlock.getUnitMatrix();
-    unitMatrix[coordinate.getX()][coordinate.getY()] = createUnit(null);
+    unitMatrix[coordinate.getX()][coordinate.getY()] = UnitVo.new(null);
 
     updateArgs({
-      unitBlock: createUnitBlock(unitMatrix),
+      unitBlock: UnitBlockVo.new(unitMatrix),
     });
   };
 
@@ -47,9 +39,9 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-const areaForPrimary = createArea(createCoordinate(3, 3), createCoordinate(9, 9));
+const areaForPrimary = AreaVo.new(CoordinateVo.new(3, 3), CoordinateVo.new(9, 9));
 Primary.args = {
   area: areaForPrimary,
-  areaOffset: createOffset(0, 0),
+  areaOffset: OffsetVo.new(0, 0),
   unitBlock: createUnitBlockByDimension(createDimensionByArea(areaForPrimary)),
 };

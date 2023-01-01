@@ -5,30 +5,6 @@ import AreaVo from '@/models/valueObjects/AreaVo';
 import DimensionVo from '@/models/valueObjects/DimensionVo';
 import UnitBlockVo from '@/models/valueObjects/UnitBlockVo';
 
-export function createArea(from: CoordinateVo, to: CoordinateVo): AreaVo {
-  return new AreaVo(from, to);
-}
-
-export function createCoordinate(x: number, y: number): CoordinateVo {
-  return new CoordinateVo(x, y);
-}
-
-export function createDimension(width: number, height: number): DimensionVo {
-  return new DimensionVo(width, height);
-}
-
-export function createOffset(x: number, y: number): OffsetVo {
-  return new OffsetVo(x, y);
-}
-
-export function createUnitBlock(unitMatrix: UnitVo[][]): UnitBlockVo {
-  return new UnitBlockVo(unitMatrix);
-}
-
-export function createUnit(itemId: string | null): UnitVo {
-  return new UnitVo(itemId);
-}
-
 export function createOffsetOfTwoAreas(areaA: AreaVo | null, areaB: AreaVo | null): OffsetVo {
   if (!areaA || !areaB) {
     return new OffsetVo(0, 0);

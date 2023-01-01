@@ -8,6 +8,10 @@ export default class OffsetVo {
     this.y = y;
   }
 
+  static new(x: number, y: number): OffsetVo {
+    return new OffsetVo(x, y);
+  }
+
   public getX(): number {
     return this.x;
   }

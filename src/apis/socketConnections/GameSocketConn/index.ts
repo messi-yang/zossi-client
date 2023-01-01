@@ -1,43 +1,36 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
-import {
-  createCoordinate,
-  createArea,
-  createDimension,
-  createUnit,
-  createUnitBlock,
-} from '@/models/valueObjects/factories';
 import type { UnitDto } from '@/apis/dtos';
-import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo } from '@/models/valueObjects';
+import { AreaVo, UnitVo, UnitBlockVo, CoordinateVo, DimensionVo } from '@/models/valueObjects';
 import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { ZoomAreaAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 
 function convertUnitDtoMatrixToUnitBlockVo(unitBlock: UnitDto[][]): UnitBlockVo {
-  const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => createUnit(unit.itemId)));
-  return createUnitBlock(unitMatrix);
+  const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => UnitVo.new(unit.itemId)));
+  return UnitBlockVo.new(unitMatrix);
 }
 
 function parseAreaZoomedEvent(event: AreaZoomedEvent): [AreaVo, UnitBlockVo] {
-  const area = createArea(
-    createCoordinate(event.payload.area.from.x, event.payload.area.from.y),
-    createCoordinate(event.payload.area.to.x, event.payload.area.to.y)
+  const area = AreaVo.new(
+    CoordinateVo.new(event.payload.area.from.x, event.payload.area.from.y),
+    CoordinateVo.new(event.payload.area.to.x, event.payload.area.to.y)
   );
   const unitBlock = convertUnitDtoMatrixToUnitBlockVo(event.payload.unitBlock);
   return [area, unitBlock];
 }
 
 function parseZoomedAreaUpdatedEvent(event: ZoomedAreaUpdatedEvent): [AreaVo, UnitBlockVo] {
-  const area = createArea(
-    createCoordinate(event.payload.area.from.x, event.payload.area.from.y),
-    createCoordinate(event.payload.area.to.x, event.payload.area.to.y)
+  const area = AreaVo.new(
+    CoordinateVo.new(event.payload.area.from.x, event.payload.area.from.y),
+    CoordinateVo.new(event.payload.area.to.x, event.payload.area.to.y)
   );
   const unitBlock = convertUnitDtoMatrixToUnitBlockVo(event.payload.unitBlock);
   return [area, unitBlock];
 }
 
 function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [DimensionVo] {
-  return [createDimension(event.payload.dimension.width, event.payload.dimension.height)];
+  return [DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height)];
 }
 
 export default class GameSocketConn {

@@ -1,17 +1,16 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import GameMap, { dataTestids } from '.';
-import { UnitBlockVo } from '@/models/valueObjects';
-import { createOffset, createUnit, createUnitBlock } from '@/models/valueObjects/factories';
+import { UnitVo, UnitBlockVo, OffsetVo } from '@/models/valueObjects';
 
 function renderGameMap(unitBlock: UnitBlockVo): RenderResult {
-  return render(<GameMap area={null} areaOffset={createOffset(0, 0)} unitBlock={unitBlock} onUnitClick={() => {}} />);
+  return render(<GameMap area={null} areaOffset={OffsetVo.new(0, 0)} unitBlock={unitBlock} onUnitClick={() => {}} />);
 }
 
 describe('GameMap', () => {
   it('Should render component successfully.', () => {
     try {
-      const unitMatrix = [[createUnit(null)]];
-      renderGameMap(createUnitBlock(unitMatrix));
+      const unitMatrix = [[UnitVo.new(null)]];
+      renderGameMap(UnitBlockVo.new(unitMatrix));
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

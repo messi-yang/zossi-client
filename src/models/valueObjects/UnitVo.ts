@@ -5,6 +5,10 @@ export default class UnitVo {
     this.itemId = itemId;
   }
 
+  static new(itemId: string | null): UnitVo {
+    return new UnitVo(itemId);
+  }
+
   public hasItemId(): boolean {
     return !!this.itemId;
   }

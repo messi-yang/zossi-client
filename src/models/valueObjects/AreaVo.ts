@@ -10,6 +10,10 @@ export default class AreaVo {
     this.to = to;
   }
 
+  static new(from: CoordinateVo, to: CoordinateVo): AreaVo {
+    return new AreaVo(from, to);
+  }
+
   public isEqual(area: AreaVo): Boolean {
     return this.from.isEqual(area.getFrom()) && this.to.isEqual(area.getTo());
   }

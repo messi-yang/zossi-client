@@ -10,6 +10,10 @@ export default class DimensionVo {
     this.height = height;
   }
 
+  static new(width: number, height: number): DimensionVo {
+    return new DimensionVo(width, height);
+  }
+
   public isEqual(dimension: DimensionVo): boolean {
     return this.width === dimension.getWidth() && this.height === dimension.getHeight();
   }

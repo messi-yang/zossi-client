@@ -1,6 +1,5 @@
 import { useRef } from 'react';
-import { DimensionVo, AreaVo } from '@/models/valueObjects';
-import { createCoordinate, createArea } from '@/models/valueObjects/factories';
+import { DimensionVo, AreaVo, CoordinateVo } from '@/models/valueObjects';
 import usePull from '@/ui/hooks/usePull';
 import dataTestids from './dataTestids';
 
@@ -48,9 +47,9 @@ function GameMiniMap({ width, dimension, area, onAreaUpdate }: Props) {
       adjustedY = 0;
     }
 
-    return createArea(
-      createCoordinate(adjustedX, adjustedY),
-      createCoordinate(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1)
+    return AreaVo.new(
+      CoordinateVo.new(adjustedX, adjustedY),
+      CoordinateVo.new(adjustedX + areaWidth - 1, adjustedY + areaHeight - 1)
     );
   };
 

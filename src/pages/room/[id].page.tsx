@@ -6,7 +6,6 @@ import GameContext from '@/ui/contexts/GameContext';
 import { AreaVo, CoordinateVo } from '@/models/valueObjects';
 import {
   calculateDimensionByResolutionAndUnitSideLength,
-  createCoordinate,
   createAreaByCoordinateAndDimension,
   createOffsetOfTwoAreas,
 } from '@/models/valueObjects/factories';
@@ -47,7 +46,7 @@ const Room: NextPage = function Room() {
         return;
       }
       const newArea = createAreaByCoordinateAndDimension(
-        zoomedArea ? zoomedArea.getFrom() : createCoordinate(0, 0),
+        zoomedArea ? zoomedArea.getFrom() : CoordinateVo.new(0, 0),
         desiredDimension
       );
       setTargetArea(newArea);

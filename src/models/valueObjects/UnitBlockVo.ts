@@ -9,6 +9,10 @@ export default class UnitBlockVo {
     this.unitMatrix = unitMatrix;
   }
 
+  static new(unitMatrix: UnitVo[][]): UnitBlockVo {
+    return new UnitBlockVo(unitMatrix);
+  }
+
   public getUnit(colIdx: number, rowIdx: number): UnitVo {
     return this.unitMatrix[colIdx][rowIdx];
   }
