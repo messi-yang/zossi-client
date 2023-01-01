@@ -3,7 +3,6 @@ import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
 import { UnitVo, UnitBlockVo, DimensionVo } from '@/models/valueObjects';
-import { createDimensionByUnitBlock } from '@/models/valueObjects/factories';
 
 import dataTestids from './dataTestids';
 
@@ -27,7 +26,7 @@ type Resolution = {
 };
 
 function generateCanvasElemSize(unitBlock: UnitBlockVo, unitSize: number): ElemSize {
-  const dimension = createDimensionByUnitBlock(unitBlock);
+  const dimension = unitBlock.getDimension();
 
   return {
     width: dimension.getWidth() * unitSize + 1,
@@ -56,7 +55,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
 
   const [borderWidth] = useState(1);
   const [canvasUnitSize] = useState(1);
-  const [dimension, setDimension] = useState(createDimensionByUnitBlock(unitBlock));
+  const [dimension, setDimension] = useState(unitBlock.getDimension());
   const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
   const canvasResolution = useMemo(
@@ -66,7 +65,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
   const canvasElemSize = useMemo(() => generateCanvasElemSize(unitBlock, unitSize), [unitBlock, unitSize]);
 
   useEffect(() => {
-    const newDimension = createDimensionByUnitBlock(unitBlock);
+    const newDimension = unitBlock.getDimension();
     if (!dimension.isEqual(newDimension)) {
       setDimension(newDimension);
     }

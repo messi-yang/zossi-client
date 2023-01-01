@@ -1,11 +1,10 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { createUnitBlockByDimension } from '@/models/valueObjects/factories';
 import UnitBlockCanvas, { dataTestids } from '.';
-import { DimensionVo } from '@/models/valueObjects';
+import { DimensionVo, UnitBlockVo } from '@/models/valueObjects';
 
 function renderUnitBlockCanvas(): RenderResult {
   return render(
-    <UnitBlockCanvas unitBlock={createUnitBlockByDimension(DimensionVo.new(1, 1))} unitSize={20} onClick={() => {}} />
+    <UnitBlockCanvas unitBlock={UnitBlockVo.newWithDimension(DimensionVo.new(1, 1))} unitSize={20} onClick={() => {}} />
   );
 }
 

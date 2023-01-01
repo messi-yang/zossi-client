@@ -2,7 +2,6 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 import { CoordinateVo, AreaVo, OffsetVo, UnitVo, UnitBlockVo } from '@/models/valueObjects';
-import { createDimensionByArea, createUnitBlockByDimension } from '@/models/valueObjects/factories';
 
 import GameMap from '.';
 
@@ -43,5 +42,5 @@ const areaForPrimary = AreaVo.new(CoordinateVo.new(3, 3), CoordinateVo.new(9, 9)
 Primary.args = {
   area: areaForPrimary,
   areaOffset: OffsetVo.new(0, 0),
-  unitBlock: createUnitBlockByDimension(createDimensionByArea(areaForPrimary)),
+  unitBlock: UnitBlockVo.newWithDimension(areaForPrimary.getDimension()),
 };

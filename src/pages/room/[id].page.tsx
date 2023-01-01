@@ -3,12 +3,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
 import GameContext from '@/ui/contexts/GameContext';
-import { AreaVo, CoordinateVo } from '@/models/valueObjects';
-import {
-  calculateDimensionByResolutionAndUnitSideLength,
-  createAreaByCoordinateAndDimension,
-  createOffsetOfTwoAreas,
-} from '@/models/valueObjects/factories';
+import { AreaVo, CoordinateVo, DimensionVo, OffsetVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import GameMap from '@/ui/components/maps/GameMap';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
@@ -28,13 +23,18 @@ const Room: NextPage = function Room() {
   const isDestroyingItem = !isBuildindItem;
 
   const [targetArea, setTargetArea] = useState<AreaVo | null>(zoomedArea);
-  const zoomedAreaOffset = useMemo(() => createOffsetOfTwoAreas(zoomedArea, targetArea), [zoomedArea, targetArea]);
+  const zoomedAreaOffset = useMemo(() => {
+    if (!zoomedArea || !targetArea) {
+      return OffsetVo.new(0, 0);
+    }
+    return zoomedArea.calculateOffsetWithArea(targetArea);
+  }, [zoomedArea, targetArea]);
 
   const gameMapWrapperElemRef = useRef<HTMLElement>(null);
   const gameMapWrapperElemRect = useDomRect(gameMapWrapperElemRef);
   const desiredDimension = useMemo(
     () =>
-      calculateDimensionByResolutionAndUnitSideLength(
+      DimensionVo.newWithResolutionAndUnitSideLength(
         { width: gameMapWrapperElemRect.width, height: gameMapWrapperElemRect.height },
         30
       ),
@@ -45,7 +45,7 @@ const Room: NextPage = function Room() {
       if (status !== 'OPEN') {
         return;
       }
-      const newArea = createAreaByCoordinateAndDimension(
+      const newArea = AreaVo.newWithCoordinateAndDimension(
         zoomedArea ? zoomedArea.getFrom() : CoordinateVo.new(0, 0),
         desiredDimension
       );

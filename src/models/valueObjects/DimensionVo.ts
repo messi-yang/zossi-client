@@ -14,6 +14,15 @@ export default class DimensionVo {
     return new DimensionVo(width, height);
   }
 
+  static newWithResolutionAndUnitSideLength(
+    resolution: { width: number; height: number },
+    unitSideLength: number
+  ): DimensionVo {
+    const width = Math.floor(resolution.width / unitSideLength) || 1;
+    const height = Math.floor(resolution.height / unitSideLength) || 1;
+    return new DimensionVo(width, height);
+  }
+
   public isEqual(dimension: DimensionVo): boolean {
     return this.width === dimension.getWidth() && this.height === dimension.getHeight();
   }

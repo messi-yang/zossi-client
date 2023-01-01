@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 
-import UnitVo from '@/models/valueObjects/UnitVo';
+import UnitVo from './UnitVo';
+import DimensionVo from './DimensionVo';
 
 export default class UnitBlockVo {
   private unitMatrix: UnitVo[][];
@@ -11,6 +12,11 @@ export default class UnitBlockVo {
 
   static new(unitMatrix: UnitVo[][]): UnitBlockVo {
     return new UnitBlockVo(unitMatrix);
+  }
+
+  static newWithDimension(dimension: DimensionVo): UnitBlockVo {
+    const unitBlock = dimension.map<UnitVo>(() => new UnitVo(null));
+    return new UnitBlockVo(unitBlock);
   }
 
   public getUnit(colIdx: number, rowIdx: number): UnitVo {
@@ -27,6 +33,10 @@ export default class UnitBlockVo {
 
   public getUnitMatrix(): UnitVo[][] {
     return cloneDeep(this.unitMatrix);
+  }
+
+  public getDimension(): DimensionVo {
+    return DimensionVo.new(this.getWidth(), this.getHeight());
   }
 
   public iterateUnit(cb: (colIdx: number, rowIdx: number, unit: UnitVo) => void) {

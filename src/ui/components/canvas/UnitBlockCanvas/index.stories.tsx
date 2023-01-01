@@ -1,9 +1,8 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { createUnitBlockByDimension } from '@/models/valueObjects/factories';
 
 import UnitBlockCanvas from '.';
-import { DimensionVo } from '@/models/valueObjects';
+import { DimensionVo, UnitBlockVo } from '@/models/valueObjects';
 
 export default {
   title: 'Canvas/UnitBlockCanvas',
@@ -17,6 +16,6 @@ const Template: ComponentStory<typeof UnitBlockCanvas> = function Template(args)
 
 export const Primary = Template.bind({});
 Primary.args = {
-  unitBlock: createUnitBlockByDimension(DimensionVo.new(30, 30)),
+  unitBlock: UnitBlockVo.newWithDimension(DimensionVo.new(30, 30)),
   unitSize: 15,
 };
