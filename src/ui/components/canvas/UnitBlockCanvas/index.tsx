@@ -117,7 +117,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
       ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
       newUnitBlock.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
-        if (unit.isAlive()) {
+        if (unit.hasItemId()) {
           ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
           const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
           const leftTopY = (rowIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;

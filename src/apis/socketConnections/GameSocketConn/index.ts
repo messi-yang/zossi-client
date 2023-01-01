@@ -14,7 +14,7 @@ import { ActionTypeEnum } from './actionTypes';
 import type { ZoomAreaAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 
 function convertUnitDtoMatrixToUnitBlockVo(unitBlock: UnitDto[][]): UnitBlockVo {
-  const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => createUnit(unit.alive)));
+  const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => createUnit(unit.itemId)));
   return createUnitBlock(unitMatrix);
 }
 

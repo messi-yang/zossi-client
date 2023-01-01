@@ -25,8 +25,8 @@ export function createUnitBlock(unitMatrix: UnitVo[][]): UnitBlockVo {
   return new UnitBlockVo(unitMatrix);
 }
 
-export function createUnit(alive: boolean): UnitVo {
-  return new UnitVo(alive);
+export function createUnit(itemId: string | null): UnitVo {
+  return new UnitVo(itemId);
 }
 
 export function createOffsetOfTwoAreas(areaA: AreaVo | null, areaB: AreaVo | null): OffsetVo {
@@ -61,7 +61,7 @@ export function createDimensionByArea(area: AreaVo): DimensionVo {
 }
 
 export function createUnitBlockByDimension(dimension: DimensionVo): UnitBlockVo {
-  const unitBlock = dimension.map<UnitVo>(() => new UnitVo(false));
+  const unitBlock = dimension.map<UnitVo>(() => new UnitVo(null));
   return new UnitBlockVo(unitBlock);
 }
 

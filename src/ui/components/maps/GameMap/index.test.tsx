@@ -10,7 +10,7 @@ function renderGameMap(unitBlock: UnitBlockVo): RenderResult {
 describe('GameMap', () => {
   it('Should render component successfully.', () => {
     try {
-      const unitMatrix = [[createUnit(true)]];
+      const unitMatrix = [[createUnit(null)]];
       renderGameMap(createUnitBlock(unitMatrix));
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();

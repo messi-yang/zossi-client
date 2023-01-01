@@ -25,12 +25,6 @@ export default class UnitBlockVo {
     return cloneDeep(this.unitMatrix);
   }
 
-  public setUnitAlive(colIdx: number, rowIdx: number, alive: boolean): UnitBlockVo {
-    const newUnitMatrix = cloneDeep(this.unitMatrix);
-    newUnitMatrix[colIdx][rowIdx] = new UnitVo(alive);
-    return new UnitBlockVo(newUnitMatrix);
-  }
-
   public iterateUnit(cb: (colIdx: number, rowIdx: number, unit: UnitVo) => void) {
     for (let colIdx = 0; colIdx < this.unitMatrix.length; colIdx += 1) {
       for (let rowIdx = 0; rowIdx < this.unitMatrix[colIdx].length; rowIdx += 1) {

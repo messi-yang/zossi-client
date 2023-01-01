@@ -1,6 +1,5 @@
 type UnitDto = {
-  itemId: string;
-  alive: boolean;
+  itemId: string | null;
 };
 
 export default UnitDto;

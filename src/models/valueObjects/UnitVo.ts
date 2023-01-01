@@ -1,15 +1,11 @@
 export default class UnitVo {
-  private alive: boolean;
+  private itemId: string | null;
 
-  constructor(alive: boolean) {
-    this.alive = alive;
+  constructor(itemId: string | null) {
+    this.itemId = itemId;
   }
 
-  public isAlive(): boolean {
-    return this.alive;
-  }
-
-  public getAlive(): boolean {
-    return this.alive;
+  public hasItemId(): boolean {
+    return !!this.itemId;
   }
 }

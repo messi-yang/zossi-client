@@ -32,7 +32,7 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
     }
 
     const unitMatrix = unitBlock.getUnitMatrix();
-    unitMatrix[coordinate.getX()][coordinate.getY()] = createUnit(true);
+    unitMatrix[coordinate.getX()][coordinate.getY()] = createUnit(null);
 
     updateArgs({
       unitBlock: createUnitBlock(unitMatrix),
