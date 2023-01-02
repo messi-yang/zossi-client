@@ -1,10 +1,17 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
 import type { UnitDto } from '@/apis/dtos';
 import { AreaVo, UnitVo, UnitBlockVo, CoordinateVo, DimensionVo } from '@/models/valueObjects';
-import { EventTypeEnum, AreaZoomedEvent, ZoomedAreaUpdatedEvent, InformationUpdatedEvent } from './eventTypes';
+import {
+  EventTypeEnum,
+  AreaZoomedEvent,
+  ZoomedAreaUpdatedEvent,
+  InformationUpdatedEvent,
+  ItemsUpdatedEvent,
+} from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type { ZoomAreaAction, BuildItemAction, DestroyItemAction } from './actionTypes';
+import { ItemAgg } from '@/models/aggregates';
 
 function convertUnitDtoMatrixToUnitBlockVo(unitBlock: UnitDto[][]): UnitBlockVo {
   const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => UnitVo.new(unit.itemId)));
@@ -33,6 +40,10 @@ function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [Dimensio
   return [DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height)];
 }
 
+function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
+  return [event.payload.items.map(({ id, name }) => ItemAgg.newItemAgg({ id, name }))];
+}
+
 export default class GameSocketConn {
   private socket: WebSocket;
 
@@ -40,6 +51,7 @@ export default class GameSocketConn {
     onAreaZoomed: (area: AreaVo, unitBlock: UnitBlockVo) => void;
     onZoomedAreaUpdated: (area: AreaVo, unitBlock: UnitBlockVo) => void;
     onInformationUpdated: (dimension: DimensionVo) => void;
+    onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: () => void;
     onOpen: () => void;
   }) {
@@ -62,6 +74,9 @@ export default class GameSocketConn {
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         const [dimension] = parseInformationUpdatedEvent(newMsg);
         params.onInformationUpdated(dimension);
+      } else if (newMsg.type === EventTypeEnum.ItemsUpdated) {
+        const [items] = parseItemsUpdatedEvent(newMsg);
+        params.onItemsUpdated(items);
       }
     };
 
@@ -80,6 +95,7 @@ export default class GameSocketConn {
     onAreaZoomed: (area: AreaVo, unitBlock: UnitBlockVo) => void;
     onZoomedAreaUpdated: (area: AreaVo, unitBlock: UnitBlockVo) => void;
     onInformationUpdated: (dimension: DimensionVo) => void;
+    onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: () => void;
     onOpen: () => void;
   }): GameSocketConn {

@@ -1,6 +1,5 @@
-import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
+import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
-import { ItemHttpApi } from '@/apis/httpApis';
 import { GameSocketConn } from '@/apis/socketConnections';
 import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
@@ -42,23 +41,12 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const itemHttpApi = ItemHttpApi.newItemHttpApi();
   const [gameSocketConn, setGameSocketConn] = useState<GameSocketConn | null>(null);
   const [status, setStatus] = useState<Status>('CLOSED');
 
   const initialContextValue = createInitialContextValue();
   const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
-
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const fetchItems = useCallback(async () => {
-    const returnedItems = await itemHttpApi.fetchItems();
-    setItems(returnedItems);
-  }, []);
-  const fetchItemsOnInitializationEffect = useCallback(() => {
-    fetchItems();
-  }, [fetchItems]);
-  useEffect(fetchItemsOnInitializationEffect, [fetchItemsOnInitializationEffect]);
-
   const [zoomedArea, setZoomedArea] = useState<AreaVo | null>(initialContextValue.zoomedArea);
   const [unitBlock, setUnitBlock] = useState<UnitBlockVo | null>(initialContextValue.unitBlock);
 
@@ -82,6 +70,9 @@ export function Provider({ children }: Props) {
       onInformationUpdated: (newDimension: DimensionVo) => {
         setDimension(newDimension);
       },
+      onItemsUpdated: (returnedItems: ItemAgg[]) => {
+        setItems(returnedItems);
+      },
       onOpen: () => {
         setStatus('OPEN');
       },
@@ -89,6 +80,7 @@ export function Provider({ children }: Props) {
         setStatus('CLOSED');
         setGameSocketConn(null);
         setDimension(initialContextValue.dimension);
+        setItems(null);
 
         setZoomedArea(null);
         setUnitBlock(null);

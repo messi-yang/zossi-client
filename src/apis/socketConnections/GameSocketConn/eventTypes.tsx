@@ -1,7 +1,8 @@
-import type { AreaDto, DimensionDto, UnitDto } from '@/apis/dtos';
+import type { AreaDto, DimensionDto, ItemDto, UnitDto } from '@/apis/dtos';
 
 enum EventTypeEnum {
   InformationUpdated = 'INFORMATION_UPDATED',
+  ItemsUpdated = 'ITEMS_UPDATED',
   AreaZoomed = 'AREA_ZOOMED',
   ZoomedAreaUpdated = 'ZOOMED_AREA_UPDATED',
 }
@@ -10,6 +11,13 @@ type InformationUpdatedEvent = {
   type: EventTypeEnum.InformationUpdated;
   payload: {
     dimension: DimensionDto;
+  };
+};
+
+type ItemsUpdatedEvent = {
+  type: EventTypeEnum.ItemsUpdated;
+  payload: {
+    items: ItemDto[];
   };
 };
 
@@ -30,7 +38,7 @@ type ZoomedAreaUpdatedEvent = {
   };
 };
 
-type Event = InformationUpdatedEvent | AreaZoomedEvent | ZoomedAreaUpdatedEvent;
+type Event = InformationUpdatedEvent | ItemsUpdatedEvent | AreaZoomedEvent | ZoomedAreaUpdatedEvent;
 
 export { EventTypeEnum };
-export type { Event, InformationUpdatedEvent, AreaZoomedEvent, ZoomedAreaUpdatedEvent };
+export type { Event, InformationUpdatedEvent, ItemsUpdatedEvent, AreaZoomedEvent, ZoomedAreaUpdatedEvent };
