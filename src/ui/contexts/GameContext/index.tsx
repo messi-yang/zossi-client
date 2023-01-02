@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import { GameSocketConn } from '@/apis/socketConnections';
-import { AreaVo, UnitBlockVo, CoordinateVo, DimensionVo } from '@/models/valueObjects';
+import { AreaVo, UnitBlockVo, LocationVo, DimensionVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'OPEN';
@@ -13,8 +13,8 @@ type ContextValue = {
   unitBlock: UnitBlockVo | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
-  buildItem: (coordinate: CoordinateVo, itemId: string) => void;
-  destroyItem: (coordinate: CoordinateVo) => void;
+  buildItem: (location: LocationVo, itemId: string) => void;
+  destroyItem: (location: LocationVo) => void;
   zoomArea: (area: AreaVo) => void;
   leaveGame: () => void;
 };
@@ -95,15 +95,15 @@ export function Provider({ children }: Props) {
   }, [gameSocketConn]);
 
   const buildItem = useCallback(
-    (coordinate: CoordinateVo, itemId: string) => {
-      gameSocketConn?.buildItem(coordinate, itemId);
+    (location: LocationVo, itemId: string) => {
+      gameSocketConn?.buildItem(location, itemId);
     },
     [gameSocketConn]
   );
 
   const destroyItem = useCallback(
-    (coordinate: CoordinateVo) => {
-      gameSocketConn?.destroyItem(coordinate);
+    (location: LocationVo) => {
+      gameSocketConn?.destroyItem(location);
     },
     [gameSocketConn]
   );

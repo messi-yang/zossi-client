@@ -1,4 +1,4 @@
-import { AreaDto, CoordinateDto } from '@/apis/dtos';
+import { AreaDto, LocationDto } from '@/apis/dtos';
 
 enum ActionTypeEnum {
   ZoomArea = 'ZOOM_AREA',
@@ -17,7 +17,7 @@ type ZoomAreaAction = {
 type BuildItemAction = {
   type: ActionTypeEnum.BuildItem;
   payload: {
-    coordinate: CoordinateDto;
+    location: LocationDto;
     itemId: string;
     actionedAt: string;
   };
@@ -26,7 +26,7 @@ type BuildItemAction = {
 type DestroyItemAction = {
   type: ActionTypeEnum.DestroyItem;
   payload: {
-    coordinate: CoordinateDto;
+    location: LocationDto;
     actionedAt: string;
   };
 };

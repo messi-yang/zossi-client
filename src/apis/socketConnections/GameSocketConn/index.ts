@@ -1,6 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
 import type { UnitDto } from '@/apis/dtos';
-import { AreaVo, UnitVo, UnitBlockVo, CoordinateVo, DimensionVo } from '@/models/valueObjects';
+import { AreaVo, UnitVo, UnitBlockVo, LocationVo, DimensionVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
   AreaZoomedEvent,
@@ -20,8 +20,8 @@ function convertUnitDtoMatrixToUnitBlockVo(unitBlock: UnitDto[][]): UnitBlockVo 
 
 function parseAreaZoomedEvent(event: AreaZoomedEvent): [AreaVo, UnitBlockVo] {
   const area = AreaVo.new(
-    CoordinateVo.new(event.payload.area.from.x, event.payload.area.from.y),
-    CoordinateVo.new(event.payload.area.to.x, event.payload.area.to.y)
+    LocationVo.new(event.payload.area.from.x, event.payload.area.from.y),
+    LocationVo.new(event.payload.area.to.x, event.payload.area.to.y)
   );
   const unitBlock = convertUnitDtoMatrixToUnitBlockVo(event.payload.unitBlock);
   return [area, unitBlock];
@@ -29,8 +29,8 @@ function parseAreaZoomedEvent(event: AreaZoomedEvent): [AreaVo, UnitBlockVo] {
 
 function parseZoomedAreaUpdatedEvent(event: ZoomedAreaUpdatedEvent): [AreaVo, UnitBlockVo] {
   const area = AreaVo.new(
-    CoordinateVo.new(event.payload.area.from.x, event.payload.area.from.y),
-    CoordinateVo.new(event.payload.area.to.x, event.payload.area.to.y)
+    LocationVo.new(event.payload.area.from.x, event.payload.area.from.y),
+    LocationVo.new(event.payload.area.to.x, event.payload.area.to.y)
   );
   const unitBlock = convertUnitDtoMatrixToUnitBlockVo(event.payload.unitBlock);
   return [area, unitBlock];
@@ -117,11 +117,11 @@ export default class GameSocketConn {
     this.socket.send(compressedJsonBlob);
   }
 
-  public buildItem(coordinate: CoordinateVo, itemId: string) {
+  public buildItem(location: LocationVo, itemId: string) {
     const action: BuildItemAction = {
       type: ActionTypeEnum.BuildItem,
       payload: {
-        coordinate: { x: coordinate.getX(), y: coordinate.getY() },
+        location: { x: location.getX(), y: location.getY() },
         itemId,
         actionedAt: new Date().toISOString(),
       },
@@ -129,11 +129,11 @@ export default class GameSocketConn {
     this.sendMessage(action);
   }
 
-  public destroyItem(coordinate: CoordinateVo) {
+  public destroyItem(location: LocationVo) {
     const action: DestroyItemAction = {
       type: ActionTypeEnum.DestroyItem,
       payload: {
-        coordinate: { x: coordinate.getX(), y: coordinate.getY() },
+        location: { x: location.getX(), y: location.getY() },
         actionedAt: new Date().toISOString(),
       },
     };

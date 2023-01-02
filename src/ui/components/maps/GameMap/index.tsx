@@ -1,13 +1,13 @@
 import { memo, useState, useCallback } from 'react';
 import UnitBlockCanvas from '@/ui/components/canvas/UnitBlockCanvas';
-import { AreaVo, UnitBlockVo, CoordinateVo, OffsetVo } from '@/models/valueObjects';
+import { AreaVo, UnitBlockVo, LocationVo, OffsetVo } from '@/models/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
   area: AreaVo | null;
   areaOffset: OffsetVo;
   unitBlock: UnitBlockVo | null;
-  onUnitClick: (coordinate: CoordinateVo) => any;
+  onUnitClick: (location: LocationVo) => any;
 };
 
 function GameMap({ area, areaOffset, unitBlock, onUnitClick }: Props) {
@@ -19,10 +19,10 @@ function GameMap({ area, areaOffset, unitBlock, onUnitClick }: Props) {
         return;
       }
 
-      const originCoordinate = area.getFrom();
-      const finalCoordinate = originCoordinate.shift(colIdx, rowIdx);
+      const originLocation = area.getFrom();
+      const finalLocation = originLocation.shift(colIdx, rowIdx);
 
-      onUnitClick(finalCoordinate);
+      onUnitClick(finalLocation);
     },
     [onUnitClick, area]
   );

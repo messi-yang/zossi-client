@@ -1,9 +1,9 @@
 import UnitVo from '@/models/valueObjects/UnitVo';
 import UnitBlockVo from '@/models/valueObjects/UnitBlockVo';
-import CoordinateVo from '@/models/valueObjects/CoordinateVo';
+import LocationVo from '@/models/valueObjects/LocationVo';
 import OffsetVo from '@/models/valueObjects/OffsetVo';
 import AreaVo from '@/models/valueObjects/AreaVo';
 import DimensionVo from '@/models/valueObjects/DimensionVo';
 
 export default {};
-export { UnitVo, UnitBlockVo, CoordinateVo, OffsetVo, AreaVo, DimensionVo };
+export { UnitVo, UnitBlockVo, LocationVo, OffsetVo, AreaVo, DimensionVo };

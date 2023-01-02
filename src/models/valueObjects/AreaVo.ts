@@ -1,23 +1,23 @@
-import CoordinateVo from './CoordinateVo';
+import LocationVo from './LocationVo';
 import DimensionVo from './DimensionVo';
 import OffsetVo from './OffsetVo';
 
 export default class AreaVo {
-  private from: CoordinateVo;
+  private from: LocationVo;
 
-  private to: CoordinateVo;
+  private to: LocationVo;
 
-  constructor(from: CoordinateVo, to: CoordinateVo) {
+  constructor(from: LocationVo, to: LocationVo) {
     this.from = from;
     this.to = to;
   }
 
-  static new(from: CoordinateVo, to: CoordinateVo): AreaVo {
+  static new(from: LocationVo, to: LocationVo): AreaVo {
     return new AreaVo(from, to);
   }
 
-  static newWithCoordinateAndDimension(coordinate: CoordinateVo, dimension: DimensionVo): AreaVo {
-    return new AreaVo(coordinate, coordinate.shift(dimension.getWidth() - 1, dimension.getHeight() - 1));
+  static newWithLocationAndDimension(location: LocationVo, dimension: DimensionVo): AreaVo {
+    return new AreaVo(location, location.shift(dimension.getWidth() - 1, dimension.getHeight() - 1));
   }
 
   public isEqual(area: AreaVo): Boolean {
@@ -28,11 +28,11 @@ export default class AreaVo {
     return DimensionVo.new(this.to.getX() - this.from.getX() + 1, this.to.getY() - this.from.getY() + 1);
   }
 
-  public getFrom(): CoordinateVo {
+  public getFrom(): LocationVo {
     return this.from;
   }
 
-  public getTo(): CoordinateVo {
+  public getTo(): LocationVo {
     return this.to;
   }
 

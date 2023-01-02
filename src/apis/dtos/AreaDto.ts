@@ -1,8 +1,8 @@
-import CoordinateDto from './CoordinateDto';
+import LocationDto from './LocationDto';
 
 type AreaDto = {
-  from: CoordinateDto;
-  to: CoordinateDto;
+  from: LocationDto;
+  to: LocationDto;
 };
 
 export default AreaDto;

@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
 import GameContext from '@/ui/contexts/GameContext';
-import { AreaVo, CoordinateVo, DimensionVo, OffsetVo } from '@/models/valueObjects';
+import { AreaVo, LocationVo, DimensionVo, OffsetVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import GameMap from '@/ui/components/maps/GameMap';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
@@ -45,8 +45,8 @@ const Room: NextPage = function Room() {
       if (status !== 'OPEN') {
         return;
       }
-      const newArea = AreaVo.newWithCoordinateAndDimension(
-        zoomedArea ? zoomedArea.getFrom() : CoordinateVo.new(0, 0),
+      const newArea = AreaVo.newWithLocationAndDimension(
+        zoomedArea ? zoomedArea.getFrom() : LocationVo.new(0, 0),
         desiredDimension
       );
       setTargetArea(newArea);
@@ -108,15 +108,15 @@ const Room: NextPage = function Room() {
   };
 
   const handleUnitClick = useCallback(
-    (coordinate: CoordinateVo) => {
+    (location: LocationVo) => {
       if (isDestroyingItem) {
-        destroyItem(coordinate);
+        destroyItem(location);
       } else if (isBuildindItem) {
         if (!selectedItem) {
           return;
         }
 
-        buildItem(coordinate, selectedItem.getId());
+        buildItem(location, selectedItem.getId());
       }
     },
     [isDestroyingItem, isBuildindItem, selectedItem, buildItem, destroyItem]
