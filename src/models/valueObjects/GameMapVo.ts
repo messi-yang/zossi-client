@@ -1,48 +1,48 @@
 import cloneDeep from 'lodash/cloneDeep';
 
-import GameMapUnitVo from './GameMapUnitVo';
+import MapUnitVo from './MapUnitVo';
 import MapSizeVo from './MapSizeVo';
 
 export default class GameMapVo {
-  private gameMapUnitMatrix: GameMapUnitVo[][];
+  private mapUnitMatrix: MapUnitVo[][];
 
-  constructor(gameMapUnitMatrix: GameMapUnitVo[][]) {
-    this.gameMapUnitMatrix = gameMapUnitMatrix;
+  constructor(mapUnitMatrix: MapUnitVo[][]) {
+    this.mapUnitMatrix = mapUnitMatrix;
   }
 
-  static new(gameMapUnitMatrix: GameMapUnitVo[][]): GameMapVo {
-    return new GameMapVo(gameMapUnitMatrix);
+  static new(mapUnitMatrix: MapUnitVo[][]): GameMapVo {
+    return new GameMapVo(mapUnitMatrix);
   }
 
   static newWithMapSize(mapSize: MapSizeVo): GameMapVo {
-    const gameMap = mapSize.map<GameMapUnitVo>(() => new GameMapUnitVo(null));
+    const gameMap = mapSize.map<MapUnitVo>(() => new MapUnitVo(null));
     return new GameMapVo(gameMap);
   }
 
-  public getUnit(colIdx: number, rowIdx: number): GameMapUnitVo {
-    return this.gameMapUnitMatrix[colIdx][rowIdx];
+  public getUnit(colIdx: number, rowIdx: number): MapUnitVo {
+    return this.mapUnitMatrix[colIdx][rowIdx];
   }
 
   public getWidth(): number {
-    return this.gameMapUnitMatrix.length;
+    return this.mapUnitMatrix.length;
   }
 
   public getHeight(): number {
-    return this.gameMapUnitMatrix[0].length;
+    return this.mapUnitMatrix[0].length;
   }
 
-  public getGameMapUnitMatrix(): GameMapUnitVo[][] {
-    return cloneDeep(this.gameMapUnitMatrix);
+  public getMapUnitMatrix(): MapUnitVo[][] {
+    return cloneDeep(this.mapUnitMatrix);
   }
 
   public getMapSize(): MapSizeVo {
     return MapSizeVo.new(this.getWidth(), this.getHeight());
   }
 
-  public iterateGameMapUnit(cb: (colIdx: number, rowIdx: number, gameMapUnit: GameMapUnitVo) => void) {
-    for (let colIdx = 0; colIdx < this.gameMapUnitMatrix.length; colIdx += 1) {
-      for (let rowIdx = 0; rowIdx < this.gameMapUnitMatrix[colIdx].length; rowIdx += 1) {
-        cb(colIdx, rowIdx, this.gameMapUnitMatrix[colIdx][rowIdx]);
+  public iterateMapUnit(cb: (colIdx: number, rowIdx: number, mapUnit: MapUnitVo) => void) {
+    for (let colIdx = 0; colIdx < this.mapUnitMatrix.length; colIdx += 1) {
+      for (let rowIdx = 0; rowIdx < this.mapUnitMatrix[colIdx].length; rowIdx += 1) {
+        cb(colIdx, rowIdx, this.mapUnitMatrix[colIdx][rowIdx]);
       }
     }
   }

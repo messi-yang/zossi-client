@@ -1,4 +1,4 @@
-import type { MapRangeDto, MapSizeDto, ItemDto, GameMapUnitDto } from '@/apis/dtos';
+import type { MapRangeDto, MapSizeDto, ItemDto, MapUnitDto } from '@/apis/dtos';
 
 enum EventTypeEnum {
   InformationUpdated = 'INFORMATION_UPDATED',
@@ -25,7 +25,7 @@ type MapRangeZoomedEvent = {
   type: EventTypeEnum.MapRangeZoomed;
   payload: {
     mapRange: MapRangeDto;
-    gameMap: GameMapUnitDto[][];
+    gameMap: MapUnitDto[][];
   };
 };
 
@@ -33,7 +33,7 @@ type ZoomedMapRangeUpdatedEvent = {
   type: EventTypeEnum.ZoomedMapRangeUpdated;
   payload: {
     mapRange: MapRangeDto;
-    gameMap: GameMapUnitDto[][];
+    gameMap: MapUnitDto[][];
     updatedAt: string;
   };
 };

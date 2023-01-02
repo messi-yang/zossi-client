@@ -1,12 +1,12 @@
-export default class GameMapUnitVo {
+export default class MapUnitVo {
   private itemId: string | null;
 
   constructor(itemId: string | null) {
     this.itemId = itemId;
   }
 
-  static new(itemId: string | null): GameMapUnitVo {
-    return new GameMapUnitVo(itemId);
+  static new(itemId: string | null): MapUnitVo {
+    return new MapUnitVo(itemId);
   }
 
   public hasItemId(): boolean {

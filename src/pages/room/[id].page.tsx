@@ -34,7 +34,7 @@ const Room: NextPage = function Room() {
   const gameMapWrapperElemRect = useDomRect(gameMapWrapperElemRef);
   const desiredMapSize = useMemo(
     () =>
-      MapSizeVo.newWithResolutionAndGameMapUnitSize(
+      MapSizeVo.newWithResolutionAndMapUnitSize(
         { width: gameMapWrapperElemRect.width, height: gameMapWrapperElemRect.height },
         30
       ),
@@ -107,7 +107,7 @@ const Room: NextPage = function Room() {
     setSelectedItem(item);
   };
 
-  const handleGameMapUnitClick = useCallback(
+  const handleMapUnitClick = useCallback(
     (location: LocationVo) => {
       if (isDestroyingItem) {
         destroyItem(location);
@@ -152,7 +152,7 @@ const Room: NextPage = function Room() {
                 mapRange={zoomedMapRange}
                 mapRangeOffset={zoomedMapRangeOffset}
                 gameMap={gameMap}
-                onGameMapUnitClick={handleGameMapUnitClick}
+                onMapUnitClick={handleMapUnitClick}
               />
             </section>
             {mapSize && targetMapRange && isMiniMapVisible && (
@@ -184,7 +184,7 @@ const Room: NextPage = function Room() {
                 mapRange={zoomedMapRange}
                 mapRangeOffset={zoomedMapRangeOffset}
                 gameMap={gameMap}
-                onGameMapUnitClick={handleGameMapUnitClick}
+                onMapUnitClick={handleMapUnitClick}
               />
             </section>
             {mapSize && targetMapRange && isMiniMapVisible && (

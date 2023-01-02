@@ -1,6 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
-import type { GameMapUnitDto } from '@/apis/dtos';
-import { MapRangeVo, GameMapUnitVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import type { MapUnitDto } from '@/apis/dtos';
+import { MapRangeVo, MapUnitVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
   MapRangeZoomedEvent,
@@ -13,11 +13,9 @@ import { ActionTypeEnum } from './actionTypes';
 import type { ZoomMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
-function convertGameMapUnitDtoMatrixToGameMapVo(gameMap: GameMapUnitDto[][]): GameMapVo {
-  const gameMapUnitMatrix = gameMap.map((gameMapUnitCol) =>
-    gameMapUnitCol.map((gameMapUnit) => GameMapUnitVo.new(gameMapUnit.itemId))
-  );
-  return GameMapVo.new(gameMapUnitMatrix);
+function convertMapUnitDtoMatrixToGameMapVo(gameMap: MapUnitDto[][]): GameMapVo {
+  const mapUnitMatrix = gameMap.map((mapUnitCol) => mapUnitCol.map((mapUnit) => MapUnitVo.new(mapUnit.itemId)));
+  return GameMapVo.new(mapUnitMatrix);
 }
 
 function parseMapRangeZoomedEvent(event: MapRangeZoomedEvent): [MapRangeVo, GameMapVo] {
@@ -25,7 +23,7 @@ function parseMapRangeZoomedEvent(event: MapRangeZoomedEvent): [MapRangeVo, Game
     LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
     LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
   );
-  const gameMap = convertGameMapUnitDtoMatrixToGameMapVo(event.payload.gameMap);
+  const gameMap = convertMapUnitDtoMatrixToGameMapVo(event.payload.gameMap);
   return [mapRange, gameMap];
 }
 
@@ -34,7 +32,7 @@ function parseZoomedMapRangeUpdatedEvent(event: ZoomedMapRangeUpdatedEvent): [Ma
     LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
     LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
   );
-  const gameMap = convertGameMapUnitDtoMatrixToGameMapVo(event.payload.gameMap);
+  const gameMap = convertMapUnitDtoMatrixToGameMapVo(event.payload.gameMap);
   return [mapRange, gameMap];
 }
 

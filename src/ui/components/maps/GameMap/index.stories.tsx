@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { LocationVo, MapRangeVo, OffsetVo, GameMapUnitVo, GameMapVo } from '@/models/valueObjects';
+import { LocationVo, MapRangeVo, OffsetVo, MapUnitVo, GameMapVo } from '@/models/valueObjects';
 
 import GameMap from '.';
 
@@ -14,7 +14,7 @@ export default {
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { mapRange, gameMap } = args;
-  const handleGameMapUnitClick = (location: LocationVo) => {
+  const handleMapUnitClick = (location: LocationVo) => {
     if (!mapRange) {
       return;
     }
@@ -22,17 +22,17 @@ const Template: ComponentStory<typeof GameMap> = function Template(args) {
       return;
     }
 
-    const gameMapUnitMatrix = gameMap.getGameMapUnitMatrix();
-    gameMapUnitMatrix[location.getX()][location.getY()] = GameMapUnitVo.new(null);
+    const mapUnitMatrix = gameMap.getMapUnitMatrix();
+    mapUnitMatrix[location.getX()][location.getY()] = MapUnitVo.new(null);
 
     updateArgs({
-      gameMap: GameMapVo.new(gameMapUnitMatrix),
+      gameMap: GameMapVo.new(mapUnitMatrix),
     });
   };
 
   return (
     <div className="inline-flex w-24 h-24">
-      <GameMap {...args} onGameMapUnitClick={handleGameMapUnitClick} />
+      <GameMap {...args} onMapUnitClick={handleMapUnitClick} />
     </div>
   );
 };

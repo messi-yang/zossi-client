@@ -17,5 +17,5 @@ const Template: ComponentStory<typeof GameMapCanvas> = function Template(args) {
 export const Primary = Template.bind({});
 Primary.args = {
   gameMap: GameMapVo.newWithMapSize(MapSizeVo.new(30, 30)),
-  gameMapUnitSize: 15,
+  mapUnitSize: 15,
 };
