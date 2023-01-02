@@ -1,43 +1,45 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
-import type { UnitDto } from '@/apis/dtos';
-import { AreaVo, UnitVo, UnitBlockVo, LocationVo, DimensionVo } from '@/models/valueObjects';
+import type { GameMapUnitDto } from '@/apis/dtos';
+import { MapRangeVo, GameMapUnitVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
-  AreaZoomedEvent,
-  ZoomedAreaUpdatedEvent,
+  MapRangeZoomedEvent,
+  ZoomedMapRangeUpdatedEvent,
   InformationUpdatedEvent,
   ItemsUpdatedEvent,
 } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { ZoomAreaAction, BuildItemAction, DestroyItemAction } from './actionTypes';
+import type { ZoomMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
-function convertUnitDtoMatrixToUnitBlockVo(unitBlock: UnitDto[][]): UnitBlockVo {
-  const unitMatrix = unitBlock.map((unitCol) => unitCol.map((unit) => UnitVo.new(unit.itemId)));
-  return UnitBlockVo.new(unitMatrix);
-}
-
-function parseAreaZoomedEvent(event: AreaZoomedEvent): [AreaVo, UnitBlockVo] {
-  const area = AreaVo.new(
-    LocationVo.new(event.payload.area.from.x, event.payload.area.from.y),
-    LocationVo.new(event.payload.area.to.x, event.payload.area.to.y)
+function convertGameMapUnitDtoMatrixToGameMapVo(gameMap: GameMapUnitDto[][]): GameMapVo {
+  const gameMapUnitMatrix = gameMap.map((gameMapUnitCol) =>
+    gameMapUnitCol.map((gameMapUnit) => GameMapUnitVo.new(gameMapUnit.itemId))
   );
-  const unitBlock = convertUnitDtoMatrixToUnitBlockVo(event.payload.unitBlock);
-  return [area, unitBlock];
+  return GameMapVo.new(gameMapUnitMatrix);
 }
 
-function parseZoomedAreaUpdatedEvent(event: ZoomedAreaUpdatedEvent): [AreaVo, UnitBlockVo] {
-  const area = AreaVo.new(
-    LocationVo.new(event.payload.area.from.x, event.payload.area.from.y),
-    LocationVo.new(event.payload.area.to.x, event.payload.area.to.y)
+function parseMapRangeZoomedEvent(event: MapRangeZoomedEvent): [MapRangeVo, GameMapVo] {
+  const mapRange = MapRangeVo.new(
+    LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
+    LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
   );
-  const unitBlock = convertUnitDtoMatrixToUnitBlockVo(event.payload.unitBlock);
-  return [area, unitBlock];
+  const gameMap = convertGameMapUnitDtoMatrixToGameMapVo(event.payload.gameMap);
+  return [mapRange, gameMap];
 }
 
-function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [DimensionVo] {
-  return [DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height)];
+function parseZoomedMapRangeUpdatedEvent(event: ZoomedMapRangeUpdatedEvent): [MapRangeVo, GameMapVo] {
+  const mapRange = MapRangeVo.new(
+    LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
+    LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
+  );
+  const gameMap = convertGameMapUnitDtoMatrixToGameMapVo(event.payload.gameMap);
+  return [mapRange, gameMap];
+}
+
+function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [MapSizeVo] {
+  return [MapSizeVo.new(event.payload.mapSize.width, event.payload.mapSize.height)];
 }
 
 function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
@@ -48,9 +50,9 @@ export default class GameSocketConn {
   private socket: WebSocket;
 
   constructor(params: {
-    onAreaZoomed: (area: AreaVo, unitBlock: UnitBlockVo) => void;
-    onZoomedAreaUpdated: (area: AreaVo, unitBlock: UnitBlockVo) => void;
-    onInformationUpdated: (dimension: DimensionVo) => void;
+    onMapRangeZoomed: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onZoomedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: () => void;
     onOpen: () => void;
@@ -65,15 +67,15 @@ export default class GameSocketConn {
       const newMsg: Event = JSON.parse(eventJsonString);
 
       console.log(newMsg);
-      if (newMsg.type === EventTypeEnum.AreaZoomed) {
-        const [area, unitBlock] = parseAreaZoomedEvent(newMsg);
-        params.onAreaZoomed(area, unitBlock);
-      } else if (newMsg.type === EventTypeEnum.ZoomedAreaUpdated) {
-        const [area, unitBlock] = parseZoomedAreaUpdatedEvent(newMsg);
-        params.onZoomedAreaUpdated(area, unitBlock);
+      if (newMsg.type === EventTypeEnum.MapRangeZoomed) {
+        const [mapRange, gameMap] = parseMapRangeZoomedEvent(newMsg);
+        params.onMapRangeZoomed(mapRange, gameMap);
+      } else if (newMsg.type === EventTypeEnum.ZoomedMapRangeUpdated) {
+        const [mapRange, gameMap] = parseZoomedMapRangeUpdatedEvent(newMsg);
+        params.onZoomedMapRangeUpdated(mapRange, gameMap);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
-        const [dimension] = parseInformationUpdatedEvent(newMsg);
-        params.onInformationUpdated(dimension);
+        const [mapSize] = parseInformationUpdatedEvent(newMsg);
+        params.onInformationUpdated(mapSize);
       } else if (newMsg.type === EventTypeEnum.ItemsUpdated) {
         const [items] = parseItemsUpdatedEvent(newMsg);
         params.onItemsUpdated(items);
@@ -92,9 +94,9 @@ export default class GameSocketConn {
   }
 
   static newGameSocketConn(params: {
-    onAreaZoomed: (area: AreaVo, unitBlock: UnitBlockVo) => void;
-    onZoomedAreaUpdated: (area: AreaVo, unitBlock: UnitBlockVo) => void;
-    onInformationUpdated: (dimension: DimensionVo) => void;
+    onMapRangeZoomed: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onZoomedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: () => void;
     onOpen: () => void;
@@ -140,13 +142,13 @@ export default class GameSocketConn {
     this.sendMessage(action);
   }
 
-  public zoomArea(newArea: AreaVo) {
-    const action: ZoomAreaAction = {
-      type: ActionTypeEnum.ZoomArea,
+  public zoomMapRange(newMapRange: MapRangeVo) {
+    const action: ZoomMapRangeAction = {
+      type: ActionTypeEnum.ZoomMapRange,
       payload: {
-        area: {
-          from: { x: newArea.getFrom().getX(), y: newArea.getFrom().getY() },
-          to: { x: newArea.getTo().getX(), y: newArea.getTo().getY() },
+        mapRange: {
+          from: { x: newMapRange.getFrom().getX(), y: newMapRange.getFrom().getY() },
+          to: { x: newMapRange.getTo().getX(), y: newMapRange.getTo().getY() },
         },
         actionedAt: new Date().toISOString(),
       },

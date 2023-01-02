@@ -1,9 +1,9 @@
-import UnitVo from '@/models/valueObjects/UnitVo';
-import UnitBlockVo from '@/models/valueObjects/UnitBlockVo';
+import GameMapUnitVo from '@/models/valueObjects/GameMapUnitVo';
+import GameMapVo from '@/models/valueObjects/GameMapVo';
 import LocationVo from '@/models/valueObjects/LocationVo';
 import OffsetVo from '@/models/valueObjects/OffsetVo';
-import AreaVo from '@/models/valueObjects/AreaVo';
-import DimensionVo from '@/models/valueObjects/DimensionVo';
+import MapRangeVo from '@/models/valueObjects/MapRangeVo';
+import MapSizeVo from '@/models/valueObjects/MapSizeVo';
 
 export default {};
-export { UnitVo, UnitBlockVo, LocationVo, OffsetVo, AreaVo, DimensionVo };
+export { GameMapUnitVo, GameMapVo, LocationVo, OffsetVo, MapRangeVo, MapSizeVo };

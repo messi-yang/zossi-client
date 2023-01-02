@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { LocationVo, AreaVo, OffsetVo, UnitVo, UnitBlockVo } from '@/models/valueObjects';
+import { LocationVo, MapRangeVo, OffsetVo, GameMapUnitVo, GameMapVo } from '@/models/valueObjects';
 
 import GameMap from '.';
 
@@ -13,34 +13,34 @@ export default {
 
 const Template: ComponentStory<typeof GameMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const { area, unitBlock } = args;
-  const handleUnitClick = (location: LocationVo) => {
-    if (!area) {
+  const { mapRange, gameMap } = args;
+  const handleGameMapUnitClick = (location: LocationVo) => {
+    if (!mapRange) {
       return;
     }
-    if (!unitBlock) {
+    if (!gameMap) {
       return;
     }
 
-    const unitMatrix = unitBlock.getUnitMatrix();
-    unitMatrix[location.getX()][location.getY()] = UnitVo.new(null);
+    const gameMapUnitMatrix = gameMap.getGameMapUnitMatrix();
+    gameMapUnitMatrix[location.getX()][location.getY()] = GameMapUnitVo.new(null);
 
     updateArgs({
-      unitBlock: UnitBlockVo.new(unitMatrix),
+      gameMap: GameMapVo.new(gameMapUnitMatrix),
     });
   };
 
   return (
     <div className="inline-flex w-24 h-24">
-      <GameMap {...args} onUnitClick={handleUnitClick} />
+      <GameMap {...args} onGameMapUnitClick={handleGameMapUnitClick} />
     </div>
   );
 };
 
 export const Primary = Template.bind({});
-const areaForPrimary = AreaVo.new(LocationVo.new(3, 3), LocationVo.new(9, 9));
+const mapRangeForPrimary = MapRangeVo.new(LocationVo.new(3, 3), LocationVo.new(9, 9));
 Primary.args = {
-  area: areaForPrimary,
-  areaOffset: OffsetVo.new(0, 0),
-  unitBlock: UnitBlockVo.newWithDimension(areaForPrimary.getDimension()),
+  mapRange: mapRangeForPrimary,
+  mapRangeOffset: OffsetVo.new(0, 0),
+  gameMap: GameMapVo.newWithMapSize(mapRangeForPrimary.getMapSize()),
 };

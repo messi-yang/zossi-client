@@ -1,30 +1,30 @@
 import { memo, useState, useCallback } from 'react';
-import UnitBlockCanvas from '@/ui/components/canvas/UnitBlockCanvas';
-import { AreaVo, UnitBlockVo, LocationVo, OffsetVo } from '@/models/valueObjects';
+import GameMapCanvas from '@/ui/components/canvas/GameMapCanvas';
+import { MapRangeVo, GameMapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
 import dataTestids from './dataTestids';
 
 type Props = {
-  area: AreaVo | null;
-  areaOffset: OffsetVo;
-  unitBlock: UnitBlockVo | null;
-  onUnitClick: (location: LocationVo) => any;
+  mapRange: MapRangeVo | null;
+  mapRangeOffset: OffsetVo;
+  gameMap: GameMapVo | null;
+  onGameMapUnitClick: (location: LocationVo) => any;
 };
 
-function GameMap({ area, areaOffset, unitBlock, onUnitClick }: Props) {
-  const [unitSideLength] = useState<number>(30);
+function GameMap({ mapRange, mapRangeOffset, gameMap, onGameMapUnitClick }: Props) {
+  const [gameMapUnitSize] = useState<number>(30);
 
-  const handleUnitClick = useCallback(
+  const handleGameMapUnitClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!area) {
+      if (!mapRange) {
         return;
       }
 
-      const originLocation = area.getFrom();
+      const originLocation = mapRange.getFrom();
       const finalLocation = originLocation.shift(colIdx, rowIdx);
 
-      onUnitClick(finalLocation);
+      onGameMapUnitClick(finalLocation);
     },
-    [onUnitClick, area]
+    [onGameMapUnitClick, mapRange]
   );
 
   return (
@@ -34,9 +34,14 @@ function GameMap({ area, areaOffset, unitBlock, onUnitClick }: Props) {
     >
       <section
         className="relative flex"
-        style={{ left: areaOffset.getX() * unitSideLength, top: areaOffset.getY() * unitSideLength }}
+        style={{
+          left: mapRangeOffset.getX() * gameMapUnitSize,
+          top: mapRangeOffset.getY() * gameMapUnitSize,
+        }}
       >
-        {unitBlock && <UnitBlockCanvas unitBlock={unitBlock} unitSize={unitSideLength} onClick={handleUnitClick} />}
+        {gameMap && (
+          <GameMapCanvas gameMap={gameMap} gameMapUnitSize={gameMapUnitSize} onClick={handleGameMapUnitClick} />
+        )}
       </section>
     </section>
   );

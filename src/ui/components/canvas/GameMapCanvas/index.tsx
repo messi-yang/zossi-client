@@ -2,12 +2,12 @@ import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 're
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import { UnitVo, UnitBlockVo, DimensionVo } from '@/models/valueObjects';
+import { GameMapUnitVo, GameMapVo, MapSizeVo } from '@/models/valueObjects';
 
 import dataTestids from './dataTestids';
 
 const color = {
-  unitColor: 'white',
+  gameMapUnitColor: 'white',
   hoverColor: 'rgba(255, 255, 255, 0.2)',
   bgColor: 'black',
   borderColor: '#141414',
@@ -25,17 +25,17 @@ type Resolution = {
   height: number;
 };
 
-function generateCanvasElemSize(unitBlock: UnitBlockVo, unitSize: number): ElemSize {
-  const dimension = unitBlock.getDimension();
+function generateCanvasElemSize(gameMap: GameMapVo, gameMapUnitSize: number): ElemSize {
+  const mapSize = gameMap.getMapSize();
 
   return {
-    width: dimension.getWidth() * unitSize + 1,
-    height: dimension.getHeight() * unitSize + 1,
+    width: mapSize.getWidth() * gameMapUnitSize + 1,
+    height: mapSize.getHeight() * gameMapUnitSize + 1,
   };
 }
 
-function generateCanvasResolution(unitBlock: UnitBlockVo, unitSize: number, canvasUnitSize: number): Resolution {
-  const elemSize = generateCanvasElemSize(unitBlock, unitSize);
+function generateCanvasResolution(gameMap: GameMapVo, gameMapUnitSize: number, canvasUnitSize: number): Resolution {
+  const elemSize = generateCanvasElemSize(gameMap, gameMapUnitSize);
 
   return {
     width: elemSize.width * canvasUnitSize,
@@ -44,32 +44,32 @@ function generateCanvasResolution(unitBlock: UnitBlockVo, unitSize: number, canv
 }
 
 type Props = {
-  unitBlock: UnitBlockVo;
-  unitSize: number;
+  gameMap: GameMapVo;
+  gameMapUnitSize: number;
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
-function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
-  const [unitBlockCanvasElem, setUnitBlockCanvasElem] = useState<HTMLCanvasElement | null>(null);
+function GameMapCanvas({ gameMap, gameMapUnitSize, onClick }: Props) {
+  const [gameMapCanvasElem, setGameMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [hoverMaskCanvasElem, HoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
   const [borderWidth] = useState(1);
   const [canvasUnitSize] = useState(1);
-  const [dimension, setDimension] = useState(unitBlock.getDimension());
+  const [mapSize, setMapSize] = useState(gameMap.getMapSize());
   const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
   const canvasResolution = useMemo(
-    () => generateCanvasResolution(unitBlock, unitSize, canvasUnitSize),
-    [unitBlock, unitSize, canvasUnitSize]
+    () => generateCanvasResolution(gameMap, gameMapUnitSize, canvasUnitSize),
+    [gameMap, gameMapUnitSize, canvasUnitSize]
   );
-  const canvasElemSize = useMemo(() => generateCanvasElemSize(unitBlock, unitSize), [unitBlock, unitSize]);
+  const canvasElemSize = useMemo(() => generateCanvasElemSize(gameMap, gameMapUnitSize), [gameMap, gameMapUnitSize]);
 
   useEffect(() => {
-    const newDimension = unitBlock.getDimension();
-    if (!dimension.isEqual(newDimension)) {
-      setDimension(newDimension);
+    const newMapSize = gameMap.getMapSize();
+    if (!mapSize.isEqual(newMapSize)) {
+      setMapSize(newMapSize);
     }
-  }, [unitBlock]);
+  }, [gameMap]);
 
   const clean = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -79,22 +79,25 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
   );
 
   const drawGrid = useCallback(
-    (ctx: CanvasRenderingContext2D, newDimension: DimensionVo, newUnitSize: number, newCanvasUnitSize: number) => {
+    (ctx: CanvasRenderingContext2D, newMapSize: MapSizeVo, newGameMapUnitSize: number, newCanvasUnitSize: number) => {
       ctx.strokeStyle = color.borderColor; // eslint-disable-line no-param-reassign
       ctx.lineWidth = canvasUnitSize; // eslint-disable-line no-param-reassign
       ctx.beginPath();
 
-      newDimension.iterateColumn((colIdx: number) => {
-        ctx.moveTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, 0);
-        ctx.lineTo(colIdx * newUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, canvasResolution.height);
+      newMapSize.iterateColumn((colIdx: number) => {
+        ctx.moveTo(colIdx * newGameMapUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, 0);
+        ctx.lineTo(colIdx * newGameMapUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, canvasResolution.height);
       });
 
       ctx.moveTo(canvasResolution.width - newCanvasUnitSize / 2, 0);
       ctx.lineTo(canvasResolution.width - newCanvasUnitSize / 2, canvasResolution.height);
 
-      newDimension.iterateRow((rowIdx: number) => {
-        ctx.moveTo(0, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
-        ctx.lineTo(canvasResolution.width, rowIdx * newUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
+      newMapSize.iterateRow((rowIdx: number) => {
+        ctx.moveTo(0, rowIdx * newGameMapUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
+        ctx.lineTo(
+          canvasResolution.width,
+          rowIdx * newGameMapUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2
+        );
       });
 
       ctx.moveTo(0, canvasResolution.height - (1 * newCanvasUnitSize) / 2);
@@ -105,28 +108,28 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
     [canvasResolution]
   );
 
-  const drawUnits = useCallback(
+  const drawGameMapUnits = useCallback(
     (
       ctx: CanvasRenderingContext2D,
-      newUnitBlock: UnitBlockVo,
-      newUnitSize: number,
+      newGameMap: GameMapVo,
+      newGameMapUnitSize: number,
       newCanvasUnitSize: number,
       newBorderWidth: number
     ) => {
-      ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
+      ctx.fillStyle = color.gameMapUnitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
-      newUnitBlock.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
-        if (unit.hasItemId()) {
-          ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
-          const leftTopX = (colIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-          const leftTopY = (rowIdx * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+      newGameMap.iterateGameMapUnit((colIdx: number, rowIdx: number, gameMapUnit: GameMapUnitVo) => {
+        if (gameMapUnit.hasItemId()) {
+          ctx.fillStyle = color.gameMapUnitColor; // eslint-disable-line no-param-reassign
+          const leftTopX = (colIdx * newGameMapUnitSize + newBorderWidth) * newCanvasUnitSize;
+          const leftTopY = (rowIdx * newGameMapUnitSize + newBorderWidth) * newCanvasUnitSize;
           ctx.moveTo(leftTopX, leftTopY);
-          ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
+          ctx.lineTo(leftTopX + (newGameMapUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
           ctx.lineTo(
-            leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize,
-            leftTopY + (newUnitSize - newBorderWidth) * newCanvasUnitSize
+            leftTopX + (newGameMapUnitSize - newBorderWidth) * newCanvasUnitSize,
+            leftTopY + (newGameMapUnitSize - newBorderWidth) * newCanvasUnitSize
           );
-          ctx.lineTo(leftTopX, leftTopY + (newUnitSize - 1) * newCanvasUnitSize);
+          ctx.lineTo(leftTopX, leftTopY + (newGameMapUnitSize - 1) * newCanvasUnitSize);
           ctx.closePath();
         }
       });
@@ -136,34 +139,34 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
   );
 
   const draw = useCallback(
-    (newUnitBlock: UnitBlockVo, newUnitSize: number, newDimension: DimensionVo, newCanvasUnitSize: number) => {
-      const ctx = unitBlockCanvasElem?.getContext('2d');
+    (newGameMap: GameMapVo, newGameMapUnitSize: number, newMapSize: MapSizeVo, newCanvasUnitSize: number) => {
+      const ctx = gameMapCanvasElem?.getContext('2d');
       if (!ctx) {
         return;
       }
 
       clean(ctx);
-      drawGrid(ctx, newDimension, newUnitSize, newCanvasUnitSize);
-      drawUnits(ctx, newUnitBlock, newUnitSize, newCanvasUnitSize, borderWidth);
+      drawGrid(ctx, newMapSize, newGameMapUnitSize, newCanvasUnitSize);
+      drawGameMapUnits(ctx, newGameMap, newGameMapUnitSize, newCanvasUnitSize, borderWidth);
     },
-    [unitBlockCanvasElem, unitBlock, unitSize, dimension, canvasUnitSize, borderWidth]
+    [gameMapCanvasElem, gameMap, gameMapUnitSize, mapSize, canvasUnitSize, borderWidth]
   );
 
-  draw(unitBlock, unitSize, dimension, canvasUnitSize);
+  draw(gameMap, gameMapUnitSize, mapSize, canvasUnitSize);
 
-  const onUnitBlockCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
-    setUnitBlockCanvasElem(elem);
+  const onGameMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
+    setGameMapCanvasElem(elem);
   }, []);
 
   const calculateIndexes = useCallback(
-    (relativeX: number, relativeY: number, newUnitSize: number, newDimension: DimensionVo): Indexes => {
-      let colIdx = Math.floor(relativeX / newUnitSize);
-      let rowIdx = Math.floor(relativeY / newUnitSize);
-      if (colIdx >= newDimension.getWidth()) {
-        colIdx = newDimension.getWidth() - 1;
+    (relativeX: number, relativeY: number, newGameMapUnitSize: number, newMapSize: MapSizeVo): Indexes => {
+      let colIdx = Math.floor(relativeX / newGameMapUnitSize);
+      let rowIdx = Math.floor(relativeY / newGameMapUnitSize);
+      if (colIdx >= newMapSize.getWidth()) {
+        colIdx = newMapSize.getWidth() - 1;
       }
-      if (rowIdx >= newDimension.getHeight()) {
-        rowIdx = newDimension.getHeight() - 1;
+      if (rowIdx >= newMapSize.getHeight()) {
+        rowIdx = newMapSize.getHeight() - 1;
       }
 
       return [colIdx, rowIdx];
@@ -174,21 +177,21 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
   const drawHoverMask = (
     ctx: CanvasRenderingContext2D,
     newHoveredIndexes: Indexes,
-    newUnitSize: number,
+    newGameMapUnitSize: number,
     newBorderWidth: number,
     newCanvasUnitSize: number
   ) => {
     ctx.fillStyle = color.hoverColor; // eslint-disable-line no-param-reassign
     ctx.beginPath();
-    const leftTopX = (newHoveredIndexes[0] * newUnitSize + newBorderWidth) * newCanvasUnitSize;
-    const leftTopY = (newHoveredIndexes[1] * newUnitSize + newBorderWidth) * newCanvasUnitSize;
+    const leftTopX = (newHoveredIndexes[0] * newGameMapUnitSize + newBorderWidth) * newCanvasUnitSize;
+    const leftTopY = (newHoveredIndexes[1] * newGameMapUnitSize + newBorderWidth) * newCanvasUnitSize;
     ctx.moveTo(leftTopX, leftTopY);
-    ctx.lineTo(leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
+    ctx.lineTo(leftTopX + (newGameMapUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
     ctx.lineTo(
-      leftTopX + (newUnitSize - newBorderWidth) * newCanvasUnitSize,
-      leftTopY + (newUnitSize - newBorderWidth) * newCanvasUnitSize
+      leftTopX + (newGameMapUnitSize - newBorderWidth) * newCanvasUnitSize,
+      leftTopY + (newGameMapUnitSize - newBorderWidth) * newCanvasUnitSize
     );
-    ctx.lineTo(leftTopX, leftTopY + (newUnitSize - 1) * newCanvasUnitSize);
+    ctx.lineTo(leftTopX, leftTopY + (newGameMapUnitSize - 1) * newCanvasUnitSize);
     ctx.closePath();
     ctx.fill();
   };
@@ -201,13 +204,13 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
         event.clientX - eventTargetRect.left - borderWidth,
         event.clientY - eventTargetRect.top - borderWidth,
       ];
-      const newHoveredIndexes = calculateIndexes(posX, posY, unitSize, dimension);
+      const newHoveredIndexes = calculateIndexes(posX, posY, gameMapUnitSize, mapSize);
 
       if (!isEqual(newHoveredIndexes, hoveredIndexes)) {
         setHoveredIndexes(newHoveredIndexes);
       }
     },
-    [hoveredIndexes, unitSize, dimension, borderWidth]
+    [hoveredIndexes, gameMapUnitSize, mapSize, borderWidth]
   );
 
   const handleHoverMaskCanvasMouseMoveDebouncer = useCallback(
@@ -227,7 +230,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
     }
 
     if (hoveredIndexes) {
-      drawHoverMask(ctx, hoveredIndexes, unitSize, borderWidth, canvasUnitSize);
+      drawHoverMask(ctx, hoveredIndexes, gameMapUnitSize, borderWidth, canvasUnitSize);
     }
 
     return () => {
@@ -235,7 +238,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
         clean(ctx);
       }
     };
-  }, [hoverMaskCanvasElem, hoveredIndexes, unitSize, borderWidth, canvasUnitSize]);
+  }, [hoverMaskCanvasElem, hoveredIndexes, gameMapUnitSize, borderWidth, canvasUnitSize]);
 
   const handleHoverMaskCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;
@@ -244,7 +247,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
       event.clientX - eventTargetRect.left - borderWidth,
       event.clientY - eventTargetRect.top - borderWidth,
     ];
-    const clickedIndexes = calculateIndexes(posX, posY, unitSize, dimension);
+    const clickedIndexes = calculateIndexes(posX, posY, gameMapUnitSize, mapSize);
     onClick(clickedIndexes[0], clickedIndexes[1]);
   };
 
@@ -259,7 +262,7 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
       className="relative box-border"
     >
       <canvas
-        ref={onUnitBlockCanvasLoad}
+        ref={onGameMapCanvasLoad}
         width={canvasResolution.width}
         height={canvasResolution.height}
         className="absolute left-0 top-0 bg-black z-0"
@@ -279,5 +282,5 @@ function UnitBlockCanvas({ unitBlock, unitSize, onClick }: Props) {
   );
 }
 
-export default UnitBlockCanvas;
+export default GameMapCanvas;
 export { dataTestids };

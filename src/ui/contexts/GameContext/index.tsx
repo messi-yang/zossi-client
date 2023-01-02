@@ -1,35 +1,35 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import { GameSocketConn } from '@/apis/socketConnections';
-import { AreaVo, UnitBlockVo, LocationVo, DimensionVo } from '@/models/valueObjects';
+import { MapRangeVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
 type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'OPEN';
 
 type ContextValue = {
   status: Status;
-  dimension: DimensionVo | null;
-  zoomedArea: AreaVo | null;
-  unitBlock: UnitBlockVo | null;
+  mapSize: MapSizeVo | null;
+  zoomedMapRange: MapRangeVo | null;
+  gameMap: GameMapVo | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
   buildItem: (location: LocationVo, itemId: string) => void;
   destroyItem: (location: LocationVo) => void;
-  zoomArea: (area: AreaVo) => void;
+  zoomMapRange: (mapRange: MapRangeVo) => void;
   leaveGame: () => void;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
     status: 'CLOSED',
-    dimension: null,
-    zoomedArea: null,
-    unitBlock: null,
+    mapSize: null,
+    zoomedMapRange: null,
+    gameMap: null,
     items: null,
     joinGame: () => {},
     buildItem: () => {},
     destroyItem: () => {},
-    zoomArea: () => {},
+    zoomMapRange: () => {},
     leaveGame: () => {},
   };
 }
@@ -45,10 +45,10 @@ export function Provider({ children }: Props) {
   const [status, setStatus] = useState<Status>('CLOSED');
 
   const initialContextValue = createInitialContextValue();
-  const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
+  const [mapSize, setMapSize] = useState<MapSizeVo | null>(initialContextValue.mapSize);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const [zoomedArea, setZoomedArea] = useState<AreaVo | null>(initialContextValue.zoomedArea);
-  const [unitBlock, setUnitBlock] = useState<UnitBlockVo | null>(initialContextValue.unitBlock);
+  const [zoomedMapRange, setZoomedMapRange] = useState<MapRangeVo | null>(initialContextValue.zoomedMapRange);
+  const [gameMap, setGameMap] = useState<GameMapVo | null>(initialContextValue.gameMap);
 
   const joinGame = useCallback(() => {
     const hasUncleanedConnection = !!gameSocketConn;
@@ -59,16 +59,16 @@ export function Provider({ children }: Props) {
     setStatus('CONNECTING');
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
-      onAreaZoomed: (newArea: AreaVo, newUnitBlock: UnitBlockVo) => {
-        setZoomedArea(newArea);
-        setUnitBlock(newUnitBlock);
+      onMapRangeZoomed: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
+        setZoomedMapRange(newMapRange);
+        setGameMap(newGameMap);
       },
-      onZoomedAreaUpdated: (newArea: AreaVo, newUnitBlock: UnitBlockVo) => {
-        setZoomedArea(newArea);
-        setUnitBlock(newUnitBlock);
+      onZoomedMapRangeUpdated: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
+        setZoomedMapRange(newMapRange);
+        setGameMap(newGameMap);
       },
-      onInformationUpdated: (newDimension: DimensionVo) => {
-        setDimension(newDimension);
+      onInformationUpdated: (newMapSize: MapSizeVo) => {
+        setMapSize(newMapSize);
       },
       onItemsUpdated: (returnedItems: ItemAgg[]) => {
         setItems(returnedItems);
@@ -79,11 +79,11 @@ export function Provider({ children }: Props) {
       onClose: () => {
         setStatus('CLOSED');
         setGameSocketConn(null);
-        setDimension(initialContextValue.dimension);
+        setMapSize(initialContextValue.mapSize);
         setItems(null);
 
-        setZoomedArea(null);
-        setUnitBlock(null);
+        setZoomedMapRange(null);
+        setGameMap(null);
       },
     });
     setGameSocketConn(newGameSocketConn);
@@ -108,10 +108,10 @@ export function Provider({ children }: Props) {
     [gameSocketConn]
   );
 
-  const zoomArea = useCallback(
+  const zoomMapRange = useCallback(
     debounce(
-      (newArea: AreaVo) => {
-        gameSocketConn?.zoomArea(newArea);
+      (newMapRange: MapRangeVo) => {
+        gameSocketConn?.zoomMapRange(newMapRange);
       },
       150,
       { leading: true, maxWait: 500, trailing: true }
@@ -124,17 +124,17 @@ export function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           status,
-          dimension,
-          zoomedArea,
-          unitBlock,
+          mapSize,
+          zoomedMapRange,
+          gameMap,
           items,
           joinGame,
           leaveGame,
           buildItem,
           destroyItem,
-          zoomArea,
+          zoomMapRange,
         }),
-        [status, dimension, zoomedArea, unitBlock, items, joinGame, leaveGame, buildItem, zoomArea]
+        [status, mapSize, zoomedMapRange, gameMap, items, joinGame, leaveGame, buildItem, zoomMapRange]
       )}
     >
       {children}

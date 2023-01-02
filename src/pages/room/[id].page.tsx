@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
 import GameContext from '@/ui/contexts/GameContext';
-import { AreaVo, LocationVo, DimensionVo, OffsetVo } from '@/models/valueObjects';
+import { MapRangeVo, LocationVo, MapSizeVo, OffsetVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import GameMap from '@/ui/components/maps/GameMap';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
@@ -14,7 +14,7 @@ import useDomRect from '@/ui/hooks/useDomRect';
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
   const router = useRouter();
-  const { dimension, zoomedArea, unitBlock, items, status, joinGame, leaveGame, buildItem, destroyItem, zoomArea } =
+  const { mapSize, zoomedMapRange, gameMap, items, status, joinGame, leaveGame, buildItem, destroyItem, zoomMapRange } =
     useContext(GameContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
@@ -22,37 +22,37 @@ const Room: NextPage = function Room() {
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
 
-  const [targetArea, setTargetArea] = useState<AreaVo | null>(zoomedArea);
-  const zoomedAreaOffset = useMemo(() => {
-    if (!zoomedArea || !targetArea) {
+  const [targetMapRange, setTargetMapRange] = useState<MapRangeVo | null>(zoomedMapRange);
+  const zoomedMapRangeOffset = useMemo(() => {
+    if (!zoomedMapRange || !targetMapRange) {
       return OffsetVo.new(0, 0);
     }
-    return zoomedArea.calculateOffsetWithArea(targetArea);
-  }, [zoomedArea, targetArea]);
+    return zoomedMapRange.calculateOffsetWithMapRange(targetMapRange);
+  }, [zoomedMapRange, targetMapRange]);
 
   const gameMapWrapperElemRef = useRef<HTMLElement>(null);
   const gameMapWrapperElemRect = useDomRect(gameMapWrapperElemRef);
-  const desiredDimension = useMemo(
+  const desiredMapSize = useMemo(
     () =>
-      DimensionVo.newWithResolutionAndUnitSideLength(
+      MapSizeVo.newWithResolutionAndGameMapUnitSize(
         { width: gameMapWrapperElemRect.width, height: gameMapWrapperElemRect.height },
         30
       ),
     [gameMapWrapperElemRect]
   );
   useEffect(
-    function handleDesiredDimensionUpdateEffect() {
+    function handleDesiredMapSizeUpdateEffect() {
       if (status !== 'OPEN') {
         return;
       }
-      const newArea = AreaVo.newWithLocationAndDimension(
-        zoomedArea ? zoomedArea.getFrom() : LocationVo.new(0, 0),
-        desiredDimension
+      const newMapRange = MapRangeVo.newWithLocationAndMapSize(
+        zoomedMapRange ? zoomedMapRange.getFrom() : LocationVo.new(0, 0),
+        desiredMapSize
       );
-      setTargetArea(newArea);
-      zoomArea(newArea);
+      setTargetMapRange(newMapRange);
+      zoomMapRange(newMapRange);
     },
-    [zoomedArea === null, desiredDimension, status]
+    [zoomedMapRange === null, desiredMapSize, status]
   );
 
   const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
@@ -82,9 +82,9 @@ const Room: NextPage = function Room() {
     router.push('/');
   };
 
-  const handleMiniMapAreaUpdate = (newArea: AreaVo) => {
-    setTargetArea(newArea);
-    zoomArea(newArea);
+  const handleMiniMapMapRangeUpdate = (newMapRange: MapRangeVo) => {
+    setTargetMapRange(newMapRange);
+    zoomMapRange(newMapRange);
   };
 
   const handleMiniMapClick = () => {
@@ -107,7 +107,7 @@ const Room: NextPage = function Room() {
     setSelectedItem(item);
   };
 
-  const handleUnitClick = useCallback(
+  const handleGameMapUnitClick = useCallback(
     (location: LocationVo) => {
       if (isDestroyingItem) {
         destroyItem(location);
@@ -149,19 +149,19 @@ const Room: NextPage = function Room() {
           <section className="relative grow overflow-hidden bg-black">
             <section ref={gameMapWrapperElemRef} className="w-full h-full">
               <GameMap
-                area={zoomedArea}
-                areaOffset={zoomedAreaOffset}
-                unitBlock={unitBlock}
-                onUnitClick={handleUnitClick}
+                mapRange={zoomedMapRange}
+                mapRangeOffset={zoomedMapRangeOffset}
+                gameMap={gameMap}
+                onGameMapUnitClick={handleGameMapUnitClick}
               />
             </section>
-            {dimension && targetArea && isMiniMapVisible && (
+            {mapSize && targetMapRange && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
                 <GameMiniMap
                   width={300}
-                  dimension={dimension}
-                  area={targetArea}
-                  onAreaUpdate={handleMiniMapAreaUpdate}
+                  mapSize={mapSize}
+                  mapRange={targetMapRange}
+                  onMapRangeUpdate={handleMiniMapMapRangeUpdate}
                 />
               </section>
             )}
@@ -181,19 +181,19 @@ const Room: NextPage = function Room() {
           <section className="relative grow overflow-hidden bg-black">
             <section ref={gameMapWrapperElemRef} className="w-full h-full">
               <GameMap
-                area={zoomedArea}
-                areaOffset={zoomedAreaOffset}
-                unitBlock={unitBlock}
-                onUnitClick={handleUnitClick}
+                mapRange={zoomedMapRange}
+                mapRangeOffset={zoomedMapRangeOffset}
+                gameMap={gameMap}
+                onGameMapUnitClick={handleGameMapUnitClick}
               />
             </section>
-            {dimension && targetArea && isMiniMapVisible && (
+            {mapSize && targetMapRange && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={windowSize.width * 0.8}
-                  dimension={dimension}
-                  area={targetArea}
-                  onAreaUpdate={handleMiniMapAreaUpdate}
+                  mapSize={mapSize}
+                  mapRange={targetMapRange}
+                  onMapRangeUpdate={handleMiniMapMapRangeUpdate}
                 />
               </section>
             )}

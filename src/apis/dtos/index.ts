@@ -1,9 +1,9 @@
-import type AreaDto from './AreaDto';
+import type MapRangeDto from './MapRangeDto';
 import type LocationDto from './LocationDto';
-import type DimensionDto from './DimensionDto';
-import type UnitDto from './UnitDto';
+import type MapSizeDto from './MapSizeDto';
+import type GameMapUnitDto from './GameMapUnitDto';
 import type ItemDto from './ItemDto';
 
-export type { AreaDto, LocationDto, DimensionDto, UnitDto, ItemDto };
+export type { MapRangeDto, LocationDto, MapSizeDto, GameMapUnitDto, ItemDto };
 
 export default {};
