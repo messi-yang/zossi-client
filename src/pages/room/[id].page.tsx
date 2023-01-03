@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
@@ -40,8 +40,7 @@ const Room: NextPage = function Room() {
     return zoomedMapRange.calculateOffsetWithMapRange(targetMapRange);
   }, [zoomedMapRange, targetMapRange]);
 
-  const gameMapWrapperElemRef = useRef<HTMLElement>(null);
-  const gameMapWrapperElemRect = useDomRect(gameMapWrapperElemRef);
+  const [gameMapWrapperElemRef, gameMapWrapperElemRect] = useDomRect();
   const desiredMapSize = useMemo(() => {
     if (!gameMapWrapperElemRect) {
       return null;
