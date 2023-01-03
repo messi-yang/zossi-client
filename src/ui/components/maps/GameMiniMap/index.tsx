@@ -15,15 +15,15 @@ function GameMiniMap({ width, mapSize, mapRange, onMapRangeUpdate }: Props) {
   const mapSizeRatio = mapSize.getRatio();
   const mapRangeWidth = mapRange.getWidth();
   const mapRangeHeight = mapRange.getHeight();
-  const mapZoomedMapRangeWidthRatio = mapRangeWidth / mapSize.getWidth();
-  const mapZoomedMapRangeHeightRatio = mapRangeHeight / mapSize.getHeight();
+  const mapObservedMapRangeWidthRatio = mapRangeWidth / mapSize.getWidth();
+  const mapObservedMapRangeHeightRatio = mapRangeHeight / mapSize.getHeight();
   const offsetXRatio = mapRange.getFrom().getX() / mapSize.getWidth();
   const offsetYRatio = mapRange.getFrom().getY() / mapSize.getHeight();
 
   const elemWidth = width;
   const elemHeight = elemWidth * mapSizeRatio;
-  const mapRangeElemWidth = elemWidth * mapZoomedMapRangeWidthRatio;
-  const mapRangeElemHeight = elemHeight * mapZoomedMapRangeHeightRatio;
+  const mapRangeElemWidth = elemWidth * mapObservedMapRangeWidthRatio;
+  const mapRangeElemHeight = elemHeight * mapObservedMapRangeHeightRatio;
 
   const calculateNewMapRangeFromMouseEvent = (clientX: number, clientY: number): MapRangeVo => {
     if (!mapContentElemRef.current) {

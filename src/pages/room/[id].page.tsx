@@ -16,7 +16,7 @@ const Room: NextPage = function Room() {
   const router = useRouter();
   const {
     mapSize,
-    zoomedMapRange,
+    observedMapRange,
     gameMap,
     items,
     gameStatus,
@@ -24,7 +24,7 @@ const Room: NextPage = function Room() {
     leaveGame,
     buildItem,
     destroyItem,
-    zoomMapRange,
+    observeMapRange,
   } = useContext(GameContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
@@ -32,13 +32,13 @@ const Room: NextPage = function Room() {
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
 
-  const [targetMapRange, setTargetMapRange] = useState<MapRangeVo | null>(zoomedMapRange);
-  const zoomedMapRangeOffset = useMemo(() => {
-    if (!zoomedMapRange || !targetMapRange) {
+  const [targetMapRange, setTargetMapRange] = useState<MapRangeVo | null>(observedMapRange);
+  const observedMapRangeOffset = useMemo(() => {
+    if (!observedMapRange || !targetMapRange) {
       return OffsetVo.new(0, 0);
     }
-    return zoomedMapRange.calculateOffsetWithMapRange(targetMapRange);
-  }, [zoomedMapRange, targetMapRange]);
+    return observedMapRange.calculateOffsetWithMapRange(targetMapRange);
+  }, [observedMapRange, targetMapRange]);
 
   const [gameMapWrapperElemRef, gameMapWrapperElemRect] = useDomRect();
   const desiredMapSize = useMemo(() => {
@@ -64,7 +64,7 @@ const Room: NextPage = function Room() {
         desiredMapSize
       );
       setTargetMapRange(newMapRange);
-      zoomMapRange(newMapRange);
+      observeMapRange(newMapRange);
     },
     [targetMapRange, desiredMapSize, gameStatus]
   );
@@ -95,7 +95,7 @@ const Room: NextPage = function Room() {
         router.events.off('beforeHistoryChange', handleBeforeHistoryChange);
       };
     },
-    [gameStatus, leaveGame]
+    [leaveGame]
   );
 
   const handleLogoClick = () => {
@@ -104,7 +104,7 @@ const Room: NextPage = function Room() {
 
   const handleMiniMapMapRangeUpdate = (newMapRange: MapRangeVo) => {
     setTargetMapRange(newMapRange);
-    zoomMapRange(newMapRange);
+    observeMapRange(newMapRange);
   };
 
   const handleMiniMapClick = () => {
@@ -169,8 +169,8 @@ const Room: NextPage = function Room() {
           <section className="relative grow overflow-hidden bg-black">
             <section ref={gameMapWrapperElemRef} className="w-full h-full">
               <GameMap
-                mapRange={zoomedMapRange}
-                mapRangeOffset={zoomedMapRangeOffset}
+                mapRange={observedMapRange}
+                mapRangeOffset={observedMapRangeOffset}
                 gameMap={gameMap}
                 onMapUnitClick={handleMapUnitClick}
               />
@@ -201,8 +201,8 @@ const Room: NextPage = function Room() {
           <section className="relative grow overflow-hidden bg-black">
             <section ref={gameMapWrapperElemRef} className="w-full h-full">
               <GameMap
-                mapRange={zoomedMapRange}
-                mapRangeOffset={zoomedMapRangeOffset}
+                mapRange={observedMapRange}
+                mapRangeOffset={observedMapRangeOffset}
                 gameMap={gameMap}
                 onMapUnitClick={handleMapUnitClick}
               />

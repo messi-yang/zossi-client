@@ -9,13 +9,13 @@ type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED';
 type ContextValue = {
   gameStatus: GameStatus;
   mapSize: MapSizeVo | null;
-  zoomedMapRange: MapRangeVo | null;
+  observedMapRange: MapRangeVo | null;
   gameMap: GameMapVo | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
   buildItem: (location: LocationVo, itemId: string) => void;
   destroyItem: (location: LocationVo) => void;
-  zoomMapRange: (mapRange: MapRangeVo) => void;
+  observeMapRange: (mapRange: MapRangeVo) => void;
   leaveGame: () => void;
 };
 
@@ -23,13 +23,13 @@ function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'CLOSED',
     mapSize: null,
-    zoomedMapRange: null,
+    observedMapRange: null,
     gameMap: null,
     items: null,
     joinGame: () => {},
     buildItem: () => {},
     destroyItem: () => {},
-    zoomMapRange: () => {},
+    observeMapRange: () => {},
     leaveGame: () => {},
   };
 }
@@ -47,7 +47,7 @@ export function Provider({ children }: Props) {
   const initialContextValue = createInitialContextValue();
   const [mapSize, setMapSize] = useState<MapSizeVo | null>(initialContextValue.mapSize);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const [zoomedMapRange, setZoomedMapRange] = useState<MapRangeVo | null>(initialContextValue.zoomedMapRange);
+  const [observedMapRange, setObservedMapRange] = useState<MapRangeVo | null>(initialContextValue.observedMapRange);
   const [gameMap, setGameMap] = useState<GameMapVo | null>(initialContextValue.gameMap);
 
   const joinGame = useCallback(() => {
@@ -57,12 +57,12 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
-      onMapRangeZoomed: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
-        setZoomedMapRange(newMapRange);
+      onMapRangeObserved: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
+        setObservedMapRange(newMapRange);
         setGameMap(newGameMap);
       },
-      onZoomedMapRangeUpdated: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
-        setZoomedMapRange(newMapRange);
+      onObservedMapRangeUpdated: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
+        setObservedMapRange(newMapRange);
         setGameMap(newGameMap);
       },
       onInformationUpdated: (newMapSize: MapSizeVo) => {
@@ -80,7 +80,7 @@ export function Provider({ children }: Props) {
         setMapSize(initialContextValue.mapSize);
         setItems(null);
 
-        setZoomedMapRange(null);
+        setObservedMapRange(null);
         setGameMap(null);
       },
     });
@@ -107,10 +107,10 @@ export function Provider({ children }: Props) {
     [gameSocketConn]
   );
 
-  const zoomMapRange = useCallback(
+  const observeMapRange = useCallback(
     debounce(
       (newMapRange: MapRangeVo) => {
-        gameSocketConn?.zoomMapRange(newMapRange);
+        gameSocketConn?.observeMapRange(newMapRange);
       },
       150,
       { leading: true, maxWait: 500, trailing: true }
@@ -124,16 +124,16 @@ export function Provider({ children }: Props) {
         () => ({
           gameStatus,
           mapSize,
-          zoomedMapRange,
+          observedMapRange,
           gameMap,
           items,
           joinGame,
           leaveGame,
           buildItem,
           destroyItem,
-          zoomMapRange,
+          observeMapRange,
         }),
-        [gameStatus, mapSize, zoomedMapRange, gameMap, items, joinGame, leaveGame, buildItem, zoomMapRange]
+        [gameStatus, mapSize, observedMapRange, gameMap, items, joinGame, leaveGame, buildItem, observeMapRange]
       )}
     >
       {children}

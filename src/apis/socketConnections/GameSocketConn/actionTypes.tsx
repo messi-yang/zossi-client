@@ -1,13 +1,13 @@
 import { MapRangeDto, LocationDto } from '@/apis/dtos';
 
 enum ActionTypeEnum {
-  ZoomMapRange = 'ZOOM_MAP_RANGE',
+  ObserveMapRange = 'OBSERVE_MAP_RANGE',
   BuildItem = 'BUILD_ITEM',
   DestroyItem = 'DESTROY_ITEM',
 }
 
-type ZoomMapRangeAction = {
-  type: ActionTypeEnum.ZoomMapRange;
+type ObserveMapRangeAction = {
+  type: ActionTypeEnum.ObserveMapRange;
   payload: {
     mapRange: MapRangeDto;
     actionedAt: string;
@@ -33,4 +33,4 @@ type DestroyItemAction = {
 
 export { ActionTypeEnum };
 
-export type { ZoomMapRangeAction, BuildItemAction, DestroyItemAction };
+export type { ObserveMapRangeAction, BuildItemAction, DestroyItemAction };

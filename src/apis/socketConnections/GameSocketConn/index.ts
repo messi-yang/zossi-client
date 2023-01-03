@@ -3,14 +3,14 @@ import type { MapUnitDto } from '@/apis/dtos';
 import { MapRangeVo, MapUnitVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
-  MapRangeZoomedEvent,
-  ZoomedMapRangeUpdatedEvent,
+  MapRangeObservedEvent,
+  ObservedMapRangeUpdatedEvent,
   InformationUpdatedEvent,
   ItemsUpdatedEvent,
 } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { ZoomMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
+import type { ObserveMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
 function convertMapUnitDtoMatrixToGameMapVo(gameMap: MapUnitDto[][]): GameMapVo {
@@ -18,7 +18,7 @@ function convertMapUnitDtoMatrixToGameMapVo(gameMap: MapUnitDto[][]): GameMapVo 
   return GameMapVo.new(mapUnitMatrix);
 }
 
-function parseMapRangeZoomedEvent(event: MapRangeZoomedEvent): [MapRangeVo, GameMapVo] {
+function parseMapRangeObservedEvent(event: MapRangeObservedEvent): [MapRangeVo, GameMapVo] {
   const mapRange = MapRangeVo.new(
     LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
     LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
@@ -27,7 +27,7 @@ function parseMapRangeZoomedEvent(event: MapRangeZoomedEvent): [MapRangeVo, Game
   return [mapRange, gameMap];
 }
 
-function parseZoomedMapRangeUpdatedEvent(event: ZoomedMapRangeUpdatedEvent): [MapRangeVo, GameMapVo] {
+function parseObservedMapRangeUpdatedEvent(event: ObservedMapRangeUpdatedEvent): [MapRangeVo, GameMapVo] {
   const mapRange = MapRangeVo.new(
     LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
     LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
@@ -48,8 +48,8 @@ export default class GameSocketConn {
   private socket: WebSocket;
 
   constructor(params: {
-    onMapRangeZoomed: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
-    onZoomedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onMapRangeObserved: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onObservedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: () => void;
@@ -65,12 +65,12 @@ export default class GameSocketConn {
       const newMsg: Event = JSON.parse(eventJsonString);
 
       console.log(newMsg);
-      if (newMsg.type === EventTypeEnum.MapRangeZoomed) {
-        const [mapRange, gameMap] = parseMapRangeZoomedEvent(newMsg);
-        params.onMapRangeZoomed(mapRange, gameMap);
-      } else if (newMsg.type === EventTypeEnum.ZoomedMapRangeUpdated) {
-        const [mapRange, gameMap] = parseZoomedMapRangeUpdatedEvent(newMsg);
-        params.onZoomedMapRangeUpdated(mapRange, gameMap);
+      if (newMsg.type === EventTypeEnum.MapRangeObserved) {
+        const [mapRange, gameMap] = parseMapRangeObservedEvent(newMsg);
+        params.onMapRangeObserved(mapRange, gameMap);
+      } else if (newMsg.type === EventTypeEnum.ObservedMapRangeUpdated) {
+        const [mapRange, gameMap] = parseObservedMapRangeUpdatedEvent(newMsg);
+        params.onObservedMapRangeUpdated(mapRange, gameMap);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         const [mapSize] = parseInformationUpdatedEvent(newMsg);
         params.onInformationUpdated(mapSize);
@@ -92,8 +92,8 @@ export default class GameSocketConn {
   }
 
   static newGameSocketConn(params: {
-    onMapRangeZoomed: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
-    onZoomedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onMapRangeObserved: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onObservedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: () => void;
@@ -140,9 +140,9 @@ export default class GameSocketConn {
     this.sendMessage(action);
   }
 
-  public zoomMapRange(newMapRange: MapRangeVo) {
-    const action: ZoomMapRangeAction = {
-      type: ActionTypeEnum.ZoomMapRange,
+  public observeMapRange(newMapRange: MapRangeVo) {
+    const action: ObserveMapRangeAction = {
+      type: ActionTypeEnum.ObserveMapRange,
       payload: {
         mapRange: {
           from: { x: newMapRange.getFrom().getX(), y: newMapRange.getFrom().getY() },
