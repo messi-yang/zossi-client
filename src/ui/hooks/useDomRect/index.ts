@@ -1,18 +1,8 @@
 import { useState, RefObject, useEffect } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
-export default function useDomRect(ref: RefObject<HTMLElement>): DOMRect {
-  const [rect, setRect] = useState<DOMRect>({
-    x: 0,
-    y: 0,
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: 0,
-    height: 0,
-    toJSON: () => {},
-  });
+export default function useDomRect(ref: RefObject<HTMLElement>): DOMRect | null {
+  const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
     let resizeObserver: ResizeObserver;

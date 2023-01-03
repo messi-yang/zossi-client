@@ -4,10 +4,10 @@ import { GameSocketConn } from '@/apis/socketConnections';
 import { MapRangeVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
-type Status = 'CLOSED' | 'CLOSING' | 'CONNECTING' | 'OPEN';
+type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED';
 
 type ContextValue = {
-  status: Status;
+  gameStatus: GameStatus;
   mapSize: MapSizeVo | null;
   zoomedMapRange: MapRangeVo | null;
   gameMap: GameMapVo | null;
@@ -21,7 +21,7 @@ type ContextValue = {
 
 function createInitialContextValue(): ContextValue {
   return {
-    status: 'CLOSED',
+    gameStatus: 'CLOSED',
     mapSize: null,
     zoomedMapRange: null,
     gameMap: null,
@@ -42,7 +42,7 @@ type Props = {
 
 export function Provider({ children }: Props) {
   const [gameSocketConn, setGameSocketConn] = useState<GameSocketConn | null>(null);
-  const [status, setStatus] = useState<Status>('CLOSED');
+  const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
 
   const initialContextValue = createInitialContextValue();
   const [mapSize, setMapSize] = useState<MapSizeVo | null>(initialContextValue.mapSize);
@@ -55,8 +55,6 @@ export function Provider({ children }: Props) {
     if (hasUncleanedConnection) {
       return;
     }
-
-    setStatus('CONNECTING');
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
       onMapRangeZoomed: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
@@ -74,10 +72,10 @@ export function Provider({ children }: Props) {
         setItems(returnedItems);
       },
       onOpen: () => {
-        setStatus('OPEN');
+        setGameStatus('OPEN');
       },
       onClose: () => {
-        setStatus('CLOSED');
+        setGameStatus('CLOSED');
         setGameSocketConn(null);
         setMapSize(initialContextValue.mapSize);
         setItems(null);
@@ -86,11 +84,12 @@ export function Provider({ children }: Props) {
         setGameMap(null);
       },
     });
+    setGameStatus('CONNECTING');
     setGameSocketConn(newGameSocketConn);
   }, [gameSocketConn]);
 
   const leaveGame = useCallback(() => {
-    setStatus('CLOSING');
+    setGameStatus('CLOSING');
     gameSocketConn?.disconnect();
   }, [gameSocketConn]);
 
@@ -123,7 +122,7 @@ export function Provider({ children }: Props) {
     <Context.Provider
       value={useMemo<ContextValue>(
         () => ({
-          status,
+          gameStatus,
           mapSize,
           zoomedMapRange,
           gameMap,
@@ -134,7 +133,7 @@ export function Provider({ children }: Props) {
           destroyItem,
           zoomMapRange,
         }),
-        [status, mapSize, zoomedMapRange, gameMap, items, joinGame, leaveGame, buildItem, zoomMapRange]
+        [gameStatus, mapSize, zoomedMapRange, gameMap, items, joinGame, leaveGame, buildItem, zoomMapRange]
       )}
     >
       {children}

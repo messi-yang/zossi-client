@@ -14,8 +14,18 @@ import useDomRect from '@/ui/hooks/useDomRect';
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
   const router = useRouter();
-  const { mapSize, zoomedMapRange, gameMap, items, status, joinGame, leaveGame, buildItem, destroyItem, zoomMapRange } =
-    useContext(GameContext);
+  const {
+    mapSize,
+    zoomedMapRange,
+    gameMap,
+    items,
+    gameStatus,
+    joinGame,
+    leaveGame,
+    buildItem,
+    destroyItem,
+    zoomMapRange,
+  } = useContext(GameContext);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
@@ -32,27 +42,32 @@ const Room: NextPage = function Room() {
 
   const gameMapWrapperElemRef = useRef<HTMLElement>(null);
   const gameMapWrapperElemRect = useDomRect(gameMapWrapperElemRef);
-  const desiredMapSize = useMemo(
-    () =>
-      MapSizeVo.newWithResolutionAndMapUnitSize(
-        { width: gameMapWrapperElemRect.width, height: gameMapWrapperElemRect.height },
-        30
-      ),
-    [gameMapWrapperElemRect]
-  );
+  const desiredMapSize = useMemo(() => {
+    if (!gameMapWrapperElemRect) {
+      return null;
+    }
+
+    return MapSizeVo.newWithResolutionAndMapUnitSize(
+      { width: gameMapWrapperElemRect.width, height: gameMapWrapperElemRect.height },
+      30
+    );
+  }, [gameMapWrapperElemRect]);
   useEffect(
     function handleDesiredMapSizeUpdateEffect() {
-      if (status !== 'OPEN') {
+      if (gameStatus === 'OPEN') {
+        return;
+      }
+      if (!desiredMapSize) {
         return;
       }
       const newMapRange = MapRangeVo.newWithLocationAndMapSize(
-        zoomedMapRange ? zoomedMapRange.getFrom() : LocationVo.new(0, 0),
+        targetMapRange ? targetMapRange.getFrom() : LocationVo.new(0, 0),
         desiredMapSize
       );
       setTargetMapRange(newMapRange);
       zoomMapRange(newMapRange);
     },
-    [zoomedMapRange === null, desiredMapSize, status]
+    [targetMapRange, desiredMapSize, gameStatus]
   );
 
   const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';

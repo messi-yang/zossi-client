@@ -25,9 +25,13 @@ function createElementRef(): MutableRefObject<HTMLDivElement | null> {
 }
 
 describe('useDomRect', () => {
-  it('Should trigger callback with "hovered = true" when referrenced element is hovered', () => {
+  it('Should return document rect with desired values', () => {
     const elementRef = createElementRef();
     const { result } = renderHook(() => useDomRect(elementRef));
+    if (!result.current) {
+      expect(true).toBeFalsy();
+      return;
+    }
 
     expect(result.current.width).toEqual(100);
     expect(result.current.height).toEqual(100);
