@@ -81,15 +81,21 @@ const Room: NextPage = function Room() {
     [deviceSize]
   );
 
-  useEffect(
-    function joinGameOnInitializationEffect() {
-      joinGame();
+  useEffect(function joinGameOnInitializationEffect() {
+    joinGame();
+  }, []);
 
-      return () => {
+  useEffect(
+    function beforeHistoryChangeEffect() {
+      const handleBeforeHistoryChange = () => {
         leaveGame();
       };
+      router.events.on('beforeHistoryChange', handleBeforeHistoryChange);
+      return () => {
+        router.events.off('beforeHistoryChange', handleBeforeHistoryChange);
+      };
     },
-    [leaveGame]
+    [gameStatus, leaveGame]
   );
 
   const handleLogoClick = () => {

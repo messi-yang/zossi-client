@@ -75,7 +75,7 @@ export function Provider({ children }: Props) {
         setGameStatus('OPEN');
       },
       onClose: () => {
-        setGameStatus('CLOSED');
+        setGameStatus('WAITING');
         setGameSocketConn(null);
         setMapSize(initialContextValue.mapSize);
         setItems(null);
