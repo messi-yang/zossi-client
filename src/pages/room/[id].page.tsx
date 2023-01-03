@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { useContext, useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
@@ -53,20 +53,17 @@ const Room: NextPage = function Room() {
   }, [gameMapWrapperElemRect]);
   useEffect(
     function handleDesiredMapSizeUpdateEffect() {
-      if (gameStatus === 'OPEN') {
-        return;
-      }
       if (!desiredMapSize) {
         return;
       }
       const newMapRange = MapRangeVo.newWithLocationAndMapSize(
-        targetMapRange ? targetMapRange.getFrom() : LocationVo.new(0, 0),
+        observedMapRange ? observedMapRange.getFrom() : LocationVo.new(0, 0),
         desiredMapSize
       );
       setTargetMapRange(newMapRange);
       observeMapRange(newMapRange);
     },
-    [targetMapRange, desiredMapSize, gameStatus]
+    [observedMapRange === null, desiredMapSize, observeMapRange]
   );
 
   const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
@@ -81,13 +78,17 @@ const Room: NextPage = function Room() {
     [deviceSize]
   );
 
-  useEffect(function joinGameOnInitializationEffect() {
+  useLayoutEffect(function joinGameOnInitializationEffect() {
     joinGame();
   }, []);
 
   useEffect(
     function beforeHistoryChangeEffect() {
-      const handleBeforeHistoryChange = () => {
+      const handleBeforeHistoryChange = (route: string) => {
+        const isRefreshingPage = route === global.history.state.as;
+        if (isRefreshingPage) {
+          return;
+        }
         leaveGame();
       };
       router.events.on('beforeHistoryChange', handleBeforeHistoryChange);
@@ -95,7 +96,7 @@ const Room: NextPage = function Room() {
         router.events.off('beforeHistoryChange', handleBeforeHistoryChange);
       };
     },
-    [leaveGame]
+    [gameStatus, leaveGame, router]
   );
 
   const handleLogoClick = () => {
