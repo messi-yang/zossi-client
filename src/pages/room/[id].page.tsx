@@ -2,6 +2,7 @@ import { useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
+import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
 import GameContext from '@/ui/contexts/GameContext';
 import { MapRangeVo, LocationVo, MapSizeVo, OffsetVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
@@ -14,18 +15,8 @@ import useDomRect from '@/ui/hooks/useDomRect';
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
   const router = useRouter();
-  const {
-    mapSize,
-    observedMapRange,
-    gameMap,
-    items,
-    gameStatus,
-    joinGame,
-    leaveGame,
-    buildItem,
-    destroyItem,
-    observeMapRange,
-  } = useContext(GameContext);
+  const { mapSize, observedMapRange, gameMap, items, joinGame, leaveGame, buildItem, destroyItem, observeMapRange } =
+    useContext(GameContext);
   const [mapUnitSize] = useState(50);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
@@ -83,22 +74,10 @@ const Room: NextPage = function Room() {
     joinGame();
   }, []);
 
-  useEffect(
-    function beforeHistoryChangeEffect() {
-      const handleBeforeHistoryChange = (route: string) => {
-        const isRefreshingPage = route === global.history.state.as;
-        if (isRefreshingPage) {
-          return;
-        }
-        leaveGame();
-      };
-      router.events.on('beforeHistoryChange', handleBeforeHistoryChange);
-      return () => {
-        router.events.off('beforeHistoryChange', handleBeforeHistoryChange);
-      };
-    },
-    [gameStatus, leaveGame, router]
-  );
+  const handleRouterLeave = useCallback(() => {
+    leaveGame();
+  }, [leaveGame]);
+  useOnHistoryChange(handleRouterLeave);
 
   const handleLogoClick = () => {
     router.push('/');
