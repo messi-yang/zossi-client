@@ -58,18 +58,6 @@ const Room: NextPage = function Room() {
     [observedMapRange === null, desiredMapSize, observeMapRange]
   );
 
-  const deviceSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
-  useEffect(
-    function onDeviceSizeChangeEffect() {
-      if (deviceSize === 'large') {
-        setIsMiniMapVisible(true);
-        return;
-      }
-      setIsMiniMapVisible(false);
-    },
-    [deviceSize]
-  );
-
   useEffect(function joinGameOnInitializationEffect() {
     joinGame();
   }, []);
@@ -123,9 +111,11 @@ const Room: NextPage = function Room() {
     [isDestroyingItem, isBuildindItem, selectedItem, buildItem, destroyItem]
   );
 
+  const screenSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
+
   return (
     <>
-      {deviceSize === 'large' && (
+      {screenSize === 'large' && (
         <main className="flex" style={{ width: windowSize.width, height: windowSize.height }}>
           <SelectItemModal
             opened={isSelectItemModalVisible}
@@ -171,7 +161,7 @@ const Room: NextPage = function Room() {
           </section>
         </main>
       )}
-      {deviceSize === 'small' && (
+      {screenSize === 'small' && (
         <main className="flex flex-col" style={{ width: windowSize.width, height: windowSize.height }}>
           <SelectItemModal
             opened={isSelectItemModalVisible}
