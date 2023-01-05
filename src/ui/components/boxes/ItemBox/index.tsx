@@ -1,6 +1,5 @@
 import classnames from 'classnames';
 import { ItemAgg } from '@/models/aggregates';
-import Text from '@/ui/components/text/Text';
 import dataTestids from './dataTestids';
 
 type Props = {
@@ -21,7 +20,6 @@ function ItemBox({ item, active, onClick }: Props) {
         'justify-center',
         'border-4',
         active ? 'border-[#01D6C9]' : 'border-transparent',
-        'p-1',
         'box-border',
         'cursor-pointer',
         'bg-black'
@@ -31,7 +29,7 @@ function ItemBox({ item, active, onClick }: Props) {
       tabIndex={0}
       role="button"
     >
-      <Text copy={item.getName()} size={14} color="white" />
+      <img className="w-full h-full" src={item.getAssetSrc()} alt={item.getName()} />
     </div>
   );
 }

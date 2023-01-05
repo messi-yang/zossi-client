@@ -24,7 +24,9 @@ const Template: ComponentStory<typeof SelectItemModal> = function Template(args)
   return <SelectItemModal {...args} onSelect={handleItemSelect} />;
 };
 
-const items = range(10).map((num) => ItemAgg.newItemAgg({ id: `sample-${num + 1}`, name: `Sample ${num + 1}` }));
+const items = range(10).map((num) =>
+  ItemAgg.newItemAgg({ id: `sample-${num + 1}`, name: `Sample ${num + 1}`, assetSrc: '' })
+);
 
 export const Primary = Template.bind({});
 Primary.args = {

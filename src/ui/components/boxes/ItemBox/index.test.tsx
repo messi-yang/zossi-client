@@ -3,7 +3,7 @@ import { ItemAgg } from '@/models/aggregates';
 import ItemBox, { dataTestids } from '.';
 
 function renderItemBox(): RenderResult {
-  return render(<ItemBox item={ItemAgg.newItemAgg({ id: '123', name: 'stone' })} />);
+  return render(<ItemBox item={ItemAgg.newItemAgg({ id: '123', name: 'stone', assetSrc: '' })} />);
 }
 
 describe('ItemBox', () => {

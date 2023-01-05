@@ -4,7 +4,14 @@ import { MapUnitVo, GameMapVo, OffsetVo } from '@/models/valueObjects';
 
 function renderGameMap(gameMap: GameMapVo): RenderResult {
   return render(
-    <GameMap mapRange={null} mapRangeOffset={OffsetVo.new(0, 0)} gameMap={gameMap} onMapUnitClick={() => {}} />
+    <GameMap
+      mapRange={null}
+      mapRangeOffset={OffsetVo.new(0, 0)}
+      gameMap={gameMap}
+      mapUnitSize={30}
+      items={[]}
+      onMapUnitClick={() => {}}
+    />
   );
 }
 

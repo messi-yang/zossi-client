@@ -9,7 +9,7 @@ export default class MapUnitVo {
     return new MapUnitVo(itemId);
   }
 
-  public hasItemId(): boolean {
-    return !!this.itemId;
+  public getItemId(): string | null {
+    return this.itemId;
   }
 }

@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce';
 import { MapUnitVo, GameMapVo, MapSizeVo } from '@/models/valueObjects';
 
 import dataTestids from './dataTestids';
+import { ItemAgg } from '@/models/aggregates';
 
 const color = {
   mapUnitColor: 'white',
@@ -25,6 +26,10 @@ type Resolution = {
   height: number;
 };
 
+type ItemMap = {
+  [id: string]: ItemAgg;
+};
+
 function generateCanvasElemSize(gameMap: GameMapVo, mapUnitSize: number): ElemSize {
   const mapSize = gameMap.getMapSize();
 
@@ -34,34 +39,39 @@ function generateCanvasElemSize(gameMap: GameMapVo, mapUnitSize: number): ElemSi
   };
 }
 
-function generateCanvasResolution(gameMap: GameMapVo, mapUnitSize: number, canvasUnitSize: number): Resolution {
+function generateCanvasResolution(gameMap: GameMapVo, mapUnitSize: number): Resolution {
   const elemSize = generateCanvasElemSize(gameMap, mapUnitSize);
 
   return {
-    width: elemSize.width * canvasUnitSize,
-    height: elemSize.height * canvasUnitSize,
+    width: elemSize.width,
+    height: elemSize.height,
   };
 }
 
 type Props = {
   gameMap: GameMapVo;
   mapUnitSize: number;
+  items: ItemAgg[];
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
-function GameMapCanvas({ gameMap, mapUnitSize, onClick }: Props) {
+function GameMapCanvas({ gameMap, mapUnitSize, items, onClick }: Props) {
   const [gameMapCanvasElem, setGameMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [hoverMaskCanvasElem, HoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
   const [borderWidth] = useState(1);
-  const [canvasUnitSize] = useState(1);
   const [mapSize, setMapSize] = useState(gameMap.getMapSize());
   const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
-  const canvasResolution = useMemo(
-    () => generateCanvasResolution(gameMap, mapUnitSize, canvasUnitSize),
-    [gameMap, mapUnitSize, canvasUnitSize]
-  );
+  const itemMap: ItemMap = useMemo(() => {
+    const res: ItemMap = {};
+    items.forEach((item) => {
+      res[item.getId()] = item;
+    });
+    return res;
+  }, [items]);
+
+  const canvasResolution = useMemo(() => generateCanvasResolution(gameMap, mapUnitSize), [gameMap, mapUnitSize]);
   const canvasElemSize = useMemo(() => generateCanvasElemSize(gameMap, mapUnitSize), [gameMap, mapUnitSize]);
 
   useEffect(() => {
@@ -79,26 +89,26 @@ function GameMapCanvas({ gameMap, mapUnitSize, onClick }: Props) {
   );
 
   const drawGrid = useCallback(
-    (ctx: CanvasRenderingContext2D, newMapSize: MapSizeVo, newMapUnitSize: number, newCanvasUnitSize: number) => {
+    (ctx: CanvasRenderingContext2D, newMapSize: MapSizeVo, newMapUnitSize: number) => {
       ctx.strokeStyle = color.borderColor; // eslint-disable-line no-param-reassign
-      ctx.lineWidth = canvasUnitSize; // eslint-disable-line no-param-reassign
+      ctx.lineWidth = 1; // eslint-disable-line no-param-reassign
       ctx.beginPath();
 
       newMapSize.iterateColumn((colIdx: number) => {
-        ctx.moveTo(colIdx * newMapUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, 0);
-        ctx.lineTo(colIdx * newMapUnitSize * newCanvasUnitSize + newCanvasUnitSize / 2, canvasResolution.height);
+        ctx.moveTo(colIdx * newMapUnitSize + 0.5, 0);
+        ctx.lineTo(colIdx * newMapUnitSize + 0.5, canvasResolution.height);
       });
 
-      ctx.moveTo(canvasResolution.width - newCanvasUnitSize / 2, 0);
-      ctx.lineTo(canvasResolution.width - newCanvasUnitSize / 2, canvasResolution.height);
+      ctx.moveTo(canvasResolution.width - 0.5, 0);
+      ctx.lineTo(canvasResolution.width - 0.5, canvasResolution.height);
 
       newMapSize.iterateRow((rowIdx: number) => {
-        ctx.moveTo(0, rowIdx * newMapUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
-        ctx.lineTo(canvasResolution.width, rowIdx * newMapUnitSize * newCanvasUnitSize + (1 * newCanvasUnitSize) / 2);
+        ctx.moveTo(0, rowIdx * newMapUnitSize + 0.5);
+        ctx.lineTo(canvasResolution.width, rowIdx * newMapUnitSize + 0.5);
       });
 
-      ctx.moveTo(0, canvasResolution.height - (1 * newCanvasUnitSize) / 2);
-      ctx.lineTo(canvasResolution.width, canvasResolution.height - (1 * newCanvasUnitSize) / 2);
+      ctx.moveTo(0, canvasResolution.height - 0.5);
+      ctx.lineTo(canvasResolution.width, canvasResolution.height - 0.5);
 
       ctx.stroke();
     },
@@ -106,50 +116,46 @@ function GameMapCanvas({ gameMap, mapUnitSize, onClick }: Props) {
   );
 
   const drawMapUnits = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      newGameMap: GameMapVo,
-      newMapUnitSize: number,
-      newCanvasUnitSize: number,
-      newBorderWidth: number
-    ) => {
+    (ctx: CanvasRenderingContext2D, newGameMap: GameMapVo, newMapUnitSize: number, newBorderWidth: number) => {
       ctx.fillStyle = color.mapUnitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
       newGameMap.iterateMapUnit((colIdx: number, rowIdx: number, mapUnit: MapUnitVo) => {
-        if (mapUnit.hasItemId()) {
-          ctx.fillStyle = color.mapUnitColor; // eslint-disable-line no-param-reassign
-          const leftTopX = (colIdx * newMapUnitSize + newBorderWidth) * newCanvasUnitSize;
-          const leftTopY = (rowIdx * newMapUnitSize + newBorderWidth) * newCanvasUnitSize;
-          ctx.moveTo(leftTopX, leftTopY);
-          ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
-          ctx.lineTo(
-            leftTopX + (newMapUnitSize - newBorderWidth) * newCanvasUnitSize,
-            leftTopY + (newMapUnitSize - newBorderWidth) * newCanvasUnitSize
+        const itemId = mapUnit.getItemId();
+        const item = itemId ? itemMap[itemId] : null;
+        const itemAssetImageElem = item?.getAssetImageElem();
+        if (itemAssetImageElem) {
+          const leftTopX = colIdx * newMapUnitSize + newBorderWidth;
+          const leftTopY = rowIdx * newMapUnitSize + newBorderWidth;
+
+          ctx.drawImage(
+            itemAssetImageElem,
+            leftTopX,
+            leftTopY,
+            newMapUnitSize - newBorderWidth,
+            newMapUnitSize - newBorderWidth
           );
-          ctx.lineTo(leftTopX, leftTopY + (newMapUnitSize - 1) * newCanvasUnitSize);
-          ctx.closePath();
         }
       });
       ctx.fill();
     },
-    []
+    [items]
   );
 
   const draw = useCallback(
-    (newGameMap: GameMapVo, newMapUnitSize: number, newMapSize: MapSizeVo, newCanvasUnitSize: number) => {
+    (newGameMap: GameMapVo, newMapUnitSize: number, newMapSize: MapSizeVo) => {
       const ctx = gameMapCanvasElem?.getContext('2d');
       if (!ctx) {
         return;
       }
 
       clean(ctx);
-      drawGrid(ctx, newMapSize, newMapUnitSize, newCanvasUnitSize);
-      drawMapUnits(ctx, newGameMap, newMapUnitSize, newCanvasUnitSize, borderWidth);
+      drawGrid(ctx, newMapSize, newMapUnitSize);
+      drawMapUnits(ctx, newGameMap, newMapUnitSize, borderWidth);
     },
-    [gameMapCanvasElem, gameMap, mapUnitSize, mapSize, canvasUnitSize, borderWidth]
+    [drawMapUnits, gameMapCanvasElem, gameMap, mapUnitSize, mapSize, borderWidth]
   );
 
-  draw(gameMap, mapUnitSize, mapSize, canvasUnitSize);
+  draw(gameMap, mapUnitSize, mapSize);
 
   const onGameMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
     setGameMapCanvasElem(elem);
@@ -175,20 +181,16 @@ function GameMapCanvas({ gameMap, mapUnitSize, onClick }: Props) {
     ctx: CanvasRenderingContext2D,
     newHoveredIndexes: Indexes,
     newMapUnitSize: number,
-    newBorderWidth: number,
-    newCanvasUnitSize: number
+    newBorderWidth: number
   ) => {
     ctx.fillStyle = color.hoverColor; // eslint-disable-line no-param-reassign
     ctx.beginPath();
-    const leftTopX = (newHoveredIndexes[0] * newMapUnitSize + newBorderWidth) * newCanvasUnitSize;
-    const leftTopY = (newHoveredIndexes[1] * newMapUnitSize + newBorderWidth) * newCanvasUnitSize;
+    const leftTopX = newHoveredIndexes[0] * newMapUnitSize + newBorderWidth;
+    const leftTopY = newHoveredIndexes[1] * newMapUnitSize + newBorderWidth;
     ctx.moveTo(leftTopX, leftTopY);
-    ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth) * newCanvasUnitSize, leftTopY);
-    ctx.lineTo(
-      leftTopX + (newMapUnitSize - newBorderWidth) * newCanvasUnitSize,
-      leftTopY + (newMapUnitSize - newBorderWidth) * newCanvasUnitSize
-    );
-    ctx.lineTo(leftTopX, leftTopY + (newMapUnitSize - 1) * newCanvasUnitSize);
+    ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth), leftTopY);
+    ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth), leftTopY + (newMapUnitSize - newBorderWidth));
+    ctx.lineTo(leftTopX, leftTopY + (newMapUnitSize - 1));
     ctx.closePath();
     ctx.fill();
   };
@@ -227,7 +229,7 @@ function GameMapCanvas({ gameMap, mapUnitSize, onClick }: Props) {
     }
 
     if (hoveredIndexes) {
-      drawHoverMask(ctx, hoveredIndexes, mapUnitSize, borderWidth, canvasUnitSize);
+      drawHoverMask(ctx, hoveredIndexes, mapUnitSize, borderWidth);
     }
 
     return () => {
@@ -235,7 +237,7 @@ function GameMapCanvas({ gameMap, mapUnitSize, onClick }: Props) {
         clean(ctx);
       }
     };
-  }, [hoverMaskCanvasElem, hoveredIndexes, mapUnitSize, borderWidth, canvasUnitSize]);
+  }, [hoverMaskCanvasElem, hoveredIndexes, mapUnitSize, borderWidth]);
 
   const handleHoverMaskCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;

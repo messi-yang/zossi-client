@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
+import { useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
@@ -26,6 +26,7 @@ const Room: NextPage = function Room() {
     destroyItem,
     observeMapRange,
   } = useContext(GameContext);
+  const [mapUnitSize] = useState(50);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
@@ -48,7 +49,7 @@ const Room: NextPage = function Room() {
 
     return MapSizeVo.newWithResolutionAndMapUnitSize(
       { width: gameMapWrapperElemRect.width, height: gameMapWrapperElemRect.height },
-      30
+      mapUnitSize
     );
   }, [gameMapWrapperElemRect]);
   useEffect(
@@ -78,7 +79,7 @@ const Room: NextPage = function Room() {
     [deviceSize]
   );
 
-  useLayoutEffect(function joinGameOnInitializationEffect() {
+  useEffect(function joinGameOnInitializationEffect() {
     joinGame();
   }, []);
 
@@ -173,6 +174,8 @@ const Room: NextPage = function Room() {
                 mapRange={observedMapRange}
                 mapRangeOffset={observedMapRangeOffset}
                 gameMap={gameMap}
+                mapUnitSize={mapUnitSize}
+                items={items || []}
                 onMapUnitClick={handleMapUnitClick}
               />
             </section>
@@ -205,6 +208,8 @@ const Room: NextPage = function Room() {
                 mapRange={observedMapRange}
                 mapRangeOffset={observedMapRangeOffset}
                 gameMap={gameMap}
+                mapUnitSize={mapUnitSize}
+                items={items || []}
                 onMapUnitClick={handleMapUnitClick}
               />
             </section>

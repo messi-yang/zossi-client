@@ -41,7 +41,7 @@ function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [MapSizeV
 }
 
 function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
-  return [event.payload.items.map(({ id, name }) => ItemAgg.newItemAgg({ id, name }))];
+  return [event.payload.items.map(({ id, name, assetSrc }) => ItemAgg.newItemAgg({ id, name, assetSrc }))];
 }
 
 export default class GameSocketConn {
@@ -76,6 +76,7 @@ export default class GameSocketConn {
         params.onInformationUpdated(mapSize);
       } else if (newMsg.type === EventTypeEnum.ItemsUpdated) {
         const [items] = parseItemsUpdatedEvent(newMsg);
+        await Promise.all(items.map((item) => item.loadAsset()));
         params.onItemsUpdated(items);
       }
     };

@@ -27,15 +27,27 @@ function SelectItemModal({ opened, width, selectedItem, items, onSelect = () => 
         className="relative p-6 pb-10 w-full h-full flex flex-col items-center border-4 border-solid border-white bg-[#121212]"
       >
         <Text color="white" copy="Select Item" size={18} />
-        <div className="mt-9 w-full flex justify-center">
+        <div className="mt-2 w-full flex flex-col items-center">
           <div className="w-[150px] h-[150px]">
-            <ItemBox item={selectedItem || ItemAgg.newItemAgg({ id: '', name: 'Empty' })} />
+            <ItemBox
+              item={
+                selectedItem ||
+                ItemAgg.newItemAgg({
+                  id: '',
+                  name: 'Empty',
+                  assetSrc: '/placeholder-item.png',
+                })
+              }
+            />
+          </div>
+          <div className="mt-2">
+            <Text color="white" copy={selectedItem?.getName() || 'Nothing selected'} />
           </div>
         </div>
         <section className="mt-6 w-full overflow-auto">
           <section className="flex">
             {items.map((item) => (
-              <div key={item.getId()} className={classnames('w-[70px]', 'h-[70px]', 'shrink-0', 'mr-2')}>
+              <div key={item.getId()} className={classnames('shrink-0', 'mr-2', 'flex', 'w-[70px]', 'h-[70px]')}>
                 <ItemBox
                   item={item}
                   active={selectedItem?.getId() === item.getId()}

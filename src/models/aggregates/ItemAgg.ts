@@ -3,12 +3,17 @@ export default class ItemAgg {
 
   private name: string;
 
-  constructor(params: { id: string; name: string }) {
+  private assetSrc: string;
+
+  private imageElem: HTMLImageElement | null = null;
+
+  constructor(params: { id: string; name: string; assetSrc: string }) {
     this.id = params.id;
     this.name = params.name;
+    this.assetSrc = params.assetSrc;
   }
 
-  static newItemAgg(params: { id: string; name: string }) {
+  static newItemAgg(params: { id: string; name: string; assetSrc: string }) {
     return new ItemAgg(params);
   }
 
@@ -18,5 +23,22 @@ export default class ItemAgg {
 
   public getName(): string {
     return this.name;
+  }
+
+  public getAssetSrc(): string {
+    return this.assetSrc;
+  }
+
+  public getAssetImageElem(): HTMLImageElement | null {
+    return this.imageElem;
+  }
+
+  public async loadAsset() {
+    const image = new Image();
+    image.onload = () => {
+      this.imageElem = image;
+    };
+
+    image.src = this.assetSrc;
   }
 }

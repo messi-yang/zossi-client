@@ -4,7 +4,13 @@ import { ItemAgg } from '@/models/aggregates';
 import SelectItemModal, { dataTestids } from '.';
 
 function renderSelectItemModal(): RenderResult {
-  const items = range(10).map((num) => ItemAgg.newItemAgg({ id: `sample-${num + 1}`, name: `Sample ${num + 1}` }));
+  const items = range(10).map((num) =>
+    ItemAgg.newItemAgg({
+      id: `sample-${num + 1}`,
+      name: `Sample ${num + 1}`,
+      assetSrc: '',
+    })
+  );
   return render(<SelectItemModal opened width={100} selectedItem={null} items={items} />);
 }
 

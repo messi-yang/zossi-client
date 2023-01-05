@@ -4,7 +4,12 @@ import { MapSizeVo, GameMapVo } from '@/models/valueObjects';
 
 function renderGameMapCanvas(): RenderResult {
   return render(
-    <GameMapCanvas gameMap={GameMapVo.newWithMapSize(MapSizeVo.new(1, 1))} mapUnitSize={20} onClick={() => {}} />
+    <GameMapCanvas
+      gameMap={GameMapVo.newWithMapSize(MapSizeVo.new(1, 1))}
+      mapUnitSize={20}
+      onClick={() => {}}
+      items={[]}
+    />
   );
 }
 

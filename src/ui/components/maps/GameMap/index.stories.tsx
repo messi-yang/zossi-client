@@ -43,4 +43,6 @@ Primary.args = {
   mapRange: mapRangeForPrimary,
   mapRangeOffset: OffsetVo.new(0, 0),
   gameMap: GameMapVo.newWithMapSize(mapRangeForPrimary.getMapSize()),
+  mapUnitSize: 30,
+  items: [],
 };
