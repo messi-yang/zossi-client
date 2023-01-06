@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
 import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
 import GameContext from '@/ui/contexts/GameContext';
-import { MapRangeVo, LocationVo, MapSizeVo, OffsetVo } from '@/models/valueObjects';
+import { MapRangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import GameMap from '@/ui/components/maps/GameMap';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
@@ -39,7 +39,7 @@ const Room: NextPage = function Room() {
   const [targetMapRange, setTargetMapRange] = useState<MapRangeVo | null>(observedMapRange);
   const observedMapRangeOffset = useMemo(() => {
     if (!observedMapRange || !targetMapRange) {
-      return OffsetVo.new(0, 0);
+      return null;
     }
     return observedMapRange.calculateOffsetWithMapRange(targetMapRange);
   }, [observedMapRange, targetMapRange]);
@@ -181,7 +181,7 @@ const Room: NextPage = function Room() {
                 mapRangeOffset={observedMapRangeOffset}
                 gameMap={gameMap}
                 mapUnitSize={mapUnitSize}
-                items={items || []}
+                items={items}
                 onMapUnitClick={handleMapUnitClick}
               />
             </section>
@@ -209,7 +209,7 @@ const Room: NextPage = function Room() {
             opened={isSelectItemModalVisible}
             width={windowSize.width}
             selectedItem={selectedItem}
-            items={items || []}
+            items={items}
             onSelect={handleItemSelect}
             onDone={handleSelectItemDone}
           />

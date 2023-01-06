@@ -6,10 +6,10 @@ import { ItemAgg } from '@/models/aggregates';
 
 type Props = {
   mapRange: MapRangeVo | null;
-  mapRangeOffset: OffsetVo;
+  mapRangeOffset: OffsetVo | null;
   gameMap: GameMapVo | null;
   mapUnitSize: number;
-  items: ItemAgg[];
+  items: ItemAgg[] | null;
   onMapUnitClick: (location: LocationVo) => any;
 };
 
@@ -36,12 +36,12 @@ function GameMap({ mapRange, mapRangeOffset, gameMap, mapUnitSize, items, onMapU
       <section
         className="relative flex"
         style={{
-          left: mapRangeOffset.getX() * mapUnitSize,
-          top: mapRangeOffset.getY() * mapUnitSize,
+          left: mapRangeOffset ? mapRangeOffset.getX() * mapUnitSize : 0,
+          top: mapRangeOffset ? mapRangeOffset.getY() * mapUnitSize : 0,
         }}
       >
         {gameMap && (
-          <GameMapCanvas gameMap={gameMap} mapUnitSize={mapUnitSize} items={items} onClick={handleMapUnitClick} />
+          <GameMapCanvas gameMap={gameMap} mapUnitSize={mapUnitSize} items={items || []} onClick={handleMapUnitClick} />
         )}
       </section>
     </section>

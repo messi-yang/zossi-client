@@ -10,7 +10,7 @@ type Props = {
   opened: boolean;
   width: number;
   selectedItem: ItemAgg | null;
-  items: ItemAgg[];
+  items: ItemAgg[] | null;
   onSelect?: (item: ItemAgg) => void;
   onDone?: () => void;
 };
@@ -46,7 +46,7 @@ function SelectItemModal({ opened, width, selectedItem, items, onSelect = () => 
         </div>
         <section className="mt-6 w-full overflow-auto">
           <section className="flex">
-            {items.map((item) => (
+            {(items || []).map((item) => (
               <div key={item.getId()} className={classnames('shrink-0', 'mr-2', 'flex', 'w-[70px]', 'h-[70px]')}>
                 <ItemBox
                   item={item}
