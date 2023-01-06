@@ -11,13 +11,25 @@ import GameMiniMap from '@/ui/components/maps/GameMiniMap';
 import SelectItemModal from '@/ui/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
 import useDomRect from '@/ui/hooks/useDomRect';
+import ConfirmModal from '@/ui/components/modals/ConfirmModal';
 
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
   const router = useRouter();
-  const { mapSize, observedMapRange, gameMap, items, joinGame, leaveGame, buildItem, destroyItem, observeMapRange } =
-    useContext(GameContext);
+  const {
+    mapSize,
+    observedMapRange,
+    gameMap,
+    items,
+    gameStatus,
+    joinGame,
+    leaveGame,
+    buildItem,
+    destroyItem,
+    observeMapRange,
+  } = useContext(GameContext);
   const [mapUnitSize] = useState(50);
+  const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
@@ -62,6 +74,13 @@ const Room: NextPage = function Room() {
     joinGame();
   }, []);
 
+  useEffect(
+    function handleItemsRead() {
+      setSelectedItem(items?.[0] || null);
+    },
+    [items]
+  );
+
   const handleRouterLeave = useCallback(() => {
     leaveGame();
   }, [leaveGame]);
@@ -96,6 +115,19 @@ const Room: NextPage = function Room() {
     setSelectedItem(item);
   };
 
+  useEffect(
+    function onDisconnectEffect() {
+      if (gameStatus === 'DISCONNECTED') {
+        setIsReconnectModalVisible(true);
+      }
+    },
+    [gameStatus]
+  );
+
+  const handleRecconectModalConfirmClick = useCallback(() => {
+    window.location.reload();
+  }, [joinGame]);
+
   const handleMapUnitClick = useCallback(
     (location: LocationVo) => {
       if (isDestroyingItem) {
@@ -117,6 +149,11 @@ const Room: NextPage = function Room() {
     <>
       {screenSize === 'large' && (
         <main className="flex" style={{ width: windowSize.width, height: windowSize.height }}>
+          <ConfirmModal
+            opened={isReconnectModalVisible}
+            buttonCopy="Reconnect"
+            onComfirm={handleRecconectModalConfirmClick}
+          />
           <SelectItemModal
             opened={isSelectItemModalVisible}
             width={560}
@@ -163,6 +200,11 @@ const Room: NextPage = function Room() {
       )}
       {screenSize === 'small' && (
         <main className="flex flex-col" style={{ width: windowSize.width, height: windowSize.height }}>
+          <ConfirmModal
+            opened={isReconnectModalVisible}
+            buttonCopy="Reconnect"
+            onComfirm={handleRecconectModalConfirmClick}
+          />
           <SelectItemModal
             opened={isSelectItemModalVisible}
             width={windowSize.width}

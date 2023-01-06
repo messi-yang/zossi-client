@@ -8,7 +8,7 @@ function renderSelectItemModal(): RenderResult {
     ItemAgg.newItemAgg({
       id: `sample-${num + 1}`,
       name: `Sample ${num + 1}`,
-      assetSrc: '',
+      assetSrc: 'placeholder-item.png',
     })
   );
   return render(<SelectItemModal opened width={100} selectedItem={null} items={items} />);

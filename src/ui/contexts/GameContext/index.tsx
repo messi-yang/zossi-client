@@ -4,7 +4,7 @@ import { GameSocketConn } from '@/apis/socketConnections';
 import { MapRangeVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
-type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED';
+type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
 type ContextValue = {
   gameStatus: GameStatus;
@@ -21,7 +21,7 @@ type ContextValue = {
 
 function createInitialContextValue(): ContextValue {
   return {
-    gameStatus: 'CLOSED',
+    gameStatus: 'DISCONNECTED',
     mapSize: null,
     observedMapRange: null,
     gameMap: null,
@@ -56,6 +56,13 @@ export function Provider({ children }: Props) {
       return;
     }
 
+    const reset = useCallback(() => {
+      setMapSize(initialContextValue.mapSize);
+      setItems(initialContextValue.items);
+      setObservedMapRange(initialContextValue.observedMapRange);
+      setGameMap(initialContextValue.gameMap);
+    }, []);
+
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
       onMapRangeObserved: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
         setObservedMapRange(newMapRange);
@@ -74,14 +81,15 @@ export function Provider({ children }: Props) {
       onOpen: () => {
         setGameStatus('OPEN');
       },
-      onClose: () => {
-        setGameStatus('WAITING');
-        setGameSocketConn(null);
-        setMapSize(initialContextValue.mapSize);
-        setItems(null);
-
-        setObservedMapRange(null);
-        setGameMap(null);
+      onClose: (disconnectedByClient: boolean) => {
+        if (disconnectedByClient) {
+          setGameStatus('WAITING');
+          setGameSocketConn(null);
+          reset();
+        } else {
+          setGameStatus('DISCONNECTED');
+          setGameSocketConn(null);
+        }
       },
     });
     setGameStatus('CONNECTING');
@@ -89,7 +97,7 @@ export function Provider({ children }: Props) {
   }, [gameSocketConn]);
 
   const leaveGame = useCallback(() => {
-    setGameStatus('CLOSING');
+    setGameStatus('DISCONNECTING');
     gameSocketConn?.disconnect();
   }, [gameSocketConn]);
 

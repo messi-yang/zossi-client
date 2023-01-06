@@ -1,15 +1,14 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { ItemAgg } from '@/models/aggregates';
-import ItemBox, { dataTestids } from '.';
+import ConfirmModal, { dataTestids } from '.';
 
-function renderItemBox(): RenderResult {
-  return render(<ItemBox item={ItemAgg.newItemAgg({ id: '123', name: 'stone', assetSrc: 'placeholder-item.png' })} />);
+function renderConfirmModal(): RenderResult {
+  return render(<ConfirmModal opened buttonCopy="Confirm" onComfirm={() => {}} />);
 }
 
-describe('ItemBox', () => {
+describe('ConfirmModal', () => {
   it('Should render component successfully.', () => {
     try {
-      renderItemBox();
+      renderConfirmModal();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

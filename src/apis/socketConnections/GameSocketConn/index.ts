@@ -47,12 +47,14 @@ function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
 export default class GameSocketConn {
   private socket: WebSocket;
 
+  private disconnectedByClient: boolean = false;
+
   constructor(params: {
     onMapRangeObserved: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
     onObservedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
-    onClose: () => void;
+    onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
   }) {
     const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
@@ -82,7 +84,7 @@ export default class GameSocketConn {
     };
 
     socket.onclose = () => {
-      params.onClose();
+      params.onClose(this.disconnectedByClient);
     };
 
     socket.onopen = () => {
@@ -97,13 +99,14 @@ export default class GameSocketConn {
     onObservedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
-    onClose: () => void;
+    onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
   }): GameSocketConn {
     return new GameSocketConn(params);
   }
 
   public disconnect() {
+    this.disconnectedByClient = true;
     this.socket.close();
   }
 
