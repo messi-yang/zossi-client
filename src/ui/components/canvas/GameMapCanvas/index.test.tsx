@@ -9,6 +9,7 @@ function renderGameMapCanvas(): RenderResult {
       mapUnitSize={20}
       onClick={() => {}}
       items={[]}
+      selectedItemId={null}
     />
   );
 }

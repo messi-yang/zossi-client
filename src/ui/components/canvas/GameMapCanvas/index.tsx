@@ -1,5 +1,4 @@
 import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 'react';
-import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
 import { MapUnitVo, GameMapVo, MapSizeVo } from '@/models/valueObjects';
@@ -9,7 +8,7 @@ import { ItemAgg } from '@/models/aggregates';
 
 const color = {
   mapUnitColor: 'white',
-  hoverColor: 'rgba(255, 255, 255, 0.2)',
+  destroyWarningColor: 'rgb(237, 28, 37)',
   bgColor: 'black',
   borderColor: '#141414',
 };
@@ -52,16 +51,16 @@ type Props = {
   gameMap: GameMapVo;
   mapUnitSize: number;
   items: ItemAgg[];
+  selectedItemId: string | null;
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
-function GameMapCanvas({ gameMap, mapUnitSize, items, onClick }: Props) {
+function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }: Props) {
   const [gameMapCanvasElem, setGameMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [hoverMaskCanvasElem, HoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
   const [borderWidth] = useState(1);
   const [mapSize, setMapSize] = useState(gameMap.getMapSize());
-  const [hoveredIndexes, setHoveredIndexes] = useState<Indexes | null>(null);
 
   const itemMap: ItemMap = useMemo(() => {
     const res: ItemMap = {};
@@ -73,6 +72,23 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, onClick }: Props) {
 
   const canvasResolution = useMemo(() => generateCanvasResolution(gameMap, mapUnitSize), [gameMap, mapUnitSize]);
   const canvasElemSize = useMemo(() => generateCanvasElemSize(gameMap, mapUnitSize), [gameMap, mapUnitSize]);
+
+  const getItemAssetImageElemOfMapUnit = useCallback(
+    (mapUnit: MapUnitVo): HTMLImageElement | null => {
+      const itemId = mapUnit.getItemId();
+      const item = itemId ? itemMap[itemId] : null;
+      return item?.getAssetImageElem() || null;
+    },
+    [itemMap]
+  );
+
+  const getItemAssetImageElemOfItem = useCallback(
+    (itemId: string): HTMLImageElement | null => {
+      const item = itemId ? itemMap[itemId] : null;
+      return item?.getAssetImageElem() || null;
+    },
+    [itemMap]
+  );
 
   useEffect(() => {
     const newMapSize = gameMap.getMapSize();
@@ -120,9 +136,7 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, onClick }: Props) {
       ctx.fillStyle = color.mapUnitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
       newGameMap.iterateMapUnit((colIdx: number, rowIdx: number, mapUnit: MapUnitVo) => {
-        const itemId = mapUnit.getItemId();
-        const item = itemId ? itemMap[itemId] : null;
-        const itemAssetImageElem = item?.getAssetImageElem();
+        const itemAssetImageElem = getItemAssetImageElemOfMapUnit(mapUnit);
         if (itemAssetImageElem) {
           const leftTopX = colIdx * newMapUnitSize + newBorderWidth;
           const leftTopY = rowIdx * newMapUnitSize + newBorderWidth;
@@ -138,7 +152,7 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, onClick }: Props) {
       });
       ctx.fill();
     },
-    [items]
+    [getItemAssetImageElemOfMapUnit]
   );
 
   const draw = useCallback(
@@ -177,26 +191,44 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, onClick }: Props) {
     []
   );
 
-  const drawHoverMask = (
-    ctx: CanvasRenderingContext2D,
-    newHoveredIndexes: Indexes,
-    newMapUnitSize: number,
-    newBorderWidth: number
-  ) => {
-    ctx.fillStyle = color.hoverColor; // eslint-disable-line no-param-reassign
-    ctx.beginPath();
-    const leftTopX = newHoveredIndexes[0] * newMapUnitSize + newBorderWidth;
-    const leftTopY = newHoveredIndexes[1] * newMapUnitSize + newBorderWidth;
-    ctx.moveTo(leftTopX, leftTopY);
-    ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth), leftTopY);
-    ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth), leftTopY + (newMapUnitSize - newBorderWidth));
-    ctx.lineTo(leftTopX, leftTopY + (newMapUnitSize - 1));
-    ctx.closePath();
-    ctx.fill();
-  };
+  const drawHoverMask = useCallback(
+    (ctx: CanvasRenderingContext2D, newHoveredIndexes: Indexes, newMapUnitSize: number, newBorderWidth: number) => {
+      const itemAssetImageElem = selectedItemId ? getItemAssetImageElemOfItem(selectedItemId) : null;
+
+      const leftTopY = newHoveredIndexes[1] * newMapUnitSize + newBorderWidth;
+      const leftTopX = newHoveredIndexes[0] * newMapUnitSize + newBorderWidth;
+
+      ctx.globalAlpha = 0.4; // eslint-disable-line no-param-reassign
+      if (itemAssetImageElem) {
+        ctx.drawImage(
+          itemAssetImageElem,
+          leftTopX,
+          leftTopY,
+          newMapUnitSize - newBorderWidth,
+          newMapUnitSize - newBorderWidth
+        );
+      } else {
+        ctx.fillStyle = color.destroyWarningColor; // eslint-disable-line no-param-reassign
+        ctx.beginPath();
+        ctx.moveTo(leftTopX, leftTopY);
+        ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth), leftTopY);
+        ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth), leftTopY + (newMapUnitSize - newBorderWidth));
+        ctx.lineTo(leftTopX, leftTopY + (newMapUnitSize - 1));
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1; // eslint-disable-line no-param-reassign
+    },
+    [selectedItemId, getItemAssetImageElemOfItem]
+  );
 
   const handleHoverMaskCanvasMouseMove: MouseEventHandler<HTMLCanvasElement> = useCallback(
     (event) => {
+      const ctx = hoverMaskCanvasElem?.getContext('2d');
+      if (!ctx) {
+        return;
+      }
+
       const eventTarget = event.target as Element;
       const eventTargetRect = eventTarget.getBoundingClientRect();
       const [posX, posY] = [
@@ -205,11 +237,10 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, onClick }: Props) {
       ];
       const newHoveredIndexes = calculateIndexes(posX, posY, mapUnitSize, mapSize);
 
-      if (!isEqual(newHoveredIndexes, hoveredIndexes)) {
-        setHoveredIndexes(newHoveredIndexes);
-      }
+      clean(ctx);
+      drawHoverMask(ctx, newHoveredIndexes, mapUnitSize, borderWidth);
     },
-    [hoveredIndexes, mapUnitSize, mapSize, borderWidth]
+    [mapUnitSize, mapSize, borderWidth, hoverMaskCanvasElem, clean, drawHoverMask]
   );
 
   const handleHoverMaskCanvasMouseMoveDebouncer = useCallback(
@@ -217,27 +248,15 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, onClick }: Props) {
     [handleHoverMaskCanvasMouseMove]
   );
 
-  const handleHoverMaskCanvasMouseLeave = () => {
-    handleHoverMaskCanvasMouseMoveDebouncer.cancel();
-    setHoveredIndexes(null);
-  };
-
-  useEffect(() => {
+  const handleHoverMaskCanvasMouseLeave = useCallback(() => {
     const ctx = hoverMaskCanvasElem?.getContext('2d');
     if (!ctx) {
-      return () => {};
+      return;
     }
 
-    if (hoveredIndexes) {
-      drawHoverMask(ctx, hoveredIndexes, mapUnitSize, borderWidth);
-    }
-
-    return () => {
-      if (hoveredIndexes) {
-        clean(ctx);
-      }
-    };
-  }, [hoverMaskCanvasElem, hoveredIndexes, mapUnitSize, borderWidth]);
+    handleHoverMaskCanvasMouseMoveDebouncer.cancel();
+    clean(ctx);
+  }, [hoverMaskCanvasElem, clean]);
 
   const handleHoverMaskCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;

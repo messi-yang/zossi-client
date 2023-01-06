@@ -10,10 +10,11 @@ type Props = {
   gameMap: GameMapVo | null;
   mapUnitSize: number;
   items: ItemAgg[] | null;
+  selectedItemId: string | null;
   onMapUnitClick: (location: LocationVo) => any;
 };
 
-function GameMap({ mapRange, mapRangeOffset, gameMap, mapUnitSize, items, onMapUnitClick }: Props) {
+function GameMap({ mapRange, mapRangeOffset, gameMap, mapUnitSize, items, selectedItemId, onMapUnitClick }: Props) {
   const handleMapUnitClick = useCallback(
     (colIdx: number, rowIdx: number) => {
       if (!mapRange) {
@@ -41,7 +42,13 @@ function GameMap({ mapRange, mapRangeOffset, gameMap, mapUnitSize, items, onMapU
         }}
       >
         {gameMap && (
-          <GameMapCanvas gameMap={gameMap} mapUnitSize={mapUnitSize} items={items || []} onClick={handleMapUnitClick} />
+          <GameMapCanvas
+            gameMap={gameMap}
+            mapUnitSize={mapUnitSize}
+            items={items || []}
+            selectedItemId={selectedItemId}
+            onClick={handleMapUnitClick}
+          />
         )}
       </section>
     </section>

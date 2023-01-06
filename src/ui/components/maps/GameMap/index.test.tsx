@@ -10,6 +10,7 @@ function renderGameMap(gameMap: GameMapVo): RenderResult {
       gameMap={gameMap}
       mapUnitSize={30}
       items={[]}
+      selectedItemId={null}
       onMapUnitClick={() => {}}
     />
   );

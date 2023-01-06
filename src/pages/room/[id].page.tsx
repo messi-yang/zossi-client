@@ -182,6 +182,7 @@ const Room: NextPage = function Room() {
                 gameMap={gameMap}
                 mapUnitSize={mapUnitSize}
                 items={items}
+                selectedItemId={selectedItem?.getId() || null}
                 onMapUnitClick={handleMapUnitClick}
               />
             </section>
@@ -221,6 +222,7 @@ const Room: NextPage = function Room() {
                 gameMap={gameMap}
                 mapUnitSize={mapUnitSize}
                 items={items || []}
+                selectedItemId={selectedItem?.getId() || null}
                 onMapUnitClick={handleMapUnitClick}
               />
             </section>

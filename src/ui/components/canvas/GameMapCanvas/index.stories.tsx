@@ -19,4 +19,5 @@ Primary.args = {
   gameMap: GameMapVo.newWithMapSize(MapSizeVo.new(30, 30)),
   mapUnitSize: 15,
   items: [],
+  selectedItemId: null,
 };
