@@ -50,18 +50,18 @@ export function Provider({ children }: Props) {
   const [observedMapRange, setObservedMapRange] = useState<MapRangeVo | null>(initialContextValue.observedMapRange);
   const [gameMap, setGameMap] = useState<GameMapVo | null>(initialContextValue.gameMap);
 
+  const reset = useCallback(() => {
+    setMapSize(initialContextValue.mapSize);
+    setItems(initialContextValue.items);
+    setObservedMapRange(initialContextValue.observedMapRange);
+    setGameMap(initialContextValue.gameMap);
+  }, []);
+
   const joinGame = useCallback(() => {
     const hasUncleanedConnection = !!gameSocketConn;
     if (hasUncleanedConnection) {
       return;
     }
-
-    const reset = useCallback(() => {
-      setMapSize(initialContextValue.mapSize);
-      setItems(initialContextValue.items);
-      setObservedMapRange(initialContextValue.observedMapRange);
-      setGameMap(initialContextValue.gameMap);
-    }, []);
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
       onMapRangeObserved: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
