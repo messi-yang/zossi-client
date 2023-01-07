@@ -10,7 +10,7 @@ import {
 } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { ObserveMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
+import type { PingAction, ObserveMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
 function convertMapUnitDtoMatrixToGameMapVo(gameMap: MapUnitDto[][]): GameMapVo {
@@ -61,6 +61,8 @@ export default class GameSocketConn {
     const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
     const socket = new WebSocket(socketUrl);
 
+    let pingServerInterval: NodeJS.Timer | null = null;
+
     socket.onmessage = async ({ data }: any) => {
       const decompressedBlob = await ungzipBlob(data as Blob);
       const eventJsonString = await decompressedBlob.text();
@@ -84,10 +86,16 @@ export default class GameSocketConn {
     };
 
     socket.onclose = () => {
+      if (pingServerInterval) {
+        clearInterval(pingServerInterval);
+      }
       params.onClose(this.disconnectedByClient);
     };
 
     socket.onopen = () => {
+      pingServerInterval = setInterval(() => {
+        this.ping();
+      }, 3000);
       params.onOpen();
     };
 
@@ -119,6 +127,13 @@ export default class GameSocketConn {
       return;
     }
     this.socket.send(compressedJsonBlob);
+  }
+
+  public ping() {
+    const action: PingAction = {
+      type: ActionTypeEnum.Ping,
+    };
+    this.sendMessage(action);
   }
 
   public buildItem(location: LocationVo, itemId: string) {
