@@ -14,12 +14,12 @@ export default class MapSizeVo {
     return new MapSizeVo(width, height);
   }
 
-  static newWithResolutionAndMapUnitSize(
+  static newWithResolutionAndUnitSize(
     resolution: { width: number; height: number },
-    mapUnitSideLength: number
+    unitSideLength: number
   ): MapSizeVo {
-    const width = Math.floor(resolution.width / mapUnitSideLength) + 1;
-    const height = Math.floor(resolution.height / mapUnitSideLength) + 1;
+    const width = Math.floor(resolution.width / unitSideLength) + 1;
+    const height = Math.floor(resolution.height / unitSideLength) + 1;
     return new MapSizeVo(width, height);
   }
 

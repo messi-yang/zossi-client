@@ -1,48 +1,48 @@
 import cloneDeep from 'lodash/cloneDeep';
 
-import MapUnitVo from './MapUnitVo';
+import UnitVo from './UnitVo';
 import MapSizeVo from './MapSizeVo';
 
 export default class UnitMapVo {
-  private mapUnitMatrix: MapUnitVo[][];
+  private unitMatrix: UnitVo[][];
 
-  constructor(mapUnitMatrix: MapUnitVo[][]) {
-    this.mapUnitMatrix = mapUnitMatrix;
+  constructor(unitMatrix: UnitVo[][]) {
+    this.unitMatrix = unitMatrix;
   }
 
-  static new(mapUnitMatrix: MapUnitVo[][]): UnitMapVo {
-    return new UnitMapVo(mapUnitMatrix);
+  static new(unitMatrix: UnitVo[][]): UnitMapVo {
+    return new UnitMapVo(unitMatrix);
   }
 
   static newWithMapSize(mapSize: MapSizeVo): UnitMapVo {
-    const unitMap = mapSize.map<MapUnitVo>(() => new MapUnitVo(null));
+    const unitMap = mapSize.map<UnitVo>(() => new UnitVo(null));
     return new UnitMapVo(unitMap);
   }
 
-  public getUnit(colIdx: number, rowIdx: number): MapUnitVo {
-    return this.mapUnitMatrix[colIdx][rowIdx];
+  public getUnit(colIdx: number, rowIdx: number): UnitVo {
+    return this.unitMatrix[colIdx][rowIdx];
   }
 
   public getWidth(): number {
-    return this.mapUnitMatrix.length;
+    return this.unitMatrix.length;
   }
 
   public getHeight(): number {
-    return this.mapUnitMatrix[0].length;
+    return this.unitMatrix[0].length;
   }
 
-  public getMapUnitMatrix(): MapUnitVo[][] {
-    return cloneDeep(this.mapUnitMatrix);
+  public getUnitMatrix(): UnitVo[][] {
+    return cloneDeep(this.unitMatrix);
   }
 
   public getMapSize(): MapSizeVo {
     return MapSizeVo.new(this.getWidth(), this.getHeight());
   }
 
-  public iterateMapUnit(cb: (colIdx: number, rowIdx: number, mapUnit: MapUnitVo) => void) {
-    for (let colIdx = 0; colIdx < this.mapUnitMatrix.length; colIdx += 1) {
-      for (let rowIdx = 0; rowIdx < this.mapUnitMatrix[colIdx].length; rowIdx += 1) {
-        cb(colIdx, rowIdx, this.mapUnitMatrix[colIdx][rowIdx]);
+  public iterateUnit(cb: (colIdx: number, rowIdx: number, unit: UnitVo) => void) {
+    for (let colIdx = 0; colIdx < this.unitMatrix.length; colIdx += 1) {
+      for (let rowIdx = 0; rowIdx < this.unitMatrix[colIdx].length; rowIdx += 1) {
+        cb(colIdx, rowIdx, this.unitMatrix[colIdx][rowIdx]);
       }
     }
   }

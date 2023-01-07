@@ -1,6 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
-import type { MapUnitDto } from '@/apis/dtos';
-import { MapRangeVo, MapUnitVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import type { UnitDto } from '@/apis/dtos';
+import { MapRangeVo, UnitVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
   MapRangeObservedEvent,
@@ -13,9 +13,9 @@ import { ActionTypeEnum } from './actionTypes';
 import type { PingAction, ObserveMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
-function convertMapUnitDtoMatrixToUnitMapVo(unitMap: MapUnitDto[][]): UnitMapVo {
-  const mapUnitMatrix = unitMap.map((mapUnitCol) => mapUnitCol.map((mapUnit) => MapUnitVo.new(mapUnit.itemId)));
-  return UnitMapVo.new(mapUnitMatrix);
+function convertUnitDtoMatrixToUnitMapVo(unitMap: UnitDto[][]): UnitMapVo {
+  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => UnitVo.new(unit.itemId)));
+  return UnitMapVo.new(unitMatrix);
 }
 
 function parseMapRangeObservedEvent(event: MapRangeObservedEvent): [MapRangeVo, UnitMapVo] {
@@ -23,7 +23,7 @@ function parseMapRangeObservedEvent(event: MapRangeObservedEvent): [MapRangeVo, 
     LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
     LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
   );
-  const unitMap = convertMapUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
+  const unitMap = convertUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
   return [mapRange, unitMap];
 }
 
@@ -32,7 +32,7 @@ function parseObservedMapRangeUpdatedEvent(event: ObservedMapRangeUpdatedEvent):
     LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
     LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
   );
-  const unitMap = convertMapUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
+  const unitMap = convertUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
   return [mapRange, unitMap];
 }
 

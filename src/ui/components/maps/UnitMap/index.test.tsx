@@ -1,6 +1,6 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import UnitMap, { dataTestids } from '.';
-import { MapUnitVo, UnitMapVo, OffsetVo } from '@/models/valueObjects';
+import { UnitVo, UnitMapVo, OffsetVo } from '@/models/valueObjects';
 
 function renderUnitMap(unitMap: UnitMapVo): RenderResult {
   return render(
@@ -8,10 +8,10 @@ function renderUnitMap(unitMap: UnitMapVo): RenderResult {
       mapRange={null}
       mapRangeOffset={OffsetVo.new(0, 0)}
       unitMap={unitMap}
-      mapUnitSize={30}
+      unitSize={30}
       items={[]}
       selectedItemId={null}
-      onMapUnitClick={() => {}}
+      onUnitClick={() => {}}
     />
   );
 }
@@ -19,8 +19,8 @@ function renderUnitMap(unitMap: UnitMapVo): RenderResult {
 describe('UnitMap', () => {
   it('Should render component successfully.', () => {
     try {
-      const mapUnitMatrix = [[MapUnitVo.new(null)]];
-      renderUnitMap(UnitMapVo.new(mapUnitMatrix));
+      const unitMatrix = [[UnitVo.new(null)]];
+      renderUnitMap(UnitMapVo.new(unitMatrix));
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

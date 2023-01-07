@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { LocationVo, MapRangeVo, OffsetVo, MapUnitVo, UnitMapVo } from '@/models/valueObjects';
+import { LocationVo, MapRangeVo, OffsetVo, UnitVo, UnitMapVo } from '@/models/valueObjects';
 
 import UnitMap from '.';
 
@@ -14,7 +14,7 @@ export default {
 const Template: ComponentStory<typeof UnitMap> = function Template(args) {
   const [, updateArgs] = useArgs();
   const { mapRange, unitMap } = args;
-  const handleMapUnitClick = (location: LocationVo) => {
+  const handleUnitClick = (location: LocationVo) => {
     if (!mapRange) {
       return;
     }
@@ -22,17 +22,17 @@ const Template: ComponentStory<typeof UnitMap> = function Template(args) {
       return;
     }
 
-    const mapUnitMatrix = unitMap.getMapUnitMatrix();
-    mapUnitMatrix[location.getX()][location.getY()] = MapUnitVo.new(null);
+    const unitMatrix = unitMap.getUnitMatrix();
+    unitMatrix[location.getX()][location.getY()] = UnitVo.new(null);
 
     updateArgs({
-      unitMap: UnitMapVo.new(mapUnitMatrix),
+      unitMap: UnitMapVo.new(unitMatrix),
     });
   };
 
   return (
     <div className="inline-flex w-24 h-24">
-      <UnitMap {...args} onMapUnitClick={handleMapUnitClick} />
+      <UnitMap {...args} onUnitClick={handleUnitClick} />
     </div>
   );
 };
@@ -43,7 +43,7 @@ Primary.args = {
   mapRange: mapRangeForPrimary,
   mapRangeOffset: OffsetVo.new(0, 0),
   unitMap: UnitMapVo.newWithMapSize(mapRangeForPrimary.getMapSize()),
-  mapUnitSize: 30,
+  unitSize: 30,
   items: [],
   selectedItemId: null,
 };

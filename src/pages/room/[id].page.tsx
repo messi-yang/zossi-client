@@ -28,7 +28,7 @@ const Room: NextPage = function Room() {
     destroyItem,
     observeMapRange,
   } = useContext(GameContext);
-  const [mapUnitSize] = useState(50);
+  const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
@@ -50,9 +50,9 @@ const Room: NextPage = function Room() {
       return null;
     }
 
-    return MapSizeVo.newWithResolutionAndMapUnitSize(
+    return MapSizeVo.newWithResolutionAndUnitSize(
       { width: unitMapWrapperElemRect.width, height: unitMapWrapperElemRect.height },
-      mapUnitSize
+      unitSize
     );
   }, [unitMapWrapperElemRect]);
   useEffect(
@@ -128,7 +128,7 @@ const Room: NextPage = function Room() {
     window.location.reload();
   }, [joinGame]);
 
-  const handleMapUnitClick = useCallback(
+  const handleUnitClick = useCallback(
     (location: LocationVo) => {
       if (isDestroyingItem) {
         destroyItem(location);
@@ -180,10 +180,10 @@ const Room: NextPage = function Room() {
                 mapRange={observedMapRange}
                 mapRangeOffset={observedMapRangeOffset}
                 unitMap={unitMap}
-                mapUnitSize={mapUnitSize}
+                unitSize={unitSize}
                 items={items}
                 selectedItemId={selectedItem?.getId() || null}
-                onMapUnitClick={handleMapUnitClick}
+                onUnitClick={handleUnitClick}
               />
             </section>
             {mapSize && targetMapRange && isMiniMapVisible && (
@@ -220,10 +220,10 @@ const Room: NextPage = function Room() {
                 mapRange={observedMapRange}
                 mapRangeOffset={observedMapRangeOffset}
                 unitMap={unitMap}
-                mapUnitSize={mapUnitSize}
+                unitSize={unitSize}
                 items={items || []}
                 selectedItemId={selectedItem?.getId() || null}
-                onMapUnitClick={handleMapUnitClick}
+                onUnitClick={handleUnitClick}
               />
             </section>
             {mapSize && targetMapRange && isMiniMapVisible && (

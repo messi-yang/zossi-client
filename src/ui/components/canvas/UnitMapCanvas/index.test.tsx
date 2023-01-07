@@ -6,7 +6,7 @@ function renderUnitMapCanvas(): RenderResult {
   return render(
     <UnitMapCanvas
       unitMap={UnitMapVo.newWithMapSize(MapSizeVo.new(1, 1))}
-      mapUnitSize={20}
+      unitSize={20}
       onClick={() => {}}
       items={[]}
       selectedItemId={null}

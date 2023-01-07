@@ -8,14 +8,14 @@ type Props = {
   mapRange: MapRangeVo | null;
   mapRangeOffset: OffsetVo | null;
   unitMap: UnitMapVo | null;
-  mapUnitSize: number;
+  unitSize: number;
   items: ItemAgg[] | null;
   selectedItemId: string | null;
-  onMapUnitClick: (location: LocationVo) => any;
+  onUnitClick: (location: LocationVo) => any;
 };
 
-function UnitMap({ mapRange, mapRangeOffset, unitMap, mapUnitSize, items, selectedItemId, onMapUnitClick }: Props) {
-  const handleMapUnitClick = useCallback(
+function UnitMap({ mapRange, mapRangeOffset, unitMap, unitSize, items, selectedItemId, onUnitClick }: Props) {
+  const handleUnitClick = useCallback(
     (colIdx: number, rowIdx: number) => {
       if (!mapRange) {
         return;
@@ -24,9 +24,9 @@ function UnitMap({ mapRange, mapRangeOffset, unitMap, mapUnitSize, items, select
       const originLocation = mapRange.getFrom();
       const finalLocation = originLocation.shift(colIdx, rowIdx);
 
-      onMapUnitClick(finalLocation);
+      onUnitClick(finalLocation);
     },
-    [onMapUnitClick, mapRange]
+    [onUnitClick, mapRange]
   );
 
   return (
@@ -34,17 +34,17 @@ function UnitMap({ mapRange, mapRangeOffset, unitMap, mapUnitSize, items, select
       <section
         className="relative flex"
         style={{
-          left: mapRangeOffset ? mapRangeOffset.getX() * mapUnitSize : 0,
-          top: mapRangeOffset ? mapRangeOffset.getY() * mapUnitSize : 0,
+          left: mapRangeOffset ? mapRangeOffset.getX() * unitSize : 0,
+          top: mapRangeOffset ? mapRangeOffset.getY() * unitSize : 0,
         }}
       >
         {unitMap && (
           <UnitMapCanvas
             unitMap={unitMap}
-            mapUnitSize={mapUnitSize}
+            unitSize={unitSize}
             items={items || []}
             selectedItemId={selectedItemId}
-            onClick={handleMapUnitClick}
+            onClick={handleUnitClick}
           />
         )}
       </section>

@@ -1,4 +1,4 @@
-import type { MapRangeDto, MapSizeDto, ItemDto, MapUnitDto } from '@/apis/dtos';
+import type { MapRangeDto, MapSizeDto, ItemDto, UnitDto } from '@/apis/dtos';
 
 enum EventTypeEnum {
   InformationUpdated = 'INFORMATION_UPDATED',
@@ -25,7 +25,7 @@ type MapRangeObservedEvent = {
   type: EventTypeEnum.MapRangeObserved;
   payload: {
     mapRange: MapRangeDto;
-    unitMap: MapUnitDto[][];
+    unitMap: UnitDto[][];
   };
 };
 
@@ -33,7 +33,7 @@ type ObservedMapRangeUpdatedEvent = {
   type: EventTypeEnum.ObservedMapRangeUpdated;
   payload: {
     mapRange: MapRangeDto;
-    unitMap: MapUnitDto[][];
+    unitMap: UnitDto[][];
     updatedAt: string;
   };
 };
