@@ -77,7 +77,7 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
     (mapUnit: MapUnitVo): HTMLImageElement | null => {
       const itemId = mapUnit.getItemId();
       const item = itemId ? itemMap[itemId] : null;
-      return item?.getAssetImageElem() || null;
+      return item?.outputAssetAsImageElement() || null;
     },
     [itemMap]
   );
@@ -85,7 +85,7 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
   const getItemAssetImageElemOfItem = useCallback(
     (itemId: string): HTMLImageElement | null => {
       const item = itemId ? itemMap[itemId] : null;
-      return item?.getAssetImageElem() || null;
+      return item?.outputAssetAsImageElement() || null;
     },
     [itemMap]
   );

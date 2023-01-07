@@ -29,7 +29,7 @@ export default class ItemAgg {
     return this.assetSrc;
   }
 
-  public getAssetImageElem(): HTMLImageElement | null {
+  public outputAssetAsImageElement(): HTMLImageElement | null {
     return this.imageElem;
   }
 
