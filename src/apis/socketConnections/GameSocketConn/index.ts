@@ -1,6 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
 import type { MapUnitDto } from '@/apis/dtos';
-import { MapRangeVo, MapUnitVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { MapRangeVo, MapUnitVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
   MapRangeObservedEvent,
@@ -13,27 +13,27 @@ import { ActionTypeEnum } from './actionTypes';
 import type { PingAction, ObserveMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
-function convertMapUnitDtoMatrixToGameMapVo(gameMap: MapUnitDto[][]): GameMapVo {
-  const mapUnitMatrix = gameMap.map((mapUnitCol) => mapUnitCol.map((mapUnit) => MapUnitVo.new(mapUnit.itemId)));
-  return GameMapVo.new(mapUnitMatrix);
+function convertMapUnitDtoMatrixToUnitMapVo(unitMap: MapUnitDto[][]): UnitMapVo {
+  const mapUnitMatrix = unitMap.map((mapUnitCol) => mapUnitCol.map((mapUnit) => MapUnitVo.new(mapUnit.itemId)));
+  return UnitMapVo.new(mapUnitMatrix);
 }
 
-function parseMapRangeObservedEvent(event: MapRangeObservedEvent): [MapRangeVo, GameMapVo] {
+function parseMapRangeObservedEvent(event: MapRangeObservedEvent): [MapRangeVo, UnitMapVo] {
   const mapRange = MapRangeVo.new(
     LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
     LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
   );
-  const gameMap = convertMapUnitDtoMatrixToGameMapVo(event.payload.gameMap);
-  return [mapRange, gameMap];
+  const unitMap = convertMapUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
+  return [mapRange, unitMap];
 }
 
-function parseObservedMapRangeUpdatedEvent(event: ObservedMapRangeUpdatedEvent): [MapRangeVo, GameMapVo] {
+function parseObservedMapRangeUpdatedEvent(event: ObservedMapRangeUpdatedEvent): [MapRangeVo, UnitMapVo] {
   const mapRange = MapRangeVo.new(
     LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
     LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
   );
-  const gameMap = convertMapUnitDtoMatrixToGameMapVo(event.payload.gameMap);
-  return [mapRange, gameMap];
+  const unitMap = convertMapUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
+  return [mapRange, unitMap];
 }
 
 function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [MapSizeVo] {
@@ -50,8 +50,8 @@ export default class GameSocketConn {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onMapRangeObserved: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
-    onObservedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onMapRangeObserved: (mapRange: MapRangeVo, unitMap: UnitMapVo) => void;
+    onObservedMapRangeUpdated: (mapRange: MapRangeVo, unitMap: UnitMapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
@@ -70,11 +70,11 @@ export default class GameSocketConn {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.MapRangeObserved) {
-        const [mapRange, gameMap] = parseMapRangeObservedEvent(newMsg);
-        params.onMapRangeObserved(mapRange, gameMap);
+        const [mapRange, unitMap] = parseMapRangeObservedEvent(newMsg);
+        params.onMapRangeObserved(mapRange, unitMap);
       } else if (newMsg.type === EventTypeEnum.ObservedMapRangeUpdated) {
-        const [mapRange, gameMap] = parseObservedMapRangeUpdatedEvent(newMsg);
-        params.onObservedMapRangeUpdated(mapRange, gameMap);
+        const [mapRange, unitMap] = parseObservedMapRangeUpdatedEvent(newMsg);
+        params.onObservedMapRangeUpdated(mapRange, unitMap);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         const [mapSize] = parseInformationUpdatedEvent(newMsg);
         params.onInformationUpdated(mapSize);
@@ -103,8 +103,8 @@ export default class GameSocketConn {
   }
 
   static newGameSocketConn(params: {
-    onMapRangeObserved: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
-    onObservedMapRangeUpdated: (mapRange: MapRangeVo, gameMap: GameMapVo) => void;
+    onMapRangeObserved: (mapRange: MapRangeVo, unitMap: UnitMapVo) => void;
+    onObservedMapRangeUpdated: (mapRange: MapRangeVo, unitMap: UnitMapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;

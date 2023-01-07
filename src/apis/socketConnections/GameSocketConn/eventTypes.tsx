@@ -25,7 +25,7 @@ type MapRangeObservedEvent = {
   type: EventTypeEnum.MapRangeObserved;
   payload: {
     mapRange: MapRangeDto;
-    gameMap: MapUnitDto[][];
+    unitMap: MapUnitDto[][];
   };
 };
 
@@ -33,7 +33,7 @@ type ObservedMapRangeUpdatedEvent = {
   type: EventTypeEnum.ObservedMapRangeUpdated;
   payload: {
     mapRange: MapRangeDto;
-    gameMap: MapUnitDto[][];
+    unitMap: MapUnitDto[][];
     updatedAt: string;
   };
 };

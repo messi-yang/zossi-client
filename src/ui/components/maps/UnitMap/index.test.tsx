@@ -1,13 +1,13 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import GameMap, { dataTestids } from '.';
-import { MapUnitVo, GameMapVo, OffsetVo } from '@/models/valueObjects';
+import UnitMap, { dataTestids } from '.';
+import { MapUnitVo, UnitMapVo, OffsetVo } from '@/models/valueObjects';
 
-function renderGameMap(gameMap: GameMapVo): RenderResult {
+function renderUnitMap(unitMap: UnitMapVo): RenderResult {
   return render(
-    <GameMap
+    <UnitMap
       mapRange={null}
       mapRangeOffset={OffsetVo.new(0, 0)}
-      gameMap={gameMap}
+      unitMap={unitMap}
       mapUnitSize={30}
       items={[]}
       selectedItemId={null}
@@ -16,11 +16,11 @@ function renderGameMap(gameMap: GameMapVo): RenderResult {
   );
 }
 
-describe('GameMap', () => {
+describe('UnitMap', () => {
   it('Should render component successfully.', () => {
     try {
       const mapUnitMatrix = [[MapUnitVo.new(null)]];
-      renderGameMap(GameMapVo.new(mapUnitMatrix));
+      renderUnitMap(UnitMapVo.new(mapUnitMatrix));
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

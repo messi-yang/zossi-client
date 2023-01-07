@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import { GameSocketConn } from '@/apis/socketConnections';
-import { MapRangeVo, GameMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { MapRangeVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
@@ -10,7 +10,7 @@ type ContextValue = {
   gameStatus: GameStatus;
   mapSize: MapSizeVo | null;
   observedMapRange: MapRangeVo | null;
-  gameMap: GameMapVo | null;
+  unitMap: UnitMapVo | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
   buildItem: (location: LocationVo, itemId: string) => void;
@@ -24,7 +24,7 @@ function createInitialContextValue(): ContextValue {
     gameStatus: 'DISCONNECTED',
     mapSize: null,
     observedMapRange: null,
-    gameMap: null,
+    unitMap: null,
     items: null,
     joinGame: () => {},
     buildItem: () => {},
@@ -48,13 +48,13 @@ export function Provider({ children }: Props) {
   const [mapSize, setMapSize] = useState<MapSizeVo | null>(initialContextValue.mapSize);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [observedMapRange, setObservedMapRange] = useState<MapRangeVo | null>(initialContextValue.observedMapRange);
-  const [gameMap, setGameMap] = useState<GameMapVo | null>(initialContextValue.gameMap);
+  const [unitMap, setUnitMap] = useState<UnitMapVo | null>(initialContextValue.unitMap);
 
   const reset = useCallback(() => {
     setMapSize(initialContextValue.mapSize);
     setItems(initialContextValue.items);
     setObservedMapRange(initialContextValue.observedMapRange);
-    setGameMap(initialContextValue.gameMap);
+    setUnitMap(initialContextValue.unitMap);
   }, []);
 
   const joinGame = useCallback(() => {
@@ -64,13 +64,13 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
-      onMapRangeObserved: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
+      onMapRangeObserved: (newMapRange: MapRangeVo, newUnitMap: UnitMapVo) => {
         setObservedMapRange(newMapRange);
-        setGameMap(newGameMap);
+        setUnitMap(newUnitMap);
       },
-      onObservedMapRangeUpdated: (newMapRange: MapRangeVo, newGameMap: GameMapVo) => {
+      onObservedMapRangeUpdated: (newMapRange: MapRangeVo, newUnitMap: UnitMapVo) => {
         setObservedMapRange(newMapRange);
-        setGameMap(newGameMap);
+        setUnitMap(newUnitMap);
       },
       onInformationUpdated: (newMapSize: MapSizeVo) => {
         setMapSize(newMapSize);
@@ -133,7 +133,7 @@ export function Provider({ children }: Props) {
           gameStatus,
           mapSize,
           observedMapRange,
-          gameMap,
+          unitMap,
           items,
           joinGame,
           leaveGame,
@@ -141,7 +141,7 @@ export function Provider({ children }: Props) {
           destroyItem,
           observeMapRange,
         }),
-        [gameStatus, mapSize, observedMapRange, gameMap, items, joinGame, leaveGame, buildItem, observeMapRange]
+        [gameStatus, mapSize, observedMapRange, unitMap, items, joinGame, leaveGame, buildItem, observeMapRange]
       )}
     >
       {children}

@@ -3,20 +3,20 @@ import cloneDeep from 'lodash/cloneDeep';
 import MapUnitVo from './MapUnitVo';
 import MapSizeVo from './MapSizeVo';
 
-export default class GameMapVo {
+export default class UnitMapVo {
   private mapUnitMatrix: MapUnitVo[][];
 
   constructor(mapUnitMatrix: MapUnitVo[][]) {
     this.mapUnitMatrix = mapUnitMatrix;
   }
 
-  static new(mapUnitMatrix: MapUnitVo[][]): GameMapVo {
-    return new GameMapVo(mapUnitMatrix);
+  static new(mapUnitMatrix: MapUnitVo[][]): UnitMapVo {
+    return new UnitMapVo(mapUnitMatrix);
   }
 
-  static newWithMapSize(mapSize: MapSizeVo): GameMapVo {
-    const gameMap = mapSize.map<MapUnitVo>(() => new MapUnitVo(null));
-    return new GameMapVo(gameMap);
+  static newWithMapSize(mapSize: MapSizeVo): UnitMapVo {
+    const unitMap = mapSize.map<MapUnitVo>(() => new MapUnitVo(null));
+    return new UnitMapVo(unitMap);
   }
 
   public getUnit(colIdx: number, rowIdx: number): MapUnitVo {

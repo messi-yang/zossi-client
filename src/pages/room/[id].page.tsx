@@ -6,7 +6,7 @@ import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
 import GameContext from '@/ui/contexts/GameContext';
 import { MapRangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
-import GameMap from '@/ui/components/maps/GameMap';
+import UnitMap from '@/ui/components/maps/UnitMap';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
 import SelectItemModal from '@/ui/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
@@ -19,7 +19,7 @@ const Room: NextPage = function Room() {
   const {
     mapSize,
     observedMapRange,
-    gameMap,
+    unitMap,
     items,
     gameStatus,
     joinGame,
@@ -44,17 +44,17 @@ const Room: NextPage = function Room() {
     return observedMapRange.calculateOffsetWithMapRange(targetMapRange);
   }, [observedMapRange, targetMapRange]);
 
-  const [gameMapWrapperElemRef, gameMapWrapperElemRect] = useDomRect();
+  const [unitMapWrapperElemRef, unitMapWrapperElemRect] = useDomRect();
   const desiredMapSize = useMemo(() => {
-    if (!gameMapWrapperElemRect) {
+    if (!unitMapWrapperElemRect) {
       return null;
     }
 
     return MapSizeVo.newWithResolutionAndMapUnitSize(
-      { width: gameMapWrapperElemRect.width, height: gameMapWrapperElemRect.height },
+      { width: unitMapWrapperElemRect.width, height: unitMapWrapperElemRect.height },
       mapUnitSize
     );
-  }, [gameMapWrapperElemRect]);
+  }, [unitMapWrapperElemRect]);
   useEffect(
     function handleDesiredMapSizeUpdateEffect() {
       if (!desiredMapSize) {
@@ -175,11 +175,11 @@ const Room: NextPage = function Room() {
             />
           </section>
           <section className="relative grow overflow-hidden bg-black">
-            <section ref={gameMapWrapperElemRef} className="w-full h-full">
-              <GameMap
+            <section ref={unitMapWrapperElemRef} className="w-full h-full">
+              <UnitMap
                 mapRange={observedMapRange}
                 mapRangeOffset={observedMapRangeOffset}
-                gameMap={gameMap}
+                unitMap={unitMap}
                 mapUnitSize={mapUnitSize}
                 items={items}
                 selectedItemId={selectedItem?.getId() || null}
@@ -215,11 +215,11 @@ const Room: NextPage = function Room() {
             onDone={handleSelectItemDone}
           />
           <section className="relative grow overflow-hidden bg-black">
-            <section ref={gameMapWrapperElemRef} className="w-full h-full">
-              <GameMap
+            <section ref={unitMapWrapperElemRef} className="w-full h-full">
+              <UnitMap
                 mapRange={observedMapRange}
                 mapRangeOffset={observedMapRangeOffset}
-                gameMap={gameMap}
+                unitMap={unitMap}
                 mapUnitSize={mapUnitSize}
                 items={items || []}
                 selectedItemId={selectedItem?.getId() || null}
