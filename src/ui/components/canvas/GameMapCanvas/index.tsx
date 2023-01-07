@@ -68,7 +68,6 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
     image.src = '/grass-base.png';
   }, []);
 
-  const [borderWidth] = useState(1);
   const [mapSize, setMapSize] = useState(gameMap.getMapSize());
 
   const itemMap: ItemMap = useMemo(() => {
@@ -141,30 +140,18 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
   );
 
   const drawMapUnits = useCallback(
-    (ctx: CanvasRenderingContext2D, newGameMap: GameMapVo, newMapUnitSize: number, newBorderWidth: number) => {
+    (ctx: CanvasRenderingContext2D, newGameMap: GameMapVo, newMapUnitSize: number) => {
       ctx.fillStyle = color.mapUnitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
       newGameMap.iterateMapUnit((colIdx: number, rowIdx: number, mapUnit: MapUnitVo) => {
-        const leftTopX = colIdx * newMapUnitSize + newBorderWidth;
-        const leftTopY = rowIdx * newMapUnitSize + newBorderWidth;
+        const leftTopX = colIdx * newMapUnitSize;
+        const leftTopY = rowIdx * newMapUnitSize;
 
         const itemAssetImageElem = getItemAssetImageElemOfMapUnit(mapUnit);
         if (grassBaseImageElem) {
-          ctx.drawImage(
-            grassBaseImageElem,
-            leftTopX,
-            leftTopY,
-            newMapUnitSize - newBorderWidth,
-            newMapUnitSize - newBorderWidth
-          );
+          ctx.drawImage(grassBaseImageElem, leftTopX, leftTopY, newMapUnitSize, newMapUnitSize);
           if (itemAssetImageElem) {
-            ctx.drawImage(
-              itemAssetImageElem,
-              leftTopX,
-              leftTopY,
-              newMapUnitSize - newBorderWidth,
-              newMapUnitSize - newBorderWidth
-            );
+            ctx.drawImage(itemAssetImageElem, leftTopX, leftTopY, newMapUnitSize, newMapUnitSize);
           }
         }
       });
@@ -182,9 +169,9 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
 
       clean(ctx);
       drawGrid(ctx, newMapSize, newMapUnitSize);
-      drawMapUnits(ctx, newGameMap, newMapUnitSize, borderWidth);
+      drawMapUnits(ctx, newGameMap, newMapUnitSize);
     },
-    [drawMapUnits, gameMapCanvasElem, gameMap, mapUnitSize, mapSize, borderWidth]
+    [drawMapUnits, gameMapCanvasElem, gameMap, mapUnitSize, mapSize]
   );
 
   draw(gameMap, mapUnitSize, mapSize);
@@ -210,27 +197,21 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
   );
 
   const drawHoverMask = useCallback(
-    (ctx: CanvasRenderingContext2D, newHoveredIndexes: Indexes, newMapUnitSize: number, newBorderWidth: number) => {
+    (ctx: CanvasRenderingContext2D, newHoveredIndexes: Indexes, newMapUnitSize: number) => {
       const itemAssetImageElem = selectedItemId ? getItemAssetImageElemOfItem(selectedItemId) : null;
 
-      const leftTopY = newHoveredIndexes[1] * newMapUnitSize + newBorderWidth;
-      const leftTopX = newHoveredIndexes[0] * newMapUnitSize + newBorderWidth;
+      const leftTopY = newHoveredIndexes[1] * newMapUnitSize;
+      const leftTopX = newHoveredIndexes[0] * newMapUnitSize;
 
       ctx.globalAlpha = 0.4; // eslint-disable-line no-param-reassign
       if (itemAssetImageElem) {
-        ctx.drawImage(
-          itemAssetImageElem,
-          leftTopX,
-          leftTopY,
-          newMapUnitSize - newBorderWidth,
-          newMapUnitSize - newBorderWidth
-        );
+        ctx.drawImage(itemAssetImageElem, leftTopX, leftTopY, newMapUnitSize, newMapUnitSize);
       } else {
         ctx.fillStyle = color.destroyWarningColor; // eslint-disable-line no-param-reassign
         ctx.beginPath();
         ctx.moveTo(leftTopX, leftTopY);
-        ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth), leftTopY);
-        ctx.lineTo(leftTopX + (newMapUnitSize - newBorderWidth), leftTopY + (newMapUnitSize - newBorderWidth));
+        ctx.lineTo(leftTopX + newMapUnitSize, leftTopY);
+        ctx.lineTo(leftTopX + newMapUnitSize, leftTopY + newMapUnitSize);
         ctx.lineTo(leftTopX, leftTopY + (newMapUnitSize - 1));
         ctx.closePath();
         ctx.fill();
@@ -249,16 +230,13 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
 
       const eventTarget = event.target as Element;
       const eventTargetRect = eventTarget.getBoundingClientRect();
-      const [posX, posY] = [
-        event.clientX - eventTargetRect.left - borderWidth,
-        event.clientY - eventTargetRect.top - borderWidth,
-      ];
+      const [posX, posY] = [event.clientX - eventTargetRect.left, event.clientY - eventTargetRect.top];
       const newHoveredIndexes = calculateIndexes(posX, posY, mapUnitSize, mapSize);
 
       clean(ctx);
-      drawHoverMask(ctx, newHoveredIndexes, mapUnitSize, borderWidth);
+      drawHoverMask(ctx, newHoveredIndexes, mapUnitSize);
     },
-    [mapUnitSize, mapSize, borderWidth, hoverMaskCanvasElem, clean, drawHoverMask]
+    [mapUnitSize, mapSize, hoverMaskCanvasElem, clean, drawHoverMask]
   );
 
   const handleHoverMaskCanvasMouseMoveDebouncer = useCallback(
@@ -279,10 +257,7 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
   const handleHoverMaskCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
     const eventTarget = event.target as Element;
     const eventTargetRect = eventTarget.getBoundingClientRect();
-    const [posX, posY] = [
-      event.clientX - eventTargetRect.left - borderWidth,
-      event.clientY - eventTargetRect.top - borderWidth,
-    ];
+    const [posX, posY] = [event.clientX - eventTargetRect.left, event.clientY - eventTargetRect.top];
     const clickedIndexes = calculateIndexes(posX, posY, mapUnitSize, mapSize);
     onClick(clickedIndexes[0], clickedIndexes[1]);
   };

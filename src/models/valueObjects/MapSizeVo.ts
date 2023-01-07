@@ -18,8 +18,8 @@ export default class MapSizeVo {
     resolution: { width: number; height: number },
     mapUnitSideLength: number
   ): MapSizeVo {
-    const width = Math.floor(resolution.width / mapUnitSideLength) || 1;
-    const height = Math.floor(resolution.height / mapUnitSideLength) || 1;
+    const width = Math.floor(resolution.width / mapUnitSideLength) + 1;
+    const height = Math.floor(resolution.height / mapUnitSideLength) + 1;
     return new MapSizeVo(width, height);
   }
 
