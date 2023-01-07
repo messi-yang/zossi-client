@@ -30,10 +30,7 @@ function GameMap({ mapRange, mapRangeOffset, gameMap, mapUnitSize, items, select
   );
 
   return (
-    <section
-      data-testid={dataTestids.root}
-      className="relative w-full h-full flex justify-center overflow-hidden bg-black"
-    >
+    <section data-testid={dataTestids.root} className="relative w-full h-full flex overflow-hidden bg-slate-300">
       <section
         className="relative flex"
         style={{

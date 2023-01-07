@@ -9,8 +9,6 @@ import dataTestids from './dataTestids';
 const color = {
   mapUnitColor: 'white',
   destroyWarningColor: 'rgb(237, 28, 37)',
-  bgColor: 'black',
-  borderColor: '#141414',
 };
 
 type Indexes = [colIdx: number, rowIdx: number];
@@ -112,33 +110,6 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
     [canvasResolution]
   );
 
-  const drawGrid = useCallback(
-    (ctx: CanvasRenderingContext2D, newMapSize: MapSizeVo, newMapUnitSize: number) => {
-      ctx.strokeStyle = color.borderColor; // eslint-disable-line no-param-reassign
-      ctx.lineWidth = 1; // eslint-disable-line no-param-reassign
-      ctx.beginPath();
-
-      newMapSize.iterateColumn((colIdx: number) => {
-        ctx.moveTo(colIdx * newMapUnitSize + 0.5, 0);
-        ctx.lineTo(colIdx * newMapUnitSize + 0.5, canvasResolution.height);
-      });
-
-      ctx.moveTo(canvasResolution.width - 0.5, 0);
-      ctx.lineTo(canvasResolution.width - 0.5, canvasResolution.height);
-
-      newMapSize.iterateRow((rowIdx: number) => {
-        ctx.moveTo(0, rowIdx * newMapUnitSize + 0.5);
-        ctx.lineTo(canvasResolution.width, rowIdx * newMapUnitSize + 0.5);
-      });
-
-      ctx.moveTo(0, canvasResolution.height - 0.5);
-      ctx.lineTo(canvasResolution.width, canvasResolution.height - 0.5);
-
-      ctx.stroke();
-    },
-    [canvasResolution]
-  );
-
   const drawMapUnits = useCallback(
     (ctx: CanvasRenderingContext2D, newGameMap: GameMapVo, newMapUnitSize: number) => {
       ctx.fillStyle = color.mapUnitColor; // eslint-disable-line no-param-reassign
@@ -161,20 +132,19 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
   );
 
   const draw = useCallback(
-    (newGameMap: GameMapVo, newMapUnitSize: number, newMapSize: MapSizeVo) => {
+    (newGameMap: GameMapVo, newMapUnitSize: number) => {
       const ctx = gameMapCanvasElem?.getContext('2d');
       if (!ctx) {
         return;
       }
 
       clean(ctx);
-      drawGrid(ctx, newMapSize, newMapUnitSize);
       drawMapUnits(ctx, newGameMap, newMapUnitSize);
     },
     [drawMapUnits, gameMapCanvasElem, gameMap, mapUnitSize, mapSize]
   );
 
-  draw(gameMap, mapUnitSize, mapSize);
+  draw(gameMap, mapUnitSize);
 
   const onGameMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
     setGameMapCanvasElem(elem);
@@ -276,7 +246,7 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
         ref={onGameMapCanvasLoad}
         width={canvasResolution.width}
         height={canvasResolution.height}
-        className="absolute left-0 top-0 bg-black z-0"
+        className="absolute left-0 top-0 z-0"
         style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
       />
       <canvas
