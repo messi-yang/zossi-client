@@ -34,11 +34,14 @@ export default class ItemAgg {
   }
 
   public async loadAsset() {
-    const image = new Image();
-    image.onload = () => {
-      this.imageElem = image;
-    };
+    return new Promise((resolve) => {
+      const image = new Image();
+      image.onload = () => {
+        this.imageElem = image;
+        resolve(true);
+      };
 
-    image.src = this.assetSrc;
+      image.src = this.assetSrc;
+    });
   }
 }
