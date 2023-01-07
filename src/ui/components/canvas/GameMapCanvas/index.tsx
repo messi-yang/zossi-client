@@ -3,8 +3,8 @@ import debounce from 'lodash/debounce';
 
 import { MapUnitVo, GameMapVo, MapSizeVo } from '@/models/valueObjects';
 
-import dataTestids from './dataTestids';
 import { ItemAgg } from '@/models/aggregates';
+import dataTestids from './dataTestids';
 
 const color = {
   mapUnitColor: 'white',
@@ -58,6 +58,15 @@ type Props = {
 function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }: Props) {
   const [gameMapCanvasElem, setGameMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [hoverMaskCanvasElem, HoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
+
+  const [grassBaseImageElem, setGrassBaseImageElem] = useState<HTMLImageElement | null>(null);
+  useEffect(function loadGrassBaseImageElemEffect() {
+    const image = new Image();
+    image.onload = () => {
+      setGrassBaseImageElem(image);
+    };
+    image.src = '/grass-base.png';
+  }, []);
 
   const [borderWidth] = useState(1);
   const [mapSize, setMapSize] = useState(gameMap.getMapSize());
@@ -136,23 +145,32 @@ function GameMapCanvas({ gameMap, mapUnitSize, items, selectedItemId, onClick }:
       ctx.fillStyle = color.mapUnitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
       newGameMap.iterateMapUnit((colIdx: number, rowIdx: number, mapUnit: MapUnitVo) => {
-        const itemAssetImageElem = getItemAssetImageElemOfMapUnit(mapUnit);
-        if (itemAssetImageElem) {
-          const leftTopX = colIdx * newMapUnitSize + newBorderWidth;
-          const leftTopY = rowIdx * newMapUnitSize + newBorderWidth;
+        const leftTopX = colIdx * newMapUnitSize + newBorderWidth;
+        const leftTopY = rowIdx * newMapUnitSize + newBorderWidth;
 
+        const itemAssetImageElem = getItemAssetImageElemOfMapUnit(mapUnit);
+        if (grassBaseImageElem) {
           ctx.drawImage(
-            itemAssetImageElem,
+            grassBaseImageElem,
             leftTopX,
             leftTopY,
             newMapUnitSize - newBorderWidth,
             newMapUnitSize - newBorderWidth
           );
+          if (itemAssetImageElem) {
+            ctx.drawImage(
+              itemAssetImageElem,
+              leftTopX,
+              leftTopY,
+              newMapUnitSize - newBorderWidth,
+              newMapUnitSize - newBorderWidth
+            );
+          }
         }
       });
       ctx.fill();
     },
-    [getItemAssetImageElemOfMapUnit]
+    [getItemAssetImageElemOfMapUnit, grassBaseImageElem]
   );
 
   const draw = useCallback(
