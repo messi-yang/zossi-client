@@ -119,6 +119,7 @@ export default class GameSocketConn {
   }
 
   private async sendMessage(msg: object) {
+    console.log(msg);
     const jsonString = JSON.stringify(msg);
     const jsonBlob = new Blob([jsonString]);
     const compressedJsonBlob = await gzipBlob(jsonBlob);

@@ -2,7 +2,7 @@ import { RangeDto, LocationDto } from '@/apis/dtos';
 
 enum ActionTypeEnum {
   Ping = 'PING',
-  ObserveRange = 'OBSERVE_MAP_RANGE',
+  ObserveRange = 'OBSERVE_RANGE',
   BuildItem = 'BUILD_ITEM',
   DestroyItem = 'DESTROY_ITEM',
 }

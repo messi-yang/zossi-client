@@ -3,8 +3,8 @@ import type { RangeDto, MapSizeDto, ItemDto, UnitDto } from '@/apis/dtos';
 enum EventTypeEnum {
   InformationUpdated = 'INFORMATION_UPDATED',
   ItemsUpdated = 'ITEMS_UPDATED',
-  RangeObserved = 'MAP_RANGE_OBSERVED',
-  ObservedRangeUpdated = 'OBSERVED_MAP_RANGE_UPDATED',
+  RangeObserved = 'RANGE_OBSERVED',
+  ObservedRangeUpdated = 'OBSERVED_RANGE_UPDATED',
 }
 
 type InformationUpdatedEvent = {
