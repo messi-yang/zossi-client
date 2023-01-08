@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { LocationVo, ExtentVo, OffsetVo, UnitVo, UnitMapVo } from '@/models/valueObjects';
+import { LocationVo, RangeVo, OffsetVo, UnitVo, UnitMapVo } from '@/models/valueObjects';
 
 import UnitMap from '.';
 
@@ -13,9 +13,9 @@ export default {
 
 const Template: ComponentStory<typeof UnitMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const { extent, unitMap } = args;
+  const { range, unitMap } = args;
   const handleUnitClick = (location: LocationVo) => {
-    if (!extent) {
+    if (!range) {
       return;
     }
     if (!unitMap) {
@@ -38,11 +38,11 @@ const Template: ComponentStory<typeof UnitMap> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-const extentForPrimary = ExtentVo.new(LocationVo.new(3, 3), LocationVo.new(9, 9));
+const rangeForPrimary = RangeVo.new(LocationVo.new(3, 3), LocationVo.new(9, 9));
 Primary.args = {
-  extent: extentForPrimary,
-  extentOffset: OffsetVo.new(0, 0),
-  unitMap: UnitMapVo.newWithMapSize(extentForPrimary.getMapSize()),
+  range: rangeForPrimary,
+  rangeOffset: OffsetVo.new(0, 0),
+  unitMap: UnitMapVo.newWithMapSize(rangeForPrimary.getMapSize()),
   unitSize: 30,
   items: [],
   selectedItemId: null,

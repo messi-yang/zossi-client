@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { ExtentVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { RangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import GameMiniMap, { dataTestids } from '.';
 
 function renderGameMiniMap(): RenderResult {
@@ -7,8 +7,8 @@ function renderGameMiniMap(): RenderResult {
     <GameMiniMap
       width={300}
       mapSize={MapSizeVo.new(100, 100)}
-      extent={ExtentVo.new(LocationVo.new(0, 0), LocationVo.new(10, 10))}
-      onExtentUpdate={() => {}}
+      range={RangeVo.new(LocationVo.new(0, 0), LocationVo.new(10, 10))}
+      onRangeUpdate={() => {}}
     />
   );
 }

@@ -1,12 +1,12 @@
 import { memo, useCallback } from 'react';
 import UnitMapCanvas from '@/ui/components/canvas/UnitMapCanvas';
-import { ExtentVo, UnitMapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
+import { RangeVo, UnitMapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
 import dataTestids from './dataTestids';
 import { ItemAgg } from '@/models/aggregates';
 
 type Props = {
-  extent: ExtentVo | null;
-  extentOffset: OffsetVo | null;
+  range: RangeVo | null;
+  rangeOffset: OffsetVo | null;
   unitMap: UnitMapVo | null;
   unitSize: number;
   items: ItemAgg[] | null;
@@ -14,19 +14,19 @@ type Props = {
   onUnitClick: (location: LocationVo) => any;
 };
 
-function UnitMap({ extent, extentOffset, unitMap, unitSize, items, selectedItemId, onUnitClick }: Props) {
+function UnitMap({ range, rangeOffset, unitMap, unitSize, items, selectedItemId, onUnitClick }: Props) {
   const handleUnitClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!extent) {
+      if (!range) {
         return;
       }
 
-      const originLocation = extent.getFrom();
+      const originLocation = range.getFrom();
       const finalLocation = originLocation.shift(colIdx, rowIdx);
 
       onUnitClick(finalLocation);
     },
-    [onUnitClick, extent]
+    [onUnitClick, range]
   );
 
   return (
@@ -34,8 +34,8 @@ function UnitMap({ extent, extentOffset, unitMap, unitSize, items, selectedItemI
       <section
         className="relative flex"
         style={{
-          left: extentOffset ? extentOffset.getX() * unitSize : 0,
-          top: extentOffset ? extentOffset.getY() * unitSize : 0,
+          left: rangeOffset ? rangeOffset.getX() * unitSize : 0,
+          top: rangeOffset ? rangeOffset.getY() * unitSize : 0,
         }}
       >
         {unitMap && (

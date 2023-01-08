@@ -1,8 +1,8 @@
-import { ExtentDto, LocationDto } from '@/apis/dtos';
+import { RangeDto, LocationDto } from '@/apis/dtos';
 
 enum ActionTypeEnum {
   Ping = 'PING',
-  ObserveExtent = 'OBSERVE_MAP_RANGE',
+  ObserveRange = 'OBSERVE_MAP_RANGE',
   BuildItem = 'BUILD_ITEM',
   DestroyItem = 'DESTROY_ITEM',
 }
@@ -11,10 +11,10 @@ type PingAction = {
   type: ActionTypeEnum.Ping;
 };
 
-type ObserveExtentAction = {
-  type: ActionTypeEnum.ObserveExtent;
+type ObserveRangeAction = {
+  type: ActionTypeEnum.ObserveRange;
   payload: {
-    extent: ExtentDto;
+    range: RangeDto;
     actionedAt: string;
   };
 };
@@ -38,4 +38,4 @@ type DestroyItemAction = {
 
 export { ActionTypeEnum };
 
-export type { PingAction, ObserveExtentAction, BuildItemAction, DestroyItemAction };
+export type { PingAction, ObserveRangeAction, BuildItemAction, DestroyItemAction };

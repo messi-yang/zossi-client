@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import useWindowSize from '@/ui/hooks/useWindowSize';
 import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
 import GameContext from '@/ui/contexts/GameContext';
-import { ExtentVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { RangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import UnitMap from '@/ui/components/maps/UnitMap';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
@@ -18,7 +18,7 @@ const Room: NextPage = function Room() {
   const router = useRouter();
   const {
     mapSize,
-    observedExtent,
+    observedRange,
     unitMap,
     items,
     gameStatus,
@@ -26,7 +26,7 @@ const Room: NextPage = function Room() {
     leaveGame,
     buildItem,
     destroyItem,
-    observeExtent,
+    observeRange,
   } = useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
@@ -36,13 +36,13 @@ const Room: NextPage = function Room() {
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
 
-  const [targetExtent, setTargetExtent] = useState<ExtentVo | null>(observedExtent);
-  const observedExtentOffset = useMemo(() => {
-    if (!observedExtent || !targetExtent) {
+  const [targetRange, setTargetRange] = useState<RangeVo | null>(observedRange);
+  const observedRangeOffset = useMemo(() => {
+    if (!observedRange || !targetRange) {
       return null;
     }
-    return observedExtent.calculateOffsetWithExtent(targetExtent);
-  }, [observedExtent, targetExtent]);
+    return observedRange.calculateOffsetWithRange(targetRange);
+  }, [observedRange, targetRange]);
 
   const [unitMapWrapperElemRef, unitMapWrapperElemRect] = useDomRect();
   const desiredMapSize = useMemo(() => {
@@ -60,14 +60,14 @@ const Room: NextPage = function Room() {
       if (!desiredMapSize) {
         return;
       }
-      const newExtent = ExtentVo.newWithLocationAndMapSize(
-        observedExtent ? observedExtent.getFrom() : LocationVo.new(0, 0),
+      const newRange = RangeVo.newWithLocationAndMapSize(
+        observedRange ? observedRange.getFrom() : LocationVo.new(0, 0),
         desiredMapSize
       );
-      setTargetExtent(newExtent);
-      observeExtent(newExtent);
+      setTargetRange(newRange);
+      observeRange(newRange);
     },
-    [observedExtent === null, desiredMapSize, observeExtent]
+    [observedRange === null, desiredMapSize, observeRange]
   );
 
   useEffect(function joinGameOnInitializationEffect() {
@@ -90,9 +90,9 @@ const Room: NextPage = function Room() {
     router.push('/');
   };
 
-  const handleMiniMapExtentUpdate = (newExtent: ExtentVo) => {
-    setTargetExtent(newExtent);
-    observeExtent(newExtent);
+  const handleMiniMapRangeUpdate = (newRange: RangeVo) => {
+    setTargetRange(newRange);
+    observeRange(newRange);
   };
 
   const handleMiniMapClick = () => {
@@ -177,8 +177,8 @@ const Room: NextPage = function Room() {
           <section className="relative grow overflow-hidden bg-black">
             <section ref={unitMapWrapperElemRef} className="w-full h-full">
               <UnitMap
-                extent={observedExtent}
-                extentOffset={observedExtentOffset}
+                range={observedRange}
+                rangeOffset={observedRangeOffset}
                 unitMap={unitMap}
                 unitSize={unitSize}
                 items={items}
@@ -186,13 +186,13 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {mapSize && targetExtent && isMiniMapVisible && (
+            {mapSize && targetRange && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
                 <GameMiniMap
                   width={300}
                   mapSize={mapSize}
-                  extent={targetExtent}
-                  onExtentUpdate={handleMiniMapExtentUpdate}
+                  range={targetRange}
+                  onRangeUpdate={handleMiniMapRangeUpdate}
                 />
               </section>
             )}
@@ -217,8 +217,8 @@ const Room: NextPage = function Room() {
           <section className="relative grow overflow-hidden bg-black">
             <section ref={unitMapWrapperElemRef} className="w-full h-full">
               <UnitMap
-                extent={observedExtent}
-                extentOffset={observedExtentOffset}
+                range={observedRange}
+                rangeOffset={observedRangeOffset}
                 unitMap={unitMap}
                 unitSize={unitSize}
                 items={items || []}
@@ -226,13 +226,13 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {mapSize && targetExtent && isMiniMapVisible && (
+            {mapSize && targetRange && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={windowSize.width * 0.8}
                   mapSize={mapSize}
-                  extent={targetExtent}
-                  onExtentUpdate={handleMiniMapExtentUpdate}
+                  range={targetRange}
+                  onRangeUpdate={handleMiniMapRangeUpdate}
                 />
               </section>
             )}

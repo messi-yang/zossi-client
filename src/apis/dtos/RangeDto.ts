@@ -1,8 +1,8 @@
 import LocationDto from './LocationDto';
 
-type ExtentDto = {
+type RangeDto = {
   from: LocationDto;
   to: LocationDto;
 };
 
-export default ExtentDto;
+export default RangeDto;

@@ -2,7 +2,7 @@ import LocationVo from './LocationVo';
 import MapSizeVo from './MapSizeVo';
 import OffsetVo from './OffsetVo';
 
-export default class ExtentVo {
+export default class RangeVo {
   private from: LocationVo;
 
   private to: LocationVo;
@@ -12,16 +12,16 @@ export default class ExtentVo {
     this.to = to;
   }
 
-  static new(from: LocationVo, to: LocationVo): ExtentVo {
-    return new ExtentVo(from, to);
+  static new(from: LocationVo, to: LocationVo): RangeVo {
+    return new RangeVo(from, to);
   }
 
-  static newWithLocationAndMapSize(location: LocationVo, mapSize: MapSizeVo): ExtentVo {
-    return new ExtentVo(location, location.shift(mapSize.getWidth() - 1, mapSize.getHeight() - 1));
+  static newWithLocationAndMapSize(location: LocationVo, mapSize: MapSizeVo): RangeVo {
+    return new RangeVo(location, location.shift(mapSize.getWidth() - 1, mapSize.getHeight() - 1));
   }
 
-  public isEqual(extent: ExtentVo): Boolean {
-    return this.from.isEqual(extent.getFrom()) && this.to.isEqual(extent.getTo());
+  public isEqual(range: RangeVo): Boolean {
+    return this.from.isEqual(range.getFrom()) && this.to.isEqual(range.getTo());
   }
 
   public getMapSize(): MapSizeVo {
@@ -44,7 +44,7 @@ export default class ExtentVo {
     return this.to.getY() - this.from.getY() + 1;
   }
 
-  public calculateOffsetWithExtent(extentB: ExtentVo): OffsetVo {
-    return OffsetVo.new(this.from.getX() - extentB.getFrom().getX(), this.from.getY() - extentB.getFrom().getY());
+  public calculateOffsetWithRange(rangeB: RangeVo): OffsetVo {
+    return OffsetVo.new(this.from.getX() - rangeB.getFrom().getX(), this.from.getY() - rangeB.getFrom().getY());
   }
 }
