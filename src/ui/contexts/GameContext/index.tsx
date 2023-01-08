@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import { GameSocketConn } from '@/apis/socketConnections';
-import { MapRangeVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { ExtentVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
@@ -9,13 +9,13 @@ type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONN
 type ContextValue = {
   gameStatus: GameStatus;
   mapSize: MapSizeVo | null;
-  observedMapRange: MapRangeVo | null;
+  observedExtent: ExtentVo | null;
   unitMap: UnitMapVo | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
   buildItem: (location: LocationVo, itemId: string) => void;
   destroyItem: (location: LocationVo) => void;
-  observeMapRange: (mapRange: MapRangeVo) => void;
+  observeExtent: (extent: ExtentVo) => void;
   leaveGame: () => void;
 };
 
@@ -23,13 +23,13 @@ function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
     mapSize: null,
-    observedMapRange: null,
+    observedExtent: null,
     unitMap: null,
     items: null,
     joinGame: () => {},
     buildItem: () => {},
     destroyItem: () => {},
-    observeMapRange: () => {},
+    observeExtent: () => {},
     leaveGame: () => {},
   };
 }
@@ -47,13 +47,13 @@ export function Provider({ children }: Props) {
   const initialContextValue = createInitialContextValue();
   const [mapSize, setMapSize] = useState<MapSizeVo | null>(initialContextValue.mapSize);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const [observedMapRange, setObservedMapRange] = useState<MapRangeVo | null>(initialContextValue.observedMapRange);
+  const [observedExtent, setObservedExtent] = useState<ExtentVo | null>(initialContextValue.observedExtent);
   const [unitMap, setUnitMap] = useState<UnitMapVo | null>(initialContextValue.unitMap);
 
   const reset = useCallback(() => {
     setMapSize(initialContextValue.mapSize);
     setItems(initialContextValue.items);
-    setObservedMapRange(initialContextValue.observedMapRange);
+    setObservedExtent(initialContextValue.observedExtent);
     setUnitMap(initialContextValue.unitMap);
   }, []);
 
@@ -64,12 +64,12 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
-      onMapRangeObserved: (newMapRange: MapRangeVo, newUnitMap: UnitMapVo) => {
-        setObservedMapRange(newMapRange);
+      onExtentObserved: (newExtent: ExtentVo, newUnitMap: UnitMapVo) => {
+        setObservedExtent(newExtent);
         setUnitMap(newUnitMap);
       },
-      onObservedMapRangeUpdated: (newMapRange: MapRangeVo, newUnitMap: UnitMapVo) => {
-        setObservedMapRange(newMapRange);
+      onObservedExtentUpdated: (newExtent: ExtentVo, newUnitMap: UnitMapVo) => {
+        setObservedExtent(newExtent);
         setUnitMap(newUnitMap);
       },
       onInformationUpdated: (newMapSize: MapSizeVo) => {
@@ -115,10 +115,10 @@ export function Provider({ children }: Props) {
     [gameSocketConn]
   );
 
-  const observeMapRange = useCallback(
+  const observeExtent = useCallback(
     debounce(
-      (newMapRange: MapRangeVo) => {
-        gameSocketConn?.observeMapRange(newMapRange);
+      (newExtent: ExtentVo) => {
+        gameSocketConn?.observeExtent(newExtent);
       },
       150,
       { leading: true, maxWait: 500, trailing: true }
@@ -132,16 +132,16 @@ export function Provider({ children }: Props) {
         () => ({
           gameStatus,
           mapSize,
-          observedMapRange,
+          observedExtent,
           unitMap,
           items,
           joinGame,
           leaveGame,
           buildItem,
           destroyItem,
-          observeMapRange,
+          observeExtent,
         }),
-        [gameStatus, mapSize, observedMapRange, unitMap, items, joinGame, leaveGame, buildItem, observeMapRange]
+        [gameStatus, mapSize, observedExtent, unitMap, items, joinGame, leaveGame, buildItem, observeExtent]
       )}
     >
       {children}

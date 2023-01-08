@@ -1,66 +1,66 @@
 import { useRef } from 'react';
-import { MapSizeVo, MapRangeVo, LocationVo } from '@/models/valueObjects';
+import { MapSizeVo, ExtentVo, LocationVo } from '@/models/valueObjects';
 import usePull from '@/ui/hooks/usePull';
 import dataTestids from './dataTestids';
 
 type Props = {
   width: number;
   mapSize: MapSizeVo;
-  mapRange: MapRangeVo;
-  onMapRangeUpdate: (newMapRange: MapRangeVo) => void;
+  extent: ExtentVo;
+  onExtentUpdate: (newExtent: ExtentVo) => void;
 };
 
-function GameMiniMap({ width, mapSize, mapRange, onMapRangeUpdate }: Props) {
+function GameMiniMap({ width, mapSize, extent, onExtentUpdate }: Props) {
   const mapContentElemRef = useRef<HTMLDivElement>(null);
   const mapSizeRatio = mapSize.getRatio();
-  const mapRangeWidth = mapRange.getWidth();
-  const mapRangeHeight = mapRange.getHeight();
-  const mapObservedMapRangeWidthRatio = mapRangeWidth / mapSize.getWidth();
-  const mapObservedMapRangeHeightRatio = mapRangeHeight / mapSize.getHeight();
-  const offsetXRatio = mapRange.getFrom().getX() / mapSize.getWidth();
-  const offsetYRatio = mapRange.getFrom().getY() / mapSize.getHeight();
+  const extentWidth = extent.getWidth();
+  const extentHeight = extent.getHeight();
+  const mapObservedExtentWidthRatio = extentWidth / mapSize.getWidth();
+  const mapObservedExtentHeightRatio = extentHeight / mapSize.getHeight();
+  const offsetXRatio = extent.getFrom().getX() / mapSize.getWidth();
+  const offsetYRatio = extent.getFrom().getY() / mapSize.getHeight();
 
   const elemWidth = width;
   const elemHeight = elemWidth * mapSizeRatio;
-  const mapRangeElemWidth = elemWidth * mapObservedMapRangeWidthRatio;
-  const mapRangeElemHeight = elemHeight * mapObservedMapRangeHeightRatio;
+  const extentElemWidth = elemWidth * mapObservedExtentWidthRatio;
+  const extentElemHeight = elemHeight * mapObservedExtentHeightRatio;
 
-  const calculateNewMapRangeFromMouseEvent = (clientX: number, clientY: number): MapRangeVo => {
+  const calculateNewExtentFromMouseEvent = (clientX: number, clientY: number): ExtentVo => {
     if (!mapContentElemRef.current) {
-      return mapRange;
+      return extent;
     }
     const rect = mapContentElemRef.current.getBoundingClientRect();
     const elemX = clientX - rect.left;
     const elemY = clientY - rect.top;
-    const standarizedX = Math.round(((elemX - mapRangeElemWidth / 2) / elemWidth) * mapSize.getWidth());
-    const standarizedY = Math.round(((elemY - mapRangeElemHeight / 2) / elemHeight) * mapSize.getHeight());
+    const standarizedX = Math.round(((elemX - extentElemWidth / 2) / elemWidth) * mapSize.getWidth());
+    const standarizedY = Math.round(((elemY - extentElemHeight / 2) / elemHeight) * mapSize.getHeight());
     let adjustedX = standarizedX;
     let adjustedY = standarizedY;
-    if (standarizedX + mapRangeWidth - 1 > mapSize.getWidth() - 1) {
-      adjustedX = mapSize.getWidth() - mapRangeWidth;
+    if (standarizedX + extentWidth - 1 > mapSize.getWidth() - 1) {
+      adjustedX = mapSize.getWidth() - extentWidth;
     } else if (standarizedX < 0) {
       adjustedX = 0;
     }
-    if (standarizedY + mapRangeHeight - 1 > mapSize.getHeight() - 1) {
-      adjustedY = mapSize.getHeight() - mapRangeHeight;
+    if (standarizedY + extentHeight - 1 > mapSize.getHeight() - 1) {
+      adjustedY = mapSize.getHeight() - extentHeight;
     } else if (standarizedY < 0) {
       adjustedY = 0;
     }
 
-    return MapRangeVo.new(
+    return ExtentVo.new(
       LocationVo.new(adjustedX, adjustedY),
-      LocationVo.new(adjustedX + mapRangeWidth - 1, adjustedY + mapRangeHeight - 1)
+      LocationVo.new(adjustedX + extentWidth - 1, adjustedY + extentHeight - 1)
     );
   };
 
   usePull(mapContentElemRef, {
     onPullStart: (x, y) => {
-      const newMapRange = calculateNewMapRangeFromMouseEvent(x, y);
-      onMapRangeUpdate(newMapRange);
+      const newExtent = calculateNewExtentFromMouseEvent(x, y);
+      onExtentUpdate(newExtent);
     },
     onPull: (x, y) => {
-      const newMapRange = calculateNewMapRangeFromMouseEvent(x, y);
-      onMapRangeUpdate(newMapRange);
+      const newExtent = calculateNewExtentFromMouseEvent(x, y);
+      onExtentUpdate(newExtent);
     },
   });
 
@@ -81,8 +81,8 @@ function GameMiniMap({ width, mapSize, mapRange, onMapRangeUpdate }: Props) {
           style={{
             left: `${offsetXRatio * 100}%`,
             top: `${offsetYRatio * 100}%`,
-            width: mapRangeElemWidth,
-            height: mapRangeElemHeight,
+            width: extentElemWidth,
+            height: extentElemHeight,
           }}
         />
       </div>

@@ -1,16 +1,16 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
 import type { UnitDto } from '@/apis/dtos';
-import { MapRangeVo, UnitVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { ExtentVo, UnitVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
-  MapRangeObservedEvent,
-  ObservedMapRangeUpdatedEvent,
+  ExtentObservedEvent,
+  ObservedExtentUpdatedEvent,
   InformationUpdatedEvent,
   ItemsUpdatedEvent,
 } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { PingAction, ObserveMapRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
+import type { PingAction, ObserveExtentAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
 function convertUnitDtoMatrixToUnitMapVo(unitMap: UnitDto[][]): UnitMapVo {
@@ -18,22 +18,22 @@ function convertUnitDtoMatrixToUnitMapVo(unitMap: UnitDto[][]): UnitMapVo {
   return UnitMapVo.new(unitMatrix);
 }
 
-function parseMapRangeObservedEvent(event: MapRangeObservedEvent): [MapRangeVo, UnitMapVo] {
-  const mapRange = MapRangeVo.new(
-    LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
-    LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
+function parseExtentObservedEvent(event: ExtentObservedEvent): [ExtentVo, UnitMapVo] {
+  const extent = ExtentVo.new(
+    LocationVo.new(event.payload.extent.from.x, event.payload.extent.from.y),
+    LocationVo.new(event.payload.extent.to.x, event.payload.extent.to.y)
   );
   const unitMap = convertUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
-  return [mapRange, unitMap];
+  return [extent, unitMap];
 }
 
-function parseObservedMapRangeUpdatedEvent(event: ObservedMapRangeUpdatedEvent): [MapRangeVo, UnitMapVo] {
-  const mapRange = MapRangeVo.new(
-    LocationVo.new(event.payload.mapRange.from.x, event.payload.mapRange.from.y),
-    LocationVo.new(event.payload.mapRange.to.x, event.payload.mapRange.to.y)
+function parseObservedExtentUpdatedEvent(event: ObservedExtentUpdatedEvent): [ExtentVo, UnitMapVo] {
+  const extent = ExtentVo.new(
+    LocationVo.new(event.payload.extent.from.x, event.payload.extent.from.y),
+    LocationVo.new(event.payload.extent.to.x, event.payload.extent.to.y)
   );
   const unitMap = convertUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
-  return [mapRange, unitMap];
+  return [extent, unitMap];
 }
 
 function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [MapSizeVo] {
@@ -50,8 +50,8 @@ export default class GameSocketConn {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onMapRangeObserved: (mapRange: MapRangeVo, unitMap: UnitMapVo) => void;
-    onObservedMapRangeUpdated: (mapRange: MapRangeVo, unitMap: UnitMapVo) => void;
+    onExtentObserved: (extent: ExtentVo, unitMap: UnitMapVo) => void;
+    onObservedExtentUpdated: (extent: ExtentVo, unitMap: UnitMapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
@@ -69,12 +69,12 @@ export default class GameSocketConn {
       const newMsg: Event = JSON.parse(eventJsonString);
 
       console.log(newMsg);
-      if (newMsg.type === EventTypeEnum.MapRangeObserved) {
-        const [mapRange, unitMap] = parseMapRangeObservedEvent(newMsg);
-        params.onMapRangeObserved(mapRange, unitMap);
-      } else if (newMsg.type === EventTypeEnum.ObservedMapRangeUpdated) {
-        const [mapRange, unitMap] = parseObservedMapRangeUpdatedEvent(newMsg);
-        params.onObservedMapRangeUpdated(mapRange, unitMap);
+      if (newMsg.type === EventTypeEnum.ExtentObserved) {
+        const [extent, unitMap] = parseExtentObservedEvent(newMsg);
+        params.onExtentObserved(extent, unitMap);
+      } else if (newMsg.type === EventTypeEnum.ObservedExtentUpdated) {
+        const [extent, unitMap] = parseObservedExtentUpdatedEvent(newMsg);
+        params.onObservedExtentUpdated(extent, unitMap);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         const [mapSize] = parseInformationUpdatedEvent(newMsg);
         params.onInformationUpdated(mapSize);
@@ -103,8 +103,8 @@ export default class GameSocketConn {
   }
 
   static newGameSocketConn(params: {
-    onMapRangeObserved: (mapRange: MapRangeVo, unitMap: UnitMapVo) => void;
-    onObservedMapRangeUpdated: (mapRange: MapRangeVo, unitMap: UnitMapVo) => void;
+    onExtentObserved: (extent: ExtentVo, unitMap: UnitMapVo) => void;
+    onObservedExtentUpdated: (extent: ExtentVo, unitMap: UnitMapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
@@ -159,13 +159,13 @@ export default class GameSocketConn {
     this.sendMessage(action);
   }
 
-  public observeMapRange(newMapRange: MapRangeVo) {
-    const action: ObserveMapRangeAction = {
-      type: ActionTypeEnum.ObserveMapRange,
+  public observeExtent(newExtent: ExtentVo) {
+    const action: ObserveExtentAction = {
+      type: ActionTypeEnum.ObserveExtent,
       payload: {
-        mapRange: {
-          from: { x: newMapRange.getFrom().getX(), y: newMapRange.getFrom().getY() },
-          to: { x: newMapRange.getTo().getX(), y: newMapRange.getTo().getY() },
+        extent: {
+          from: { x: newExtent.getFrom().getX(), y: newExtent.getFrom().getY() },
+          to: { x: newExtent.getTo().getX(), y: newExtent.getTo().getY() },
         },
         actionedAt: new Date().toISOString(),
       },

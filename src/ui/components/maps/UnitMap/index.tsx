@@ -1,12 +1,12 @@
 import { memo, useCallback } from 'react';
 import UnitMapCanvas from '@/ui/components/canvas/UnitMapCanvas';
-import { MapRangeVo, UnitMapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
+import { ExtentVo, UnitMapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
 import dataTestids from './dataTestids';
 import { ItemAgg } from '@/models/aggregates';
 
 type Props = {
-  mapRange: MapRangeVo | null;
-  mapRangeOffset: OffsetVo | null;
+  extent: ExtentVo | null;
+  extentOffset: OffsetVo | null;
   unitMap: UnitMapVo | null;
   unitSize: number;
   items: ItemAgg[] | null;
@@ -14,19 +14,19 @@ type Props = {
   onUnitClick: (location: LocationVo) => any;
 };
 
-function UnitMap({ mapRange, mapRangeOffset, unitMap, unitSize, items, selectedItemId, onUnitClick }: Props) {
+function UnitMap({ extent, extentOffset, unitMap, unitSize, items, selectedItemId, onUnitClick }: Props) {
   const handleUnitClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!mapRange) {
+      if (!extent) {
         return;
       }
 
-      const originLocation = mapRange.getFrom();
+      const originLocation = extent.getFrom();
       const finalLocation = originLocation.shift(colIdx, rowIdx);
 
       onUnitClick(finalLocation);
     },
-    [onUnitClick, mapRange]
+    [onUnitClick, extent]
   );
 
   return (
@@ -34,8 +34,8 @@ function UnitMap({ mapRange, mapRangeOffset, unitMap, unitSize, items, selectedI
       <section
         className="relative flex"
         style={{
-          left: mapRangeOffset ? mapRangeOffset.getX() * unitSize : 0,
-          top: mapRangeOffset ? mapRangeOffset.getY() * unitSize : 0,
+          left: extentOffset ? extentOffset.getX() * unitSize : 0,
+          top: extentOffset ? extentOffset.getY() * unitSize : 0,
         }}
       >
         {unitMap && (
