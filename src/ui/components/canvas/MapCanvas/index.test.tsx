@@ -1,11 +1,11 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import UnitMapCanvas, { dataTestids } from '.';
-import { MapSizeVo, UnitMapVo } from '@/models/valueObjects';
+import MapCanvas, { dataTestids } from '.';
+import { MapSizeVo, MapVo } from '@/models/valueObjects';
 
-function renderUnitMapCanvas(): RenderResult {
+function renderMapCanvas(): RenderResult {
   return render(
-    <UnitMapCanvas
-      unitMap={UnitMapVo.newWithMapSize(MapSizeVo.new(1, 1))}
+    <MapCanvas
+      map={MapVo.newWithMapSize(MapSizeVo.new(1, 1))}
       unitSize={20}
       onClick={() => {}}
       items={[]}
@@ -14,10 +14,10 @@ function renderUnitMapCanvas(): RenderResult {
   );
 }
 
-describe('UnitMapCanvas', () => {
+describe('MapCanvas', () => {
   it('Should render component successfully.', () => {
     try {
-      renderUnitMapCanvas();
+      renderMapCanvas();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

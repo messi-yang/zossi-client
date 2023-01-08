@@ -1,20 +1,20 @@
 import { memo, useCallback } from 'react';
-import UnitMapCanvas from '@/ui/components/canvas/UnitMapCanvas';
-import { RangeVo, UnitMapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
+import MapCanvas from '@/ui/components/canvas/MapCanvas';
+import { RangeVo, MapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
 import dataTestids from './dataTestids';
 import { ItemAgg } from '@/models/aggregates';
 
 type Props = {
   range: RangeVo | null;
   rangeOffset: OffsetVo | null;
-  unitMap: UnitMapVo | null;
+  map: MapVo | null;
   unitSize: number;
   items: ItemAgg[] | null;
   selectedItemId: string | null;
   onUnitClick: (location: LocationVo) => any;
 };
 
-function UnitMap({ range, rangeOffset, unitMap, unitSize, items, selectedItemId, onUnitClick }: Props) {
+function Map({ range, rangeOffset, map, unitSize, items, selectedItemId, onUnitClick }: Props) {
   const handleUnitClick = useCallback(
     (colIdx: number, rowIdx: number) => {
       if (!range) {
@@ -38,9 +38,9 @@ function UnitMap({ range, rangeOffset, unitMap, unitSize, items, selectedItemId,
           top: rangeOffset ? rangeOffset.getY() * unitSize : 0,
         }}
       >
-        {unitMap && (
-          <UnitMapCanvas
-            unitMap={unitMap}
+        {map && (
+          <MapCanvas
+            map={map}
             unitSize={unitSize}
             items={items || []}
             selectedItemId={selectedItemId}
@@ -52,5 +52,5 @@ function UnitMap({ range, rangeOffset, unitMap, unitSize, items, selectedItemId,
   );
 }
 
-export default memo(UnitMap);
+export default memo(Map);
 export { dataTestids };

@@ -1,13 +1,13 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import UnitMap, { dataTestids } from '.';
-import { UnitVo, UnitMapVo, OffsetVo } from '@/models/valueObjects';
+import Map, { dataTestids } from '.';
+import { UnitVo, MapVo, OffsetVo } from '@/models/valueObjects';
 
-function renderUnitMap(unitMap: UnitMapVo): RenderResult {
+function renderMap(map: MapVo): RenderResult {
   return render(
-    <UnitMap
+    <Map
       range={null}
       rangeOffset={OffsetVo.new(0, 0)}
-      unitMap={unitMap}
+      map={map}
       unitSize={30}
       items={[]}
       selectedItemId={null}
@@ -16,11 +16,11 @@ function renderUnitMap(unitMap: UnitMapVo): RenderResult {
   );
 }
 
-describe('UnitMap', () => {
+describe('Map', () => {
   it('Should render component successfully.', () => {
     try {
       const unitMatrix = [[UnitVo.new(null)]];
-      renderUnitMap(UnitMapVo.new(unitMatrix));
+      renderMap(MapVo.new(unitMatrix));
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

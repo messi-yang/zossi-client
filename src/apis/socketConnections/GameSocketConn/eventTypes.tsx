@@ -25,7 +25,7 @@ type RangeObservedEvent = {
   type: EventTypeEnum.RangeObserved;
   payload: {
     range: RangeDto;
-    unitMap: UnitDto[][];
+    map: UnitDto[][];
   };
 };
 
@@ -33,7 +33,7 @@ type ObservedRangeUpdatedEvent = {
   type: EventTypeEnum.ObservedRangeUpdated;
   payload: {
     range: RangeDto;
-    unitMap: UnitDto[][];
+    map: UnitDto[][];
     updatedAt: string;
   };
 };

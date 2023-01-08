@@ -1,7 +1,7 @@
 import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 
-import { UnitVo, UnitMapVo, MapSizeVo } from '@/models/valueObjects';
+import { UnitVo, MapVo, MapSizeVo } from '@/models/valueObjects';
 
 import { ItemAgg } from '@/models/aggregates';
 import dataTestids from './dataTestids';
@@ -27,8 +27,8 @@ type ItemMap = {
   [id: string]: ItemAgg;
 };
 
-function generateCanvasElemSize(unitMap: UnitMapVo, unitSize: number): ElemSize {
-  const mapSize = unitMap.getMapSize();
+function generateCanvasElemSize(map: MapVo, unitSize: number): ElemSize {
+  const mapSize = map.getMapSize();
 
   return {
     width: mapSize.getWidth() * unitSize + 1,
@@ -36,8 +36,8 @@ function generateCanvasElemSize(unitMap: UnitMapVo, unitSize: number): ElemSize 
   };
 }
 
-function generateCanvasResolution(unitMap: UnitMapVo, unitSize: number): Resolution {
-  const elemSize = generateCanvasElemSize(unitMap, unitSize);
+function generateCanvasResolution(map: MapVo, unitSize: number): Resolution {
+  const elemSize = generateCanvasElemSize(map, unitSize);
 
   return {
     width: elemSize.width,
@@ -46,15 +46,15 @@ function generateCanvasResolution(unitMap: UnitMapVo, unitSize: number): Resolut
 }
 
 type Props = {
-  unitMap: UnitMapVo;
+  map: MapVo;
   unitSize: number;
   items: ItemAgg[];
   selectedItemId: string | null;
   onClick: (colIdx: number, rowIdx: number) => void;
 };
 
-function UnitMapCanvas({ unitMap, unitSize, items, selectedItemId, onClick }: Props) {
-  const [unitMapCanvasElem, setUnitMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
+function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
+  const [mapCanvasElem, setMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [hoverMaskCanvasElem, HoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
   const [grassBaseImageElem, setGrassBaseImageElem] = useState<HTMLImageElement | null>(null);
@@ -66,7 +66,7 @@ function UnitMapCanvas({ unitMap, unitSize, items, selectedItemId, onClick }: Pr
     image.src = '/grass-base.png';
   }, []);
 
-  const [mapSize, setMapSize] = useState(unitMap.getMapSize());
+  const [mapSize, setMapSize] = useState(map.getMapSize());
 
   const itemMap: ItemMap = useMemo(() => {
     const res: ItemMap = {};
@@ -76,8 +76,8 @@ function UnitMapCanvas({ unitMap, unitSize, items, selectedItemId, onClick }: Pr
     return res;
   }, [items]);
 
-  const canvasResolution = useMemo(() => generateCanvasResolution(unitMap, unitSize), [unitMap, unitSize]);
-  const canvasElemSize = useMemo(() => generateCanvasElemSize(unitMap, unitSize), [unitMap, unitSize]);
+  const canvasResolution = useMemo(() => generateCanvasResolution(map, unitSize), [map, unitSize]);
+  const canvasElemSize = useMemo(() => generateCanvasElemSize(map, unitSize), [map, unitSize]);
 
   const getItemAssetImageElemOfUnit = useCallback(
     (unit: UnitVo): HTMLImageElement | null => {
@@ -97,11 +97,11 @@ function UnitMapCanvas({ unitMap, unitSize, items, selectedItemId, onClick }: Pr
   );
 
   useEffect(() => {
-    const newMapSize = unitMap.getMapSize();
+    const newMapSize = map.getMapSize();
     if (!mapSize.isEqual(newMapSize)) {
       setMapSize(newMapSize);
     }
-  }, [unitMap]);
+  }, [map]);
 
   const clean = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -111,10 +111,10 @@ function UnitMapCanvas({ unitMap, unitSize, items, selectedItemId, onClick }: Pr
   );
 
   const drawUnits = useCallback(
-    (ctx: CanvasRenderingContext2D, newUnitMap: UnitMapVo, newUnitSize: number) => {
+    (ctx: CanvasRenderingContext2D, newMap: MapVo, newUnitSize: number) => {
       ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
-      newUnitMap.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
+      newMap.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
         const leftTopX = colIdx * newUnitSize;
         const leftTopY = rowIdx * newUnitSize;
 
@@ -132,22 +132,22 @@ function UnitMapCanvas({ unitMap, unitSize, items, selectedItemId, onClick }: Pr
   );
 
   const draw = useCallback(
-    (newUnitMap: UnitMapVo, newUnitSize: number) => {
-      const ctx = unitMapCanvasElem?.getContext('2d');
+    (newMap: MapVo, newUnitSize: number) => {
+      const ctx = mapCanvasElem?.getContext('2d');
       if (!ctx) {
         return;
       }
 
       clean(ctx);
-      drawUnits(ctx, newUnitMap, newUnitSize);
+      drawUnits(ctx, newMap, newUnitSize);
     },
-    [drawUnits, unitMapCanvasElem, unitMap, unitSize, mapSize]
+    [drawUnits, mapCanvasElem, map, unitSize, mapSize]
   );
 
-  draw(unitMap, unitSize);
+  draw(map, unitSize);
 
-  const onUnitMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
-    setUnitMapCanvasElem(elem);
+  const onMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
+    setMapCanvasElem(elem);
   }, []);
 
   const calculateIndexes = useCallback(
@@ -243,7 +243,7 @@ function UnitMapCanvas({ unitMap, unitSize, items, selectedItemId, onClick }: Pr
       className="relative box-border"
     >
       <canvas
-        ref={onUnitMapCanvasLoad}
+        ref={onMapCanvasLoad}
         width={canvasResolution.width}
         height={canvasResolution.height}
         className="absolute left-0 top-0 z-0"
@@ -263,5 +263,5 @@ function UnitMapCanvas({ unitMap, unitSize, items, selectedItemId, onClick }: Pr
   );
 }
 
-export default UnitMapCanvas;
+export default MapCanvas;
 export { dataTestids };

@@ -6,7 +6,7 @@ import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
 import GameContext from '@/ui/contexts/GameContext';
 import { RangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
-import UnitMap from '@/ui/components/maps/UnitMap';
+import Map from '@/ui/components/maps/Map';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
 import SelectItemModal from '@/ui/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
@@ -16,18 +16,8 @@ import ConfirmModal from '@/ui/components/modals/ConfirmModal';
 const Room: NextPage = function Room() {
   const windowSize = useWindowSize();
   const router = useRouter();
-  const {
-    mapSize,
-    observedRange,
-    unitMap,
-    items,
-    gameStatus,
-    joinGame,
-    leaveGame,
-    buildItem,
-    destroyItem,
-    observeRange,
-  } = useContext(GameContext);
+  const { mapSize, observedRange, map, items, gameStatus, joinGame, leaveGame, buildItem, destroyItem, observeRange } =
+    useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
@@ -44,17 +34,17 @@ const Room: NextPage = function Room() {
     return observedRange.calculateOffsetWithRange(targetRange);
   }, [observedRange, targetRange]);
 
-  const [unitMapWrapperElemRef, unitMapWrapperElemRect] = useDomRect();
+  const [mapWrapperElemRef, mapWrapperElemRect] = useDomRect();
   const desiredMapSize = useMemo(() => {
-    if (!unitMapWrapperElemRect) {
+    if (!mapWrapperElemRect) {
       return null;
     }
 
     return MapSizeVo.newWithResolutionAndUnitSize(
-      { width: unitMapWrapperElemRect.width, height: unitMapWrapperElemRect.height },
+      { width: mapWrapperElemRect.width, height: mapWrapperElemRect.height },
       unitSize
     );
-  }, [unitMapWrapperElemRect]);
+  }, [mapWrapperElemRect]);
   useEffect(
     function handleDesiredMapSizeUpdateEffect() {
       if (!desiredMapSize) {
@@ -175,11 +165,11 @@ const Room: NextPage = function Room() {
             />
           </section>
           <section className="relative grow overflow-hidden bg-black">
-            <section ref={unitMapWrapperElemRef} className="w-full h-full">
-              <UnitMap
+            <section ref={mapWrapperElemRef} className="w-full h-full">
+              <Map
                 range={observedRange}
                 rangeOffset={observedRangeOffset}
-                unitMap={unitMap}
+                map={map}
                 unitSize={unitSize}
                 items={items}
                 selectedItemId={selectedItem?.getId() || null}
@@ -215,11 +205,11 @@ const Room: NextPage = function Room() {
             onDone={handleSelectItemDone}
           />
           <section className="relative grow overflow-hidden bg-black">
-            <section ref={unitMapWrapperElemRef} className="w-full h-full">
-              <UnitMap
+            <section ref={mapWrapperElemRef} className="w-full h-full">
+              <Map
                 range={observedRange}
                 rangeOffset={observedRangeOffset}
-                unitMap={unitMap}
+                map={map}
                 unitSize={unitSize}
                 items={items || []}
                 selectedItemId={selectedItem?.getId() || null}

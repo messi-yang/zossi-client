@@ -1,6 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
 import type { UnitDto } from '@/apis/dtos';
-import { RangeVo, UnitVo, UnitMapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { RangeVo, UnitVo, MapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
   RangeObservedEvent,
@@ -13,27 +13,27 @@ import { ActionTypeEnum } from './actionTypes';
 import type { PingAction, ObserveRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
-function convertUnitDtoMatrixToUnitMapVo(unitMap: UnitDto[][]): UnitMapVo {
-  const unitMatrix = unitMap.map((unitCol) => unitCol.map((unit) => UnitVo.new(unit.itemId)));
-  return UnitMapVo.new(unitMatrix);
+function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
+  const unitMatrix = map.map((unitCol) => unitCol.map((unit) => UnitVo.new(unit.itemId)));
+  return MapVo.new(unitMatrix);
 }
 
-function parseRangeObservedEvent(event: RangeObservedEvent): [RangeVo, UnitMapVo] {
+function parseRangeObservedEvent(event: RangeObservedEvent): [RangeVo, MapVo] {
   const range = RangeVo.new(
     LocationVo.new(event.payload.range.from.x, event.payload.range.from.y),
     LocationVo.new(event.payload.range.to.x, event.payload.range.to.y)
   );
-  const unitMap = convertUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
-  return [range, unitMap];
+  const map = convertUnitDtoMatrixToMapVo(event.payload.map);
+  return [range, map];
 }
 
-function parseObservedRangeUpdatedEvent(event: ObservedRangeUpdatedEvent): [RangeVo, UnitMapVo] {
+function parseObservedRangeUpdatedEvent(event: ObservedRangeUpdatedEvent): [RangeVo, MapVo] {
   const range = RangeVo.new(
     LocationVo.new(event.payload.range.from.x, event.payload.range.from.y),
     LocationVo.new(event.payload.range.to.x, event.payload.range.to.y)
   );
-  const unitMap = convertUnitDtoMatrixToUnitMapVo(event.payload.unitMap);
-  return [range, unitMap];
+  const map = convertUnitDtoMatrixToMapVo(event.payload.map);
+  return [range, map];
 }
 
 function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [MapSizeVo] {
@@ -50,8 +50,8 @@ export default class GameSocketConn {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onRangeObserved: (range: RangeVo, unitMap: UnitMapVo) => void;
-    onObservedRangeUpdated: (range: RangeVo, unitMap: UnitMapVo) => void;
+    onRangeObserved: (range: RangeVo, map: MapVo) => void;
+    onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
@@ -70,11 +70,11 @@ export default class GameSocketConn {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.RangeObserved) {
-        const [range, unitMap] = parseRangeObservedEvent(newMsg);
-        params.onRangeObserved(range, unitMap);
+        const [range, map] = parseRangeObservedEvent(newMsg);
+        params.onRangeObserved(range, map);
       } else if (newMsg.type === EventTypeEnum.ObservedRangeUpdated) {
-        const [range, unitMap] = parseObservedRangeUpdatedEvent(newMsg);
-        params.onObservedRangeUpdated(range, unitMap);
+        const [range, map] = parseObservedRangeUpdatedEvent(newMsg);
+        params.onObservedRangeUpdated(range, map);
       } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
         const [mapSize] = parseInformationUpdatedEvent(newMsg);
         params.onInformationUpdated(mapSize);
@@ -103,8 +103,8 @@ export default class GameSocketConn {
   }
 
   static newGameSocketConn(params: {
-    onRangeObserved: (range: RangeVo, unitMap: UnitMapVo) => void;
-    onObservedRangeUpdated: (range: RangeVo, unitMap: UnitMapVo) => void;
+    onRangeObserved: (range: RangeVo, map: MapVo) => void;
+    onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
