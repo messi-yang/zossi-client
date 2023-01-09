@@ -1,9 +1,9 @@
 import { useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import useWindowSize from '@/ui/hooks/useWindowSize';
 import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
 import GameContext from '@/ui/contexts/GameContext';
+import StyleContext from '@/ui/contexts/StyleContext';
 import { RangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import Map from '@/ui/components/maps/Map';
@@ -14,8 +14,8 @@ import useDomRect from '@/ui/hooks/useDomRect';
 import ConfirmModal from '@/ui/components/modals/ConfirmModal';
 
 const Room: NextPage = function Room() {
-  const windowSize = useWindowSize();
   const router = useRouter();
+  const styleContext = useContext(StyleContext);
   const { mapSize, observedRange, map, items, gameStatus, joinGame, leaveGame, buildItem, destroyItem, observeRange } =
     useContext(GameContext);
   const [unitSize] = useState(50);
@@ -50,6 +50,9 @@ const Room: NextPage = function Room() {
       if (!desiredMapSize) {
         return;
       }
+      if (!styleContext.isWindowSizeReady) {
+        return;
+      }
       const newRange = RangeVo.newWithLocationAndMapSize(
         observedRange ? observedRange.getFrom() : LocationVo.new(0, 0),
         desiredMapSize
@@ -57,7 +60,7 @@ const Room: NextPage = function Room() {
       setTargetRange(newRange);
       observeRange(newRange);
     },
-    [observedRange === null, desiredMapSize, observeRange]
+    [observedRange === null, desiredMapSize, observeRange, styleContext.isWindowSizeReady]
   );
 
   useEffect(function joinGameOnInitializationEffect() {
@@ -133,12 +136,15 @@ const Room: NextPage = function Room() {
     [isDestroyingItem, isBuildindItem, selectedItem, buildItem, destroyItem]
   );
 
-  const screenSize: 'large' | 'small' = windowSize.width > 700 ? 'large' : 'small';
+  const screenSize: 'large' | 'small' = styleContext.getWindowWidth() > 700 ? 'large' : 'small';
 
   return (
     <>
       {screenSize === 'large' && (
-        <main className="flex" style={{ width: windowSize.width, height: windowSize.height }}>
+        <main
+          className="w-screen h-screen flex"
+          style={{ width: styleContext.windowWidth, height: styleContext.windowHeight }}
+        >
           <ConfirmModal
             opened={isReconnectModalVisible}
             buttonCopy="Reconnect"
@@ -190,7 +196,10 @@ const Room: NextPage = function Room() {
         </main>
       )}
       {screenSize === 'small' && (
-        <main className="flex flex-col" style={{ width: windowSize.width, height: windowSize.height }}>
+        <main
+          className="w-screen h-screen flex flex-col"
+          style={{ width: styleContext.windowWidth, height: styleContext.windowHeight }}
+        >
           <ConfirmModal
             opened={isReconnectModalVisible}
             buttonCopy="Reconnect"
@@ -198,7 +207,7 @@ const Room: NextPage = function Room() {
           />
           <SelectItemModal
             opened={isSelectItemModalVisible}
-            width={windowSize.width}
+            width={styleContext.getWindowWidth()}
             selectedItem={selectedItem}
             items={items}
             onSelect={handleItemSelect}
@@ -219,7 +228,7 @@ const Room: NextPage = function Room() {
             {mapSize && targetRange && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
-                  width={windowSize.width * 0.8}
+                  width={styleContext.getWindowWidth() * 0.8}
                   mapSize={mapSize}
                   range={targetRange}
                   onRangeUpdate={handleMiniMapRangeUpdate}

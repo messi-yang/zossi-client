@@ -1,12 +1,15 @@
 import './tailwind.css';
 import type { AppProps } from 'next/app';
-import { Provider as GameRoomProvider } from '@/ui/contexts/GameContext';
+import { Provider as GameContextProvider } from '@/ui/contexts/GameContext';
+import { Provider as StyleContextProvider } from '@/ui/contexts/StyleContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <GameRoomProvider>
-      <Component {...pageProps} />
-    </GameRoomProvider>
+    <GameContextProvider>
+      <StyleContextProvider>
+        <Component {...pageProps} />
+      </StyleContextProvider>
+    </GameContextProvider>
   );
 }
 
