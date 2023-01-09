@@ -2,6 +2,7 @@ import { useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
+import useOnWindowResize from '@/ui/hooks/useOnWindowResize';
 import GameContext from '@/ui/contexts/GameContext';
 import StyleContext from '@/ui/contexts/StyleContext';
 import { RangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
@@ -10,7 +11,6 @@ import Map from '@/ui/components/maps/Map';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
 import SelectItemModal from '@/ui/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
-import useDomRect from '@/ui/hooks/useDomRect';
 import ConfirmModal from '@/ui/components/modals/ConfirmModal';
 
 const Room: NextPage = function Room() {
@@ -34,34 +34,21 @@ const Room: NextPage = function Room() {
     return observedRange.calculateOffsetWithRange(targetRange);
   }, [observedRange, targetRange]);
 
-  const [mapWrapperElemRef, mapWrapperElemRect] = useDomRect();
-  const desiredMapSize = useMemo(() => {
-    if (!mapWrapperElemRect) {
-      return null;
-    }
-
-    return MapSizeVo.newWithResolutionAndUnitSize(
-      { width: mapWrapperElemRect.width, height: mapWrapperElemRect.height },
-      unitSize
+  const handleDesiredMapSizeUpdate = useCallback(() => {
+    const newRange = RangeVo.newWithLocationAndMapSize(
+      observedRange ? observedRange.getFrom() : LocationVo.new(0, 0),
+      MapSizeVo.newWithResolutionAndUnitSize(
+        {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        },
+        30
+      )
     );
-  }, [mapWrapperElemRect]);
-  useEffect(
-    function handleDesiredMapSizeUpdateEffect() {
-      if (!desiredMapSize) {
-        return;
-      }
-      if (!styleContext.isWindowSizeReady) {
-        return;
-      }
-      const newRange = RangeVo.newWithLocationAndMapSize(
-        observedRange ? observedRange.getFrom() : LocationVo.new(0, 0),
-        desiredMapSize
-      );
-      setTargetRange(newRange);
-      observeRange(newRange);
-    },
-    [observedRange === null, desiredMapSize, observeRange, styleContext.isWindowSizeReady]
-  );
+    setTargetRange(newRange);
+    observeRange(newRange);
+  }, [observedRange === null, observeRange]);
+  useOnWindowResize(handleDesiredMapSizeUpdate);
 
   useEffect(function joinGameOnInitializationEffect() {
     joinGame();
@@ -171,7 +158,7 @@ const Room: NextPage = function Room() {
             />
           </section>
           <section className="relative grow overflow-hidden bg-black">
-            <section ref={mapWrapperElemRef} className="w-full h-full">
+            <section className="w-full h-full">
               <Map
                 range={observedRange}
                 rangeOffset={observedRangeOffset}
@@ -214,7 +201,7 @@ const Room: NextPage = function Room() {
             onDone={handleSelectItemDone}
           />
           <section className="relative grow overflow-hidden bg-black">
-            <section ref={mapWrapperElemRef} className="w-full h-full">
+            <section className="w-full h-full">
               <Map
                 range={observedRange}
                 rangeOffset={observedRangeOffset}

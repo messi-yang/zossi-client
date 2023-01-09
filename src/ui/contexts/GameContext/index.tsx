@@ -64,6 +64,7 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
+      onGameJoined: () => {},
       onRangeObserved: (newRange: RangeVo, newMap: MapVo) => {
         setObservedRange(newRange);
         setMap(newMap);

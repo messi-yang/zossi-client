@@ -3,6 +3,7 @@ import type { UnitDto } from '@/apis/dtos';
 import { RangeVo, UnitVo, MapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
 import {
   EventTypeEnum,
+  GameJoinedEvent,
   RangeObservedEvent,
   ObservedRangeUpdatedEvent,
   InformationUpdatedEvent,
@@ -16,6 +17,10 @@ import { ItemAgg } from '@/models/aggregates';
 function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
   const unitMatrix = map.map((unitCol) => unitCol.map((unit) => UnitVo.new(unit.itemId)));
   return MapVo.new(unitMatrix);
+}
+
+function parseGameJoinedEvent(event: GameJoinedEvent): [string] {
+  return [event.payload.playerId];
 }
 
 function parseRangeObservedEvent(event: RangeObservedEvent): [RangeVo, MapVo] {
@@ -51,6 +56,7 @@ export default class GameSocketConn {
 
   constructor(params: {
     onRangeObserved: (range: RangeVo, map: MapVo) => void;
+    onGameJoined: () => void;
     onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
@@ -69,7 +75,16 @@ export default class GameSocketConn {
       const newMsg: Event = JSON.parse(eventJsonString);
 
       console.log(newMsg);
-      if (newMsg.type === EventTypeEnum.RangeObserved) {
+      if (newMsg.type === EventTypeEnum.GameJoined) {
+        parseGameJoinedEvent(newMsg);
+        params.onGameJoined();
+        this.observeRange(
+          RangeVo.newWithLocationAndMapSize(
+            LocationVo.new(0, 0),
+            MapSizeVo.newWithResolutionAndUnitSize({ width: window.innerWidth, height: window.innerHeight }, 30)
+          )
+        );
+      } else if (newMsg.type === EventTypeEnum.RangeObserved) {
         const [range, map] = parseRangeObservedEvent(newMsg);
         params.onRangeObserved(range, map);
       } else if (newMsg.type === EventTypeEnum.ObservedRangeUpdated) {
@@ -104,6 +119,7 @@ export default class GameSocketConn {
 
   static newGameSocketConn(params: {
     onRangeObserved: (range: RangeVo, map: MapVo) => void;
+    onGameJoined: () => void;
     onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
     onInformationUpdated: (mapSize: MapSizeVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
