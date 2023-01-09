@@ -2,7 +2,7 @@ import type { RangeDto, DimensionDto, ItemDto, UnitDto } from '@/apis/dtos';
 
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
-  InformationUpdated = 'INFORMATION_UPDATED',
+  DimensionUpdated = 'DIMENSION_UPDATED',
   ItemsUpdated = 'ITEMS_UPDATED',
   RangeObserved = 'RANGE_OBSERVED',
   ObservedRangeUpdated = 'OBSERVED_RANGE_UPDATED',
@@ -15,8 +15,8 @@ type GameJoinedEvent = {
   };
 };
 
-type InformationUpdatedEvent = {
-  type: EventTypeEnum.InformationUpdated;
+type DimensionUpdatedEvent = {
+  type: EventTypeEnum.DimensionUpdated;
   payload: {
     dimension: DimensionDto;
   };
@@ -48,7 +48,7 @@ type ObservedRangeUpdatedEvent = {
 
 type Event =
   | GameJoinedEvent
-  | InformationUpdatedEvent
+  | DimensionUpdatedEvent
   | ItemsUpdatedEvent
   | RangeObservedEvent
   | ObservedRangeUpdatedEvent;
@@ -57,7 +57,7 @@ export { EventTypeEnum };
 export type {
   Event,
   GameJoinedEvent,
-  InformationUpdatedEvent,
+  DimensionUpdatedEvent,
   ItemsUpdatedEvent,
   RangeObservedEvent,
   ObservedRangeUpdatedEvent,

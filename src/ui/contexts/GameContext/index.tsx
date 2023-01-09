@@ -73,7 +73,7 @@ export function Provider({ children }: Props) {
         setObservedRange(newRange);
         setMap(newMap);
       },
-      onInformationUpdated: (newDimension: DimensionVo) => {
+      onDimensionUpdated: (newDimension: DimensionVo) => {
         setDimension(newDimension);
       },
       onItemsUpdated: (returnedItems: ItemAgg[]) => {

@@ -6,7 +6,7 @@ import {
   GameJoinedEvent,
   RangeObservedEvent,
   ObservedRangeUpdatedEvent,
-  InformationUpdatedEvent,
+  DimensionUpdatedEvent,
   ItemsUpdatedEvent,
 } from './eventTypes';
 import type { Event } from './eventTypes';
@@ -41,7 +41,7 @@ function parseObservedRangeUpdatedEvent(event: ObservedRangeUpdatedEvent): [Rang
   return [range, map];
 }
 
-function parseInformationUpdatedEvent(event: InformationUpdatedEvent): [DimensionVo] {
+function parseDimensionUpdatedEvent(event: DimensionUpdatedEvent): [DimensionVo] {
   return [DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height)];
 }
 
@@ -58,7 +58,7 @@ export default class GameSocketConn {
     onRangeObserved: (range: RangeVo, map: MapVo) => void;
     onGameJoined: () => void;
     onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
-    onInformationUpdated: (dimension: DimensionVo) => void;
+    onDimensionUpdated: (dimension: DimensionVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
@@ -90,9 +90,9 @@ export default class GameSocketConn {
       } else if (newMsg.type === EventTypeEnum.ObservedRangeUpdated) {
         const [range, map] = parseObservedRangeUpdatedEvent(newMsg);
         params.onObservedRangeUpdated(range, map);
-      } else if (newMsg.type === EventTypeEnum.InformationUpdated) {
-        const [dimension] = parseInformationUpdatedEvent(newMsg);
-        params.onInformationUpdated(dimension);
+      } else if (newMsg.type === EventTypeEnum.DimensionUpdated) {
+        const [dimension] = parseDimensionUpdatedEvent(newMsg);
+        params.onDimensionUpdated(dimension);
       } else if (newMsg.type === EventTypeEnum.ItemsUpdated) {
         const [items] = parseItemsUpdatedEvent(newMsg);
         await Promise.all(items.map((item) => item.loadAsset()));
@@ -121,7 +121,7 @@ export default class GameSocketConn {
     onRangeObserved: (range: RangeVo, map: MapVo) => void;
     onGameJoined: () => void;
     onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
-    onInformationUpdated: (dimension: DimensionVo) => void;
+    onDimensionUpdated: (dimension: DimensionVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
