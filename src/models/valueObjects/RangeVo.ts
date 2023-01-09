@@ -1,5 +1,5 @@
 import LocationVo from './LocationVo';
-import MapSizeVo from './MapSizeVo';
+import DimensionVo from './DimensionVo';
 import OffsetVo from './OffsetVo';
 
 export default class RangeVo {
@@ -16,16 +16,16 @@ export default class RangeVo {
     return new RangeVo(from, to);
   }
 
-  static newWithLocationAndMapSize(location: LocationVo, mapSize: MapSizeVo): RangeVo {
-    return new RangeVo(location, location.shift(mapSize.getWidth() - 1, mapSize.getHeight() - 1));
+  static newWithLocationAndDimension(location: LocationVo, dimension: DimensionVo): RangeVo {
+    return new RangeVo(location, location.shift(dimension.getWidth() - 1, dimension.getHeight() - 1));
   }
 
   public isEqual(range: RangeVo): Boolean {
     return this.from.isEqual(range.getFrom()) && this.to.isEqual(range.getTo());
   }
 
-  public getMapSize(): MapSizeVo {
-    return MapSizeVo.new(this.to.getX() - this.from.getX() + 1, this.to.getY() - this.from.getY() + 1);
+  public getDimension(): DimensionVo {
+    return DimensionVo.new(this.to.getX() - this.from.getX() + 1, this.to.getY() - this.from.getY() + 1);
   }
 
   public getFrom(): LocationVo {

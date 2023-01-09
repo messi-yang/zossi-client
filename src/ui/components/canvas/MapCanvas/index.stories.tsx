@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import MapCanvas from '.';
-import { MapSizeVo, MapVo } from '@/models/valueObjects';
+import { DimensionVo, MapVo } from '@/models/valueObjects';
 
 export default {
   title: 'Canvas/MapCanvas',
@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof MapCanvas> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  map: MapVo.newWithMapSize(MapSizeVo.new(30, 30)),
+  map: MapVo.newWithDimension(DimensionVo.new(30, 30)),
   unitSize: 15,
   items: [],
   selectedItemId: null,

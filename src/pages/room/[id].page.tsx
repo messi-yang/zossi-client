@@ -5,7 +5,7 @@ import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
 import useOnWindowResize from '@/ui/hooks/useOnWindowResize';
 import GameContext from '@/ui/contexts/GameContext';
 import StyleContext from '@/ui/contexts/StyleContext';
-import { RangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { RangeVo, LocationVo, DimensionVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import Map from '@/ui/components/maps/Map';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
@@ -16,8 +16,18 @@ import ConfirmModal from '@/ui/components/modals/ConfirmModal';
 const Room: NextPage = function Room() {
   const router = useRouter();
   const styleContext = useContext(StyleContext);
-  const { mapSize, observedRange, map, items, gameStatus, joinGame, leaveGame, buildItem, destroyItem, observeRange } =
-    useContext(GameContext);
+  const {
+    dimension,
+    observedRange,
+    map,
+    items,
+    gameStatus,
+    joinGame,
+    leaveGame,
+    buildItem,
+    destroyItem,
+    observeRange,
+  } = useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
@@ -40,9 +50,9 @@ const Room: NextPage = function Room() {
         return;
       }
       setTargetRange(
-        RangeVo.newWithLocationAndMapSize(
+        RangeVo.newWithLocationAndDimension(
           LocationVo.new(0, 0),
-          MapSizeVo.newWithResolutionAndUnitSize(
+          DimensionVo.newWithResolutionAndUnitSize(
             {
               width: styleContext.getWindowWidth(),
               height: styleContext.getWindowWidth(),
@@ -55,10 +65,10 @@ const Room: NextPage = function Room() {
     [styleContext.isWindowSizeReady]
   );
 
-  const handleDesiredMapSizeUpdate = useCallback(() => {
-    const newRange = RangeVo.newWithLocationAndMapSize(
+  const handleDesiredDimensionUpdate = useCallback(() => {
+    const newRange = RangeVo.newWithLocationAndDimension(
       observedRange ? observedRange.getFrom() : LocationVo.new(0, 0),
-      MapSizeVo.newWithResolutionAndUnitSize(
+      DimensionVo.newWithResolutionAndUnitSize(
         {
           width: window.innerWidth,
           height: window.innerHeight,
@@ -69,7 +79,7 @@ const Room: NextPage = function Room() {
     setTargetRange(newRange);
     observeRange(newRange);
   }, [observedRange === null, observeRange]);
-  useOnWindowResize(handleDesiredMapSizeUpdate);
+  useOnWindowResize(handleDesiredDimensionUpdate);
 
   useEffect(function joinGameOnInitializationEffect() {
     joinGame();
@@ -190,11 +200,11 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {mapSize && targetRange && isMiniMapVisible && (
+            {dimension && targetRange && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
                 <GameMiniMap
                   width={300}
-                  mapSize={mapSize}
+                  dimension={dimension}
                   range={targetRange}
                   onRangeUpdate={handleMiniMapRangeUpdate}
                 />
@@ -233,11 +243,11 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {mapSize && targetRange && isMiniMapVisible && (
+            {dimension && targetRange && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={styleContext.getWindowWidth() * 0.8}
-                  mapSize={mapSize}
+                  dimension={dimension}
                   range={targetRange}
                   onRangeUpdate={handleMiniMapRangeUpdate}
                 />

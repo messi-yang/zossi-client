@@ -1,12 +1,12 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { RangeVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { RangeVo, LocationVo, DimensionVo } from '@/models/valueObjects';
 import GameMiniMap, { dataTestids } from '.';
 
 function renderGameMiniMap(): RenderResult {
   return render(
     <GameMiniMap
       width={300}
-      mapSize={MapSizeVo.new(100, 100)}
+      dimension={DimensionVo.new(100, 100)}
       range={RangeVo.new(LocationVo.new(0, 0), LocationVo.new(10, 10))}
       onRangeUpdate={() => {}}
     />

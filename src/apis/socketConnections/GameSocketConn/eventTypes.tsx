@@ -1,4 +1,4 @@
-import type { RangeDto, MapSizeDto, ItemDto, UnitDto } from '@/apis/dtos';
+import type { RangeDto, DimensionDto, ItemDto, UnitDto } from '@/apis/dtos';
 
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
@@ -18,7 +18,7 @@ type GameJoinedEvent = {
 type InformationUpdatedEvent = {
   type: EventTypeEnum.InformationUpdated;
   payload: {
-    mapSize: MapSizeDto;
+    dimension: DimensionDto;
   };
 };
 

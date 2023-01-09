@@ -42,7 +42,7 @@ const rangeForPrimary = RangeVo.new(LocationVo.new(3, 3), LocationVo.new(9, 9));
 Primary.args = {
   range: rangeForPrimary,
   rangeOffset: OffsetVo.new(0, 0),
-  map: MapVo.newWithMapSize(rangeForPrimary.getMapSize()),
+  map: MapVo.newWithDimension(rangeForPrimary.getDimension()),
   unitSize: 30,
   items: [],
   selectedItemId: null,

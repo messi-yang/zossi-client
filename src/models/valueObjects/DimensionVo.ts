@@ -1,6 +1,6 @@
 import range from 'lodash/range';
 
-export default class MapSizeVo {
+export default class DimensionVo {
   private width: number;
 
   private height: number;
@@ -10,21 +10,21 @@ export default class MapSizeVo {
     this.height = height;
   }
 
-  static new(width: number, height: number): MapSizeVo {
-    return new MapSizeVo(width, height);
+  static new(width: number, height: number): DimensionVo {
+    return new DimensionVo(width, height);
   }
 
   static newWithResolutionAndUnitSize(
     resolution: { width: number; height: number },
     unitSideLength: number
-  ): MapSizeVo {
+  ): DimensionVo {
     const width = Math.floor(resolution.width / unitSideLength) + 1;
     const height = Math.floor(resolution.height / unitSideLength) + 1;
-    return new MapSizeVo(width, height);
+    return new DimensionVo(width, height);
   }
 
-  public isEqual(mapSize: MapSizeVo): boolean {
-    return this.width === mapSize.getWidth() && this.height === mapSize.getHeight();
+  public isEqual(dimension: DimensionVo): boolean {
+    return this.width === dimension.getWidth() && this.height === dimension.getHeight();
   }
 
   public getWidth(): number {

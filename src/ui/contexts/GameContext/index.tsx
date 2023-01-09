@@ -1,14 +1,14 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import { GameSocketConn } from '@/apis/socketConnections';
-import { RangeVo, MapVo, LocationVo, MapSizeVo } from '@/models/valueObjects';
+import { RangeVo, MapVo, LocationVo, DimensionVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
 type ContextValue = {
   gameStatus: GameStatus;
-  mapSize: MapSizeVo | null;
+  dimension: DimensionVo | null;
   observedRange: RangeVo | null;
   map: MapVo | null;
   items: ItemAgg[] | null;
@@ -22,7 +22,7 @@ type ContextValue = {
 function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
-    mapSize: null,
+    dimension: null,
     observedRange: null,
     map: null,
     items: null,
@@ -45,13 +45,13 @@ export function Provider({ children }: Props) {
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
 
   const initialContextValue = createInitialContextValue();
-  const [mapSize, setMapSize] = useState<MapSizeVo | null>(initialContextValue.mapSize);
+  const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [observedRange, setObservedRange] = useState<RangeVo | null>(initialContextValue.observedRange);
   const [map, setMap] = useState<MapVo | null>(initialContextValue.map);
 
   const reset = useCallback(() => {
-    setMapSize(initialContextValue.mapSize);
+    setDimension(initialContextValue.dimension);
     setItems(initialContextValue.items);
     setObservedRange(initialContextValue.observedRange);
     setMap(initialContextValue.map);
@@ -73,8 +73,8 @@ export function Provider({ children }: Props) {
         setObservedRange(newRange);
         setMap(newMap);
       },
-      onInformationUpdated: (newMapSize: MapSizeVo) => {
-        setMapSize(newMapSize);
+      onInformationUpdated: (newDimension: DimensionVo) => {
+        setDimension(newDimension);
       },
       onItemsUpdated: (returnedItems: ItemAgg[]) => {
         setItems(returnedItems);
@@ -132,7 +132,7 @@ export function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           gameStatus,
-          mapSize,
+          dimension,
           observedRange,
           map,
           items,
@@ -142,7 +142,7 @@ export function Provider({ children }: Props) {
           destroyItem,
           observeRange,
         }),
-        [gameStatus, mapSize, observedRange, map, items, joinGame, leaveGame, buildItem, observeRange]
+        [gameStatus, dimension, observedRange, map, items, joinGame, leaveGame, buildItem, observeRange]
       )}
     >
       {children}
