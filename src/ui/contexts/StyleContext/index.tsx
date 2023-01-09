@@ -4,6 +4,7 @@ type ContextValue = {
   windowWidth: number | undefined;
   getWindowWidth: () => number;
   windowHeight: number | undefined;
+  getWindowHeight: () => number;
   isWindowSizeReady: boolean;
 };
 
@@ -12,6 +13,7 @@ function createInitialContextValue(): ContextValue {
     windowWidth: undefined,
     getWindowWidth: () => 0,
     windowHeight: undefined,
+    getWindowHeight: () => 0,
     isWindowSizeReady: false,
   };
 }
@@ -46,6 +48,7 @@ export function Provider({ children }: Props) {
   }, []);
 
   const getWindowWidth = useCallback(() => windowWidth || 0, [windowWidth]);
+  const getWindowHeight = useCallback(() => windowHeight || 0, [windowHeight]);
 
   return (
     <Context.Provider
@@ -54,6 +57,7 @@ export function Provider({ children }: Props) {
           windowWidth,
           getWindowWidth,
           windowHeight,
+          getWindowHeight,
           isWindowSizeReady,
         }),
         [windowWidth, getWindowWidth, windowHeight, isWindowSizeReady]

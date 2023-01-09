@@ -26,13 +26,34 @@ const Room: NextPage = function Room() {
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
 
-  const [targetRange, setTargetRange] = useState<RangeVo | null>(observedRange);
+  const [targetRange, setTargetRange] = useState<RangeVo | null>(null);
   const observedRangeOffset = useMemo(() => {
     if (!observedRange || !targetRange) {
       return null;
     }
     return observedRange.calculateOffsetWithRange(targetRange);
   }, [observedRange, targetRange]);
+
+  useEffect(
+    function handleWindowSizeIsReadyEffect() {
+      if (!styleContext.isWindowSizeReady) {
+        return;
+      }
+      setTargetRange(
+        RangeVo.newWithLocationAndMapSize(
+          LocationVo.new(0, 0),
+          MapSizeVo.newWithResolutionAndUnitSize(
+            {
+              width: styleContext.getWindowWidth(),
+              height: styleContext.getWindowWidth(),
+            },
+            30
+          )
+        )
+      );
+    },
+    [styleContext.isWindowSizeReady]
+  );
 
   const handleDesiredMapSizeUpdate = useCallback(() => {
     const newRange = RangeVo.newWithLocationAndMapSize(
