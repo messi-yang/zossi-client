@@ -64,7 +64,9 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
-      onGameJoined: () => {},
+      onGameJoined: (newDimension: DimensionVo) => {
+        setDimension(newDimension);
+      },
       onRangeObserved: (newRange: RangeVo, newMap: MapVo) => {
         setObservedRange(newRange);
         setMap(newMap);
@@ -72,9 +74,6 @@ export function Provider({ children }: Props) {
       onObservedRangeUpdated: (newRange: RangeVo, newMap: MapVo) => {
         setObservedRange(newRange);
         setMap(newMap);
-      },
-      onDimensionUpdated: (newDimension: DimensionVo) => {
-        setDimension(newDimension);
       },
       onItemsUpdated: (returnedItems: ItemAgg[]) => {
         setItems(returnedItems);

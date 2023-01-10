@@ -6,7 +6,6 @@ import {
   GameJoinedEvent,
   RangeObservedEvent,
   ObservedRangeUpdatedEvent,
-  DimensionUpdatedEvent,
   ItemsUpdatedEvent,
 } from './eventTypes';
 import type { Event } from './eventTypes';
@@ -19,8 +18,9 @@ function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
   return MapVo.new(unitMatrix);
 }
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string] {
-  return [event.payload.playerId];
+function parseGameJoinedEvent(event: GameJoinedEvent): [string, DimensionVo] {
+  const dimension = DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height);
+  return [event.payload.playerId, dimension];
 }
 
 function parseRangeObservedEvent(event: RangeObservedEvent): [RangeVo, MapVo] {
@@ -41,10 +41,6 @@ function parseObservedRangeUpdatedEvent(event: ObservedRangeUpdatedEvent): [Rang
   return [range, map];
 }
 
-function parseDimensionUpdatedEvent(event: DimensionUpdatedEvent): [DimensionVo] {
-  return [DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height)];
-}
-
 function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
   return [event.payload.items.map(({ id, name, assetSrc }) => ItemAgg.newItemAgg({ id, name, assetSrc }))];
 }
@@ -56,9 +52,8 @@ export default class GameSocketConn {
 
   constructor(params: {
     onRangeObserved: (range: RangeVo, map: MapVo) => void;
-    onGameJoined: () => void;
+    onGameJoined: (dimension: DimensionVo) => void;
     onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
-    onDimensionUpdated: (dimension: DimensionVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
@@ -76,23 +71,20 @@ export default class GameSocketConn {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        parseGameJoinedEvent(newMsg);
-        params.onGameJoined();
+        const [, dimension] = parseGameJoinedEvent(newMsg);
         this.observeRange(
           RangeVo.newWithLocationAndDimension(
             LocationVo.new(0, 0),
             DimensionVo.newWithResolutionAndUnitSize({ width: window.innerWidth, height: window.innerHeight }, 30)
           )
         );
+        params.onGameJoined(dimension);
       } else if (newMsg.type === EventTypeEnum.RangeObserved) {
         const [range, map] = parseRangeObservedEvent(newMsg);
         params.onRangeObserved(range, map);
       } else if (newMsg.type === EventTypeEnum.ObservedRangeUpdated) {
         const [range, map] = parseObservedRangeUpdatedEvent(newMsg);
         params.onObservedRangeUpdated(range, map);
-      } else if (newMsg.type === EventTypeEnum.DimensionUpdated) {
-        const [dimension] = parseDimensionUpdatedEvent(newMsg);
-        params.onDimensionUpdated(dimension);
       } else if (newMsg.type === EventTypeEnum.ItemsUpdated) {
         const [items] = parseItemsUpdatedEvent(newMsg);
         await Promise.all(items.map((item) => item.loadAsset()));
@@ -119,9 +111,8 @@ export default class GameSocketConn {
 
   static newGameSocketConn(params: {
     onRangeObserved: (range: RangeVo, map: MapVo) => void;
-    onGameJoined: () => void;
+    onGameJoined: (dimension: DimensionVo) => void;
     onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
-    onDimensionUpdated: (dimension: DimensionVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
