@@ -10,7 +10,13 @@ import {
 } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { PingAction, ObserveRangeAction, BuildItemAction, DestroyItemAction } from './actionTypes';
+import type {
+  PingAction,
+  ChangeViewAction,
+  ObserveRangeAction,
+  BuildItemAction,
+  DestroyItemAction,
+} from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
 function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
@@ -162,6 +168,21 @@ export default class GameSocketConn {
       payload: {
         location: { x: location.getX(), y: location.getY() },
         actionedAt: new Date().toISOString(),
+      },
+    };
+    this.sendMessage(action);
+  }
+
+  public changeView(center: LocationVo) {
+    const action: ChangeViewAction = {
+      type: ActionTypeEnum.ChangeView,
+      payload: {
+        view: {
+          center: {
+            x: center.getX(),
+            y: center.getY(),
+          },
+        },
       },
     };
     this.sendMessage(action);

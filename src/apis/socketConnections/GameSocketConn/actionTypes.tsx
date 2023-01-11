@@ -1,7 +1,9 @@
 import { RangeDto, LocationDto } from '@/apis/dtos';
+import ViewDto from '@/apis/dtos/ViewDto';
 
 enum ActionTypeEnum {
   Ping = 'PING',
+  ChangeView = 'CHANGE_VIEW',
   ObserveRange = 'OBSERVE_RANGE',
   BuildItem = 'BUILD_ITEM',
   DestroyItem = 'DESTROY_ITEM',
@@ -9,6 +11,13 @@ enum ActionTypeEnum {
 
 type PingAction = {
   type: ActionTypeEnum.Ping;
+};
+
+type ChangeViewAction = {
+  type: ActionTypeEnum.ChangeView;
+  payload: {
+    view: ViewDto;
+  };
 };
 
 type ObserveRangeAction = {
@@ -38,4 +47,4 @@ type DestroyItemAction = {
 
 export { ActionTypeEnum };
 
-export type { PingAction, ObserveRangeAction, BuildItemAction, DestroyItemAction };
+export type { PingAction, ChangeViewAction, ObserveRangeAction, BuildItemAction, DestroyItemAction };

@@ -44,6 +44,12 @@ export default class RangeVo {
     return this.to.getY() - this.from.getY() + 1;
   }
 
+  public getCenter(): LocationVo {
+    const centerX = Math.floor((this.from.getX() + this.to.getX()) / 2);
+    const centerY = Math.floor((this.from.getY() + this.to.getY()) / 2);
+    return LocationVo.new(centerX, centerY);
+  }
+
   public calculateOffsetWithRange(rangeB: RangeVo): OffsetVo {
     return OffsetVo.new(this.from.getX() - rangeB.getFrom().getX(), this.from.getY() - rangeB.getFrom().getY());
   }
