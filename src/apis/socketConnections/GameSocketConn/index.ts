@@ -12,7 +12,7 @@ import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
 import type {
   PingAction,
-  ChangeViewAction,
+  ChangeCameraAction,
   ObserveRangeAction,
   BuildItemAction,
   DestroyItemAction,
@@ -173,11 +173,11 @@ export default class GameSocketConn {
     this.sendMessage(action);
   }
 
-  public changeView(center: LocationVo) {
-    const action: ChangeViewAction = {
-      type: ActionTypeEnum.ChangeView,
+  public changeCamera(center: LocationVo) {
+    const action: ChangeCameraAction = {
+      type: ActionTypeEnum.ChangeCamera,
       payload: {
-        view: {
+        camera: {
           center: {
             x: center.getX(),
             y: center.getY(),

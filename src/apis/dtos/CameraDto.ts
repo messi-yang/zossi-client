@@ -1,7 +1,7 @@
 import LocationDto from './LocationDto';
 
-type ViewDto = {
+type CameraDto = {
   center: LocationDto;
 };
 
-export default ViewDto;
+export default CameraDto;

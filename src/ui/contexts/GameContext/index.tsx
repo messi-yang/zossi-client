@@ -119,7 +119,7 @@ export function Provider({ children }: Props) {
     debounce(
       (newRange: RangeVo) => {
         gameSocketConn?.observeRange(newRange);
-        gameSocketConn?.changeView(newRange.getCenter());
+        gameSocketConn?.changeCamera(newRange.getCenter());
       },
       150,
       { leading: true, maxWait: 500, trailing: true }
