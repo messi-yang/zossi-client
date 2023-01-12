@@ -1,10 +1,12 @@
-import type { RangeDto, DimensionDto, ItemDto, UnitDto } from '@/apis/dtos';
+import type { DimensionDto, ItemDto } from '@/apis/dtos';
+import CameraDto from '@/apis/dtos/CameraDto';
+import ViewDto from '@/apis/dtos/ViewDto';
 
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
+  CameraChanged = 'CAMERA_CHANGED',
+  ViewUpdated = 'VIEW_UPDATED',
   ItemsUpdated = 'ITEMS_UPDATED',
-  RangeObserved = 'RANGE_OBSERVED',
-  ObservedRangeUpdated = 'OBSERVED_RANGE_UPDATED',
 }
 
 type GameJoinedEvent = {
@@ -12,6 +14,22 @@ type GameJoinedEvent = {
   payload: {
     playerId: string;
     dimension: DimensionDto;
+    view: ViewDto;
+  };
+};
+
+type CameraChangedEvent = {
+  type: EventTypeEnum.CameraChanged;
+  payload: {
+    camera: CameraDto;
+    view: ViewDto;
+  };
+};
+
+type ViewUpdatedEvent = {
+  type: EventTypeEnum.ViewUpdated;
+  payload: {
+    view: ViewDto;
   };
 };
 
@@ -22,24 +40,7 @@ type ItemsUpdatedEvent = {
   };
 };
 
-type RangeObservedEvent = {
-  type: EventTypeEnum.RangeObserved;
-  payload: {
-    range: RangeDto;
-    map: UnitDto[][];
-  };
-};
-
-type ObservedRangeUpdatedEvent = {
-  type: EventTypeEnum.ObservedRangeUpdated;
-  payload: {
-    range: RangeDto;
-    map: UnitDto[][];
-    updatedAt: string;
-  };
-};
-
-type Event = GameJoinedEvent | ItemsUpdatedEvent | RangeObservedEvent | ObservedRangeUpdatedEvent;
+type Event = GameJoinedEvent | CameraChangedEvent | ViewUpdatedEvent | ItemsUpdatedEvent;
 
 export { EventTypeEnum };
-export type { Event, GameJoinedEvent, ItemsUpdatedEvent, RangeObservedEvent, ObservedRangeUpdatedEvent };
+export type { Event, GameJoinedEvent, CameraChangedEvent, ViewUpdatedEvent, ItemsUpdatedEvent };

@@ -1,22 +1,10 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
 import type { UnitDto } from '@/apis/dtos';
-import { RangeVo, UnitVo, MapVo, LocationVo, DimensionVo } from '@/models/valueObjects';
-import {
-  EventTypeEnum,
-  GameJoinedEvent,
-  RangeObservedEvent,
-  ObservedRangeUpdatedEvent,
-  ItemsUpdatedEvent,
-} from './eventTypes';
+import { RangeVo, UnitVo, MapVo, LocationVo, DimensionVo, ViewVo, CameraVo } from '@/models/valueObjects';
+import { EventTypeEnum, GameJoinedEvent, CameraChangedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type {
-  PingAction,
-  ChangeCameraAction,
-  ObserveRangeAction,
-  BuildItemAction,
-  DestroyItemAction,
-} from './actionTypes';
+import type { PingAction, ChangeCameraAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
 function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
@@ -24,27 +12,36 @@ function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
   return MapVo.new(unitMatrix);
 }
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string, DimensionVo] {
+function parseGameJoinedEvent(event: GameJoinedEvent): [string, DimensionVo, ViewVo] {
   const dimension = DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height);
-  return [event.payload.playerId, dimension];
+  const range = RangeVo.new(
+    LocationVo.new(event.payload.view.range.from.x, event.payload.view.range.from.y),
+    LocationVo.new(event.payload.view.range.to.x, event.payload.view.range.to.y)
+  );
+  const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
+  const view = ViewVo.new(range, map);
+  return [event.payload.playerId, dimension, view];
 }
 
-function parseRangeObservedEvent(event: RangeObservedEvent): [RangeVo, MapVo] {
+function parseCameraChangedEvent(event: CameraChangedEvent): [CameraVo, ViewVo] {
+  const camera = CameraVo.new(LocationVo.new(event.payload.camera.center.x, event.payload.camera.center.y));
   const range = RangeVo.new(
-    LocationVo.new(event.payload.range.from.x, event.payload.range.from.y),
-    LocationVo.new(event.payload.range.to.x, event.payload.range.to.y)
+    LocationVo.new(event.payload.view.range.from.x, event.payload.view.range.from.y),
+    LocationVo.new(event.payload.view.range.to.x, event.payload.view.range.to.y)
   );
-  const map = convertUnitDtoMatrixToMapVo(event.payload.map);
-  return [range, map];
+  const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
+  const view = ViewVo.new(range, map);
+  return [camera, view];
 }
 
-function parseObservedRangeUpdatedEvent(event: ObservedRangeUpdatedEvent): [RangeVo, MapVo] {
+function parseViewUpdatedEvent(event: ViewUpdatedEvent): [ViewVo] {
   const range = RangeVo.new(
-    LocationVo.new(event.payload.range.from.x, event.payload.range.from.y),
-    LocationVo.new(event.payload.range.to.x, event.payload.range.to.y)
+    LocationVo.new(event.payload.view.range.from.x, event.payload.view.range.from.y),
+    LocationVo.new(event.payload.view.range.to.x, event.payload.view.range.to.y)
   );
-  const map = convertUnitDtoMatrixToMapVo(event.payload.map);
-  return [range, map];
+  const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
+  const view = ViewVo.new(range, map);
+  return [view];
 }
 
 function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
@@ -57,9 +54,9 @@ export default class GameSocketConn {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onRangeObserved: (range: RangeVo, map: MapVo) => void;
-    onGameJoined: (dimension: DimensionVo) => void;
-    onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
+    onCameraChanged: (view: ViewVo) => void;
+    onGameJoined: (dimension: DimensionVo, view: ViewVo) => void;
+    onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
@@ -77,20 +74,14 @@ export default class GameSocketConn {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [, dimension] = parseGameJoinedEvent(newMsg);
-        this.observeRange(
-          RangeVo.newWithLocationAndDimension(
-            LocationVo.new(0, 0),
-            DimensionVo.newWithResolutionAndUnitSize({ width: window.innerWidth, height: window.innerHeight }, 30)
-          )
-        );
-        params.onGameJoined(dimension);
-      } else if (newMsg.type === EventTypeEnum.RangeObserved) {
-        const [range, map] = parseRangeObservedEvent(newMsg);
-        params.onRangeObserved(range, map);
-      } else if (newMsg.type === EventTypeEnum.ObservedRangeUpdated) {
-        const [range, map] = parseObservedRangeUpdatedEvent(newMsg);
-        params.onObservedRangeUpdated(range, map);
+        const [, dimension, view] = parseGameJoinedEvent(newMsg);
+        params.onGameJoined(dimension, view);
+      } else if (newMsg.type === EventTypeEnum.CameraChanged) {
+        const [, view] = parseCameraChangedEvent(newMsg);
+        params.onCameraChanged(view);
+      } else if (newMsg.type === EventTypeEnum.ViewUpdated) {
+        const [view] = parseViewUpdatedEvent(newMsg);
+        params.onViewUpdated(view);
       } else if (newMsg.type === EventTypeEnum.ItemsUpdated) {
         const [items] = parseItemsUpdatedEvent(newMsg);
         await Promise.all(items.map((item) => item.loadAsset()));
@@ -116,9 +107,9 @@ export default class GameSocketConn {
   }
 
   static newGameSocketConn(params: {
-    onRangeObserved: (range: RangeVo, map: MapVo) => void;
-    onGameJoined: (dimension: DimensionVo) => void;
-    onObservedRangeUpdated: (range: RangeVo, map: MapVo) => void;
+    onGameJoined: (dimension: DimensionVo, view: ViewVo) => void;
+    onCameraChanged: (view: ViewVo) => void;
+    onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
@@ -173,30 +164,16 @@ export default class GameSocketConn {
     this.sendMessage(action);
   }
 
-  public changeCamera(center: LocationVo) {
+  public changeCamera(camera: CameraVo) {
     const action: ChangeCameraAction = {
       type: ActionTypeEnum.ChangeCamera,
       payload: {
         camera: {
           center: {
-            x: center.getX(),
-            y: center.getY(),
+            x: camera.getCenter().getX(),
+            y: camera.getCenter().getY(),
           },
         },
-      },
-    };
-    this.sendMessage(action);
-  }
-
-  public observeRange(newRange: RangeVo) {
-    const action: ObserveRangeAction = {
-      type: ActionTypeEnum.ObserveRange,
-      payload: {
-        range: {
-          from: { x: newRange.getFrom().getX(), y: newRange.getFrom().getY() },
-          to: { x: newRange.getTo().getX(), y: newRange.getTo().getY() },
-        },
-        actionedAt: new Date().toISOString(),
       },
     };
     this.sendMessage(action);

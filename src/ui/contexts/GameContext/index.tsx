@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import { GameSocketConn } from '@/apis/socketConnections';
-import { RangeVo, MapVo, LocationVo, DimensionVo } from '@/models/valueObjects';
+import { RangeVo, MapVo, LocationVo, DimensionVo, ViewVo, CameraVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
@@ -15,7 +15,7 @@ type ContextValue = {
   joinGame: () => void;
   buildItem: (location: LocationVo, itemId: string) => void;
   destroyItem: (location: LocationVo) => void;
-  observeRange: (range: RangeVo) => void;
+  changeCamera: (camera: CameraVo) => void;
   leaveGame: () => void;
 };
 
@@ -29,7 +29,7 @@ function createInitialContextValue(): ContextValue {
     joinGame: () => {},
     buildItem: () => {},
     destroyItem: () => {},
-    observeRange: () => {},
+    changeCamera: () => {},
     leaveGame: () => {},
   };
 }
@@ -64,16 +64,18 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
-      onGameJoined: (newDimension: DimensionVo) => {
+      onGameJoined: (newDimension: DimensionVo, view: ViewVo) => {
         setDimension(newDimension);
+        setObservedRange(view.getRange());
+        setMap(view.getmap());
       },
-      onRangeObserved: (newRange: RangeVo, newMap: MapVo) => {
-        setObservedRange(newRange);
-        setMap(newMap);
+      onCameraChanged: (view: ViewVo) => {
+        setObservedRange(view.getRange());
+        setMap(view.getmap());
       },
-      onObservedRangeUpdated: (newRange: RangeVo, newMap: MapVo) => {
-        setObservedRange(newRange);
-        setMap(newMap);
+      onViewUpdated: (view: ViewVo) => {
+        setObservedRange(view.getRange());
+        setMap(view.getmap());
       },
       onItemsUpdated: (returnedItems: ItemAgg[]) => {
         setItems(returnedItems);
@@ -115,11 +117,10 @@ export function Provider({ children }: Props) {
     [gameSocketConn]
   );
 
-  const observeRange = useCallback(
+  const changeCamera = useCallback(
     debounce(
-      (newRange: RangeVo) => {
-        gameSocketConn?.observeRange(newRange);
-        gameSocketConn?.changeCamera(newRange.getCenter());
+      (camera: CameraVo) => {
+        gameSocketConn?.changeCamera(camera);
       },
       150,
       { leading: true, maxWait: 500, trailing: true }
@@ -140,9 +141,9 @@ export function Provider({ children }: Props) {
           leaveGame,
           buildItem,
           destroyItem,
-          observeRange,
+          changeCamera,
         }),
-        [gameStatus, dimension, observedRange, map, items, joinGame, leaveGame, buildItem, observeRange]
+        [gameStatus, dimension, observedRange, map, items, joinGame, leaveGame, buildItem, changeCamera]
       )}
     >
       {children}

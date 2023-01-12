@@ -1,4 +1,4 @@
-import { RangeDto, LocationDto } from '@/apis/dtos';
+import { LocationDto } from '@/apis/dtos';
 import CameraDto from '@/apis/dtos/CameraDto';
 
 enum ActionTypeEnum {
@@ -17,14 +17,6 @@ type ChangeCameraAction = {
   type: ActionTypeEnum.ChangeCamera;
   payload: {
     camera: CameraDto;
-  };
-};
-
-type ObserveRangeAction = {
-  type: ActionTypeEnum.ObserveRange;
-  payload: {
-    range: RangeDto;
-    actionedAt: string;
   };
 };
 
@@ -47,4 +39,4 @@ type DestroyItemAction = {
 
 export { ActionTypeEnum };
 
-export type { PingAction, ChangeCameraAction, ObserveRangeAction, BuildItemAction, DestroyItemAction };
+export type { PingAction, ChangeCameraAction, BuildItemAction, DestroyItemAction };

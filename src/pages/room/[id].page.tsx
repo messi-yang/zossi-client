@@ -5,7 +5,7 @@ import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
 import useOnWindowResize from '@/ui/hooks/useOnWindowResize';
 import GameContext from '@/ui/contexts/GameContext';
 import StyleContext from '@/ui/contexts/StyleContext';
-import { RangeVo, LocationVo, DimensionVo } from '@/models/valueObjects';
+import { RangeVo, LocationVo, DimensionVo, CameraVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import Map from '@/ui/components/maps/Map';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
@@ -26,7 +26,7 @@ const Room: NextPage = function Room() {
     leaveGame,
     buildItem,
     destroyItem,
-    observeRange,
+    changeCamera,
   } = useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
@@ -77,8 +77,9 @@ const Room: NextPage = function Room() {
       )
     );
     setTargetRange(newRange);
-    observeRange(newRange);
-  }, [observedRange === null, observeRange]);
+    const center = newRange.getCenter();
+    changeCamera(CameraVo.new(center));
+  }, [observedRange === null, changeCamera]);
   useOnWindowResize(handleDesiredDimensionUpdate);
 
   useEffect(function joinGameOnInitializationEffect() {
@@ -103,7 +104,8 @@ const Room: NextPage = function Room() {
 
   const handleMiniMapRangeUpdate = (newRange: RangeVo) => {
     setTargetRange(newRange);
-    observeRange(newRange);
+    const center = newRange.getCenter();
+    changeCamera(CameraVo.new(center));
   };
 
   const handleMiniMapClick = () => {
