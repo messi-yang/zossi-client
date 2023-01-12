@@ -12,6 +12,7 @@ type ContextValue = {
   observedRange: RangeVo | null;
   map: MapVo | null;
   items: ItemAgg[] | null;
+  camera: CameraVo | null;
   joinGame: () => void;
   buildItem: (location: LocationVo, itemId: string) => void;
   destroyItem: (location: LocationVo) => void;
@@ -26,6 +27,7 @@ function createInitialContextValue(): ContextValue {
     observedRange: null,
     map: null,
     items: null,
+    camera: null,
     joinGame: () => {},
     buildItem: () => {},
     destroyItem: () => {},
@@ -49,6 +51,7 @@ export function Provider({ children }: Props) {
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [observedRange, setObservedRange] = useState<RangeVo | null>(initialContextValue.observedRange);
   const [map, setMap] = useState<MapVo | null>(initialContextValue.map);
+  const [camera, setCamera] = useState<CameraVo | null>(initialContextValue.camera);
 
   const reset = useCallback(() => {
     setDimension(initialContextValue.dimension);
@@ -69,9 +72,10 @@ export function Provider({ children }: Props) {
         setObservedRange(view.getRange());
         setMap(view.getmap());
       },
-      onCameraChanged: (view: ViewVo) => {
+      onCameraChanged: (newCamera: CameraVo, view: ViewVo) => {
         setObservedRange(view.getRange());
         setMap(view.getmap());
+        setCamera(newCamera);
       },
       onViewUpdated: (view: ViewVo) => {
         setObservedRange(view.getRange());
@@ -119,8 +123,8 @@ export function Provider({ children }: Props) {
 
   const changeCamera = useCallback(
     debounce(
-      (camera: CameraVo) => {
-        gameSocketConn?.changeCamera(camera);
+      (newCamera: CameraVo) => {
+        gameSocketConn?.changeCamera(newCamera);
       },
       150,
       { leading: true, maxWait: 500, trailing: true }
@@ -137,13 +141,14 @@ export function Provider({ children }: Props) {
           observedRange,
           map,
           items,
+          camera,
           joinGame,
           leaveGame,
           buildItem,
           destroyItem,
           changeCamera,
         }),
-        [gameStatus, dimension, observedRange, map, items, joinGame, leaveGame, buildItem, changeCamera]
+        [gameStatus, dimension, observedRange, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
       )}
     >
       {children}

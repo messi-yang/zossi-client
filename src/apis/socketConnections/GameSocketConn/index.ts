@@ -54,7 +54,7 @@ export default class GameSocketConn {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onCameraChanged: (view: ViewVo) => void;
+    onCameraChanged: (cameraVo: CameraVo, view: ViewVo) => void;
     onGameJoined: (dimension: DimensionVo, view: ViewVo) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
@@ -77,8 +77,8 @@ export default class GameSocketConn {
         const [, dimension, view] = parseGameJoinedEvent(newMsg);
         params.onGameJoined(dimension, view);
       } else if (newMsg.type === EventTypeEnum.CameraChanged) {
-        const [, view] = parseCameraChangedEvent(newMsg);
-        params.onCameraChanged(view);
+        const [camera, view] = parseCameraChangedEvent(newMsg);
+        params.onCameraChanged(camera, view);
       } else if (newMsg.type === EventTypeEnum.ViewUpdated) {
         const [view] = parseViewUpdatedEvent(newMsg);
         params.onViewUpdated(view);
@@ -108,7 +108,7 @@ export default class GameSocketConn {
 
   static newGameSocketConn(params: {
     onGameJoined: (dimension: DimensionVo, view: ViewVo) => void;
-    onCameraChanged: (view: ViewVo) => void;
+    onCameraChanged: (camera: CameraVo, view: ViewVo) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
