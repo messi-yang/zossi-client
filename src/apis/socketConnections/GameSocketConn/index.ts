@@ -1,6 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/apis/compression';
 import type { UnitDto } from '@/apis/dtos';
-import { RangeVo, UnitVo, MapVo, LocationVo, DimensionVo, ViewVo, CameraVo } from '@/models/valueObjects';
+import { BoundVo, UnitVo, MapVo, LocationVo, DimensionVo, ViewVo, CameraVo } from '@/models/valueObjects';
 import { EventTypeEnum, GameJoinedEvent, CameraChangedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
@@ -14,34 +14,34 @@ function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
 
 function parseGameJoinedEvent(event: GameJoinedEvent): [string, DimensionVo, ViewVo, CameraVo] {
   const dimension = DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height);
-  const range = RangeVo.new(
-    LocationVo.new(event.payload.view.range.from.x, event.payload.view.range.from.y),
-    LocationVo.new(event.payload.view.range.to.x, event.payload.view.range.to.y)
+  const bound = BoundVo.new(
+    LocationVo.new(event.payload.view.bound.from.x, event.payload.view.bound.from.y),
+    LocationVo.new(event.payload.view.bound.to.x, event.payload.view.bound.to.y)
   );
   const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
-  const view = ViewVo.new(range, map);
+  const view = ViewVo.new(bound, map);
   const camera = CameraVo.new(LocationVo.new(event.payload.camera.center.x, event.payload.camera.center.y));
   return [event.payload.playerId, dimension, view, camera];
 }
 
 function parseCameraChangedEvent(event: CameraChangedEvent): [CameraVo, ViewVo] {
   const camera = CameraVo.new(LocationVo.new(event.payload.camera.center.x, event.payload.camera.center.y));
-  const range = RangeVo.new(
-    LocationVo.new(event.payload.view.range.from.x, event.payload.view.range.from.y),
-    LocationVo.new(event.payload.view.range.to.x, event.payload.view.range.to.y)
+  const bound = BoundVo.new(
+    LocationVo.new(event.payload.view.bound.from.x, event.payload.view.bound.from.y),
+    LocationVo.new(event.payload.view.bound.to.x, event.payload.view.bound.to.y)
   );
   const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
-  const view = ViewVo.new(range, map);
+  const view = ViewVo.new(bound, map);
   return [camera, view];
 }
 
 function parseViewUpdatedEvent(event: ViewUpdatedEvent): [ViewVo] {
-  const range = RangeVo.new(
-    LocationVo.new(event.payload.view.range.from.x, event.payload.view.range.from.y),
-    LocationVo.new(event.payload.view.range.to.x, event.payload.view.range.to.y)
+  const bound = BoundVo.new(
+    LocationVo.new(event.payload.view.bound.from.x, event.payload.view.bound.from.y),
+    LocationVo.new(event.payload.view.bound.to.x, event.payload.view.bound.to.y)
   );
   const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
-  const view = ViewVo.new(range, map);
+  const view = ViewVo.new(bound, map);
   return [view];
 }
 

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import { GameSocketConn } from '@/apis/socketConnections';
-import { RangeVo, MapVo, LocationVo, DimensionVo, ViewVo, CameraVo } from '@/models/valueObjects';
+import { BoundVo, MapVo, LocationVo, DimensionVo, ViewVo, CameraVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
@@ -9,7 +9,7 @@ type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONN
 type ContextValue = {
   gameStatus: GameStatus;
   dimension: DimensionVo | null;
-  viewRange: RangeVo | null;
+  viewBound: BoundVo | null;
   map: MapVo | null;
   items: ItemAgg[] | null;
   camera: CameraVo | null;
@@ -24,7 +24,7 @@ function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
     dimension: null,
-    viewRange: null,
+    viewBound: null,
     map: null,
     items: null,
     camera: null,
@@ -49,14 +49,14 @@ export function Provider({ children }: Props) {
   const initialContextValue = createInitialContextValue();
   const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const [viewRange, setViewRange] = useState<RangeVo | null>(initialContextValue.viewRange);
+  const [viewBound, setViewBound] = useState<BoundVo | null>(initialContextValue.viewBound);
   const [map, setMap] = useState<MapVo | null>(initialContextValue.map);
   const [camera, setCamera] = useState<CameraVo | null>(initialContextValue.camera);
 
   const reset = useCallback(() => {
     setDimension(initialContextValue.dimension);
     setItems(initialContextValue.items);
-    setViewRange(initialContextValue.viewRange);
+    setViewBound(initialContextValue.viewBound);
     setMap(initialContextValue.map);
   }, []);
 
@@ -69,17 +69,17 @@ export function Provider({ children }: Props) {
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
       onGameJoined: (newDimension: DimensionVo, newCamera: CameraVo, view: ViewVo) => {
         setDimension(newDimension);
-        setViewRange(view.getRange());
+        setViewBound(view.getBound());
         setMap(view.getmap());
         setCamera(newCamera);
       },
       onCameraChanged: (newCamera: CameraVo, view: ViewVo) => {
-        setViewRange(view.getRange());
+        setViewBound(view.getBound());
         setMap(view.getmap());
         setCamera(newCamera);
       },
       onViewUpdated: (view: ViewVo) => {
-        setViewRange(view.getRange());
+        setViewBound(view.getBound());
         setMap(view.getmap());
       },
       onItemsUpdated: (returnedItems: ItemAgg[]) => {
@@ -139,7 +139,7 @@ export function Provider({ children }: Props) {
         () => ({
           gameStatus,
           dimension,
-          viewRange,
+          viewBound,
           map,
           items,
           camera,
@@ -149,7 +149,7 @@ export function Provider({ children }: Props) {
           destroyItem,
           changeCamera,
         }),
-        [gameStatus, dimension, viewRange, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
+        [gameStatus, dimension, viewBound, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
       )}
     >
       {children}

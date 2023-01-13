@@ -1,8 +1,8 @@
 import LocationDto from './LocationDto';
 
-type RangeDto = {
+type BoundDto = {
   from: LocationDto;
   to: LocationDto;
 };
 
-export default RangeDto;
+export default BoundDto;

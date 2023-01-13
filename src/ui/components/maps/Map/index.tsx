@@ -1,12 +1,12 @@
 import { memo, useCallback } from 'react';
 import MapCanvas from '@/ui/components/canvas/MapCanvas';
-import { RangeVo, MapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
+import { BoundVo, MapVo, LocationVo, OffsetVo } from '@/models/valueObjects';
 import dataTestids from './dataTestids';
 import { ItemAgg } from '@/models/aggregates';
 
 type Props = {
-  range: RangeVo | null;
-  rangeOffset: OffsetVo | null;
+  bound: BoundVo | null;
+  boundOffset: OffsetVo | null;
   map: MapVo | null;
   unitSize: number;
   items: ItemAgg[] | null;
@@ -14,19 +14,19 @@ type Props = {
   onUnitClick: (location: LocationVo) => any;
 };
 
-function Map({ range, rangeOffset, map, unitSize, items, selectedItemId, onUnitClick }: Props) {
+function Map({ bound, boundOffset, map, unitSize, items, selectedItemId, onUnitClick }: Props) {
   const handleUnitClick = useCallback(
     (colIdx: number, rowIdx: number) => {
-      if (!range) {
+      if (!bound) {
         return;
       }
 
-      const originLocation = range.getFrom();
+      const originLocation = bound.getFrom();
       const finalLocation = originLocation.shift(colIdx, rowIdx);
 
       onUnitClick(finalLocation);
     },
-    [onUnitClick, range]
+    [onUnitClick, bound]
   );
 
   return (
@@ -34,8 +34,8 @@ function Map({ range, rangeOffset, map, unitSize, items, selectedItemId, onUnitC
       <section
         className="relative flex"
         style={{
-          left: rangeOffset ? rangeOffset.getX() * unitSize : 0,
-          top: rangeOffset ? rangeOffset.getY() * unitSize : 0,
+          left: boundOffset ? boundOffset.getX() * unitSize : 0,
+          top: boundOffset ? boundOffset.getY() * unitSize : 0,
         }}
       >
         {map && (

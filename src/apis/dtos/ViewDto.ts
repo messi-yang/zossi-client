@@ -1,9 +1,9 @@
-import RangeDto from './RangeDto';
+import BoundDto from './BoundDto';
 import UnitDto from './UnitDto';
 
 type ViewDto = {
   map: UnitDto[][];
-  range: RangeDto;
+  bound: BoundDto;
 };
 
 export default ViewDto;

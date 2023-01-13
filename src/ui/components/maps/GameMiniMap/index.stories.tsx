@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { LocationVo, DimensionVo, RangeVo } from '@/models/valueObjects';
+import { LocationVo, DimensionVo, BoundVo } from '@/models/valueObjects';
 
 import GameMiniMap from '.';
 
@@ -26,5 +26,5 @@ export const Primary = Template.bind({});
 Primary.args = {
   width: 300,
   dimension: DimensionVo.new(300, 300),
-  range: RangeVo.new(LocationVo.new(0, 0), LocationVo.new(30, 30)),
+  bound: BoundVo.new(LocationVo.new(0, 0), LocationVo.new(30, 30)),
 };

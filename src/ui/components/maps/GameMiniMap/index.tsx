@@ -1,27 +1,27 @@
 import { useCallback, useRef } from 'react';
-import { DimensionVo, RangeVo, LocationVo } from '@/models/valueObjects';
+import { DimensionVo, BoundVo, LocationVo } from '@/models/valueObjects';
 import usePull from '@/ui/hooks/usePull';
 import dataTestids from './dataTestids';
 
 type Props = {
   width: number;
   dimension: DimensionVo;
-  range: RangeVo;
+  bound: BoundVo;
   onDrag: (center: LocationVo) => void;
 };
 
-function GameMiniMap({ width, dimension, range, onDrag }: Props) {
+function GameMiniMap({ width, dimension, bound, onDrag }: Props) {
   const mapContentElemRef = useRef<HTMLDivElement>(null);
   const dimensionRatio = dimension.getRatio();
-  const mapDimensionRangeDimensionWidthRatio = range.getDimension().getWidth() / dimension.getWidth();
-  const mapDimensionRangeDimensionHeightRatio = range.getDimension().getHeight() / dimension.getHeight();
-  const offsetXRatio = range.getFrom().getX() / dimension.getWidth();
-  const offsetYRatio = range.getFrom().getY() / dimension.getHeight();
+  const mapDimensionBoundDimensionWidthRatio = bound.getDimension().getWidth() / dimension.getWidth();
+  const mapDimensionBoundDimensionHeightRatio = bound.getDimension().getHeight() / dimension.getHeight();
+  const offsetXRatio = bound.getFrom().getX() / dimension.getWidth();
+  const offsetYRatio = bound.getFrom().getY() / dimension.getHeight();
 
   const elemWidth = width;
   const elemHeight = elemWidth * dimensionRatio;
-  const rangeElemWidth = elemWidth * mapDimensionRangeDimensionWidthRatio;
-  const rangeElemHeight = elemHeight * mapDimensionRangeDimensionHeightRatio;
+  const boundElemWidth = elemWidth * mapDimensionBoundDimensionWidthRatio;
+  const boundElemHeight = elemHeight * mapDimensionBoundDimensionHeightRatio;
 
   const calculateLocation = useCallback(
     (clientX: number, clientY: number): LocationVo | null => {
@@ -74,8 +74,8 @@ function GameMiniMap({ width, dimension, range, onDrag }: Props) {
           style={{
             left: `${offsetXRatio * 100}%`,
             top: `${offsetYRatio * 100}%`,
-            width: rangeElemWidth,
-            height: rangeElemHeight,
+            width: boundElemWidth,
+            height: boundElemHeight,
           }}
         />
       </div>

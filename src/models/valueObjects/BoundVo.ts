@@ -2,7 +2,7 @@ import LocationVo from './LocationVo';
 import DimensionVo from './DimensionVo';
 import OffsetVo from './OffsetVo';
 
-export default class RangeVo {
+export default class BoundVo {
   private from: LocationVo;
 
   private to: LocationVo;
@@ -12,16 +12,16 @@ export default class RangeVo {
     this.to = to;
   }
 
-  static new(from: LocationVo, to: LocationVo): RangeVo {
-    return new RangeVo(from, to);
+  static new(from: LocationVo, to: LocationVo): BoundVo {
+    return new BoundVo(from, to);
   }
 
-  static newWithLocationAndDimension(location: LocationVo, dimension: DimensionVo): RangeVo {
-    return new RangeVo(location, location.shift(dimension.getWidth() - 1, dimension.getHeight() - 1));
+  static newWithLocationAndDimension(location: LocationVo, dimension: DimensionVo): BoundVo {
+    return new BoundVo(location, location.shift(dimension.getWidth() - 1, dimension.getHeight() - 1));
   }
 
-  public isEqual(range: RangeVo): Boolean {
-    return this.from.isEqual(range.getFrom()) && this.to.isEqual(range.getTo());
+  public isEqual(bound: BoundVo): Boolean {
+    return this.from.isEqual(bound.getFrom()) && this.to.isEqual(bound.getTo());
   }
 
   public getDimension(): DimensionVo {
@@ -50,7 +50,7 @@ export default class RangeVo {
     return LocationVo.new(centerX, centerY);
   }
 
-  public calculateOffsetWithRange(rangeB: RangeVo): OffsetVo {
-    return OffsetVo.new(this.from.getX() - rangeB.getFrom().getX(), this.from.getY() - rangeB.getFrom().getY());
+  public calculateOffsetWithBound(boundB: BoundVo): OffsetVo {
+    return OffsetVo.new(this.from.getX() - boundB.getFrom().getX(), this.from.getY() - boundB.getFrom().getY());
   }
 }

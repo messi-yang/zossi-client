@@ -1,6 +1,6 @@
 import DimensionVo from './DimensionVo';
 import LocationVo from './LocationVo';
-import RangeVo from './RangeVo';
+import BoundVo from './BoundVo';
 
 export default class CameraVo {
   private center: LocationVo;
@@ -17,7 +17,7 @@ export default class CameraVo {
     return this.center;
   }
 
-  public calculateRangeInMap(mapDimension: DimensionVo, screenDimension: DimensionVo): RangeVo {
+  public calculateBoundInMap(mapDimension: DimensionVo, screenDimension: DimensionVo): BoundVo {
     const standarizedX = Math.round(this.center.getX() - screenDimension.getWidth() / 2);
     const standarizedY = Math.round(this.center.getY() - screenDimension.getHeight() / 2);
     let adjustedX = standarizedX;
@@ -33,7 +33,7 @@ export default class CameraVo {
       adjustedY = 0;
     }
 
-    return RangeVo.new(
+    return BoundVo.new(
       LocationVo.new(adjustedX, adjustedY),
       LocationVo.new(adjustedX + screenDimension.getWidth() - 1, adjustedY + screenDimension.getHeight() - 1)
     );

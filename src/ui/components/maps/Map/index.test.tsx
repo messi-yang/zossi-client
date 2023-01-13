@@ -5,8 +5,8 @@ import { UnitVo, MapVo, OffsetVo } from '@/models/valueObjects';
 function renderMap(map: MapVo): RenderResult {
   return render(
     <Map
-      range={null}
-      rangeOffset={OffsetVo.new(0, 0)}
+      bound={null}
+      boundOffset={OffsetVo.new(0, 0)}
       map={map}
       unitSize={30}
       items={[]}

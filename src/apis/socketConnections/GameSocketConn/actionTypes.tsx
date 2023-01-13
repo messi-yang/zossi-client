@@ -4,7 +4,6 @@ import CameraDto from '@/apis/dtos/CameraDto';
 enum ActionTypeEnum {
   Ping = 'PING',
   ChangeCamera = 'CHANGE_CAMERA',
-  ObserveRange = 'OBSERVE_RANGE',
   BuildItem = 'BUILD_ITEM',
   DestroyItem = 'DESTROY_ITEM',
 }

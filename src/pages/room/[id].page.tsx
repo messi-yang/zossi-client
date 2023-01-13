@@ -32,7 +32,7 @@ const Room: NextPage = function Room() {
   }, [mapContainerRect]);
   const {
     dimension,
-    viewRange,
+    viewBound,
     map,
     items,
     camera,
@@ -52,19 +52,19 @@ const Room: NextPage = function Room() {
   const isDestroyingItem = !isBuildindItem;
 
   const [targetCamera, setTargetCamera] = useState<CameraVo | null>(null);
-  const targetRange = useMemo(() => {
+  const targetBound = useMemo(() => {
     if (!targetCamera || !dimension || !screenDimension) {
       return null;
     }
-    return targetCamera.calculateRangeInMap(dimension, screenDimension);
+    return targetCamera.calculateBoundInMap(dimension, screenDimension);
   }, [targetCamera, dimension, screenDimension]);
 
-  const viewRangeOffset = useMemo(() => {
-    if (!viewRange || !targetRange) {
+  const viewBoundOffset = useMemo(() => {
+    if (!viewBound || !targetBound) {
       return null;
     }
-    return viewRange.calculateOffsetWithRange(targetRange);
-  }, [viewRange, targetRange]);
+    return viewBound.calculateOffsetWithBound(targetBound);
+  }, [viewBound, targetBound]);
 
   useEffect(
     function handleCameraChangedEffect() {
@@ -186,8 +186,8 @@ const Room: NextPage = function Room() {
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               <Map
-                range={viewRange}
-                rangeOffset={viewRangeOffset}
+                bound={viewBound}
+                boundOffset={viewBoundOffset}
                 map={map}
                 unitSize={unitSize}
                 items={items}
@@ -195,9 +195,9 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {dimension && targetRange && targetCamera && isMiniMapVisible && (
+            {dimension && targetBound && targetCamera && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
-                <GameMiniMap width={300} dimension={dimension} range={targetRange} onDrag={handleMiniMapDrag} />
+                <GameMiniMap width={300} dimension={dimension} bound={targetBound} onDrag={handleMiniMapDrag} />
               </section>
             )}
           </section>
@@ -224,8 +224,8 @@ const Room: NextPage = function Room() {
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               <Map
-                range={viewRange}
-                rangeOffset={viewRangeOffset}
+                bound={viewBound}
+                boundOffset={viewBoundOffset}
                 map={map}
                 unitSize={unitSize}
                 items={items || []}
@@ -233,12 +233,12 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {dimension && targetRange && targetCamera && isMiniMapVisible && (
+            {dimension && targetBound && targetCamera && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={styleContext.getWindowWidth() * 0.8}
                   dimension={dimension}
-                  range={targetRange}
+                  bound={targetBound}
                   onDrag={handleMiniMapDrag}
                 />
               </section>
