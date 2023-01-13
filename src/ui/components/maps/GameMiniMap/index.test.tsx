@@ -7,8 +7,8 @@ function renderGameMiniMap(): RenderResult {
     <GameMiniMap
       width={300}
       dimension={DimensionVo.new(100, 100)}
-      range={RangeVo.new(LocationVo.new(0, 0), LocationVo.new(10, 10))}
-      onRangeUpdate={() => {}}
+      range={RangeVo.new(LocationVo.new(0, 10), LocationVo.new(20, 30))}
+      onDrag={() => {}}
     />
   );
 }

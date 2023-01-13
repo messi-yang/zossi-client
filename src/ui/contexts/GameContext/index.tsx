@@ -9,7 +9,7 @@ type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONN
 type ContextValue = {
   gameStatus: GameStatus;
   dimension: DimensionVo | null;
-  observedRange: RangeVo | null;
+  viewRange: RangeVo | null;
   map: MapVo | null;
   items: ItemAgg[] | null;
   camera: CameraVo | null;
@@ -24,7 +24,7 @@ function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
     dimension: null,
-    observedRange: null,
+    viewRange: null,
     map: null,
     items: null,
     camera: null,
@@ -49,14 +49,14 @@ export function Provider({ children }: Props) {
   const initialContextValue = createInitialContextValue();
   const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const [observedRange, setObservedRange] = useState<RangeVo | null>(initialContextValue.observedRange);
+  const [viewRange, setViewRange] = useState<RangeVo | null>(initialContextValue.viewRange);
   const [map, setMap] = useState<MapVo | null>(initialContextValue.map);
   const [camera, setCamera] = useState<CameraVo | null>(initialContextValue.camera);
 
   const reset = useCallback(() => {
     setDimension(initialContextValue.dimension);
     setItems(initialContextValue.items);
-    setObservedRange(initialContextValue.observedRange);
+    setViewRange(initialContextValue.viewRange);
     setMap(initialContextValue.map);
   }, []);
 
@@ -67,18 +67,19 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocketConn = GameSocketConn.newGameSocketConn({
-      onGameJoined: (newDimension: DimensionVo, view: ViewVo) => {
+      onGameJoined: (newDimension: DimensionVo, newCamera: CameraVo, view: ViewVo) => {
         setDimension(newDimension);
-        setObservedRange(view.getRange());
+        setViewRange(view.getRange());
         setMap(view.getmap());
+        setCamera(newCamera);
       },
       onCameraChanged: (newCamera: CameraVo, view: ViewVo) => {
-        setObservedRange(view.getRange());
+        setViewRange(view.getRange());
         setMap(view.getmap());
         setCamera(newCamera);
       },
       onViewUpdated: (view: ViewVo) => {
-        setObservedRange(view.getRange());
+        setViewRange(view.getRange());
         setMap(view.getmap());
       },
       onItemsUpdated: (returnedItems: ItemAgg[]) => {
@@ -138,7 +139,7 @@ export function Provider({ children }: Props) {
         () => ({
           gameStatus,
           dimension,
-          observedRange,
+          viewRange,
           map,
           items,
           camera,
@@ -148,7 +149,7 @@ export function Provider({ children }: Props) {
           destroyItem,
           changeCamera,
         }),
-        [gameStatus, dimension, observedRange, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
+        [gameStatus, dimension, viewRange, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
       )}
     >
       {children}

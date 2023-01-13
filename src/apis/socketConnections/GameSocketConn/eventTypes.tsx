@@ -15,6 +15,7 @@ type GameJoinedEvent = {
     playerId: string;
     dimension: DimensionDto;
     view: ViewDto;
+    camera: CameraDto;
   };
 };
 

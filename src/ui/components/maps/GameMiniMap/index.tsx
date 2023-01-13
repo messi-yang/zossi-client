@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { DimensionVo, RangeVo, LocationVo } from '@/models/valueObjects';
 import usePull from '@/ui/hooks/usePull';
 import dataTestids from './dataTestids';
@@ -7,61 +7,54 @@ type Props = {
   width: number;
   dimension: DimensionVo;
   range: RangeVo;
-  onRangeUpdate: (newRange: RangeVo) => void;
+  onDrag: (center: LocationVo) => void;
 };
 
-function GameMiniMap({ width, dimension, range, onRangeUpdate }: Props) {
+function GameMiniMap({ width, dimension, range, onDrag }: Props) {
   const mapContentElemRef = useRef<HTMLDivElement>(null);
   const dimensionRatio = dimension.getRatio();
-  const rangeWidth = range.getWidth();
-  const rangeHeight = range.getHeight();
-  const mapObservedRangeWidthRatio = rangeWidth / dimension.getWidth();
-  const mapObservedRangeHeightRatio = rangeHeight / dimension.getHeight();
+  const mapDimensionRangeDimensionWidthRatio = range.getDimension().getWidth() / dimension.getWidth();
+  const mapDimensionRangeDimensionHeightRatio = range.getDimension().getHeight() / dimension.getHeight();
   const offsetXRatio = range.getFrom().getX() / dimension.getWidth();
   const offsetYRatio = range.getFrom().getY() / dimension.getHeight();
 
   const elemWidth = width;
   const elemHeight = elemWidth * dimensionRatio;
-  const rangeElemWidth = elemWidth * mapObservedRangeWidthRatio;
-  const rangeElemHeight = elemHeight * mapObservedRangeHeightRatio;
+  const rangeElemWidth = elemWidth * mapDimensionRangeDimensionWidthRatio;
+  const rangeElemHeight = elemHeight * mapDimensionRangeDimensionHeightRatio;
 
-  const calculateNewRangeFromMouseEvent = (clientX: number, clientY: number): RangeVo => {
-    if (!mapContentElemRef.current) {
-      return range;
-    }
-    const rect = mapContentElemRef.current.getBoundingClientRect();
-    const elemX = clientX - rect.left;
-    const elemY = clientY - rect.top;
-    const standarizedX = Math.round(((elemX - rangeElemWidth / 2) / elemWidth) * dimension.getWidth());
-    const standarizedY = Math.round(((elemY - rangeElemHeight / 2) / elemHeight) * dimension.getHeight());
-    let adjustedX = standarizedX;
-    let adjustedY = standarizedY;
-    if (standarizedX + rangeWidth - 1 > dimension.getWidth() - 1) {
-      adjustedX = dimension.getWidth() - rangeWidth;
-    } else if (standarizedX < 0) {
-      adjustedX = 0;
-    }
-    if (standarizedY + rangeHeight - 1 > dimension.getHeight() - 1) {
-      adjustedY = dimension.getHeight() - rangeHeight;
-    } else if (standarizedY < 0) {
-      adjustedY = 0;
-    }
+  const calculateLocation = useCallback(
+    (clientX: number, clientY: number): LocationVo | null => {
+      if (!mapContentElemRef.current) {
+        return null;
+      }
+      const rect = mapContentElemRef.current.getBoundingClientRect();
+      const elemX = clientX - rect.left;
+      const elemY = clientY - rect.top;
+      let standarizedX = Math.round((elemX / elemWidth) * dimension.getWidth());
+      standarizedX = standarizedX < 0 ? 0 : standarizedX;
+      standarizedX = standarizedX > dimension.getWidth() - 1 ? dimension.getWidth() - 1 : standarizedX;
+      let standarizedY = Math.round((elemY / elemHeight) * dimension.getHeight());
+      standarizedY = standarizedY > 0 ? standarizedY : 0;
+      standarizedY = standarizedY > dimension.getWidth() - 1 ? dimension.getWidth() - 1 : standarizedY;
+      return LocationVo.new(standarizedX, standarizedY);
+    },
+    [mapContentElemRef.current]
+  );
 
-    return RangeVo.new(
-      LocationVo.new(adjustedX, adjustedY),
-      LocationVo.new(adjustedX + rangeWidth - 1, adjustedY + rangeHeight - 1)
-    );
-  };
+  const handlePull = useCallback(
+    (clientX: number, clientY: number) => {
+      const locationOnMap = calculateLocation(clientX, clientY);
+      if (locationOnMap) {
+        onDrag(locationOnMap);
+      }
+    },
+    [calculateLocation]
+  );
 
   usePull(mapContentElemRef, {
-    onPullStart: (x, y) => {
-      const newRange = calculateNewRangeFromMouseEvent(x, y);
-      onRangeUpdate(newRange);
-    },
-    onPull: (x, y) => {
-      const newRange = calculateNewRangeFromMouseEvent(x, y);
-      onRangeUpdate(newRange);
-    },
+    onPullStart: handlePull,
+    onPull: handlePull,
   });
 
   return (

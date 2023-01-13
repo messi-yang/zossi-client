@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { RangeVo, LocationVo, DimensionVo } from '@/models/valueObjects';
+import { LocationVo, DimensionVo, RangeVo } from '@/models/valueObjects';
 
 import GameMiniMap from '.';
 
@@ -13,13 +13,13 @@ export default {
 
 const Template: ComponentStory<typeof GameMiniMap> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const handleRangeUpdate = (newRange: RangeVo) => {
+  const handleDrag = (newCenter: LocationVo) => {
     updateArgs({
-      range: newRange,
+      center: newCenter,
     });
   };
 
-  return <GameMiniMap {...args} onRangeUpdate={handleRangeUpdate} />;
+  return <GameMiniMap {...args} onDrag={handleDrag} />;
 };
 
 export const Primary = Template.bind({});

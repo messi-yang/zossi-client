@@ -12,7 +12,7 @@ function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
   return MapVo.new(unitMatrix);
 }
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string, DimensionVo, ViewVo] {
+function parseGameJoinedEvent(event: GameJoinedEvent): [string, DimensionVo, ViewVo, CameraVo] {
   const dimension = DimensionVo.new(event.payload.dimension.width, event.payload.dimension.height);
   const range = RangeVo.new(
     LocationVo.new(event.payload.view.range.from.x, event.payload.view.range.from.y),
@@ -20,7 +20,8 @@ function parseGameJoinedEvent(event: GameJoinedEvent): [string, DimensionVo, Vie
   );
   const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
   const view = ViewVo.new(range, map);
-  return [event.payload.playerId, dimension, view];
+  const camera = CameraVo.new(LocationVo.new(event.payload.camera.center.x, event.payload.camera.center.y));
+  return [event.payload.playerId, dimension, view, camera];
 }
 
 function parseCameraChangedEvent(event: CameraChangedEvent): [CameraVo, ViewVo] {
@@ -54,8 +55,8 @@ export default class GameSocketConn {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
+    onGameJoined: (dimension: DimensionVo, camera: CameraVo, view: ViewVo) => void;
     onCameraChanged: (cameraVo: CameraVo, view: ViewVo) => void;
-    onGameJoined: (dimension: DimensionVo, view: ViewVo) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
@@ -74,8 +75,8 @@ export default class GameSocketConn {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [, dimension, view] = parseGameJoinedEvent(newMsg);
-        params.onGameJoined(dimension, view);
+        const [, dimension, view, camera] = parseGameJoinedEvent(newMsg);
+        params.onGameJoined(dimension, camera, view);
       } else if (newMsg.type === EventTypeEnum.CameraChanged) {
         const [camera, view] = parseCameraChangedEvent(newMsg);
         params.onCameraChanged(camera, view);
@@ -107,7 +108,7 @@ export default class GameSocketConn {
   }
 
   static newGameSocketConn(params: {
-    onGameJoined: (dimension: DimensionVo, view: ViewVo) => void;
+    onGameJoined: (dimension: DimensionVo, camera: CameraVo, view: ViewVo) => void;
     onCameraChanged: (camera: CameraVo, view: ViewVo) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;

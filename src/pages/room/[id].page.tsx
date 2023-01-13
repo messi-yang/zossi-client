@@ -1,11 +1,11 @@
-import { useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
-import useOnWindowResize from '@/ui/hooks/useOnWindowResize';
+import useDomRect from '@/ui/hooks/useDomRect';
 import GameContext from '@/ui/contexts/GameContext';
 import StyleContext from '@/ui/contexts/StyleContext';
-import { RangeVo, LocationVo, DimensionVo, CameraVo } from '@/models/valueObjects';
+import { LocationVo, DimensionVo, CameraVo } from '@/models/valueObjects';
 import GameSideBar from '@/ui/components/sidebars/GameSideBar';
 import Map from '@/ui/components/maps/Map';
 import GameMiniMap from '@/ui/components/maps/GameMiniMap';
@@ -16,11 +16,26 @@ import ConfirmModal from '@/ui/components/modals/ConfirmModal';
 const Room: NextPage = function Room() {
   const router = useRouter();
   const styleContext = useContext(StyleContext);
+  const mapContainerRef = useRef<HTMLElement | null>(null);
+  const mapContainerRect = useDomRect(mapContainerRef);
+  const screenDimension = useMemo(() => {
+    if (!mapContainerRect) {
+      return null;
+    }
+    return DimensionVo.newWithResolutionAndUnitSize(
+      {
+        width: mapContainerRect.width,
+        height: mapContainerRect.height,
+      },
+      50
+    );
+  }, [mapContainerRect]);
   const {
     dimension,
-    observedRange,
+    viewRange,
     map,
     items,
+    camera,
     gameStatus,
     joinGame,
     leaveGame,
@@ -36,51 +51,29 @@ const Room: NextPage = function Room() {
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
 
-  const [targetRange, setTargetRange] = useState<RangeVo | null>(null);
-  const observedRangeOffset = useMemo(() => {
-    if (!observedRange || !targetRange) {
+  const [targetCamera, setTargetCamera] = useState<CameraVo | null>(null);
+  const targetRange = useMemo(() => {
+    if (!targetCamera || !dimension || !screenDimension) {
       return null;
     }
-    return observedRange.calculateOffsetWithRange(targetRange);
-  }, [observedRange, targetRange]);
+    return targetCamera.calculateRangeInMap(dimension, screenDimension);
+  }, [targetCamera, dimension, screenDimension]);
+
+  const viewRangeOffset = useMemo(() => {
+    if (!viewRange || !targetRange) {
+      return null;
+    }
+    return viewRange.calculateOffsetWithRange(targetRange);
+  }, [viewRange, targetRange]);
 
   useEffect(
-    function handleWindowSizeIsReadyEffect() {
-      if (!styleContext.isWindowSizeReady) {
-        return;
+    function handleCameraChangedEffect() {
+      if (camera && !targetCamera) {
+        setTargetCamera(camera);
       }
-      setTargetRange(
-        RangeVo.newWithLocationAndDimension(
-          LocationVo.new(0, 0),
-          DimensionVo.newWithResolutionAndUnitSize(
-            {
-              width: styleContext.getWindowWidth(),
-              height: styleContext.getWindowWidth(),
-            },
-            30
-          )
-        )
-      );
     },
-    [styleContext.isWindowSizeReady]
+    [camera, targetCamera]
   );
-
-  const handleDesiredDimensionUpdate = useCallback(() => {
-    const newRange = RangeVo.newWithLocationAndDimension(
-      observedRange ? observedRange.getFrom() : LocationVo.new(0, 0),
-      DimensionVo.newWithResolutionAndUnitSize(
-        {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        },
-        30
-      )
-    );
-    setTargetRange(newRange);
-    const center = newRange.getCenter();
-    changeCamera(CameraVo.new(center));
-  }, [observedRange === null, changeCamera]);
-  useOnWindowResize(handleDesiredDimensionUpdate);
 
   useEffect(function joinGameOnInitializationEffect() {
     joinGame();
@@ -102,10 +95,10 @@ const Room: NextPage = function Room() {
     router.push('/');
   };
 
-  const handleMiniMapRangeUpdate = (newRange: RangeVo) => {
-    setTargetRange(newRange);
-    const center = newRange.getCenter();
-    changeCamera(CameraVo.new(center));
+  const handleMiniMapDrag = (location: LocationVo) => {
+    const newCamera = CameraVo.new(location);
+    changeCamera(newCamera);
+    setTargetCamera(newCamera);
   };
 
   const handleMiniMapClick = () => {
@@ -190,11 +183,11 @@ const Room: NextPage = function Room() {
               onMiniMapClick={handleMiniMapClick}
             />
           </section>
-          <section className="relative grow overflow-hidden bg-black">
+          <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               <Map
-                range={observedRange}
-                rangeOffset={observedRangeOffset}
+                range={viewRange}
+                rangeOffset={viewRangeOffset}
                 map={map}
                 unitSize={unitSize}
                 items={items}
@@ -202,14 +195,9 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {dimension && targetRange && isMiniMapVisible && (
+            {dimension && targetRange && targetCamera && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
-                <GameMiniMap
-                  width={300}
-                  dimension={dimension}
-                  range={targetRange}
-                  onRangeUpdate={handleMiniMapRangeUpdate}
-                />
+                <GameMiniMap width={300} dimension={dimension} range={targetRange} onDrag={handleMiniMapDrag} />
               </section>
             )}
           </section>
@@ -233,11 +221,11 @@ const Room: NextPage = function Room() {
             onSelect={handleItemSelect}
             onDone={handleSelectItemDone}
           />
-          <section className="relative grow overflow-hidden bg-black">
+          <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               <Map
-                range={observedRange}
-                rangeOffset={observedRangeOffset}
+                range={viewRange}
+                rangeOffset={viewRangeOffset}
                 map={map}
                 unitSize={unitSize}
                 items={items || []}
@@ -245,13 +233,13 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {dimension && targetRange && isMiniMapVisible && (
+            {dimension && targetRange && targetCamera && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={styleContext.getWindowWidth() * 0.8}
                   dimension={dimension}
                   range={targetRange}
-                  onRangeUpdate={handleMiniMapRangeUpdate}
+                  onDrag={handleMiniMapDrag}
                 />
               </section>
             )}
