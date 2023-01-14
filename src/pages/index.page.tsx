@@ -2,10 +2,10 @@ import { useContext } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import StyleContext from '@/ui/contexts/StyleContext';
+import StyleContext from '@/contexts/StyleContext';
 
-import BigLogo from '@/ui/components/logos/BigLogo';
-import Button from '@/ui/components/buttons/Button';
+import BigLogo from '@/components/logos/BigLogo';
+import Button from '@/components/buttons/Button';
 
 const Landing: NextPage = function Landing() {
   const styleContext = useContext(StyleContext);

@@ -1,17 +1,17 @@
 import { useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import useOnHistoryChange from '@/ui/hooks/useOnHistoryChange';
-import useDomRect from '@/ui/hooks/useDomRect';
-import GameContext from '@/ui/contexts/GameContext';
-import StyleContext from '@/ui/contexts/StyleContext';
+import useOnHistoryChange from '@/hooks/useOnHistoryChange';
+import useDomRect from '@/hooks/useDomRect';
+import GameContext from '@/contexts/GameContext';
+import StyleContext from '@/contexts/StyleContext';
 import { LocationVo, DimensionVo, CameraVo } from '@/models/valueObjects';
-import GameSideBar from '@/ui/components/sidebars/GameSideBar';
-import Map from '@/ui/components/maps/Map';
-import GameMiniMap from '@/ui/components/maps/GameMiniMap';
-import SelectItemModal from '@/ui/components/modals/SelectItemModal';
+import GameSideBar from '@/components/sidebars/GameSideBar';
+import Map from '@/components/maps/Map';
+import GameMiniMap from '@/components/maps/GameMiniMap';
+import SelectItemModal from '@/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
-import ConfirmModal from '@/ui/components/modals/ConfirmModal';
+import ConfirmModal from '@/components/modals/ConfirmModal';
 
 const Room: NextPage = function Room() {
   const router = useRouter();
