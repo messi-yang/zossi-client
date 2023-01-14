@@ -16,10 +16,6 @@ export default class BoundVo {
     return new BoundVo(from, to);
   }
 
-  static newWithLocationAndDimension(location: LocationVo, dimension: DimensionVo): BoundVo {
-    return new BoundVo(location, location.shift(dimension.getWidth() - 1, dimension.getHeight() - 1));
-  }
-
   public isEqual(bound: BoundVo): Boolean {
     return this.from.isEqual(bound.getFrom()) && this.to.isEqual(bound.getTo());
   }
