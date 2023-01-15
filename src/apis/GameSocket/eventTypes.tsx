@@ -13,7 +13,7 @@ type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
   payload: {
     playerId: string;
-    size: SizeDto;
+    mapSize: SizeDto;
     view: ViewDto;
     camera: CameraDto;
   };

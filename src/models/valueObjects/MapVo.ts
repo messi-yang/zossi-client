@@ -14,8 +14,8 @@ export default class MapVo {
     return new MapVo(unitMatrix);
   }
 
-  static newWithSize(size: SizeVo): MapVo {
-    const map = size.map<UnitVo>(() => new UnitVo(null));
+  static newWithMapSize(mapSize: SizeVo): MapVo {
+    const map = mapSize.map<UnitVo>(() => new UnitVo(null));
     return new MapVo(map);
   }
 

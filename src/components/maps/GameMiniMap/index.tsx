@@ -5,21 +5,21 @@ import dataTestids from './dataTestids';
 
 type Props = {
   width: number;
-  size: SizeVo;
+  mapSize: SizeVo;
   bound: BoundVo;
   onDrag: (center: LocationVo) => void;
 };
 
-function GameMiniMap({ width, size, bound, onDrag }: Props) {
+function GameMiniMap({ width, mapSize, bound, onDrag }: Props) {
   const mapContentElemRef = useRef<HTMLDivElement>(null);
-  const sizeRatio = size.getRatio();
-  const mapSizeBoundSizeWidthRatio = bound.getSize().getWidth() / size.getWidth();
-  const mapSizeBoundSizeHeightRatio = bound.getSize().getHeight() / size.getHeight();
-  const offsetXRatio = bound.getFrom().getX() / size.getWidth();
-  const offsetYRatio = bound.getFrom().getY() / size.getHeight();
+  const mapSizeRatio = mapSize.getRatio();
+  const mapSizeBoundSizeWidthRatio = bound.getSize().getWidth() / mapSize.getWidth();
+  const mapSizeBoundSizeHeightRatio = bound.getSize().getHeight() / mapSize.getHeight();
+  const offsetXRatio = bound.getFrom().getX() / mapSize.getWidth();
+  const offsetYRatio = bound.getFrom().getY() / mapSize.getHeight();
 
   const elemWidth = width;
-  const elemHeight = elemWidth * sizeRatio;
+  const elemHeight = elemWidth * mapSizeRatio;
   const boundElemWidth = elemWidth * mapSizeBoundSizeWidthRatio;
   const boundElemHeight = elemHeight * mapSizeBoundSizeHeightRatio;
 
@@ -31,12 +31,12 @@ function GameMiniMap({ width, size, bound, onDrag }: Props) {
       const rect = mapContentElemRef.current.getBoundingClientRect();
       const elemX = clientX - rect.left;
       const elemY = clientY - rect.top;
-      let standarizedX = Math.round((elemX / elemWidth) * size.getWidth());
+      let standarizedX = Math.round((elemX / elemWidth) * mapSize.getWidth());
       standarizedX = standarizedX < 0 ? 0 : standarizedX;
-      standarizedX = standarizedX > size.getWidth() - 1 ? size.getWidth() - 1 : standarizedX;
-      let standarizedY = Math.round((elemY / elemHeight) * size.getHeight());
+      standarizedX = standarizedX > mapSize.getWidth() - 1 ? mapSize.getWidth() - 1 : standarizedX;
+      let standarizedY = Math.round((elemY / elemHeight) * mapSize.getHeight());
       standarizedY = standarizedY > 0 ? standarizedY : 0;
-      standarizedY = standarizedY > size.getWidth() - 1 ? size.getWidth() - 1 : standarizedY;
+      standarizedY = standarizedY > mapSize.getWidth() - 1 ? mapSize.getWidth() - 1 : standarizedY;
       return LocationVo.new(standarizedX, standarizedY);
     },
     [mapContentElemRef.current]

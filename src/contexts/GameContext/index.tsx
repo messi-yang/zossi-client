@@ -8,7 +8,7 @@ type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONN
 
 type ContextValue = {
   gameStatus: GameStatus;
-  size: SizeVo | null;
+  mapSize: SizeVo | null;
   viewBound: BoundVo | null;
   map: MapVo | null;
   items: ItemAgg[] | null;
@@ -23,7 +23,7 @@ type ContextValue = {
 function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
-    size: null,
+    mapSize: null,
     viewBound: null,
     map: null,
     items: null,
@@ -47,14 +47,14 @@ export function Provider({ children }: Props) {
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
 
   const initialContextValue = createInitialContextValue();
-  const [size, setSize] = useState<SizeVo | null>(initialContextValue.size);
+  const [mapSize, setMapSize] = useState<SizeVo | null>(initialContextValue.mapSize);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [viewBound, setViewBound] = useState<BoundVo | null>(initialContextValue.viewBound);
   const [map, setMap] = useState<MapVo | null>(initialContextValue.map);
   const [camera, setCamera] = useState<CameraVo | null>(initialContextValue.camera);
 
   const reset = useCallback(() => {
-    setSize(initialContextValue.size);
+    setMapSize(initialContextValue.mapSize);
     setItems(initialContextValue.items);
     setViewBound(initialContextValue.viewBound);
     setMap(initialContextValue.map);
@@ -67,8 +67,8 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (newSize: SizeVo, newCamera: CameraVo, view: ViewVo) => {
-        setSize(newSize);
+      onGameJoined: (newMapSize: SizeVo, newCamera: CameraVo, view: ViewVo) => {
+        setMapSize(newMapSize);
         setViewBound(view.getBound());
         setMap(view.getmap());
         setCamera(newCamera);
@@ -138,7 +138,7 @@ export function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           gameStatus,
-          size,
+          mapSize,
           viewBound,
           map,
           items,
@@ -149,7 +149,7 @@ export function Provider({ children }: Props) {
           destroyItem,
           changeCamera,
         }),
-        [gameStatus, size, viewBound, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
+        [gameStatus, mapSize, viewBound, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
       )}
     >
       {children}

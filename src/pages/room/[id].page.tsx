@@ -30,8 +30,19 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const { size, viewBound, map, items, camera, gameStatus, joinGame, leaveGame, buildItem, destroyItem, changeCamera } =
-    useContext(GameContext);
+  const {
+    mapSize,
+    viewBound,
+    map,
+    items,
+    camera,
+    gameStatus,
+    joinGame,
+    leaveGame,
+    buildItem,
+    destroyItem,
+    changeCamera,
+  } = useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
@@ -42,11 +53,11 @@ const Room: NextPage = function Room() {
 
   const [targetCamera, setTargetCamera] = useState<CameraVo | null>(null);
   const targetBound = useMemo(() => {
-    if (!targetCamera || !size || !visibleBoundSize) {
+    if (!targetCamera || !mapSize || !visibleBoundSize) {
       return null;
     }
-    return targetCamera.calculateBoundInMap(size, visibleBoundSize);
-  }, [targetCamera, size, visibleBoundSize]);
+    return targetCamera.calculateBoundInMap(mapSize, visibleBoundSize);
+  }, [targetCamera, mapSize, visibleBoundSize]);
 
   const viewBoundOffset = useMemo(() => {
     if (!viewBound || !targetBound) {
@@ -184,9 +195,9 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {size && targetBound && targetCamera && isMiniMapVisible && (
+            {mapSize && targetBound && targetCamera && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
-                <GameMiniMap width={300} size={size} bound={targetBound} onDrag={handleMiniMapDrag} />
+                <GameMiniMap width={300} mapSize={mapSize} bound={targetBound} onDrag={handleMiniMapDrag} />
               </section>
             )}
           </section>
@@ -222,11 +233,11 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {size && targetBound && targetCamera && isMiniMapVisible && (
+            {mapSize && targetBound && targetCamera && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={styleContext.getWindowWidth() * 0.8}
-                  size={size}
+                  mapSize={mapSize}
                   bound={targetBound}
                   onDrag={handleMiniMapDrag}
                 />

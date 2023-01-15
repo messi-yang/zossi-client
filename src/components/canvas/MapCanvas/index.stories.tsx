@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof MapCanvas> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  map: MapVo.newWithSize(SizeVo.new(30, 30)),
+  map: MapVo.newWithMapSize(SizeVo.new(30, 30)),
   unitSize: 15,
   items: [],
   selectedItemId: null,

@@ -25,6 +25,6 @@ const Template: ComponentStory<typeof GameMiniMap> = function Template(args) {
 export const Primary = Template.bind({});
 Primary.args = {
   width: 300,
-  size: SizeVo.new(300, 300),
+  mapSize: SizeVo.new(300, 300),
   bound: BoundVo.new(LocationVo.new(0, 0), LocationVo.new(30, 30)),
 };

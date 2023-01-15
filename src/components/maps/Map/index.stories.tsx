@@ -42,7 +42,7 @@ const boundForPrimary = BoundVo.new(LocationVo.new(3, 3), LocationVo.new(9, 9));
 Primary.args = {
   bound: boundForPrimary,
   boundOffset: OffsetVo.new(0, 0),
-  map: MapVo.newWithSize(boundForPrimary.getSize()),
+  map: MapVo.newWithMapSize(boundForPrimary.getSize()),
   unitSize: 30,
   items: [],
   selectedItemId: null,

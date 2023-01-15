@@ -5,7 +5,7 @@ import { SizeVo, MapVo } from '@/models/valueObjects';
 function renderMapCanvas(): RenderResult {
   return render(
     <MapCanvas
-      map={MapVo.newWithSize(SizeVo.new(1, 1))}
+      map={MapVo.newWithMapSize(SizeVo.new(1, 1))}
       unitSize={20}
       onClick={() => {}}
       items={[]}

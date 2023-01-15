@@ -28,11 +28,11 @@ type ItemMap = {
 };
 
 function generateCanvasElemSize(map: MapVo, unitSize: number): ElemSize {
-  const size = map.getSize();
+  const mapSize = map.getSize();
 
   return {
-    width: size.getWidth() * unitSize + 1,
-    height: size.getHeight() * unitSize + 1,
+    width: mapSize.getWidth() * unitSize + 1,
+    height: mapSize.getHeight() * unitSize + 1,
   };
 }
 
@@ -66,7 +66,7 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
     image.src = '/grass-base.png';
   }, []);
 
-  const [size, setSize] = useState(map.getSize());
+  const [mapSize, setSize] = useState(map.getSize());
 
   const itemMap: ItemMap = useMemo(() => {
     const res: ItemMap = {};
@@ -98,7 +98,7 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
 
   useEffect(() => {
     const newSize = map.getSize();
-    if (!size.isEqual(newSize)) {
+    if (!mapSize.isEqual(newSize)) {
       setSize(newSize);
     }
   }, [map]);
@@ -141,7 +141,7 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
       clean(ctx);
       drawUnits(ctx, newMap, newUnitSize);
     },
-    [drawUnits, mapCanvasElem, map, unitSize, size]
+    [drawUnits, mapCanvasElem, map, unitSize, mapSize]
   );
 
   draw(map, unitSize);
@@ -201,12 +201,12 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
       const eventTarget = event.target as Element;
       const eventTargetRect = eventTarget.getBoundingClientRect();
       const [posX, posY] = [event.clientX - eventTargetRect.left, event.clientY - eventTargetRect.top];
-      const newHoveredIndexes = calculateIndexes(posX, posY, unitSize, size);
+      const newHoveredIndexes = calculateIndexes(posX, posY, unitSize, mapSize);
 
       clean(ctx);
       drawHoverMask(ctx, newHoveredIndexes, unitSize);
     },
-    [unitSize, size, hoverMaskCanvasElem, clean, drawHoverMask]
+    [unitSize, mapSize, hoverMaskCanvasElem, clean, drawHoverMask]
   );
 
   const handleHoverMaskCanvasMouseMoveDebouncer = useCallback(
@@ -228,7 +228,7 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
     const eventTarget = event.target as Element;
     const eventTargetRect = eventTarget.getBoundingClientRect();
     const [posX, posY] = [event.clientX - eventTargetRect.left, event.clientY - eventTargetRect.top];
-    const clickedIndexes = calculateIndexes(posX, posY, unitSize, size);
+    const clickedIndexes = calculateIndexes(posX, posY, unitSize, mapSize);
     onClick(clickedIndexes[0], clickedIndexes[1]);
   };
 
