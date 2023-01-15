@@ -5,7 +5,7 @@ import useOnHistoryChange from '@/hooks/useOnHistoryChange';
 import useDomRect from '@/hooks/useDomRect';
 import GameContext from '@/contexts/GameContext';
 import StyleContext from '@/contexts/StyleContext';
-import { LocationVo, DimensionVo, CameraVo } from '@/models/valueObjects';
+import { LocationVo, SizeVo, CameraVo } from '@/models/valueObjects';
 import GameSideBar from '@/components/sidebars/GameSideBar';
 import Map from '@/components/maps/Map';
 import GameMiniMap from '@/components/maps/GameMiniMap';
@@ -18,11 +18,11 @@ const Room: NextPage = function Room() {
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const mapContainerRect = useDomRect(mapContainerRef);
-  const screenDimension = useMemo(() => {
+  const visibleBoundSize = useMemo(() => {
     if (!mapContainerRect) {
       return null;
     }
-    return DimensionVo.newWithResolutionAndUnitSize(
+    return SizeVo.newWithResolutionAndUnitSize(
       {
         width: mapContainerRect.width,
         height: mapContainerRect.height,
@@ -30,19 +30,8 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const {
-    dimension,
-    viewBound,
-    map,
-    items,
-    camera,
-    gameStatus,
-    joinGame,
-    leaveGame,
-    buildItem,
-    destroyItem,
-    changeCamera,
-  } = useContext(GameContext);
+  const { size, viewBound, map, items, camera, gameStatus, joinGame, leaveGame, buildItem, destroyItem, changeCamera } =
+    useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
@@ -53,11 +42,11 @@ const Room: NextPage = function Room() {
 
   const [targetCamera, setTargetCamera] = useState<CameraVo | null>(null);
   const targetBound = useMemo(() => {
-    if (!targetCamera || !dimension || !screenDimension) {
+    if (!targetCamera || !size || !visibleBoundSize) {
       return null;
     }
-    return targetCamera.calculateBoundInMap(dimension, screenDimension);
-  }, [targetCamera, dimension, screenDimension]);
+    return targetCamera.calculateBoundInMap(size, visibleBoundSize);
+  }, [targetCamera, size, visibleBoundSize]);
 
   const viewBoundOffset = useMemo(() => {
     if (!viewBound || !targetBound) {
@@ -195,9 +184,9 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {dimension && targetBound && targetCamera && isMiniMapVisible && (
+            {size && targetBound && targetCamera && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
-                <GameMiniMap width={300} dimension={dimension} bound={targetBound} onDrag={handleMiniMapDrag} />
+                <GameMiniMap width={300} size={size} bound={targetBound} onDrag={handleMiniMapDrag} />
               </section>
             )}
           </section>
@@ -233,11 +222,11 @@ const Room: NextPage = function Room() {
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {dimension && targetBound && targetCamera && isMiniMapVisible && (
+            {size && targetBound && targetCamera && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={styleContext.getWindowWidth() * 0.8}
-                  dimension={dimension}
+                  size={size}
                   bound={targetBound}
                   onDrag={handleMiniMapDrag}
                 />

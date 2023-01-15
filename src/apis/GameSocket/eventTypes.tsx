@@ -1,4 +1,4 @@
-import type { DimensionDto, ItemDto } from '@/dtos';
+import type { SizeDto, ItemDto } from '@/dtos';
 import CameraDto from '@/dtos/CameraDto';
 import ViewDto from '@/dtos/ViewDto';
 
@@ -13,7 +13,7 @@ type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
   payload: {
     playerId: string;
-    dimension: DimensionDto;
+    size: SizeDto;
     view: ViewDto;
     camera: CameraDto;
   };

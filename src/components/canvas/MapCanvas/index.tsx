@@ -1,7 +1,7 @@
 import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 
-import { UnitVo, MapVo, DimensionVo } from '@/models/valueObjects';
+import { UnitVo, MapVo, SizeVo } from '@/models/valueObjects';
 
 import { ItemAgg } from '@/models/aggregates';
 import dataTestids from './dataTestids';
@@ -28,11 +28,11 @@ type ItemMap = {
 };
 
 function generateCanvasElemSize(map: MapVo, unitSize: number): ElemSize {
-  const dimension = map.getDimension();
+  const size = map.getSize();
 
   return {
-    width: dimension.getWidth() * unitSize + 1,
-    height: dimension.getHeight() * unitSize + 1,
+    width: size.getWidth() * unitSize + 1,
+    height: size.getHeight() * unitSize + 1,
   };
 }
 
@@ -66,7 +66,7 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
     image.src = '/grass-base.png';
   }, []);
 
-  const [dimension, setDimension] = useState(map.getDimension());
+  const [size, setSize] = useState(map.getSize());
 
   const itemMap: ItemMap = useMemo(() => {
     const res: ItemMap = {};
@@ -97,9 +97,9 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
   );
 
   useEffect(() => {
-    const newDimension = map.getDimension();
-    if (!dimension.isEqual(newDimension)) {
-      setDimension(newDimension);
+    const newSize = map.getSize();
+    if (!size.isEqual(newSize)) {
+      setSize(newSize);
     }
   }, [map]);
 
@@ -141,7 +141,7 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
       clean(ctx);
       drawUnits(ctx, newMap, newUnitSize);
     },
-    [drawUnits, mapCanvasElem, map, unitSize, dimension]
+    [drawUnits, mapCanvasElem, map, unitSize, size]
   );
 
   draw(map, unitSize);
@@ -151,14 +151,14 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
   }, []);
 
   const calculateIndexes = useCallback(
-    (relativeX: number, relativeY: number, newUnitSize: number, newDimension: DimensionVo): Indexes => {
+    (relativeX: number, relativeY: number, newUnitSize: number, newSize: SizeVo): Indexes => {
       let colIdx = Math.floor(relativeX / newUnitSize);
       let rowIdx = Math.floor(relativeY / newUnitSize);
-      if (colIdx >= newDimension.getWidth()) {
-        colIdx = newDimension.getWidth() - 1;
+      if (colIdx >= newSize.getWidth()) {
+        colIdx = newSize.getWidth() - 1;
       }
-      if (rowIdx >= newDimension.getHeight()) {
-        rowIdx = newDimension.getHeight() - 1;
+      if (rowIdx >= newSize.getHeight()) {
+        rowIdx = newSize.getHeight() - 1;
       }
 
       return [colIdx, rowIdx];
@@ -201,12 +201,12 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
       const eventTarget = event.target as Element;
       const eventTargetRect = eventTarget.getBoundingClientRect();
       const [posX, posY] = [event.clientX - eventTargetRect.left, event.clientY - eventTargetRect.top];
-      const newHoveredIndexes = calculateIndexes(posX, posY, unitSize, dimension);
+      const newHoveredIndexes = calculateIndexes(posX, posY, unitSize, size);
 
       clean(ctx);
       drawHoverMask(ctx, newHoveredIndexes, unitSize);
     },
-    [unitSize, dimension, hoverMaskCanvasElem, clean, drawHoverMask]
+    [unitSize, size, hoverMaskCanvasElem, clean, drawHoverMask]
   );
 
   const handleHoverMaskCanvasMouseMoveDebouncer = useCallback(
@@ -228,7 +228,7 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
     const eventTarget = event.target as Element;
     const eventTargetRect = eventTarget.getBoundingClientRect();
     const [posX, posY] = [event.clientX - eventTargetRect.left, event.clientY - eventTargetRect.top];
-    const clickedIndexes = calculateIndexes(posX, posY, unitSize, dimension);
+    const clickedIndexes = calculateIndexes(posX, posY, unitSize, size);
     onClick(clickedIndexes[0], clickedIndexes[1]);
   };
 

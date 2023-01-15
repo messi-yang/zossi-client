@@ -1,11 +1,11 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import MapCanvas, { dataTestids } from '.';
-import { DimensionVo, MapVo } from '@/models/valueObjects';
+import { SizeVo, MapVo } from '@/models/valueObjects';
 
 function renderMapCanvas(): RenderResult {
   return render(
     <MapCanvas
-      map={MapVo.newWithDimension(DimensionVo.new(1, 1))}
+      map={MapVo.newWithSize(SizeVo.new(1, 1))}
       unitSize={20}
       onClick={() => {}}
       items={[]}

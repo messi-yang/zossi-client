@@ -1,5 +1,5 @@
 import LocationVo from './LocationVo';
-import DimensionVo from './DimensionVo';
+import SizeVo from './SizeVo';
 import OffsetVo from './OffsetVo';
 
 export default class BoundVo {
@@ -20,8 +20,8 @@ export default class BoundVo {
     return this.from.isEqual(bound.getFrom()) && this.to.isEqual(bound.getTo());
   }
 
-  public getDimension(): DimensionVo {
-    return DimensionVo.new(this.to.getX() - this.from.getX() + 1, this.to.getY() - this.from.getY() + 1);
+  public getSize(): SizeVo {
+    return SizeVo.new(this.to.getX() - this.from.getX() + 1, this.to.getY() - this.from.getY() + 1);
   }
 
   public getFrom(): LocationVo {

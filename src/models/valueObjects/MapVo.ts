@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 
 import UnitVo from './UnitVo';
-import DimensionVo from './DimensionVo';
+import SizeVo from './SizeVo';
 
 export default class MapVo {
   private unitMatrix: UnitVo[][];
@@ -14,8 +14,8 @@ export default class MapVo {
     return new MapVo(unitMatrix);
   }
 
-  static newWithDimension(dimension: DimensionVo): MapVo {
-    const map = dimension.map<UnitVo>(() => new UnitVo(null));
+  static newWithSize(size: SizeVo): MapVo {
+    const map = size.map<UnitVo>(() => new UnitVo(null));
     return new MapVo(map);
   }
 
@@ -35,8 +35,8 @@ export default class MapVo {
     return cloneDeep(this.unitMatrix);
   }
 
-  public getDimension(): DimensionVo {
-    return DimensionVo.new(this.getWidth(), this.getHeight());
+  public getSize(): SizeVo {
+    return SizeVo.new(this.getWidth(), this.getHeight());
   }
 
   public iterateUnit(cb: (colIdx: number, rowIdx: number, unit: UnitVo) => void) {

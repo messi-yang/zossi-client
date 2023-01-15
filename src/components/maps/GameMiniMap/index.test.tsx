@@ -1,12 +1,12 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { BoundVo, LocationVo, DimensionVo } from '@/models/valueObjects';
+import { BoundVo, LocationVo, SizeVo } from '@/models/valueObjects';
 import GameMiniMap, { dataTestids } from '.';
 
 function renderGameMiniMap(): RenderResult {
   return render(
     <GameMiniMap
       width={300}
-      dimension={DimensionVo.new(100, 100)}
+      size={SizeVo.new(100, 100)}
       bound={BoundVo.new(LocationVo.new(0, 10), LocationVo.new(20, 30))}
       onDrag={() => {}}
     />

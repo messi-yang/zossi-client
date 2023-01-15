@@ -1,4 +1,4 @@
-import DimensionVo from './DimensionVo';
+import SizeVo from './SizeVo';
 import LocationVo from './LocationVo';
 import BoundVo from './BoundVo';
 
@@ -17,25 +17,25 @@ export default class CameraVo {
     return this.center;
   }
 
-  public calculateBoundInMap(mapDimension: DimensionVo, screenDimension: DimensionVo): BoundVo {
-    const standarizedX = Math.round(this.center.getX() - screenDimension.getWidth() / 2);
-    const standarizedY = Math.round(this.center.getY() - screenDimension.getHeight() / 2);
+  public calculateBoundInMap(mapSize: SizeVo, screenSize: SizeVo): BoundVo {
+    const standarizedX = Math.round(this.center.getX() - screenSize.getWidth() / 2);
+    const standarizedY = Math.round(this.center.getY() - screenSize.getHeight() / 2);
     let adjustedX = standarizedX;
     let adjustedY = standarizedY;
-    if (standarizedX + screenDimension.getWidth() - 1 > mapDimension.getWidth() - 1) {
-      adjustedX = mapDimension.getWidth() - screenDimension.getWidth();
+    if (standarizedX + screenSize.getWidth() - 1 > mapSize.getWidth() - 1) {
+      adjustedX = mapSize.getWidth() - screenSize.getWidth();
     } else if (standarizedX < 0) {
       adjustedX = 0;
     }
-    if (standarizedY + screenDimension.getHeight() - 1 > mapDimension.getHeight() - 1) {
-      adjustedY = mapDimension.getHeight() - screenDimension.getHeight();
+    if (standarizedY + screenSize.getHeight() - 1 > mapSize.getHeight() - 1) {
+      adjustedY = mapSize.getHeight() - screenSize.getHeight();
     } else if (standarizedY < 0) {
       adjustedY = 0;
     }
 
     return BoundVo.new(
       LocationVo.new(adjustedX, adjustedY),
-      LocationVo.new(adjustedX + screenDimension.getWidth() - 1, adjustedY + screenDimension.getHeight() - 1)
+      LocationVo.new(adjustedX + screenSize.getWidth() - 1, adjustedY + screenSize.getHeight() - 1)
     );
   }
 }

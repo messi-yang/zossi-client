@@ -1,6 +1,6 @@
 import range from 'lodash/range';
 
-export default class DimensionVo {
+export default class SizeVo {
   private width: number;
 
   private height: number;
@@ -10,21 +10,18 @@ export default class DimensionVo {
     this.height = height;
   }
 
-  static new(width: number, height: number): DimensionVo {
-    return new DimensionVo(width, height);
+  static new(width: number, height: number): SizeVo {
+    return new SizeVo(width, height);
   }
 
-  static newWithResolutionAndUnitSize(
-    resolution: { width: number; height: number },
-    unitSideLength: number
-  ): DimensionVo {
+  static newWithResolutionAndUnitSize(resolution: { width: number; height: number }, unitSideLength: number): SizeVo {
     const width = Math.floor(resolution.width / unitSideLength) + 1;
     const height = Math.floor(resolution.height / unitSideLength) + 1;
-    return new DimensionVo(width, height);
+    return new SizeVo(width, height);
   }
 
-  public isEqual(dimension: DimensionVo): boolean {
-    return this.width === dimension.getWidth() && this.height === dimension.getHeight();
+  public isEqual(size: SizeVo): boolean {
+    return this.width === size.getWidth() && this.height === size.getHeight();
   }
 
   public getWidth(): number {

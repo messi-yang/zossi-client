@@ -1,14 +1,14 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import GameSocket from '@/apis/GameSocket';
-import { BoundVo, MapVo, LocationVo, DimensionVo, ViewVo, CameraVo } from '@/models/valueObjects';
+import { BoundVo, MapVo, LocationVo, SizeVo, ViewVo, CameraVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
 type ContextValue = {
   gameStatus: GameStatus;
-  dimension: DimensionVo | null;
+  size: SizeVo | null;
   viewBound: BoundVo | null;
   map: MapVo | null;
   items: ItemAgg[] | null;
@@ -23,7 +23,7 @@ type ContextValue = {
 function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
-    dimension: null,
+    size: null,
     viewBound: null,
     map: null,
     items: null,
@@ -47,14 +47,14 @@ export function Provider({ children }: Props) {
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
 
   const initialContextValue = createInitialContextValue();
-  const [dimension, setDimension] = useState<DimensionVo | null>(initialContextValue.dimension);
+  const [size, setSize] = useState<SizeVo | null>(initialContextValue.size);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [viewBound, setViewBound] = useState<BoundVo | null>(initialContextValue.viewBound);
   const [map, setMap] = useState<MapVo | null>(initialContextValue.map);
   const [camera, setCamera] = useState<CameraVo | null>(initialContextValue.camera);
 
   const reset = useCallback(() => {
-    setDimension(initialContextValue.dimension);
+    setSize(initialContextValue.size);
     setItems(initialContextValue.items);
     setViewBound(initialContextValue.viewBound);
     setMap(initialContextValue.map);
@@ -67,8 +67,8 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (newDimension: DimensionVo, newCamera: CameraVo, view: ViewVo) => {
-        setDimension(newDimension);
+      onGameJoined: (newSize: SizeVo, newCamera: CameraVo, view: ViewVo) => {
+        setSize(newSize);
         setViewBound(view.getBound());
         setMap(view.getmap());
         setCamera(newCamera);
@@ -138,7 +138,7 @@ export function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           gameStatus,
-          dimension,
+          size,
           viewBound,
           map,
           items,
@@ -149,7 +149,7 @@ export function Provider({ children }: Props) {
           destroyItem,
           changeCamera,
         }),
-        [gameStatus, dimension, viewBound, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
+        [gameStatus, size, viewBound, map, items, camera, joinGame, leaveGame, buildItem, changeCamera]
       )}
     >
       {children}
