@@ -64,7 +64,7 @@ const Room: NextPage = function Room() {
     [camera, targetCamera]
   );
 
-  useEffect(function joinGameOnInitializationEffect() {
+  useEffect(function joinGameOnInitEffect() {
     joinGame();
   }, []);
 
