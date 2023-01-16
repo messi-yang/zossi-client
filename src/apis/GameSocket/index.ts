@@ -1,4 +1,5 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
+import { mapMatrix } from '@/libs/common';
 import type { UnitDto } from '@/dtos';
 import { BoundVo, UnitVo, MapVo, LocationVo, SizeVo, ViewVo, CameraVo } from '@/models/valueObjects';
 import { EventTypeEnum, GameJoinedEvent, CameraChangedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './eventTypes';
@@ -7,8 +8,8 @@ import { ActionTypeEnum } from './actionTypes';
 import type { PingAction, ChangeCameraAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
-function convertUnitDtoMatrixToMapVo(map: UnitDto[][]): MapVo {
-  const unitMatrix = map.map((unitCol) => unitCol.map((unit) => UnitVo.new(unit.itemId)));
+function convertUnitDtoMatrixToMapVo(unitDtoMatrix: UnitDto[][]): MapVo {
+  const unitMatrix = mapMatrix(unitDtoMatrix, (uint) => UnitVo.new(uint.itemId));
   return MapVo.new(unitMatrix);
 }
 
