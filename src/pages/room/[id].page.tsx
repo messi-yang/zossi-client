@@ -30,19 +30,8 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const {
-    mapSize,
-    viewBound,
-    map,
-    items,
-    camera,
-    gameStatus,
-    joinGame,
-    leaveGame,
-    buildItem,
-    destroyItem,
-    changeCamera,
-  } = useContext(GameContext);
+  const { mapSize, view, items, camera, gameStatus, joinGame, leaveGame, buildItem, destroyItem, changeCamera } =
+    useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
@@ -60,11 +49,11 @@ const Room: NextPage = function Room() {
   }, [targetCamera, mapSize, visibleBoundSize]);
 
   const viewBoundOffset = useMemo(() => {
-    if (!viewBound || !targetBound) {
+    if (!view || !targetBound) {
       return null;
     }
-    return viewBound.calculateOffsetWithBound(targetBound);
-  }, [viewBound, targetBound]);
+    return view.getBound().calculateOffsetWithBound(targetBound);
+  }, [view, targetBound]);
 
   useEffect(
     function handleCameraChangedEffect() {
@@ -186,9 +175,9 @@ const Room: NextPage = function Room() {
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               <Map
-                bound={viewBound}
+                bound={view?.getBound() || null}
                 boundOffset={viewBoundOffset}
-                map={map}
+                map={view?.getmap() || null}
                 unitSize={unitSize}
                 items={items}
                 selectedItemId={selectedItem?.getId() || null}
@@ -224,9 +213,9 @@ const Room: NextPage = function Room() {
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               <Map
-                bound={viewBound}
+                bound={view?.getBound() || null}
                 boundOffset={viewBoundOffset}
-                map={map}
+                map={view?.getmap() || null}
                 unitSize={unitSize}
                 items={items || []}
                 selectedItemId={selectedItem?.getId() || null}
