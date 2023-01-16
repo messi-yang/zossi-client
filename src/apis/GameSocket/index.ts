@@ -1,4 +1,4 @@
-import { ungzipBlob, gzipBlob } from '@/lib/compression';
+import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import type { UnitDto } from '@/dtos';
 import { BoundVo, UnitVo, MapVo, LocationVo, SizeVo, ViewVo, CameraVo } from '@/models/valueObjects';
 import { EventTypeEnum, GameJoinedEvent, CameraChangedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './eventTypes';
