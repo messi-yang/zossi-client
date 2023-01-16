@@ -57,7 +57,7 @@ export default class GameSocket {
 
   constructor(params: {
     onGameJoined: (mapSize: SizeVo, camera: CameraVo, view: ViewVo) => void;
-    onCameraChanged: (cameraVo: CameraVo, view: ViewVo) => void;
+    onCameraChanged: (camera: CameraVo, view: ViewVo) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
