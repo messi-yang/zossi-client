@@ -19,7 +19,7 @@ export default class ViewVo {
     return this.bound;
   }
 
-  public getmap(): MapVo {
+  public getMap(): MapVo {
     return this.map;
   }
 }

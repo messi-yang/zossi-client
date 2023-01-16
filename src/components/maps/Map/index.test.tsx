@@ -1,13 +1,12 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import Map, { dataTestids } from '.';
-import { UnitVo, MapVo, OffsetVo } from '@/models/valueObjects';
+import { UnitVo, MapVo, ViewVo, OffsetVo, BoundVo, LocationVo } from '@/models/valueObjects';
 
 function renderMap(map: MapVo): RenderResult {
   return render(
     <Map
-      bound={null}
-      boundOffset={OffsetVo.new(0, 0)}
-      map={map}
+      view={ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(10, 10)), map)}
+      viewOffset={OffsetVo.new(0, 0)}
       unitSize={30}
       items={[]}
       selectedItemId={null}

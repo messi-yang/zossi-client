@@ -18,7 +18,7 @@ const Room: NextPage = function Room() {
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const mapContainerRect = useDomRect(mapContainerRef);
-  const visibleBoundSize = useMemo(() => {
+  const clientViewBoundSize = useMemo(() => {
     if (!mapContainerRect) {
       return null;
     }
@@ -41,22 +41,22 @@ const Room: NextPage = function Room() {
   const isDestroyingItem = !isBuildindItem;
 
   const [targetCamera, setTargetCamera] = useState<CameraVo | null>(null);
-  const targetBound = useMemo(() => {
-    if (!targetCamera || !mapSize || !visibleBoundSize) {
+  const clientViewBound = useMemo(() => {
+    if (!targetCamera || !mapSize || !clientViewBoundSize) {
       return null;
     }
-    return targetCamera.calculateBoundInMap(mapSize, visibleBoundSize);
-  }, [targetCamera, mapSize, visibleBoundSize]);
+    return targetCamera.getViewBoundInMap(mapSize, clientViewBoundSize);
+  }, [targetCamera, mapSize, clientViewBoundSize]);
 
-  const viewBoundOffset = useMemo(() => {
-    if (!view || !targetBound) {
+  const viewOffset = useMemo(() => {
+    if (!view || !clientViewBound) {
       return null;
     }
-    return view.getBound().calculateOffsetWithBound(targetBound);
-  }, [view, targetBound]);
+    return view.getBound().calculateOffsetWithBound(clientViewBound);
+  }, [view, clientViewBound]);
 
   useEffect(
-    function handleCameraChangedEffect() {
+    function initTargetCameraEffect() {
       if (camera && !targetCamera) {
         setTargetCamera(camera);
       }
@@ -175,18 +175,17 @@ const Room: NextPage = function Room() {
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               <Map
-                bound={view?.getBound() || null}
-                boundOffset={viewBoundOffset}
-                map={view?.getmap() || null}
+                view={view}
+                viewOffset={viewOffset}
                 unitSize={unitSize}
                 items={items}
                 selectedItemId={selectedItem?.getId() || null}
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {mapSize && targetBound && targetCamera && isMiniMapVisible && (
+            {mapSize && clientViewBound && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
-                <GameMiniMap width={300} mapSize={mapSize} bound={targetBound} onDrag={handleMiniMapDrag} />
+                <GameMiniMap width={300} mapSize={mapSize} bound={clientViewBound} onDrag={handleMiniMapDrag} />
               </section>
             )}
           </section>
@@ -213,21 +212,20 @@ const Room: NextPage = function Room() {
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               <Map
-                bound={view?.getBound() || null}
-                boundOffset={viewBoundOffset}
-                map={view?.getmap() || null}
+                view={view}
+                viewOffset={viewOffset}
                 unitSize={unitSize}
-                items={items || []}
+                items={items}
                 selectedItemId={selectedItem?.getId() || null}
                 onUnitClick={handleUnitClick}
               />
             </section>
-            {mapSize && targetBound && targetCamera && isMiniMapVisible && (
+            {mapSize && clientViewBound && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
                 <GameMiniMap
                   width={styleContext.getWindowWidth() * 0.8}
                   mapSize={mapSize}
-                  bound={targetBound}
+                  bound={clientViewBound}
                   onDrag={handleMiniMapDrag}
                 />
               </section>

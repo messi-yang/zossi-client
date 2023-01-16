@@ -17,7 +17,7 @@ export default class CameraVo {
     return this.center;
   }
 
-  public calculateBoundInMap(mapSize: SizeVo, screenSize: SizeVo): BoundVo {
+  public getViewBoundInMap(mapSize: SizeVo, screenSize: SizeVo): BoundVo {
     const standarizedX = Math.round(this.center.getX() - screenSize.getWidth() / 2);
     const standarizedY = Math.round(this.center.getY() - screenSize.getHeight() / 2);
     let adjustedX = standarizedX;

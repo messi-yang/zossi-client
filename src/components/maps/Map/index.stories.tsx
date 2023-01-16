@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { LocationVo, BoundVo, OffsetVo, UnitVo, MapVo } from '@/models/valueObjects';
+import { LocationVo, BoundVo, OffsetVo, UnitVo, MapVo, ViewVo } from '@/models/valueObjects';
 
 import Map from '.';
 
@@ -13,16 +13,13 @@ export default {
 
 const Template: ComponentStory<typeof Map> = function Template(args) {
   const [, updateArgs] = useArgs();
-  const { bound, map } = args;
+  const { view } = args;
   const handleUnitClick = (location: LocationVo) => {
-    if (!bound) {
-      return;
-    }
-    if (!map) {
+    if (!view) {
       return;
     }
 
-    const unitMatrix = map.getUnitMatrix();
+    const unitMatrix = view.getMap().getUnitMatrix();
     unitMatrix[location.getX()][location.getY()] = UnitVo.new(null);
 
     updateArgs({
@@ -40,9 +37,8 @@ const Template: ComponentStory<typeof Map> = function Template(args) {
 export const Primary = Template.bind({});
 const boundForPrimary = BoundVo.new(LocationVo.new(3, 3), LocationVo.new(9, 9));
 Primary.args = {
-  bound: boundForPrimary,
-  boundOffset: OffsetVo.new(0, 0),
-  map: MapVo.newWithMapSize(boundForPrimary.getSize()),
+  view: ViewVo.new(boundForPrimary, MapVo.newWithMapSize(boundForPrimary.getSize())),
+  viewOffset: OffsetVo.new(0, 0),
   unitSize: 30,
   items: [],
   selectedItemId: null,
