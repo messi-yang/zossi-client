@@ -5,6 +5,7 @@ import ViewDto from '@/dtos/ViewDto';
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
   CameraChanged = 'CAMERA_CHANGED',
+  ViewChanged = 'VIEW_CHANGED',
   ViewUpdated = 'VIEW_UPDATED',
   ItemsUpdated = 'ITEMS_UPDATED',
 }
@@ -23,6 +24,12 @@ type CameraChangedEvent = {
   type: EventTypeEnum.CameraChanged;
   payload: {
     camera: CameraDto;
+  };
+};
+
+type ViewChangedEvent = {
+  type: EventTypeEnum.ViewChanged;
+  payload: {
     view: ViewDto;
   };
 };
@@ -41,7 +48,7 @@ type ItemsUpdatedEvent = {
   };
 };
 
-type Event = GameJoinedEvent | CameraChangedEvent | ViewUpdatedEvent | ItemsUpdatedEvent;
+type Event = GameJoinedEvent | CameraChangedEvent | ViewChangedEvent | ViewUpdatedEvent | ItemsUpdatedEvent;
 
 export { EventTypeEnum };
-export type { Event, GameJoinedEvent, CameraChangedEvent, ViewUpdatedEvent, ItemsUpdatedEvent };
+export type { Event, GameJoinedEvent, CameraChangedEvent, ViewChangedEvent, ViewUpdatedEvent, ItemsUpdatedEvent };

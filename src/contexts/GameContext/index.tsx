@@ -67,9 +67,11 @@ export function Provider({ children }: Props) {
         setView(newView);
         setCamera(newCamera);
       },
-      onCameraChanged: (newCamera: CameraVo, newView: ViewVo) => {
-        setView(newView);
+      onCameraChanged: (newCamera: CameraVo) => {
         setCamera(newCamera);
+      },
+      onViewChanged: (newView: ViewVo) => {
+        setView(newView);
       },
       onViewUpdated: (newView: ViewVo) => {
         setView(newView);
