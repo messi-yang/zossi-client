@@ -3,12 +3,14 @@ import debounce from 'lodash/debounce';
 import GameSocket from '@/apis/GameSocket';
 import { LocationVo, SizeVo, ViewVo, CameraVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
+import { PlayerEntity } from '@/models/entities';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
 type ContextValue = {
   gameStatus: GameStatus;
   mapSize: SizeVo | null;
+  player: PlayerEntity | null;
   view: ViewVo | null;
   items: ItemAgg[] | null;
   camera: CameraVo | null;
@@ -23,6 +25,7 @@ function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
     mapSize: null,
+    player: null,
     view: null,
     items: null,
     camera: null,
@@ -46,6 +49,7 @@ export function Provider({ children }: Props) {
 
   const initialContextValue = createInitialContextValue();
   const [mapSize, setMapSize] = useState<SizeVo | null>(initialContextValue.mapSize);
+  const [player, setPlayer] = useState<PlayerEntity | null>(initialContextValue.player);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [view, setView] = useState<ViewVo | null>(initialContextValue.view);
   const [camera, setCamera] = useState<CameraVo | null>(initialContextValue.camera);
@@ -66,6 +70,9 @@ export function Provider({ children }: Props) {
         setMapSize(newMapSize);
         setView(newView);
         setCamera(newCamera);
+      },
+      onPlayerUpdated: (newPlayer: PlayerEntity) => {
+        setPlayer(newPlayer);
       },
       onCameraChanged: (newCamera: CameraVo) => {
         setCamera(newCamera);
@@ -133,6 +140,7 @@ export function Provider({ children }: Props) {
         () => ({
           gameStatus,
           mapSize,
+          player,
           view,
           items,
           camera,
@@ -142,7 +150,7 @@ export function Provider({ children }: Props) {
           destroyItem,
           changeCamera,
         }),
-        [gameStatus, mapSize, view, items, camera, joinGame, leaveGame, buildItem, changeCamera]
+        [gameStatus, mapSize, player, view, items, camera, joinGame, leaveGame, buildItem, changeCamera]
       )}
     >
       {children}
