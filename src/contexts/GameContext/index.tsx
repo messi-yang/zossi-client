@@ -13,7 +13,6 @@ type ContextValue = {
   player: PlayerEntity | null;
   view: ViewVo | null;
   items: ItemAgg[] | null;
-  camera: CameraVo | null;
   joinGame: () => void;
   buildItem: (location: LocationVo, itemId: string) => void;
   destroyItem: (location: LocationVo) => void;
@@ -28,7 +27,6 @@ function createInitialContextValue(): ContextValue {
     player: null,
     view: null,
     items: null,
-    camera: null,
     joinGame: () => {},
     buildItem: () => {},
     destroyItem: () => {},
@@ -52,7 +50,6 @@ export function Provider({ children }: Props) {
   const [player, setPlayer] = useState<PlayerEntity | null>(initialContextValue.player);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [view, setView] = useState<ViewVo | null>(initialContextValue.view);
-  const [camera, setCamera] = useState<CameraVo | null>(initialContextValue.camera);
 
   const reset = useCallback(() => {
     setMapSize(initialContextValue.mapSize);
@@ -66,16 +63,13 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (newMapSize: SizeVo, newCamera: CameraVo, newView: ViewVo) => {
+      onGameJoined: (newPlayer: PlayerEntity, newMapSize: SizeVo, newView: ViewVo) => {
+        setPlayer(newPlayer);
         setMapSize(newMapSize);
         setView(newView);
-        setCamera(newCamera);
       },
       onPlayerUpdated: (newPlayer: PlayerEntity) => {
         setPlayer(newPlayer);
-      },
-      onCameraChanged: (newCamera: CameraVo) => {
-        setCamera(newCamera);
       },
       onViewChanged: (newView: ViewVo) => {
         setView(newView);
@@ -143,14 +137,13 @@ export function Provider({ children }: Props) {
           player,
           view,
           items,
-          camera,
           joinGame,
           leaveGame,
           buildItem,
           destroyItem,
           changeCamera,
         }),
-        [gameStatus, mapSize, player, view, items, camera, joinGame, leaveGame, buildItem, changeCamera]
+        [gameStatus, mapSize, player, view, items, joinGame, leaveGame, buildItem, changeCamera]
       )}
     >
       {children}

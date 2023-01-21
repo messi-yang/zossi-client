@@ -7,7 +7,6 @@ import {
   EventTypeEnum,
   GameJoinedEvent,
   PlayerUpdatedEvent,
-  CameraChangedEvent,
   ViewChangedEvent,
   ViewUpdatedEvent,
   ItemsUpdatedEvent,
@@ -22,7 +21,7 @@ function convertUnitDtoMatrixToMapVo(unitDtoMatrix: UnitDto[][]): MapVo {
   return MapVo.new(unitMatrix);
 }
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string, SizeVo, ViewVo, CameraVo] {
+function parseGameJoinedEvent(event: GameJoinedEvent): [PlayerEntity, SizeVo, ViewVo] {
   const mapSize = SizeVo.new(event.payload.mapSize.width, event.payload.mapSize.height);
   const bound = BoundVo.new(
     LocationVo.new(event.payload.view.bound.from.x, event.payload.view.bound.from.y),
@@ -30,8 +29,13 @@ function parseGameJoinedEvent(event: GameJoinedEvent): [string, SizeVo, ViewVo, 
   );
   const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
   const view = ViewVo.new(bound, map);
-  const camera = CameraVo.new(LocationVo.new(event.payload.camera.center.x, event.payload.camera.center.y));
-  return [event.payload.playerId, mapSize, view, camera];
+  const player = PlayerEntity.new({
+    id: event.payload.player.id,
+    name: event.payload.player.name,
+    location: LocationVo.new(event.payload.player.location.x, event.payload.player.location.y),
+    camera: CameraVo.new(LocationVo.new(event.payload.player.camera.center.x, event.payload.player.camera.center.y)),
+  });
+  return [player, mapSize, view];
 }
 
 function parsePlayerUpdatedEvent(event: PlayerUpdatedEvent): [PlayerEntity] {
@@ -42,11 +46,6 @@ function parsePlayerUpdatedEvent(event: PlayerUpdatedEvent): [PlayerEntity] {
     camera: CameraVo.new(LocationVo.new(event.payload.player.camera.center.x, event.payload.player.camera.center.y)),
   });
   return [player];
-}
-
-function parseCameraChangedEvent(event: CameraChangedEvent): [CameraVo] {
-  const camera = CameraVo.new(LocationVo.new(event.payload.camera.center.x, event.payload.camera.center.y));
-  return [camera];
 }
 
 function parseViewChangedEvent(event: ViewChangedEvent): [ViewVo] {
@@ -79,9 +78,8 @@ export default class GameSocket {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onGameJoined: (mapSize: SizeVo, camera: CameraVo, view: ViewVo) => void;
+    onGameJoined: (player: PlayerEntity, mapSize: SizeVo, view: ViewVo) => void;
     onPlayerUpdated: (player: PlayerEntity) => void;
-    onCameraChanged: (camera: CameraVo) => void;
     onViewChanged: (view: ViewVo) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
@@ -101,14 +99,11 @@ export default class GameSocket {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [, mapSize, view, camera] = parseGameJoinedEvent(newMsg);
-        params.onGameJoined(mapSize, camera, view);
+        const [player, mapSize, view] = parseGameJoinedEvent(newMsg);
+        params.onGameJoined(player, mapSize, view);
       } else if (newMsg.type === EventTypeEnum.PlayerUpdated) {
         const [player] = parsePlayerUpdatedEvent(newMsg);
         params.onPlayerUpdated(player);
-      } else if (newMsg.type === EventTypeEnum.CameraChanged) {
-        const [camera] = parseCameraChangedEvent(newMsg);
-        params.onCameraChanged(camera);
       } else if (newMsg.type === EventTypeEnum.ViewChanged) {
         const [view] = parseViewChangedEvent(newMsg);
         params.onViewChanged(view);
@@ -140,9 +135,8 @@ export default class GameSocket {
   }
 
   static newGameSocket(params: {
-    onGameJoined: (mapSize: SizeVo, camera: CameraVo, view: ViewVo) => void;
+    onGameJoined: (player: PlayerEntity, mapSize: SizeVo, view: ViewVo) => void;
     onPlayerUpdated: (player: PlayerEntity) => void;
-    onCameraChanged: (camera: CameraVo) => void;
     onViewChanged: (view: ViewVo) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;

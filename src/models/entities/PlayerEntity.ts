@@ -19,4 +19,8 @@ export default class PlayerEntity {
   static new(params: { id: string; name: string; camera: CameraVo; location: LocationVo }): PlayerEntity {
     return new PlayerEntity(params);
   }
+
+  public getCamera(): CameraVo {
+    return this.camera;
+  }
 }

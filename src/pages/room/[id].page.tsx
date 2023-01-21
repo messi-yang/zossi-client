@@ -30,7 +30,7 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const { mapSize, view, items, camera, gameStatus, joinGame, leaveGame, buildItem, destroyItem, changeCamera } =
+  const { mapSize, view, items, player, gameStatus, joinGame, leaveGame, buildItem, destroyItem, changeCamera } =
     useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
@@ -56,12 +56,12 @@ const Room: NextPage = function Room() {
   }, [view, clientViewBound]);
 
   useEffect(
-    function initTargetCameraEffect() {
-      if (camera && !targetCamera) {
-        setTargetCamera(camera);
+    function initTargetCameraWithPlayerEffect() {
+      if (player && !targetCamera) {
+        setTargetCamera(player.getCamera());
       }
     },
-    [camera, targetCamera]
+    [player, targetCamera]
   );
 
   useEffect(function joinGameOnInitEffect() {
