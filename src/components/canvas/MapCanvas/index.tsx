@@ -238,7 +238,7 @@ function MapCanvas({ view, viewOffset, unitSize, items, selectedItemId, onUnitCl
       const finalLocation = originLocation.shift(colIdx, rowIdx);
       onUnitClick(finalLocation);
     },
-    [bound]
+    [bound, onUnitClick]
   );
 
   const onHoverMaskCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
