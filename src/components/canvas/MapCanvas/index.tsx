@@ -269,7 +269,7 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
     <div
       data-testid={dataTestids.root}
       style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
-      className="relative w-full h-full flex overflow-hidden bg-slate-300"
+      className="relative w-full h-full flex"
     >
       <section
         className="relative flex"
