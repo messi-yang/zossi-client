@@ -100,9 +100,11 @@ export default class GameSocket {
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
         const [player, mapSize, view] = parseGameJoinedEvent(newMsg);
+        await player.loadAsset();
         params.onGameJoined(player, mapSize, view);
       } else if (newMsg.type === EventTypeEnum.PlayerUpdated) {
         const [player] = parsePlayerUpdatedEvent(newMsg);
+        await player.loadAsset();
         params.onPlayerUpdated(player);
       } else if (newMsg.type === EventTypeEnum.ViewChanged) {
         const [view] = parseViewChangedEvent(newMsg);
