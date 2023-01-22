@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import MapCanvas from '.';
-import { SizeVo, MapVo } from '@/models/valueObjects';
+import { ViewVo, SizeVo, OffsetVo, MapVo, BoundVo, LocationVo } from '@/models/valueObjects';
 
 export default {
   title: 'Canvas/MapCanvas',
@@ -16,7 +16,8 @@ const Template: ComponentStory<typeof MapCanvas> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  map: MapVo.newWithMapSize(SizeVo.new(30, 30)),
+  view: ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(4, 4)), MapVo.newWithMapSize(SizeVo.new(5, 5))),
+  viewOffset: OffsetVo.new(0, 0),
   unitSize: 15,
   items: [],
   selectedItemId: null,

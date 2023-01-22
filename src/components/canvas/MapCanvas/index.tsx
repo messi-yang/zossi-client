@@ -1,7 +1,7 @@
 import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 
-import { UnitVo, MapVo, SizeVo } from '@/models/valueObjects';
+import { ViewVo, UnitVo, OffsetVo, MapVo, SizeVo, LocationVo } from '@/models/valueObjects';
 
 import { ItemAgg } from '@/models/aggregates';
 import dataTestids from './dataTestids';
@@ -46,14 +46,17 @@ function generateCanvasResolution(map: MapVo, unitSize: number): Resolution {
 }
 
 type Props = {
-  map: MapVo;
+  view: ViewVo;
+  viewOffset: OffsetVo;
   unitSize: number;
   items: ItemAgg[];
   selectedItemId: string | null;
-  onClick: (colIdx: number, rowIdx: number) => void;
+  onUnitClick: (location: LocationVo) => void;
 };
 
-function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
+function MapCanvas({ view, viewOffset, unitSize, items, selectedItemId, onUnitClick }: Props) {
+  const map = view.getMap();
+  const bound = view.getBound();
   const [mapCanvasElem, setMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [hoverMaskCanvasElem, HoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
@@ -224,13 +227,19 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
     clean(ctx);
   }, [hoverMaskCanvasElem, clean]);
 
-  const handleHoverMaskCanvasClick: MouseEventHandler<HTMLCanvasElement> = (event) => {
-    const eventTarget = event.target as Element;
-    const eventTargetRect = eventTarget.getBoundingClientRect();
-    const [posX, posY] = [event.clientX - eventTargetRect.left, event.clientY - eventTargetRect.top];
-    const clickedIndexes = calculateIndexes(posX, posY, unitSize, mapSize);
-    onClick(clickedIndexes[0], clickedIndexes[1]);
-  };
+  const handleHoverMaskCanvasClick: MouseEventHandler<HTMLCanvasElement> = useCallback(
+    (event) => {
+      const eventTarget = event.target as Element;
+      const eventTargetRect = eventTarget.getBoundingClientRect();
+      const [posX, posY] = [event.clientX - eventTargetRect.left, event.clientY - eventTargetRect.top];
+      const [colIdx, rowIdx] = calculateIndexes(posX, posY, unitSize, mapSize);
+
+      const originLocation = bound.getFrom();
+      const finalLocation = originLocation.shift(colIdx, rowIdx);
+      onUnitClick(finalLocation);
+    },
+    [bound]
+  );
 
   const onHoverMaskCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
     HoverMaskCanvasElem(elem);
@@ -240,25 +249,33 @@ function MapCanvas({ map, unitSize, items, selectedItemId, onClick }: Props) {
     <div
       data-testid={dataTestids.root}
       style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
-      className="relative box-border"
+      className="relative w-full h-full flex overflow-hidden bg-slate-300"
     >
-      <canvas
-        ref={onMapCanvasLoad}
-        width={canvasResolution.width}
-        height={canvasResolution.height}
-        className="absolute left-0 top-0 z-0"
-        style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
-      />
-      <canvas
-        ref={onHoverMaskCanvasLoad}
-        width={canvasResolution.width}
-        height={canvasResolution.height}
-        className="absolute left-0 top-0 cursor-pointer"
-        onMouseMove={handleHoverMaskCanvasMouseMoveDebouncer}
-        onMouseLeave={handleHoverMaskCanvasMouseLeave}
-        onClick={handleHoverMaskCanvasClick}
-        style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
-      />
+      <section
+        className="relative flex"
+        style={{
+          left: (viewOffset?.getX() || 0) * unitSize,
+          top: (viewOffset?.getY() || 0) * unitSize,
+        }}
+      >
+        <canvas
+          ref={onMapCanvasLoad}
+          width={canvasResolution.width}
+          height={canvasResolution.height}
+          className="absolute left-0 top-0 z-0"
+          style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
+        />
+        <canvas
+          ref={onHoverMaskCanvasLoad}
+          width={canvasResolution.width}
+          height={canvasResolution.height}
+          className="absolute left-0 top-0 cursor-pointer"
+          onMouseMove={handleHoverMaskCanvasMouseMoveDebouncer}
+          onMouseLeave={handleHoverMaskCanvasMouseLeave}
+          onClick={handleHoverMaskCanvasClick}
+          style={{ width: canvasElemSize.width, height: canvasElemSize.height }}
+        />
+      </section>
     </div>
   );
 }

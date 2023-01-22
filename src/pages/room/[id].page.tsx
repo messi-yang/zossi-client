@@ -6,8 +6,8 @@ import useDomRect from '@/hooks/useDomRect';
 import GameContext from '@/contexts/GameContext';
 import StyleContext from '@/contexts/StyleContext';
 import { LocationVo, SizeVo, CameraVo } from '@/models/valueObjects';
+import MapCanvas from '@/components/canvas/MapCanvas';
 import GameSideBar from '@/components/sidebars/GameSideBar';
-import Map from '@/components/maps/Map';
 import GameMiniMap from '@/components/maps/GameMiniMap';
 import SelectItemModal from '@/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
@@ -174,14 +174,16 @@ const Room: NextPage = function Room() {
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              <Map
-                view={view}
-                viewOffset={viewOffset}
-                unitSize={unitSize}
-                items={items}
-                selectedItemId={selectedItem?.getId() || null}
-                onUnitClick={handleUnitClick}
-              />
+              {view && viewOffset && items && (
+                <MapCanvas
+                  view={view}
+                  viewOffset={viewOffset}
+                  unitSize={unitSize}
+                  items={items}
+                  selectedItemId={selectedItem?.getId() || null}
+                  onUnitClick={handleUnitClick}
+                />
+              )}
             </section>
             {mapSize && clientViewBound && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
@@ -211,14 +213,16 @@ const Room: NextPage = function Room() {
           />
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              <Map
-                view={view}
-                viewOffset={viewOffset}
-                unitSize={unitSize}
-                items={items}
-                selectedItemId={selectedItem?.getId() || null}
-                onUnitClick={handleUnitClick}
-              />
+              {view && viewOffset && items && (
+                <MapCanvas
+                  view={view}
+                  viewOffset={viewOffset}
+                  unitSize={unitSize}
+                  items={items}
+                  selectedItemId={selectedItem?.getId() || null}
+                  onUnitClick={handleUnitClick}
+                />
+              )}
             </section>
             {mapSize && clientViewBound && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
