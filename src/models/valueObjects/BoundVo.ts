@@ -46,6 +46,20 @@ export default class BoundVo {
     return LocationVo.new(centerX, centerY);
   }
 
+  private coversLocation(globalLocation: LocationVo): boolean {
+    const x = globalLocation.getX();
+    const y = globalLocation.getY();
+    return this.from.getX() <= x && this.to.getX() >= x && this.from.getY() <= y && this.to.getY() >= y;
+  }
+
+  public calculateLocationInBound(globalLocation: LocationVo): LocationVo | null {
+    if (!this.coversLocation(globalLocation)) {
+      return null;
+    }
+
+    return globalLocation.getRelativeLocation(this.from);
+  }
+
   public calculateOffsetWithBound(boundB: BoundVo): OffsetVo {
     return OffsetVo.new(this.from.getX() - boundB.getFrom().getX(), this.from.getY() - boundB.getFrom().getY());
   }

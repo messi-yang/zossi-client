@@ -1,10 +1,17 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import MapCanvas, { dataTestids } from '.';
-import { ViewVo, SizeVo, MapVo, OffsetVo, BoundVo, LocationVo } from '@/models/valueObjects';
+import { ViewVo, SizeVo, MapVo, OffsetVo, BoundVo, LocationVo, CameraVo } from '@/models/valueObjects';
+import { PlayerEntity } from '@/models/entities';
 
 function renderMapCanvas(): RenderResult {
   return render(
     <MapCanvas
+      player={PlayerEntity.new({
+        id: '1',
+        name: 'Mark',
+        camera: CameraVo.new(LocationVo.new(0, 0)),
+        location: LocationVo.new(0, 0),
+      })}
       view={ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(4, 4)), MapVo.newWithMapSize(SizeVo.new(5, 5)))}
       viewOffset={OffsetVo.new(0, 0)}
       unitSize={20}

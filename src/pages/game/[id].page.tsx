@@ -174,8 +174,9 @@ const Room: NextPage = function Room() {
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {view && viewOffset && items && (
+              {player && view && viewOffset && items && (
                 <MapCanvas
+                  player={player}
                   view={view}
                   viewOffset={viewOffset}
                   unitSize={unitSize}
@@ -213,8 +214,9 @@ const Room: NextPage = function Room() {
           />
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {view && viewOffset && items && (
+              {player && view && viewOffset && items && (
                 <MapCanvas
+                  player={player}
                   view={view}
                   viewOffset={viewOffset}
                   unitSize={unitSize}

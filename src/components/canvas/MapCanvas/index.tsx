@@ -2,8 +2,8 @@ import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 're
 import debounce from 'lodash/debounce';
 
 import { ViewVo, UnitVo, OffsetVo, MapVo, SizeVo, LocationVo } from '@/models/valueObjects';
-
 import { ItemAgg } from '@/models/aggregates';
+import { PlayerEntity } from '@/models/entities';
 import dataTestids from './dataTestids';
 
 const color = {
@@ -46,6 +46,7 @@ function generateCanvasResolution(map: MapVo, unitSize: number): Resolution {
 }
 
 type Props = {
+  player: PlayerEntity;
   view: ViewVo;
   viewOffset: OffsetVo;
   unitSize: number;
@@ -54,7 +55,7 @@ type Props = {
   onUnitClick: (location: LocationVo) => void;
 };
 
-function MapCanvas({ view, viewOffset, unitSize, items, selectedItemId, onUnitClick }: Props) {
+function MapCanvas({ player, view, viewOffset, unitSize, items, selectedItemId, onUnitClick }: Props) {
   const map = view.getMap();
   const bound = view.getBound();
   const [mapCanvasElem, setMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
@@ -121,17 +122,38 @@ function MapCanvas({ view, viewOffset, unitSize, items, selectedItemId, onUnitCl
         const leftTopX = colIdx * newUnitSize;
         const leftTopY = rowIdx * newUnitSize;
 
-        const itemAssetImageElem = getItemAssetImageElemOfUnit(unit);
+        const assetImgElement = getItemAssetImageElemOfUnit(unit);
         if (grassBaseImageElem) {
           ctx.drawImage(grassBaseImageElem, leftTopX, leftTopY, newUnitSize, newUnitSize);
-          if (itemAssetImageElem) {
-            ctx.drawImage(itemAssetImageElem, leftTopX, leftTopY, newUnitSize, newUnitSize);
+          if (assetImgElement) {
+            ctx.drawImage(assetImgElement, leftTopX, leftTopY, newUnitSize, newUnitSize);
           }
         }
       });
       ctx.fill();
     },
     [getItemAssetImageElemOfUnit, grassBaseImageElem]
+  );
+
+  const drawPlayer = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
+      ctx.beginPath();
+
+      const playerLocationInBound = bound.calculateLocationInBound(player.getLocation());
+      if (!playerLocationInBound) {
+        return;
+      }
+      const leftTopX = playerLocationInBound.getX() * unitSize;
+      const leftTopY = playerLocationInBound.getY() * unitSize;
+
+      const assetImgElement = player.outputAssetAsImageElement();
+      if (assetImgElement) {
+        ctx.drawImage(assetImgElement, leftTopX, leftTopY, unitSize, unitSize);
+      }
+      ctx.fill();
+    },
+    [player, bound, unitSize]
   );
 
   const draw = useCallback(
@@ -143,6 +165,7 @@ function MapCanvas({ view, viewOffset, unitSize, items, selectedItemId, onUnitCl
 
       clean(ctx);
       drawUnits(ctx, newMap, newUnitSize);
+      drawPlayer(ctx);
     },
     [drawUnits, mapCanvasElem, map, unitSize, mapSize]
   );
@@ -171,14 +194,14 @@ function MapCanvas({ view, viewOffset, unitSize, items, selectedItemId, onUnitCl
 
   const drawHoverMask = useCallback(
     (ctx: CanvasRenderingContext2D, newHoveredIndexes: Indexes, newUnitSize: number) => {
-      const itemAssetImageElem = selectedItemId ? getItemAssetImageElemOfItem(selectedItemId) : null;
+      const assetImgElement = selectedItemId ? getItemAssetImageElemOfItem(selectedItemId) : null;
 
       const leftTopY = newHoveredIndexes[1] * newUnitSize;
       const leftTopX = newHoveredIndexes[0] * newUnitSize;
 
       ctx.globalAlpha = 0.4; // eslint-disable-line no-param-reassign
-      if (itemAssetImageElem) {
-        ctx.drawImage(itemAssetImageElem, leftTopX, leftTopY, newUnitSize, newUnitSize);
+      if (assetImgElement) {
+        ctx.drawImage(assetImgElement, leftTopX, leftTopY, newUnitSize, newUnitSize);
       } else {
         ctx.fillStyle = color.destroyWarningColor; // eslint-disable-line no-param-reassign
         ctx.beginPath();

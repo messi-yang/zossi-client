@@ -2,7 +2,8 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import MapCanvas from '.';
-import { ViewVo, SizeVo, OffsetVo, MapVo, BoundVo, LocationVo } from '@/models/valueObjects';
+import { CameraVo, ViewVo, SizeVo, OffsetVo, MapVo, BoundVo, LocationVo } from '@/models/valueObjects';
+import { PlayerEntity } from '@/models/entities';
 
 export default {
   title: 'Canvas/MapCanvas',
@@ -16,6 +17,12 @@ const Template: ComponentStory<typeof MapCanvas> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
+  player: PlayerEntity.new({
+    id: '1',
+    name: 'Mark',
+    camera: CameraVo.new(LocationVo.new(0, 0)),
+    location: LocationVo.new(0, 0),
+  }),
   view: ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(19, 19)), MapVo.newWithMapSize(SizeVo.new(20, 20))),
   viewOffset: OffsetVo.new(0, 0),
   unitSize: 25,
