@@ -71,9 +71,6 @@ export function Provider({ children }: Props) {
       onPlayerUpdated: (newPlayer: PlayerEntity) => {
         setPlayer(newPlayer);
       },
-      onViewChanged: (newView: ViewVo) => {
-        setView(newView);
-      },
       onViewUpdated: (newView: ViewVo) => {
         setView(newView);
       },
