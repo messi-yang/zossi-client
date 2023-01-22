@@ -14,7 +14,7 @@ const Landing: NextPage = function Landing() {
   const router = useRouter();
 
   const onStartClick = () => {
-    router.push('/room/a');
+    router.push('/game/a');
   };
 
   return (
