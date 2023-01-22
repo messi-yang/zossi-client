@@ -30,8 +30,19 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const { mapSize, view, items, player, gameStatus, joinGame, leaveGame, buildItem, destroyItem, changeCamera } =
-    useContext(GameContext);
+  const {
+    mapSize,
+    view,
+    items,
+    myPlayer,
+    allPlayers,
+    gameStatus,
+    joinGame,
+    leaveGame,
+    buildItem,
+    destroyItem,
+    changeCamera,
+  } = useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
@@ -56,12 +67,12 @@ const Room: NextPage = function Room() {
   }, [view, clientViewBound]);
 
   useEffect(
-    function initTargetCameraWithPlayerEffect() {
-      if (player && !targetCamera) {
-        setTargetCamera(player.getCamera());
+    function initTargetCameraWithMyPlayerEffect() {
+      if (myPlayer && !targetCamera) {
+        setTargetCamera(myPlayer.getCamera());
       }
     },
-    [player, targetCamera]
+    [myPlayer, targetCamera]
   );
 
   useEffect(function joinGameOnInitEffect() {
@@ -174,9 +185,9 @@ const Room: NextPage = function Room() {
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {player && view && viewOffset && items && (
+              {allPlayers && view && viewOffset && items && (
                 <MapCanvas
-                  player={player}
+                  players={allPlayers}
                   view={view}
                   viewOffset={viewOffset}
                   unitSize={unitSize}
@@ -214,9 +225,9 @@ const Room: NextPage = function Room() {
           />
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {player && view && viewOffset && items && (
+              {allPlayers && view && viewOffset && items && (
                 <MapCanvas
-                  player={player}
+                  players={allPlayers}
                   view={view}
                   viewOffset={viewOffset}
                   unitSize={unitSize}

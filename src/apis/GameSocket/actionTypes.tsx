@@ -1,5 +1,4 @@
-import { LocationDto } from '@/dtos';
-import CameraDto from '@/dtos/CameraDto';
+import { LocationDto, CameraDto } from '@/dtos';
 
 enum ActionTypeEnum {
   Ping = 'PING',

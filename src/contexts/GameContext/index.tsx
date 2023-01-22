@@ -10,7 +10,9 @@ type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONN
 type ContextValue = {
   gameStatus: GameStatus;
   mapSize: SizeVo | null;
-  player: PlayerEntity | null;
+  myPlayer: PlayerEntity | null;
+  otherPlayers: PlayerEntity[] | null;
+  allPlayers: PlayerEntity[] | null;
   view: ViewVo | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
@@ -24,7 +26,9 @@ function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
     mapSize: null,
-    player: null,
+    myPlayer: null,
+    otherPlayers: null,
+    allPlayers: null,
     view: null,
     items: null,
     joinGame: () => {},
@@ -47,7 +51,14 @@ export function Provider({ children }: Props) {
 
   const initialContextValue = createInitialContextValue();
   const [mapSize, setMapSize] = useState<SizeVo | null>(initialContextValue.mapSize);
-  const [player, setPlayer] = useState<PlayerEntity | null>(initialContextValue.player);
+  const [myPlayer, setMyPlayer] = useState<PlayerEntity | null>(initialContextValue.myPlayer);
+  const [otherPlayers, setOtherPlayers] = useState<PlayerEntity[] | null>(initialContextValue.otherPlayers);
+  const allPlayers = useMemo(() => {
+    if (!myPlayer || !otherPlayers) {
+      return null;
+    }
+    return [myPlayer, ...otherPlayers];
+  }, [myPlayer, otherPlayers]);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [view, setView] = useState<ViewVo | null>(initialContextValue.view);
 
@@ -63,19 +74,26 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (newPlayer: PlayerEntity, newMapSize: SizeVo, newView: ViewVo) => {
-        setPlayer(newPlayer);
+      onGameJoined: (
+        newMyPlayer: PlayerEntity,
+        newOtherPlayers: PlayerEntity[],
+        newMapSize: SizeVo,
+        newView: ViewVo
+      ) => {
+        setMyPlayer(newMyPlayer);
+        setOtherPlayers(newOtherPlayers);
         setMapSize(newMapSize);
         setView(newView);
       },
-      onPlayerUpdated: (newPlayer: PlayerEntity) => {
-        setPlayer(newPlayer);
+      onPlayerUpdated: (newMyPlayer: PlayerEntity, newOtherPlayers: PlayerEntity[]) => {
+        setMyPlayer(newMyPlayer);
+        setOtherPlayers(newOtherPlayers);
       },
       onViewUpdated: (newView: ViewVo) => {
         setView(newView);
       },
-      onItemsUpdated: (returnedItems: ItemAgg[]) => {
-        setItems(returnedItems);
+      onItemsUpdated: (newItems: ItemAgg[]) => {
+        setItems(newItems);
       },
       onOpen: () => {
         setGameStatus('OPEN');
@@ -131,7 +149,9 @@ export function Provider({ children }: Props) {
         () => ({
           gameStatus,
           mapSize,
-          player,
+          myPlayer,
+          otherPlayers,
+          allPlayers,
           view,
           items,
           joinGame,
@@ -140,7 +160,19 @@ export function Provider({ children }: Props) {
           destroyItem,
           changeCamera,
         }),
-        [gameStatus, mapSize, player, view, items, joinGame, leaveGame, buildItem, changeCamera]
+        [
+          gameStatus,
+          mapSize,
+          myPlayer,
+          otherPlayers,
+          allPlayers,
+          view,
+          items,
+          joinGame,
+          leaveGame,
+          buildItem,
+          changeCamera,
+        ]
       )}
     >
       {children}

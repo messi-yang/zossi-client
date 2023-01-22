@@ -46,7 +46,7 @@ function generateCanvasResolution(map: MapVo, unitSize: number): Resolution {
 }
 
 type Props = {
-  player: PlayerEntity;
+  players: PlayerEntity[];
   view: ViewVo;
   viewOffset: OffsetVo;
   unitSize: number;
@@ -55,7 +55,7 @@ type Props = {
   onUnitClick: (location: LocationVo) => void;
 };
 
-function MapCanvas({ player, view, viewOffset, unitSize, items, selectedItemId, onUnitClick }: Props) {
+function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId, onUnitClick }: Props) {
   const map = view.getMap();
   const bound = view.getBound();
   const [mapCanvasElem, setMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
@@ -115,62 +115,59 @@ function MapCanvas({ player, view, viewOffset, unitSize, items, selectedItemId, 
   );
 
   const drawUnits = useCallback(
-    (ctx: CanvasRenderingContext2D, newMap: MapVo, newUnitSize: number) => {
+    (ctx: CanvasRenderingContext2D) => {
       ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
-      newMap.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
-        const leftTopX = colIdx * newUnitSize;
-        const leftTopY = rowIdx * newUnitSize;
+      map.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
+        const leftTopX = colIdx * unitSize;
+        const leftTopY = rowIdx * unitSize;
 
         const assetImgElement = getItemAssetImageElemOfUnit(unit);
         if (grassBaseImageElem) {
-          ctx.drawImage(grassBaseImageElem, leftTopX, leftTopY, newUnitSize, newUnitSize);
+          ctx.drawImage(grassBaseImageElem, leftTopX, leftTopY, unitSize, unitSize);
           if (assetImgElement) {
-            ctx.drawImage(assetImgElement, leftTopX, leftTopY, newUnitSize, newUnitSize);
+            ctx.drawImage(assetImgElement, leftTopX, leftTopY, unitSize, unitSize);
           }
         }
       });
       ctx.fill();
     },
-    [getItemAssetImageElemOfUnit, grassBaseImageElem]
+    [getItemAssetImageElemOfUnit, grassBaseImageElem, map, unitSize]
   );
 
   const drawPlayer = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
-      ctx.beginPath();
+      players.forEach((player) => {
+        ctx.beginPath();
+        const playerLocationInBound = bound.calculateLocationInBound(player.getLocation());
+        if (!playerLocationInBound) {
+          return;
+        }
+        const leftTopX = playerLocationInBound.getX() * unitSize;
+        const leftTopY = playerLocationInBound.getY() * unitSize;
 
-      const playerLocationInBound = bound.calculateLocationInBound(player.getLocation());
-      if (!playerLocationInBound) {
-        return;
-      }
-      const leftTopX = playerLocationInBound.getX() * unitSize;
-      const leftTopY = playerLocationInBound.getY() * unitSize;
-
-      const assetImgElement = player.outputAssetAsImageElement();
-      if (assetImgElement) {
-        ctx.drawImage(assetImgElement, leftTopX, leftTopY, unitSize, unitSize);
-      }
-      ctx.fill();
+        const assetImgElement = player.outputAssetAsImageElement();
+        if (assetImgElement) {
+          ctx.drawImage(assetImgElement, leftTopX, leftTopY, unitSize, unitSize);
+        }
+        ctx.fill();
+      });
     },
-    [player, bound, unitSize]
+    [players, bound, unitSize]
   );
 
-  const draw = useCallback(
-    (newMap: MapVo, newUnitSize: number) => {
-      const ctx = mapCanvasElem?.getContext('2d');
-      if (!ctx) {
-        return;
-      }
+  const draw = useCallback(() => {
+    const ctx = mapCanvasElem?.getContext('2d');
+    if (!ctx) {
+      return;
+    }
 
-      clean(ctx);
-      drawUnits(ctx, newMap, newUnitSize);
-      drawPlayer(ctx);
-    },
-    [drawUnits, mapCanvasElem, map, unitSize, mapSize]
-  );
+    clean(ctx);
+    drawUnits(ctx);
+    drawPlayer(ctx);
+  }, [clean, drawUnits, drawPlayer, mapCanvasElem]);
 
-  draw(map, unitSize);
+  draw();
 
   const onMapCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
     setMapCanvasElem(elem);

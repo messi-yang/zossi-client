@@ -1,11 +1,8 @@
-import type { SizeDto, ItemDto } from '@/dtos';
-import CameraDto from '@/dtos/CameraDto';
-import PlayerDto from '@/dtos/PlayerDto';
-import ViewDto from '@/dtos/ViewDto';
+import type { SizeDto, ItemDto, CameraDto, PlayerDto, ViewDto } from '@/dtos';
 
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
-  PlayerUpdated = 'PLAYER_UPDATED',
+  PlayersUpdated = 'PLAYERS_UPDATED',
   ViewUpdated = 'VIEW_UPDATED',
   ItemsUpdated = 'ITEMS_UPDATED',
 }
@@ -13,6 +10,8 @@ enum EventTypeEnum {
 type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
   payload: {
+    myPlayer: PlayerDto;
+    otherPlayers: PlayerDto[];
     player: PlayerDto;
     mapSize: SizeDto;
     view: ViewDto;
@@ -20,10 +19,11 @@ type GameJoinedEvent = {
   };
 };
 
-type PlayerUpdatedEvent = {
-  type: EventTypeEnum.PlayerUpdated;
+type PlayersUpdatedEvent = {
+  type: EventTypeEnum.PlayersUpdated;
   payload: {
-    player: PlayerDto;
+    myPlayer: PlayerDto;
+    otherPlayers: PlayerDto[];
   };
 };
 
@@ -41,7 +41,7 @@ type ItemsUpdatedEvent = {
   };
 };
 
-type Event = GameJoinedEvent | PlayerUpdatedEvent | ViewUpdatedEvent | ItemsUpdatedEvent;
+type Event = GameJoinedEvent | PlayersUpdatedEvent | ViewUpdatedEvent | ItemsUpdatedEvent;
 
 export { EventTypeEnum };
-export type { Event, GameJoinedEvent, PlayerUpdatedEvent, ViewUpdatedEvent, ItemsUpdatedEvent };
+export type { Event, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent, ItemsUpdatedEvent };
