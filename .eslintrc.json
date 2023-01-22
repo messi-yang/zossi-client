@@ -14,6 +14,7 @@
     "react/require-default-props": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",
+    "react/destructuring-assignment": "off",
     "import/extensions": "off",
     "default-param-last": "off",
     "prefer-arrow-callback": "off",

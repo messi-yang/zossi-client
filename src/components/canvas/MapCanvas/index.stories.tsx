@@ -16,9 +16,9 @@ const Template: ComponentStory<typeof MapCanvas> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  view: ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(4, 4)), MapVo.newWithMapSize(SizeVo.new(5, 5))),
+  view: ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(19, 19)), MapVo.newWithMapSize(SizeVo.new(20, 20))),
   viewOffset: OffsetVo.new(0, 0),
-  unitSize: 15,
+  unitSize: 25,
   items: [],
   selectedItemId: null,
 };
