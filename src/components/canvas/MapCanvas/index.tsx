@@ -59,7 +59,7 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
   const map = view.getMap();
   const bound = view.getBound();
   const [mapCanvasElem, setMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
-  const [hoverMaskCanvasElem, HoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
+  const [hoverMaskCanvasElem, setHoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
 
   const [grassBaseImageElem, setGrassBaseImageElem] = useState<HTMLImageElement | null>(null);
   useEffect(function loadGrassBaseImageElemEffect() {
@@ -262,7 +262,7 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
   );
 
   const onHoverMaskCanvasLoad = useCallback((elem: HTMLCanvasElement) => {
-    HoverMaskCanvasElem(elem);
+    setHoverMaskCanvasElem(elem);
   }, []);
 
   return (
