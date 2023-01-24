@@ -6,11 +6,6 @@ import { ItemAgg } from '@/models/aggregates';
 import { PlayerEntity } from '@/models/entities';
 import dataTestids from './dataTestids';
 
-const color = {
-  unitColor: 'white',
-  destroyWarningColor: 'rgb(237, 28, 37)',
-};
-
 type Indexes = [colIdx: number, rowIdx: number];
 
 type ElemSize = {
@@ -116,7 +111,6 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
 
   const drawUnits = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      ctx.fillStyle = color.unitColor; // eslint-disable-line no-param-reassign
       ctx.beginPath();
       map.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
         const leftTopX = colIdx * unitSize;
@@ -200,7 +194,7 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
       if (assetImgElement) {
         ctx.drawImage(assetImgElement, leftTopX, leftTopY, newUnitSize, newUnitSize);
       } else {
-        ctx.fillStyle = color.destroyWarningColor; // eslint-disable-line no-param-reassign
+        ctx.fillStyle = 'rgb(237, 28, 37)'; // eslint-disable-line no-param-reassign
         ctx.beginPath();
         ctx.moveTo(leftTopX, leftTopY);
         ctx.lineTo(leftTopX + newUnitSize, leftTopY);
