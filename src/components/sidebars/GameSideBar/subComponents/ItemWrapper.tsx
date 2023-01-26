@@ -33,12 +33,13 @@ function ItemWrapper({
         'items-center',
         'justify-center',
         'cursor-pointer',
+        'outline-none',
         hovered && 'bg-[#575757]'
       )}
       role="button"
       tabIndex={0}
       onClick={onClick}
-      onKeyDown={onClick}
+      onKeyPress={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
