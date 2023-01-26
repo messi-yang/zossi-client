@@ -1,9 +1,9 @@
 type Props = {
-  hovered: boolean;
+  highlighted: boolean;
   children: JSX.Element;
 };
 
-export default function ContentWrapper({ hovered, children }: Props) {
+export default function ContentWrapper({ highlighted, children }: Props) {
   return (
     <div className="h-14 flex p-0 flex-col bg-none">
       <div className="w-full flex justify-center px-4">
@@ -15,13 +15,13 @@ export default function ContentWrapper({ hovered, children }: Props) {
         </div>
         <div className="w-2 h-full flex flex-col">
           <div className="w-full h-2 bg-white" />
-          <div className={['grow', 'w-full', hovered ? 'bg-white' : 'bg-none'].join(' ')} />
+          <div className={['grow', 'w-full', highlighted ? 'bg-white' : 'bg-none'].join(' ')} />
           <div className="w-full h-2 bg-white" />
         </div>
         <div className="grow">{children}</div>
         <div className="w-2 h-full flex flex-col">
           <div className="w-full h-2 bg-white" />
-          <div className={['grow', 'w-full', hovered ? 'bg-white' : 'bg-none'].join(' ')} />
+          <div className={['grow', 'w-full', highlighted ? 'bg-white' : 'bg-none'].join(' ')} />
           <div className="w-full h-2 bg-white" />
         </div>
         <div className="w-2 h-full flex py-2 items-center">

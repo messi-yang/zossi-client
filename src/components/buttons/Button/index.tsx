@@ -11,14 +11,22 @@ type Props = {
 };
 
 function Button({ text, onClick = () => {} }: Props) {
-  const [hovered, setHovered] = useState(false);
+  const [highlighted, setHighlighted] = useState(false);
 
   const handleMouseEnter = () => {
-    setHovered(true);
+    setHighlighted(true);
   };
 
   const handleMouseLeave = () => {
-    setHovered(false);
+    setHighlighted(false);
+  };
+
+  const handleFocus = () => {
+    setHighlighted(true);
+  };
+
+  const handleBlure = () => {
+    setHighlighted(false);
   };
 
   return (
@@ -27,10 +35,12 @@ function Button({ text, onClick = () => {} }: Props) {
       type="button"
       className="border-none outline-none cursor-pointer bg-none"
       onClick={onClick}
+      onFocus={handleFocus}
+      onBlur={handleBlure}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <ContentWrapper hovered={hovered}>
+      <ContentWrapper highlighted={highlighted}>
         <div
           className={[
             'h-full',
@@ -39,10 +49,10 @@ function Button({ text, onClick = () => {} }: Props) {
             'px-12',
             'justify-center',
             'items-center',
-            hovered ? 'bg-white' : 'bg-none',
+            highlighted ? 'bg-white' : 'bg-none',
           ].join(' ')}
         >
-          <Text color={hovered ? 'black' : 'white'} copy={text} size={16} />
+          <Text color={highlighted ? 'black' : 'white'} copy={text} size={16} />
         </div>
       </ContentWrapper>
     </button>
