@@ -52,7 +52,7 @@ export default class BoundVo {
     return this.from.getX() <= x && this.to.getX() >= x && this.from.getY() <= y && this.to.getY() >= y;
   }
 
-  public calculateLocationInBound(globalLocation: LocationVo): LocationVo | null {
+  public getLocalLocation(globalLocation: LocationVo): LocationVo | null {
     if (!this.coversLocation(globalLocation)) {
       return null;
     }

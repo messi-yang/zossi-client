@@ -63,7 +63,7 @@ export default class GameSocket {
 
   constructor(params: {
     onGameJoined: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[], mapSize: SizeVo, view: ViewVo) => void;
-    onPlayerUpdated: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[]) => void;
+    onPlayersUpdated: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[]) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
@@ -88,7 +88,7 @@ export default class GameSocket {
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [myPlayer, otherPlayers] = parsePlayersUpdatedEvent(newMsg);
         await Promise.all([myPlayer, ...otherPlayers].map((player) => player.loadAsset()));
-        params.onPlayerUpdated(myPlayer, otherPlayers);
+        params.onPlayersUpdated(myPlayer, otherPlayers);
       } else if (newMsg.type === EventTypeEnum.ViewUpdated) {
         const [view] = parseViewUpdatedEvent(newMsg);
         params.onViewUpdated(view);
@@ -118,7 +118,7 @@ export default class GameSocket {
 
   static newGameSocket(params: {
     onGameJoined: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[], mapSize: SizeVo, view: ViewVo) => void;
-    onPlayerUpdated: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[]) => void;
+    onPlayersUpdated: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[]) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;

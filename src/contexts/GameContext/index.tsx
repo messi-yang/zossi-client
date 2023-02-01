@@ -85,7 +85,7 @@ export function Provider({ children }: Props) {
         setMapSize(newMapSize);
         setView(newView);
       },
-      onPlayerUpdated: (newMyPlayer: PlayerEntity, newOtherPlayers: PlayerEntity[]) => {
+      onPlayersUpdated: (newMyPlayer: PlayerEntity, newOtherPlayers: PlayerEntity[]) => {
         setMyPlayer(newMyPlayer);
         setOtherPlayers(newOtherPlayers);
       },

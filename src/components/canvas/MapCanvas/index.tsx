@@ -133,7 +133,7 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
     (ctx: CanvasRenderingContext2D) => {
       players.forEach((player) => {
         ctx.beginPath();
-        const playerLocationInBound = bound.calculateLocationInBound(player.getLocation());
+        const playerLocationInBound = bound.getLocalLocation(player.getLocation());
         if (!playerLocationInBound) {
           return;
         }
