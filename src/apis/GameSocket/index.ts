@@ -1,12 +1,12 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { mapMatrix } from '@/libs/common';
 import type { UnitDto, PlayerDto } from '@/dtos';
-import { BoundVo, UnitVo, MapVo, LocationVo, SizeVo, ViewVo, CameraVo } from '@/models/valueObjects';
+import { BoundVo, UnitVo, MapVo, LocationVo, SizeVo, ViewVo, CameraVo, DirectionVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { PingAction, ChangeCameraAction, BuildItemAction, DestroyItemAction } from './actionTypes';
+import type { PingAction, MoveAction, ChangeCameraAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
 function convertUnitDtoMatrixToMapVo(unitDtoMatrix: UnitDto[][]): MapVo {
@@ -150,6 +150,16 @@ export default class GameSocket {
   public ping() {
     const action: PingAction = {
       type: ActionTypeEnum.Ping,
+    };
+    this.sendMessage(action);
+  }
+
+  public move(direction: DirectionVo) {
+    const action: MoveAction = {
+      type: ActionTypeEnum.Move,
+      payload: {
+        direction: direction.toNumber(),
+      },
     };
     this.sendMessage(action);
   }

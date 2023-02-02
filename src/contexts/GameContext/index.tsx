@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import GameSocket from '@/apis/GameSocket';
-import { LocationVo, SizeVo, ViewVo, CameraVo } from '@/models/valueObjects';
+import { LocationVo, SizeVo, ViewVo, CameraVo, DirectionVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 import { PlayerEntity } from '@/models/entities';
 
@@ -16,6 +16,7 @@ type ContextValue = {
   view: ViewVo | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
+  move: (direction: DirectionVo) => void;
   buildItem: (location: LocationVo, itemId: string) => void;
   destroyItem: (location: LocationVo) => void;
   changeCamera: (camera: CameraVo) => void;
@@ -32,6 +33,7 @@ function createInitialContextValue(): ContextValue {
     view: null,
     items: null,
     joinGame: () => {},
+    move: () => {},
     buildItem: () => {},
     destroyItem: () => {},
     changeCamera: () => {},
@@ -113,6 +115,13 @@ export function Provider({ children }: Props) {
     setGameSocket(newGameSocket);
   }, [gameSocket]);
 
+  const move = useCallback(
+    (direction: DirectionVo) => {
+      gameSocket?.move(direction);
+    },
+    [gameSocket]
+  );
+
   const leaveGame = useCallback(() => {
     setGameStatus('DISCONNECTING');
     gameSocket?.disconnect();
@@ -155,6 +164,7 @@ export function Provider({ children }: Props) {
           view,
           items,
           joinGame,
+          move,
           leaveGame,
           buildItem,
           destroyItem,
@@ -169,6 +179,7 @@ export function Provider({ children }: Props) {
           view,
           items,
           joinGame,
+          move,
           leaveGame,
           buildItem,
           changeCamera,

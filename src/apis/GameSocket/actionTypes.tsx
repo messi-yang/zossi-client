@@ -2,6 +2,7 @@ import { LocationDto, CameraDto } from '@/dtos';
 
 enum ActionTypeEnum {
   Ping = 'PING',
+  Move = 'MOVE',
   ChangeCamera = 'CHANGE_CAMERA',
   BuildItem = 'BUILD_ITEM',
   DestroyItem = 'DESTROY_ITEM',
@@ -9,6 +10,13 @@ enum ActionTypeEnum {
 
 type PingAction = {
   type: ActionTypeEnum.Ping;
+};
+
+type MoveAction = {
+  type: ActionTypeEnum.Move;
+  payload: {
+    direction: number;
+  };
 };
 
 type ChangeCameraAction = {
@@ -37,4 +45,4 @@ type DestroyItemAction = {
 
 export { ActionTypeEnum };
 
-export type { PingAction, ChangeCameraAction, BuildItemAction, DestroyItemAction };
+export type { PingAction, MoveAction, ChangeCameraAction, BuildItemAction, DestroyItemAction };

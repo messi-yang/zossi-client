@@ -6,6 +6,7 @@ import BoundVo from '@/models/valueObjects/BoundVo';
 import SizeVo from '@/models/valueObjects/SizeVo';
 import CameraVo from '@/models/valueObjects/CameraVo';
 import ViewVo from '@/models/valueObjects/ViewVo';
+import DirectionVo from '@/models/valueObjects/DirectionVo';
 
 export default {};
-export { UnitVo, MapVo, LocationVo, OffsetVo, BoundVo, SizeVo, CameraVo, ViewVo };
+export { UnitVo, MapVo, LocationVo, OffsetVo, BoundVo, SizeVo, CameraVo, ViewVo, DirectionVo };

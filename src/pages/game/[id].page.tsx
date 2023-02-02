@@ -1,11 +1,12 @@
 import { useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import { useHotkeys } from 'react-hotkeys-hook';
 import useOnHistoryChange from '@/hooks/useOnHistoryChange';
 import useDomRect from '@/hooks/useDomRect';
 import GameContext from '@/contexts/GameContext';
 import StyleContext from '@/contexts/StyleContext';
-import { LocationVo, SizeVo, CameraVo } from '@/models/valueObjects';
+import { LocationVo, SizeVo, CameraVo, DirectionVo } from '@/models/valueObjects';
 import MapCanvas from '@/components/canvas/MapCanvas';
 import GameSideBar from '@/components/sidebars/GameSideBar';
 import GameMiniMap from '@/components/maps/GameMiniMap';
@@ -38,6 +39,7 @@ const Room: NextPage = function Room() {
     allPlayers,
     gameStatus,
     joinGame,
+    move,
     leaveGame,
     buildItem,
     destroyItem,
@@ -50,6 +52,31 @@ const Room: NextPage = function Room() {
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
+
+  useHotkeys(
+    'w,a,s,d',
+    (_, { keys }) => {
+      if (!keys) {
+        return;
+      }
+      switch (keys.join('')) {
+        case 'w':
+          move(DirectionVo.new(0));
+          break;
+        case 'd':
+          move(DirectionVo.new(1));
+          break;
+        case 's':
+          move(DirectionVo.new(2));
+          break;
+        case 'a':
+          move(DirectionVo.new(3));
+          break;
+        default:
+      }
+    },
+    [move]
+  );
 
   const [targetCamera, setTargetCamera] = useState<CameraVo | null>(null);
   const clientViewBound = useMemo(() => {
