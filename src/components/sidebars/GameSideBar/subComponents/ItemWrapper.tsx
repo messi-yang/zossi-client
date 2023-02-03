@@ -1,3 +1,4 @@
+import { KeyboardEventHandler, MouseEventHandler } from 'react';
 import classnames from 'classnames';
 import Text from '@/components/text/Text';
 
@@ -22,6 +23,16 @@ function ItemWrapper({
   onMouseEnter = () => {},
   onMouseLeave = () => {},
 }: Props) {
+  const handleClick: MouseEventHandler<HTMLElement> = (e) => {
+    const target = e.target as HTMLElement;
+    target.blur();
+    onClick();
+  };
+  const handleKeyDown: KeyboardEventHandler<HTMLElement> = (e) => {
+    const target = e.target as HTMLElement;
+    target.blur();
+    onClick();
+  };
   return (
     <section
       className={classnames(
@@ -38,8 +49,8 @@ function ItemWrapper({
       )}
       role="button"
       tabIndex={0}
-      onClick={onClick}
-      onKeyPress={onClick}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
