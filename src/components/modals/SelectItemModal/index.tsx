@@ -32,9 +32,10 @@ function SelectItemModal({ opened, width, selectedItem, items, onSelect = () => 
             <ItemBox
               item={
                 selectedItem ||
-                ItemAgg.newItemAgg({
+                ItemAgg.new({
                   id: '',
                   name: 'Empty',
+                  traversable: true,
                   assetSrc: '/placeholder-item.png',
                 })
               }

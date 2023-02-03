@@ -3,7 +3,9 @@ import { ItemAgg } from '@/models/aggregates';
 import ItemBox, { dataTestids } from '.';
 
 function renderItemBox(): RenderResult {
-  return render(<ItemBox item={ItemAgg.newItemAgg({ id: '123', name: 'stone', assetSrc: 'placeholder-item.png' })} />);
+  return render(
+    <ItemBox item={ItemAgg.new({ id: '123', name: 'stone', traversable: true, assetSrc: 'placeholder-item.png' })} />
+  );
 }
 
 describe('ItemBox', () => {

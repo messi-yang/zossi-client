@@ -53,7 +53,9 @@ function parseViewUpdatedEvent(event: ViewUpdatedEvent): [ViewVo] {
 }
 
 function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
-  return [event.payload.items.map(({ id, name, assetSrc }) => ItemAgg.newItemAgg({ id, name, assetSrc }))];
+  return [
+    event.payload.items.map(({ id, name, traversable, assetSrc }) => ItemAgg.new({ id, name, traversable, assetSrc })),
+  ];
 }
 
 export default class GameSocket {

@@ -3,17 +3,20 @@ export default class ItemAgg {
 
   private name: string;
 
+  private traversable: boolean;
+
   private assetSrc: string;
 
   private imageElem: HTMLImageElement | null = null;
 
-  constructor(params: { id: string; name: string; assetSrc: string }) {
+  constructor(params: { id: string; name: string; traversable: boolean; assetSrc: string }) {
     this.id = params.id;
     this.name = params.name;
+    this.traversable = params.traversable;
     this.assetSrc = params.assetSrc;
   }
 
-  static newItemAgg(params: { id: string; name: string; assetSrc: string }) {
+  static new(params: { id: string; name: string; traversable: boolean; assetSrc: string }) {
     return new ItemAgg(params);
   }
 

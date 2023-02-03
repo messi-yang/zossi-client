@@ -5,9 +5,10 @@ import SelectItemModal, { dataTestids } from '.';
 
 function renderSelectItemModal(): RenderResult {
   const items = range(10).map((num) =>
-    ItemAgg.newItemAgg({
+    ItemAgg.new({
       id: `sample-${num + 1}`,
       name: `Sample ${num + 1}`,
+      traversable: true,
       assetSrc: 'placeholder-item.png',
     })
   );
