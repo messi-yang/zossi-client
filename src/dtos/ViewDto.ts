@@ -1,9 +1,9 @@
 import { ViewVo, MapVo } from '@/models/valueObjects';
 import { mapMatrix } from '@/libs/common';
-import { convertBoundDtoToBound } from './boundDto';
-import type { BoundDto } from './boundDto';
-import { convertUnitDtoToUnit } from './unitDto';
-import type { UnitDto } from './unitDto';
+import { convertBoundDtoToBound } from './BoundDto';
+import type { BoundDto } from './BoundDto';
+import { convertUnitDtoToUnit } from './UnitDto';
+import type { UnitDto } from './UnitDto';
 
 type ViewDto = {
   map: UnitDto[][];

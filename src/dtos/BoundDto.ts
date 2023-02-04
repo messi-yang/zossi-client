@@ -1,5 +1,5 @@
 import { BoundVo, LocationVo } from '@/models/valueObjects';
-import type { LocationDto } from './locationDto';
+import type { LocationDto } from './LocationDto';
 
 type BoundDto = {
   from: LocationDto;

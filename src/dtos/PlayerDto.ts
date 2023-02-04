@@ -1,6 +1,6 @@
 import { PlayerEntity } from '@/models/entities';
 import { LocationVo } from '@/models/valueObjects';
-import type { LocationDto } from './locationDto';
+import type { LocationDto } from './LocationDto';
 
 type PlayerDto = {
   id: string;
