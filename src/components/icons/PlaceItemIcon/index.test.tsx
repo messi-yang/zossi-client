@@ -1,14 +1,14 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import BuildItemIcon, { dataTestids } from '.';
+import PlaceItemIcon, { dataTestids } from '.';
 
-function renderBuildItemIcon(): RenderResult {
-  return render(<BuildItemIcon active highlighted={false} />);
+function renderPlaceItemIcon(): RenderResult {
+  return render(<PlaceItemIcon active highlighted={false} />);
 }
 
-describe('BuildItemIcon', () => {
+describe('PlaceItemIcon', () => {
   it('Should render component successfully.', () => {
     try {
-      renderBuildItemIcon();
+      renderPlaceItemIcon();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

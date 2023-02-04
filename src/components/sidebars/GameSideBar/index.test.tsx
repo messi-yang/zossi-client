@@ -6,8 +6,8 @@ function renderGameSideBar(): RenderResult {
     <GameSideBar
       align="column"
       onLogoClick={() => {}}
-      isBuildItemActive
-      onBuildItemClick={() => {}}
+      isPlaceItemActive
+      onPlaceItemClick={() => {}}
       isDestroyActive
       onDestroyClick={() => {}}
       isMiniMapActive

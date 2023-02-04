@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import classnames from 'classnames';
 import SmallLogo from '@/components/logos/SmallLogo';
-import BuildItemIcon from '@/components/icons/BuildItemIcon';
+import PlaceItemIcon from '@/components/icons/PlaceItemIcon';
 import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
@@ -9,8 +9,8 @@ import dataTestids from './dataTestids';
 type Props = {
   align: 'row' | 'column';
   onLogoClick: () => void;
-  isBuildItemActive: boolean;
-  onBuildItemClick: () => void;
+  isPlaceItemActive: boolean;
+  onPlaceItemClick: () => void;
   isDestroyActive: boolean;
   onDestroyClick: () => void;
   isMiniMapActive: boolean;
@@ -20,14 +20,14 @@ type Props = {
 function GameSideBar({
   align,
   onLogoClick,
-  isBuildItemActive,
-  onBuildItemClick,
+  isPlaceItemActive,
+  onPlaceItemClick,
   isDestroyActive,
   onDestroyClick,
   isMiniMapActive,
   onMiniMapClick,
 }: Props) {
-  const [isBuildItemMenuHovered, setIsBuildItemMenuHovered] = useState<boolean>(false);
+  const [isPlaceItemMenuHovered, setIsPlaceItemMenuHovered] = useState<boolean>(false);
   const [isDestroyMenuHovered, setIsDestroyMenuHovered] = useState<boolean>(false);
   const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
 
@@ -47,18 +47,18 @@ function GameSideBar({
       </ItemWrapper>
       <ItemWrapper
         label="Build"
-        highlighted={isBuildItemMenuHovered}
-        active={isBuildItemActive}
-        hovered={isBuildItemMenuHovered}
-        onClick={onBuildItemClick}
+        highlighted={isPlaceItemMenuHovered}
+        active={isPlaceItemActive}
+        hovered={isPlaceItemMenuHovered}
+        onClick={onPlaceItemClick}
         onMouseEnter={() => {
-          setIsBuildItemMenuHovered(true);
+          setIsPlaceItemMenuHovered(true);
         }}
         onMouseLeave={() => {
-          setIsBuildItemMenuHovered(false);
+          setIsPlaceItemMenuHovered(false);
         }}
       >
-        <BuildItemIcon highlighted={isBuildItemMenuHovered} active={isBuildItemActive} />
+        <PlaceItemIcon highlighted={isPlaceItemMenuHovered} active={isPlaceItemActive} />
       </ItemWrapper>
       <ItemWrapper
         label="Destroy"
@@ -73,7 +73,7 @@ function GameSideBar({
           setIsDestroyMenuHovered(false);
         }}
       >
-        <BuildItemIcon highlighted={isDestroyMenuHovered} active={isDestroyActive} />
+        <PlaceItemIcon highlighted={isDestroyMenuHovered} active={isDestroyActive} />
       </ItemWrapper>
       <ItemWrapper
         label="Map"

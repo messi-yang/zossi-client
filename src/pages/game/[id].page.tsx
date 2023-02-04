@@ -104,7 +104,7 @@ const Room: NextPage = function Room() {
     setIsMiniMapVisible(!isMiniMapVisible);
   };
 
-  const handleBuildItemClick = () => {
+  const handlePlaceItemClick = () => {
     setIsSelectItemModalVisible(true);
   };
 
@@ -174,8 +174,8 @@ const Room: NextPage = function Room() {
             <GameSideBar
               align="column"
               onLogoClick={handleLogoClick}
-              isBuildItemActive={isBuildindItem}
-              onBuildItemClick={handleBuildItemClick}
+              isPlaceItemActive={isBuildindItem}
+              onPlaceItemClick={handlePlaceItemClick}
               isDestroyActive={isDestroyingItem}
               onDestroyClick={handleDestroyClick}
               isMiniMapActive={isMiniMapVisible}
@@ -246,8 +246,8 @@ const Room: NextPage = function Room() {
             <GameSideBar
               align="row"
               onLogoClick={handleLogoClick}
-              isBuildItemActive={isBuildindItem}
-              onBuildItemClick={handleBuildItemClick}
+              isPlaceItemActive={isBuildindItem}
+              onPlaceItemClick={handlePlaceItemClick}
               isDestroyActive={isDestroyingItem}
               onDestroyClick={handleDestroyClick}
               isMiniMapActive={isMiniMapVisible}

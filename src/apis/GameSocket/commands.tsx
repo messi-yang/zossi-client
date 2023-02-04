@@ -3,7 +3,7 @@ import { LocationDto } from '@/dtos';
 enum CommandTypeEnum {
   Ping = 'PING',
   Move = 'MOVE',
-  BuildItem = 'BUILD_ITEM',
+  PlaceItem = 'PLACE_ITEM',
   DestroyItem = 'DESTROY_ITEM',
 }
 
@@ -18,12 +18,11 @@ type MoveCommand = {
   };
 };
 
-type BuildItemCommand = {
-  type: CommandTypeEnum.BuildItem;
+type PlaceItemCommand = {
+  type: CommandTypeEnum.PlaceItem;
   payload: {
     location: LocationDto;
     itemId: string;
-    actionedAt: string;
   };
 };
 
@@ -31,10 +30,9 @@ type DestroyItemCommand = {
   type: CommandTypeEnum.DestroyItem;
   payload: {
     location: LocationDto;
-    actionedAt: string;
   };
 };
 
 export { CommandTypeEnum };
 
-export type { PingCommand, MoveCommand, BuildItemCommand, DestroyItemCommand };
+export type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand };

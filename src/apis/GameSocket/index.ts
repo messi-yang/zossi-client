@@ -5,7 +5,7 @@ import { PlayerEntity } from '@/models/entities';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
-import type { PingCommand, MoveCommand, BuildItemCommand, DestroyItemCommand } from './commands';
+import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
 import { ItemAgg } from '@/models/aggregates';
 
 function parseGameJoinedEvent(event: GameJoinedEvent): [PlayerEntity, PlayerEntity[], SizeVo, ViewVo] {
@@ -140,12 +140,11 @@ export default class GameSocket {
   }
 
   public buildItem(location: LocationVo, itemId: string) {
-    const action: BuildItemCommand = {
-      type: CommandTypeEnum.BuildItem,
+    const action: PlaceItemCommand = {
+      type: CommandTypeEnum.PlaceItem,
       payload: {
         location: { x: location.getX(), y: location.getY() },
         itemId,
-        actionedAt: new Date().toISOString(),
       },
     };
     this.sendMessage(action);
@@ -156,7 +155,6 @@ export default class GameSocket {
       type: CommandTypeEnum.DestroyItem,
       payload: {
         location: { x: location.getX(), y: location.getY() },
-        actionedAt: new Date().toISOString(),
       },
     };
     this.sendMessage(action);

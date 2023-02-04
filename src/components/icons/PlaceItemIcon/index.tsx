@@ -5,7 +5,7 @@ type Props = {
   active: boolean;
 };
 
-function BuildItemIcon({ highlighted, active }: Props) {
+function PlaceItemIcon({ highlighted, active }: Props) {
   const fill = active || highlighted ? '#01D6C9' : 'white';
   return (
     <svg
@@ -31,5 +31,5 @@ function BuildItemIcon({ highlighted, active }: Props) {
   );
 }
 
-export default BuildItemIcon;
+export default PlaceItemIcon;
 export { dataTestids };
