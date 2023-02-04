@@ -197,8 +197,8 @@ const Room: NextPage = function Room() {
               )}
             </section>
             {mapSize && clientViewBound && isMiniMapVisible && (
-              <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
-                <GameMiniMap width={300} mapSize={mapSize} bound={clientViewBound} />
+              <section className="absolute right-2 bottom-2 opacity-80 inline-flex">
+                <GameMiniMap width={150} mapSize={mapSize} bound={clientViewBound} />
               </section>
             )}
           </section>
@@ -237,8 +237,8 @@ const Room: NextPage = function Room() {
               )}
             </section>
             {mapSize && clientViewBound && isMiniMapVisible && (
-              <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
-                <GameMiniMap width={styleContext.getWindowWidth() * 0.8} mapSize={mapSize} bound={clientViewBound} />
+              <section className="absolute right-1 bottom-1 opacity-80 inline-flex">
+                <GameMiniMap width={100} mapSize={mapSize} bound={clientViewBound} />
               </section>
             )}
           </section>
