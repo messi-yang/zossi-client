@@ -8,7 +8,6 @@ function renderGameMiniMap(): RenderResult {
       width={300}
       mapSize={SizeVo.new(100, 100)}
       bound={BoundVo.new(LocationVo.new(0, 10), LocationVo.new(20, 30))}
-      onDrag={() => {}}
     />
   );
 }

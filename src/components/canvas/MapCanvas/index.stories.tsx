@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import MapCanvas from '.';
-import { CameraVo, ViewVo, SizeVo, OffsetVo, MapVo, BoundVo, LocationVo } from '@/models/valueObjects';
+import { ViewVo, SizeVo, OffsetVo, MapVo, BoundVo, LocationVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 
 export default {
@@ -21,7 +21,6 @@ Primary.args = {
     PlayerEntity.new({
       id: '1',
       name: 'Mark',
-      camera: CameraVo.new(LocationVo.new(0, 0)),
       location: LocationVo.new(0, 0),
     }),
   ],

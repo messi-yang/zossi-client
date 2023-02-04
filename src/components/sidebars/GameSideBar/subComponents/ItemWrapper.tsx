@@ -1,4 +1,4 @@
-import { KeyboardEventHandler, MouseEventHandler } from 'react';
+import { KeyboardEventHandler, MouseEventHandler, useRef, useCallback } from 'react';
 import classnames from 'classnames';
 import Text from '@/components/text/Text';
 
@@ -23,18 +23,24 @@ function ItemWrapper({
   onMouseEnter = () => {},
   onMouseLeave = () => {},
 }: Props) {
-  const handleClick: MouseEventHandler<HTMLElement> = (e) => {
-    const target = e.target as HTMLElement;
-    target.blur();
+  const wrapperRef = useRef<HTMLElement>(null);
+  const handleClick: MouseEventHandler<HTMLElement> = useCallback(() => {
+    if (!wrapperRef.current) {
+      return;
+    }
+    wrapperRef.current.blur();
     onClick();
-  };
-  const handleKeyDown: KeyboardEventHandler<HTMLElement> = (e) => {
-    const target = e.target as HTMLElement;
-    target.blur();
+  }, [wrapperRef, onClick]);
+  const handleKeyDown: KeyboardEventHandler<HTMLElement> = useCallback(() => {
+    if (!wrapperRef.current) {
+      return;
+    }
+    wrapperRef.current.blur();
     onClick();
-  };
+  }, [wrapperRef, onClick]);
   return (
     <section
+      ref={wrapperRef}
       className={classnames(
         'w-full',
         'h-full',
@@ -45,6 +51,7 @@ function ItemWrapper({
         'justify-center',
         'cursor-pointer',
         'outline-none',
+        'focus:bg-red-600',
         hovered && 'bg-[#575757]'
       )}
       role="button"

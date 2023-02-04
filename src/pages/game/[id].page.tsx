@@ -6,7 +6,7 @@ import useOnHistoryChange from '@/hooks/useOnHistoryChange';
 import useDomRect from '@/hooks/useDomRect';
 import GameContext from '@/contexts/GameContext';
 import StyleContext from '@/contexts/StyleContext';
-import { LocationVo, SizeVo, CameraVo, DirectionVo } from '@/models/valueObjects';
+import { LocationVo, SizeVo, DirectionVo, BoundVo } from '@/models/valueObjects';
 import MapCanvas from '@/components/canvas/MapCanvas';
 import GameSideBar from '@/components/sidebars/GameSideBar';
 import GameMiniMap from '@/components/maps/GameMiniMap';
@@ -31,20 +31,8 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const {
-    mapSize,
-    view,
-    items,
-    myPlayer,
-    allPlayers,
-    gameStatus,
-    joinGame,
-    move,
-    leaveGame,
-    buildItem,
-    destroyItem,
-    changeCamera,
-  } = useContext(GameContext);
+  const { mapSize, view, items, myPlayer, allPlayers, gameStatus, joinGame, move, leaveGame, buildItem, destroyItem } =
+    useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
@@ -78,13 +66,12 @@ const Room: NextPage = function Room() {
     [move]
   );
 
-  const [targetCamera, setTargetCamera] = useState<CameraVo | null>(null);
   const clientViewBound = useMemo(() => {
-    if (!targetCamera || !mapSize || !clientViewBoundSize) {
+    if (!myPlayer || !mapSize || !clientViewBoundSize) {
       return null;
     }
-    return targetCamera.getViewBoundInMap(mapSize, clientViewBoundSize);
-  }, [targetCamera, mapSize, clientViewBoundSize]);
+    return BoundVo.createPlayerViewBound(myPlayer.getLocation(), mapSize, clientViewBoundSize);
+  }, [myPlayer, mapSize, clientViewBoundSize]);
 
   const viewOffset = useMemo(() => {
     if (!view || !clientViewBound) {
@@ -92,15 +79,6 @@ const Room: NextPage = function Room() {
     }
     return view.getBound().calculateOffsetWithBound(clientViewBound);
   }, [view, clientViewBound]);
-
-  useEffect(
-    function initTargetCameraWithMyPlayerEffect() {
-      if (myPlayer && !targetCamera) {
-        setTargetCamera(myPlayer.getCamera());
-      }
-    },
-    [myPlayer, targetCamera]
-  );
 
   useEffect(function joinGameOnInitEffect() {
     joinGame();
@@ -120,12 +98,6 @@ const Room: NextPage = function Room() {
 
   const handleLogoClick = () => {
     router.push('/');
-  };
-
-  const handleMiniMapDrag = (location: LocationVo) => {
-    const newCamera = CameraVo.new(location);
-    changeCamera(newCamera);
-    setTargetCamera(newCamera);
   };
 
   const handleMiniMapClick = () => {
@@ -226,7 +198,7 @@ const Room: NextPage = function Room() {
             </section>
             {mapSize && clientViewBound && isMiniMapVisible && (
               <section className="absolute right-5 bottom-5 opacity-80 inline-flex">
-                <GameMiniMap width={300} mapSize={mapSize} bound={clientViewBound} onDrag={handleMiniMapDrag} />
+                <GameMiniMap width={300} mapSize={mapSize} bound={clientViewBound} />
               </section>
             )}
           </section>
@@ -266,12 +238,7 @@ const Room: NextPage = function Room() {
             </section>
             {mapSize && clientViewBound && isMiniMapVisible && (
               <section className="absolute left-1/2 bottom-5 opacity-80 inline-flex translate-x-[-50%]">
-                <GameMiniMap
-                  width={styleContext.getWindowWidth() * 0.8}
-                  mapSize={mapSize}
-                  bound={clientViewBound}
-                  onDrag={handleMiniMapDrag}
-                />
+                <GameMiniMap width={styleContext.getWindowWidth() * 0.8} mapSize={mapSize} bound={clientViewBound} />
               </section>
             )}
           </section>

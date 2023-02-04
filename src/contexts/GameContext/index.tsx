@@ -1,7 +1,6 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
-import debounce from 'lodash/debounce';
 import GameSocket from '@/apis/GameSocket';
-import { LocationVo, SizeVo, ViewVo, CameraVo, DirectionVo } from '@/models/valueObjects';
+import { LocationVo, SizeVo, ViewVo, DirectionVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 import { PlayerEntity } from '@/models/entities';
 
@@ -19,7 +18,6 @@ type ContextValue = {
   move: (direction: DirectionVo) => void;
   buildItem: (location: LocationVo, itemId: string) => void;
   destroyItem: (location: LocationVo) => void;
-  changeCamera: (camera: CameraVo) => void;
   leaveGame: () => void;
 };
 
@@ -36,7 +34,6 @@ function createInitialContextValue(): ContextValue {
     move: () => {},
     buildItem: () => {},
     destroyItem: () => {},
-    changeCamera: () => {},
     leaveGame: () => {},
   };
 }
@@ -141,17 +138,6 @@ export function Provider({ children }: Props) {
     [gameSocket]
   );
 
-  const changeCamera = useCallback(
-    debounce(
-      (newCamera: CameraVo) => {
-        gameSocket?.changeCamera(newCamera);
-      },
-      150,
-      { leading: true, maxWait: 500, trailing: true }
-    ),
-    [gameSocket]
-  );
-
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
@@ -168,22 +154,8 @@ export function Provider({ children }: Props) {
           leaveGame,
           buildItem,
           destroyItem,
-          changeCamera,
         }),
-        [
-          gameStatus,
-          mapSize,
-          myPlayer,
-          otherPlayers,
-          allPlayers,
-          view,
-          items,
-          joinGame,
-          move,
-          leaveGame,
-          buildItem,
-          changeCamera,
-        ]
+        [gameStatus, mapSize, myPlayer, otherPlayers, allPlayers, view, items, joinGame, move, leaveGame, buildItem]
       )}
     >
       {children}

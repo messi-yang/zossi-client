@@ -1,12 +1,12 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { mapMatrix } from '@/libs/common';
 import type { UnitDto, PlayerDto } from '@/dtos';
-import { BoundVo, UnitVo, MapVo, LocationVo, SizeVo, ViewVo, CameraVo, DirectionVo } from '@/models/valueObjects';
+import { BoundVo, UnitVo, MapVo, LocationVo, SizeVo, ViewVo, DirectionVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './eventTypes';
 import type { Event } from './eventTypes';
 import { ActionTypeEnum } from './actionTypes';
-import type { PingAction, MoveAction, ChangeCameraAction, BuildItemAction, DestroyItemAction } from './actionTypes';
+import type { PingAction, MoveAction, BuildItemAction, DestroyItemAction } from './actionTypes';
 import { ItemAgg } from '@/models/aggregates';
 
 function convertUnitDtoMatrixToMapVo(unitDtoMatrix: UnitDto[][]): MapVo {
@@ -19,7 +19,6 @@ function convertPlayerDtoPlayerEntity(playerDto: PlayerDto): PlayerEntity {
     id: playerDto.id,
     name: playerDto.name,
     location: LocationVo.new(playerDto.location.x, playerDto.location.y),
-    camera: CameraVo.new(LocationVo.new(playerDto.camera.center.x, playerDto.camera.center.y)),
   });
 }
 
@@ -184,21 +183,6 @@ export default class GameSocket {
       payload: {
         location: { x: location.getX(), y: location.getY() },
         actionedAt: new Date().toISOString(),
-      },
-    };
-    this.sendMessage(action);
-  }
-
-  public changeCamera(camera: CameraVo) {
-    const action: ChangeCameraAction = {
-      type: ActionTypeEnum.ChangeCamera,
-      payload: {
-        camera: {
-          center: {
-            x: camera.getCenter().getX(),
-            y: camera.getCenter().getY(),
-          },
-        },
       },
     };
     this.sendMessage(action);

@@ -1,4 +1,4 @@
-import type { SizeDto, ItemDto, CameraDto, PlayerDto, ViewDto } from '@/dtos';
+import type { SizeDto, ItemDto, PlayerDto, ViewDto } from '@/dtos';
 
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
@@ -15,7 +15,6 @@ type GameJoinedEvent = {
     player: PlayerDto;
     mapSize: SizeDto;
     view: ViewDto;
-    camera: CameraDto;
   };
 };
 

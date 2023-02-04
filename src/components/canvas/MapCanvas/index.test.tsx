@@ -1,6 +1,6 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import MapCanvas, { dataTestids } from '.';
-import { ViewVo, SizeVo, MapVo, OffsetVo, BoundVo, LocationVo, CameraVo } from '@/models/valueObjects';
+import { ViewVo, SizeVo, MapVo, OffsetVo, BoundVo, LocationVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 
 function renderMapCanvas(): RenderResult {
@@ -10,7 +10,6 @@ function renderMapCanvas(): RenderResult {
         PlayerEntity.new({
           id: '1',
           name: 'Mark',
-          camera: CameraVo.new(LocationVo.new(0, 0)),
           location: LocationVo.new(0, 0),
         }),
       ]}

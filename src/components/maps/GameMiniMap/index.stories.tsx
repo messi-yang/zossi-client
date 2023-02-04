@@ -1,7 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { useArgs } from '@storybook/client-api';
-import { LocationVo, CameraVo, SizeVo, BoundVo } from '@/models/valueObjects';
+import { LocationVo, SizeVo, BoundVo } from '@/models/valueObjects';
 
 import GameMiniMap from '.';
 
@@ -12,16 +11,7 @@ export default {
 } as ComponentMeta<typeof GameMiniMap>;
 
 const Template: ComponentStory<typeof GameMiniMap> = function Template(args) {
-  const [, updateArgs] = useArgs();
-  const handleDrag = (newCenter: LocationVo) => {
-    const camera = CameraVo.new(newCenter);
-    const newBound = camera.getViewBoundInMap(args.mapSize, args.bound.getSize());
-    updateArgs({
-      bound: newBound,
-    });
-  };
-
-  return <GameMiniMap {...args} onDrag={handleDrag} />;
+  return <GameMiniMap {...args} />;
 };
 
 export const Primary = Template.bind({});

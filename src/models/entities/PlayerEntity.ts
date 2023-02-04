@@ -1,11 +1,9 @@
-import { CameraVo, LocationVo } from '@/models/valueObjects';
+import { LocationVo } from '@/models/valueObjects';
 
 export default class PlayerEntity {
   private id: string;
 
   private name: string;
-
-  private camera: CameraVo;
 
   private location: LocationVo;
 
@@ -13,20 +11,15 @@ export default class PlayerEntity {
 
   private imageElem: HTMLImageElement | null = null;
 
-  constructor(params: { id: string; name: string; camera: CameraVo; location: LocationVo }) {
+  constructor(params: { id: string; name: string; location: LocationVo }) {
     this.id = params.id;
     this.name = params.name;
-    this.camera = params.camera;
     this.location = params.location;
     this.assetSrc = `https://avatars.dicebear.com/api/pixel-art/${params.id}.svg`;
   }
 
-  static new(params: { id: string; name: string; camera: CameraVo; location: LocationVo }): PlayerEntity {
+  static new(params: { id: string; name: string; location: LocationVo }): PlayerEntity {
     return new PlayerEntity(params);
-  }
-
-  public getCamera(): CameraVo {
-    return this.camera;
   }
 
   public getLocation(): LocationVo {
