@@ -3,4 +3,4 @@ type LocationDto = {
   y: number;
 };
 
-export default LocationDto;
+export type { LocationDto };

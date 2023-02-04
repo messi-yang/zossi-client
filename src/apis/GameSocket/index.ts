@@ -1,7 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
-import { mapMatrix } from '@/libs/common';
-import type { UnitDto, PlayerDto } from '@/dtos';
-import { BoundVo, UnitVo, MapVo, LocationVo, SizeVo, ViewVo, DirectionVo } from '@/models/valueObjects';
+import { convertSizeDtoToSize, convertPlayerDtoPlayer, convertItemDtoToItem, convertViewDtoToView } from '@/dtos';
+import { LocationVo, SizeVo, ViewVo, DirectionVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './events';
 import type { Event } from './events';
@@ -9,52 +8,27 @@ import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, BuildItemCommand, DestroyItemCommand } from './commands';
 import { ItemAgg } from '@/models/aggregates';
 
-function convertUnitDtoMatrixToMapVo(unitDtoMatrix: UnitDto[][]): MapVo {
-  const unitMatrix = mapMatrix(unitDtoMatrix, (uint) => UnitVo.new(uint.itemId));
-  return MapVo.new(unitMatrix);
-}
-
-function convertPlayerDtoPlayerEntity(playerDto: PlayerDto): PlayerEntity {
-  return PlayerEntity.new({
-    id: playerDto.id,
-    name: playerDto.name,
-    location: LocationVo.new(playerDto.location.x, playerDto.location.y),
-  });
-}
-
 function parseGameJoinedEvent(event: GameJoinedEvent): [PlayerEntity, PlayerEntity[], SizeVo, ViewVo] {
-  const mapSize = SizeVo.new(event.payload.mapSize.width, event.payload.mapSize.height);
-  const bound = BoundVo.new(
-    LocationVo.new(event.payload.view.bound.from.x, event.payload.view.bound.from.y),
-    LocationVo.new(event.payload.view.bound.to.x, event.payload.view.bound.to.y)
-  );
-  const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
-  const view = ViewVo.new(bound, map);
-  const myPlayer = convertPlayerDtoPlayerEntity(event.payload.myPlayer);
-  const otherPlayers = event.payload.otherPlayers.map(convertPlayerDtoPlayerEntity);
+  const mapSize = convertSizeDtoToSize(event.payload.mapSize);
+  const view = convertViewDtoToView(event.payload.view);
+  const myPlayer = convertPlayerDtoPlayer(event.payload.myPlayer);
+  const otherPlayers = event.payload.otherPlayers.map(convertPlayerDtoPlayer);
   return [myPlayer, otherPlayers, mapSize, view];
 }
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity, PlayerEntity[]] {
-  const myPlayer = convertPlayerDtoPlayerEntity(event.payload.myPlayer);
-  const otherPlayers = event.payload.otherPlayers.map(convertPlayerDtoPlayerEntity);
+  const myPlayer = convertPlayerDtoPlayer(event.payload.myPlayer);
+  const otherPlayers = event.payload.otherPlayers.map(convertPlayerDtoPlayer);
   return [myPlayer, otherPlayers];
 }
 
 function parseViewUpdatedEvent(event: ViewUpdatedEvent): [ViewVo] {
-  const bound = BoundVo.new(
-    LocationVo.new(event.payload.view.bound.from.x, event.payload.view.bound.from.y),
-    LocationVo.new(event.payload.view.bound.to.x, event.payload.view.bound.to.y)
-  );
-  const map = convertUnitDtoMatrixToMapVo(event.payload.view.map);
-  const view = ViewVo.new(bound, map);
+  const view = convertViewDtoToView(event.payload.view);
   return [view];
 }
 
 function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
-  return [
-    event.payload.items.map(({ id, name, traversable, assetSrc }) => ItemAgg.new({ id, name, traversable, assetSrc })),
-  ];
+  return [event.payload.items.map(convertItemDtoToItem)];
 }
 
 export default class GameSocket {

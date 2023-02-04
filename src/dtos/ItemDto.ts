@@ -1,3 +1,5 @@
+import { ItemAgg } from '@/models/aggregates';
+
 type ItemDto = {
   id: string;
   name: string;
@@ -5,4 +7,14 @@ type ItemDto = {
   assetSrc: string;
 };
 
-export default ItemDto;
+function convertItemDtoToItem(itemDto: ItemDto): ItemAgg {
+  return ItemAgg.new({
+    id: itemDto.id,
+    name: itemDto.name,
+    traversable: itemDto.traversable,
+    assetSrc: itemDto.assetSrc,
+  });
+}
+
+export type { ItemDto };
+export { convertItemDtoToItem };
