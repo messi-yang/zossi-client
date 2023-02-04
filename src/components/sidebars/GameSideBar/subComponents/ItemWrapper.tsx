@@ -51,7 +51,6 @@ function ItemWrapper({
         'justify-center',
         'cursor-pointer',
         'outline-none',
-        'focus:bg-red-600',
         hovered && 'bg-[#575757]'
       )}
       role="button"
