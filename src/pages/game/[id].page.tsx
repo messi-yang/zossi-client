@@ -31,7 +31,7 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const { mapSize, view, items, myPlayer, allPlayers, gameStatus, joinGame, move, leaveGame, buildItem, destroyItem } =
+  const { mapSize, view, items, myPlayer, allPlayers, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
     useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
@@ -142,10 +142,10 @@ const Room: NextPage = function Room() {
           return;
         }
 
-        buildItem(location, selectedItem.getId());
+        placeItem(location, selectedItem.getId());
       }
     },
-    [isDestroyingItem, isBuildindItem, selectedItem, buildItem, destroyItem]
+    [isDestroyingItem, isBuildindItem, selectedItem, placeItem, destroyItem]
   );
 
   const screenSize: 'large' | 'small' = styleContext.getWindowWidth() > 700 ? 'large' : 'small';
