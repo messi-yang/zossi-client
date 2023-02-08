@@ -33,7 +33,7 @@ function SelectItemModal({ opened, width, selectedItem, items, onSelect = () => 
               item={
                 selectedItem ||
                 ItemAgg.new({
-                  id: '',
+                  id: 0,
                   name: 'Empty',
                   traversable: true,
                   assetSrc: '/placeholder-item.png',

@@ -4,7 +4,7 @@ import ItemBox, { dataTestids } from '.';
 
 function renderItemBox(): RenderResult {
   return render(
-    <ItemBox item={ItemAgg.new({ id: '123', name: 'stone', traversable: true, assetSrc: 'placeholder-item.png' })} />
+    <ItemBox item={ItemAgg.new({ id: 0, name: 'stone', traversable: true, assetSrc: 'placeholder-item.png' })} />
   );
 }
 

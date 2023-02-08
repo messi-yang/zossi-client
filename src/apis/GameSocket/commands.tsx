@@ -22,7 +22,7 @@ type PlaceItemCommand = {
   type: CommandTypeEnum.PlaceItem;
   payload: {
     location: LocationDto;
-    itemId: string;
+    itemId: number;
   };
 };
 

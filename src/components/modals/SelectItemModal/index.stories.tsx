@@ -26,7 +26,7 @@ const Template: ComponentStory<typeof SelectItemModal> = function Template(args)
 
 const items = range(10).map((num) =>
   ItemAgg.new({
-    id: `sample-${num + 1}`,
+    id: 0,
     name: `Sample ${num + 1}`,
     traversable: true,
     assetSrc: 'placeholder-item.png',

@@ -1,5 +1,5 @@
 export default class ItemAgg {
-  private id: string;
+  private id: number;
 
   private name: string;
 
@@ -9,18 +9,18 @@ export default class ItemAgg {
 
   private imageElem: HTMLImageElement | null = null;
 
-  constructor(params: { id: string; name: string; traversable: boolean; assetSrc: string }) {
+  constructor(params: { id: number; name: string; traversable: boolean; assetSrc: string }) {
     this.id = params.id;
     this.name = params.name;
     this.traversable = params.traversable;
     this.assetSrc = params.assetSrc;
   }
 
-  static new(params: { id: string; name: string; traversable: boolean; assetSrc: string }) {
+  static new(params: { id: number; name: string; traversable: boolean; assetSrc: string }) {
     return new ItemAgg(params);
   }
 
-  public getId(): string {
+  public getId(): number {
     return this.id;
   }
 

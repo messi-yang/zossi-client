@@ -38,6 +38,7 @@ const Room: NextPage = function Room() {
   const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
+  const selectedItemId = selectedItem?.getId();
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
 
@@ -191,7 +192,7 @@ const Room: NextPage = function Room() {
                   viewOffset={viewOffset}
                   unitSize={unitSize}
                   items={items}
-                  selectedItemId={selectedItem?.getId() || null}
+                  selectedItemId={selectedItemId !== undefined ? selectedItemId : null}
                   onUnitClick={handleUnitClick}
                 />
               )}
@@ -231,7 +232,7 @@ const Room: NextPage = function Room() {
                   viewOffset={viewOffset}
                   unitSize={unitSize}
                   items={items}
-                  selectedItemId={selectedItem?.getId() || null}
+                  selectedItemId={selectedItemId !== undefined ? selectedItemId : null}
                   onUnitClick={handleUnitClick}
                 />
               )}

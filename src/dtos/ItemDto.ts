@@ -1,7 +1,7 @@
 import { ItemAgg } from '@/models/aggregates';
 
 type ItemDto = {
-  id: string;
+  id: number;
   name: string;
   traversable: boolean;
   assetSrc: string;

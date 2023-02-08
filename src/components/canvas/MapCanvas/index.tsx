@@ -45,7 +45,7 @@ type Props = {
   viewOffset: OffsetVo;
   unitSize: number;
   items: ItemAgg[];
-  selectedItemId: string | null;
+  selectedItemId: number | null;
   onUnitClick: (location: LocationVo) => void;
 };
 
@@ -80,16 +80,16 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
   const getItemAssetImageElemOfUnit = useCallback(
     (unit: UnitVo): HTMLImageElement | null => {
       const itemId = unit.getItemId();
-      const item = itemId ? itemMap[itemId] : null;
+      const item = itemId !== null ? itemMap[itemId] : null;
       return item?.outputAssetAsImageElement() || null;
     },
     [itemMap]
   );
 
   const getItemAssetImageElemOfItem = useCallback(
-    (itemId: string): HTMLImageElement | null => {
-      const item = itemId ? itemMap[itemId] : null;
-      return item?.outputAssetAsImageElement() || null;
+    (itemId: number): HTMLImageElement | null => {
+      const item = itemMap[itemId];
+      return item.outputAssetAsImageElement() || null;
     },
     [itemMap]
   );
@@ -192,7 +192,7 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
 
   const drawHoverMask = useCallback(
     (ctx: CanvasRenderingContext2D, newHoveredIndexes: Indexes, newUnitSize: number) => {
-      const assetImgElement = selectedItemId ? getItemAssetImageElemOfItem(selectedItemId) : null;
+      const assetImgElement = selectedItemId !== null ? getItemAssetImageElemOfItem(selectedItemId) : null;
 
       const leftTopY = newHoveredIndexes[1] * newUnitSize;
       const leftTopX = newHoveredIndexes[0] * newUnitSize;
