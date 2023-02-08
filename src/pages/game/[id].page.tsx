@@ -67,11 +67,11 @@ const Room: NextPage = function Room() {
   );
 
   const clientViewBound = useMemo(() => {
-    if (!myPlayer || !mapSize || !clientViewBoundSize) {
+    if (!myPlayer || !clientViewBoundSize) {
       return null;
     }
-    return BoundVo.createPlayerViewBound(myPlayer.getLocation(), mapSize, clientViewBoundSize);
-  }, [myPlayer, mapSize, clientViewBoundSize]);
+    return BoundVo.createPlayerViewBound(myPlayer.getLocation(), clientViewBoundSize);
+  }, [myPlayer, clientViewBoundSize]);
 
   const viewOffset = useMemo(() => {
     if (!view || !clientViewBound) {

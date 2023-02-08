@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import MapCanvas from '.';
-import { ViewVo, SizeVo, OffsetVo, MapVo, BoundVo, LocationVo } from '@/models/valueObjects';
+import { ViewVo, OffsetVo, BoundVo, LocationVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 
 export default {
@@ -24,7 +24,7 @@ Primary.args = {
       location: LocationVo.new(0, 0),
     }),
   ],
-  view: ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(19, 19)), MapVo.newWithMapSize(SizeVo.new(20, 20))),
+  view: ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(19, 19)), []),
   viewOffset: OffsetVo.new(0, 0),
   unitSize: 25,
   items: [],

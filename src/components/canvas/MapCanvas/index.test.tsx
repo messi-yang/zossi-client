@@ -1,6 +1,6 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import MapCanvas, { dataTestids } from '.';
-import { ViewVo, SizeVo, MapVo, OffsetVo, BoundVo, LocationVo } from '@/models/valueObjects';
+import { ViewVo, OffsetVo, BoundVo, LocationVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 
 function renderMapCanvas(): RenderResult {
@@ -13,7 +13,7 @@ function renderMapCanvas(): RenderResult {
           location: LocationVo.new(0, 0),
         }),
       ]}
-      view={ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(4, 4)), MapVo.newWithMapSize(SizeVo.new(5, 5)))}
+      view={ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(4, 4)), [])}
       viewOffset={OffsetVo.new(0, 0)}
       unitSize={20}
       onUnitClick={() => {}}

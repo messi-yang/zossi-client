@@ -1,19 +1,18 @@
-import { ViewVo, MapVo } from '@/models/valueObjects';
-import { mapMatrix } from '@/libs/common';
+import { ViewVo } from '@/models/valueObjects';
 import { convertBoundDtoToBound } from './BoundDto';
 import type { BoundDto } from './BoundDto';
 import { convertUnitDtoToUnit } from './UnitDto';
 import type { UnitDto } from './UnitDto';
 
 type ViewDto = {
-  map: UnitDto[][];
   bound: BoundDto;
+  units: UnitDto[];
 };
 
 function convertViewDtoToView(viewDto: ViewDto): ViewVo {
   const bound = convertBoundDtoToBound(viewDto.bound);
-  const map = MapVo.new(mapMatrix(viewDto.map, (unitDto) => convertUnitDtoToUnit(unitDto)));
-  return ViewVo.new(bound, map);
+  const units = viewDto.units.map(convertUnitDtoToUnit);
+  return ViewVo.new(bound, units);
 }
 
 export type { ViewDto };

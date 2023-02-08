@@ -1,25 +1,25 @@
-import MapVo from './MapVo';
 import BoundVo from './BoundVo';
+import UnitVo from './UnitVo';
 
 export default class ViewVo {
   private bound: BoundVo;
 
-  private map: MapVo;
+  private units: UnitVo[];
 
-  constructor(bound: BoundVo, map: MapVo) {
+  constructor(bound: BoundVo, units: UnitVo[]) {
     this.bound = bound;
-    this.map = map;
+    this.units = units;
   }
 
-  static new(bound: BoundVo, map: MapVo) {
-    return new ViewVo(bound, map);
+  static new(bound: BoundVo, units: UnitVo[]) {
+    return new ViewVo(bound, units);
   }
 
   public getBound(): BoundVo {
     return this.bound;
   }
 
-  public getMap(): MapVo {
-    return this.map;
+  public getUnits(): UnitVo[] {
+    return this.units;
   }
 }

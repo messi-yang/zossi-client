@@ -1,9 +1,10 @@
 import { useCallback, useState, MouseEventHandler, useEffect, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 
-import { ViewVo, UnitVo, OffsetVo, MapVo, SizeVo, LocationVo } from '@/models/valueObjects';
+import { ViewVo, UnitVo, OffsetVo, SizeVo, LocationVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 import { PlayerEntity } from '@/models/entities';
+import { rangeMatrix } from '@/libs/common';
 import dataTestids from './dataTestids';
 
 type Indexes = [colIdx: number, rowIdx: number];
@@ -22,17 +23,15 @@ type ItemMap = {
   [id: string]: ItemAgg;
 };
 
-function generateCanvasElemSize(map: MapVo, unitSize: number): ElemSize {
-  const mapSize = map.getSize();
-
+function generateCanvasElemSize(mapSize: SizeVo, unitSize: number): ElemSize {
   return {
     width: mapSize.getWidth() * unitSize + 1,
     height: mapSize.getHeight() * unitSize + 1,
   };
 }
 
-function generateCanvasResolution(map: MapVo, unitSize: number): Resolution {
-  const elemSize = generateCanvasElemSize(map, unitSize);
+function generateCanvasResolution(mapSize: SizeVo, unitSize: number): Resolution {
+  const elemSize = generateCanvasElemSize(mapSize, unitSize);
 
   return {
     width: elemSize.width,
@@ -51,7 +50,7 @@ type Props = {
 };
 
 function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId, onUnitClick }: Props) {
-  const map = view.getMap();
+  const units = view.getUnits();
   const bound = view.getBound();
   const [mapCanvasElem, setMapCanvasElem] = useState<HTMLCanvasElement | null>(null);
   const [hoverMaskCanvasElem, setHoverMaskCanvasElem] = useState<HTMLCanvasElement | null>(null);
@@ -65,7 +64,7 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
     image.src = '/grass-base.png';
   }, []);
 
-  const [mapSize, setSize] = useState(map.getSize());
+  const [mapSize, setSize] = useState(bound.getSize());
 
   const itemMap: ItemMap = useMemo(() => {
     const res: ItemMap = {};
@@ -75,8 +74,8 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
     return res;
   }, [items]);
 
-  const canvasResolution = useMemo(() => generateCanvasResolution(map, unitSize), [map, unitSize]);
-  const canvasElemSize = useMemo(() => generateCanvasElemSize(map, unitSize), [map, unitSize]);
+  const canvasResolution = useMemo(() => generateCanvasResolution(mapSize, unitSize), [mapSize, unitSize]);
+  const canvasElemSize = useMemo(() => generateCanvasElemSize(mapSize, unitSize), [mapSize, unitSize]);
 
   const getItemAssetImageElemOfUnit = useCallback(
     (unit: UnitVo): HTMLImageElement | null => {
@@ -96,11 +95,11 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
   );
 
   useEffect(() => {
-    const newSize = map.getSize();
+    const newSize = bound.getSize();
     if (!mapSize.isEqual(newSize)) {
       setSize(newSize);
     }
-  }, [map]);
+  }, [bound]);
 
   const clean = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -112,21 +111,29 @@ function MapCanvas({ players, view, viewOffset, unitSize, items, selectedItemId,
   const drawUnits = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       ctx.beginPath();
-      map.iterateUnit((colIdx: number, rowIdx: number, unit: UnitVo) => {
+
+      rangeMatrix(mapSize.getWidth(), mapSize.getHeight(), (colIdx, rowIdx) => {
+        const leftTopX = colIdx * unitSize;
+        const leftTopY = rowIdx * unitSize;
+        if (grassBaseImageElem) {
+          ctx.drawImage(grassBaseImageElem, leftTopX, leftTopY, unitSize, unitSize);
+        }
+      });
+
+      units.forEach((unit) => {
+        const colIdx = unit.getLocation().getX() - bound.getFrom().getX();
+        const rowIdx = unit.getLocation().getY() - bound.getFrom().getY();
         const leftTopX = colIdx * unitSize;
         const leftTopY = rowIdx * unitSize;
 
         const assetImgElement = getItemAssetImageElemOfUnit(unit);
-        if (grassBaseImageElem) {
-          ctx.drawImage(grassBaseImageElem, leftTopX, leftTopY, unitSize, unitSize);
-          if (assetImgElement) {
-            ctx.drawImage(assetImgElement, leftTopX, leftTopY, unitSize, unitSize);
-          }
+        if (assetImgElement) {
+          ctx.drawImage(assetImgElement, leftTopX, leftTopY, unitSize, unitSize);
         }
       });
       ctx.fill();
     },
-    [getItemAssetImageElemOfUnit, grassBaseImageElem, map, unitSize]
+    [getItemAssetImageElemOfUnit, grassBaseImageElem, mapSize, units, unitSize, bound]
   );
 
   const drawPlayer = useCallback(

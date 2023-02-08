@@ -1,18 +1,19 @@
-import { mapMatrix } from '.';
+import { rangeMatrix } from '.';
 
 describe('common', () => {
-  describe('mapMatrix', () => {
-    it('Should convert matrix of string to matrix of number', () => {
-      const stringMatrix = [
-        ['1', '2', '3'],
-        ['4', '5', '6'],
-      ];
-      const numberMatrix = mapMatrix(stringMatrix, (str) => parseInt(str, 10));
+  describe('rangeMatrix', () => {
+    it('Should iterate through the given range of matrix', () => {
+      const res: [number, number][] = [];
+      rangeMatrix(2, 2, (colIdx, rowIdx) => {
+        res.push([colIdx, rowIdx]);
+      });
 
-      expect(numberMatrix).toEqual([
-        [1, 2, 3],
-        [4, 5, 6],
-      ]);
+      expect([
+        [0, 0],
+        [0, 1],
+        [1, 0],
+        [1, 1],
+      ]).toEqual(res);
     });
   });
 });

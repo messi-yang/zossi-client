@@ -16,25 +16,13 @@ export default class BoundVo {
     return new BoundVo(from, to);
   }
 
-  static createPlayerViewBound(playerLocation: LocationVo, mapSize: SizeVo, playerScreenSize: SizeVo): BoundVo {
+  static createPlayerViewBound(playerLocation: LocationVo, playerScreenSize: SizeVo): BoundVo {
     const standarizedX = Math.round(playerLocation.getX() - playerScreenSize.getWidth() / 2);
     const standarizedY = Math.round(playerLocation.getY() - playerScreenSize.getHeight() / 2);
-    let adjustedX = standarizedX;
-    let adjustedY = standarizedY;
-    if (standarizedX + playerScreenSize.getWidth() - 1 > mapSize.getWidth() - 1) {
-      adjustedX = mapSize.getWidth() - playerScreenSize.getWidth();
-    } else if (standarizedX < 0) {
-      adjustedX = 0;
-    }
-    if (standarizedY + playerScreenSize.getHeight() - 1 > mapSize.getHeight() - 1) {
-      adjustedY = mapSize.getHeight() - playerScreenSize.getHeight();
-    } else if (standarizedY < 0) {
-      adjustedY = 0;
-    }
 
     return new BoundVo(
-      LocationVo.new(adjustedX, adjustedY),
-      LocationVo.new(adjustedX + playerScreenSize.getWidth() - 1, adjustedY + playerScreenSize.getHeight() - 1)
+      LocationVo.new(standarizedX, standarizedY),
+      LocationVo.new(standarizedX + playerScreenSize.getWidth() - 1, standarizedY + playerScreenSize.getHeight() - 1)
     );
   }
 
