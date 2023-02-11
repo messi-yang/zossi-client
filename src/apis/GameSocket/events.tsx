@@ -1,4 +1,4 @@
-import type { SizeDto, ItemDto, PlayerDto, ViewDto } from '@/dtos';
+import type { ItemDto, PlayerDto, ViewDto } from '@/dtos';
 
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
@@ -11,7 +11,6 @@ type GameJoinedEvent = {
   payload: {
     playerId: string;
     players: PlayerDto[];
-    mapSize: SizeDto;
     view: ViewDto;
     items: ItemDto[];
   };

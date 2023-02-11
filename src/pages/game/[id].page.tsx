@@ -9,7 +9,6 @@ import StyleContext from '@/contexts/StyleContext';
 import { LocationVo, SizeVo, DirectionVo, BoundVo } from '@/models/valueObjects';
 import MapCanvas from '@/components/canvas/MapCanvas';
 import GameSideBar from '@/components/sidebars/GameSideBar';
-import GameMiniMap from '@/components/maps/GameMiniMap';
 import SelectItemModal from '@/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
 import ConfirmModal from '@/components/modals/ConfirmModal';
@@ -31,11 +30,10 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const { mapSize, view, items, myPlayer, players, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
+  const { view, items, myPlayer, players, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
     useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
-  const [isMiniMapVisible, setIsMiniMapVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
   const selectedItemId = selectedItem?.getId();
@@ -99,10 +97,6 @@ const Room: NextPage = function Room() {
 
   const handleLogoClick = () => {
     router.push('/');
-  };
-
-  const handleMiniMapClick = () => {
-    setIsMiniMapVisible(!isMiniMapVisible);
   };
 
   const handlePlaceItemClick = () => {
@@ -179,8 +173,6 @@ const Room: NextPage = function Room() {
               onPlaceItemClick={handlePlaceItemClick}
               isDestroyActive={isDestroyingItem}
               onDestroyClick={handleDestroyClick}
-              isMiniMapActive={isMiniMapVisible}
-              onMiniMapClick={handleMiniMapClick}
             />
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
@@ -197,11 +189,6 @@ const Room: NextPage = function Room() {
                 />
               )}
             </section>
-            {mapSize && clientViewBound && isMiniMapVisible && (
-              <section className="absolute right-2 bottom-2 opacity-80 inline-flex">
-                <GameMiniMap width={150} mapSize={mapSize} bound={clientViewBound} />
-              </section>
-            )}
           </section>
         </main>
       )}
@@ -237,11 +224,6 @@ const Room: NextPage = function Room() {
                 />
               )}
             </section>
-            {mapSize && clientViewBound && isMiniMapVisible && (
-              <section className="absolute right-1 bottom-1 opacity-80 inline-flex">
-                <GameMiniMap width={100} mapSize={mapSize} bound={clientViewBound} />
-              </section>
-            )}
           </section>
           <section className="shrink-0">
             <GameSideBar
@@ -251,8 +233,6 @@ const Room: NextPage = function Room() {
               onPlaceItemClick={handlePlaceItemClick}
               isDestroyActive={isDestroyingItem}
               onDestroyClick={handleDestroyClick}
-              isMiniMapActive={isMiniMapVisible}
-              onMiniMapClick={handleMiniMapClick}
             />
           </section>
         </main>

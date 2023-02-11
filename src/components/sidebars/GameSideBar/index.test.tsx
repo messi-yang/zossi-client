@@ -10,8 +10,6 @@ function renderGameSideBar(): RenderResult {
       onPlaceItemClick={() => {}}
       isDestroyActive
       onDestroyClick={() => {}}
-      isMiniMapActive
-      onMiniMapClick={() => {}}
     />
   );
 }

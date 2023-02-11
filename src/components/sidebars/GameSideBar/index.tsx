@@ -2,7 +2,6 @@ import { useState } from 'react';
 import classnames from 'classnames';
 import SmallLogo from '@/components/logos/SmallLogo';
 import PlaceItemIcon from '@/components/icons/PlaceItemIcon';
-import MapMarkerIcon from '@/components/icons/MapMarkerIcon';
 import ItemWrapper from './subComponents/ItemWrapper';
 import dataTestids from './dataTestids';
 
@@ -13,8 +12,6 @@ type Props = {
   onPlaceItemClick: () => void;
   isDestroyActive: boolean;
   onDestroyClick: () => void;
-  isMiniMapActive: boolean;
-  onMiniMapClick: () => void;
 };
 
 function GameSideBar({
@@ -24,12 +21,9 @@ function GameSideBar({
   onPlaceItemClick,
   isDestroyActive,
   onDestroyClick,
-  isMiniMapActive,
-  onMiniMapClick,
 }: Props) {
   const [isPlaceItemMenuHovered, setIsPlaceItemMenuHovered] = useState<boolean>(false);
   const [isDestroyMenuHovered, setIsDestroyMenuHovered] = useState<boolean>(false);
-  const [isMiniMapHovered, setIsMiniMapHovered] = useState<boolean>(false);
 
   return (
     <section
@@ -74,21 +68,6 @@ function GameSideBar({
         }}
       >
         <PlaceItemIcon highlighted={isDestroyMenuHovered} active={isDestroyActive} />
-      </ItemWrapper>
-      <ItemWrapper
-        label="Map"
-        highlighted={isMiniMapHovered}
-        active={isMiniMapActive}
-        hovered={isMiniMapHovered}
-        onClick={onMiniMapClick}
-        onMouseEnter={() => {
-          setIsMiniMapHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsMiniMapHovered(false);
-        }}
-      >
-        <MapMarkerIcon highlighted={isMiniMapHovered} active={isMiniMapActive} />
       </ItemWrapper>
     </section>
   );

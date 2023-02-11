@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import GameSocket from '@/apis/GameSocket';
-import { LocationVo, SizeVo, ViewVo, DirectionVo } from '@/models/valueObjects';
+import { LocationVo, ViewVo, DirectionVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 import { PlayerEntity } from '@/models/entities';
 
@@ -8,7 +8,6 @@ type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONN
 
 type ContextValue = {
   gameStatus: GameStatus;
-  mapSize: SizeVo | null;
   myPlayer: PlayerEntity | null;
   players: PlayerEntity[] | null;
   view: ViewVo | null;
@@ -23,7 +22,6 @@ type ContextValue = {
 function createInitialContextValue(): ContextValue {
   return {
     gameStatus: 'DISCONNECTED',
-    mapSize: null,
     myPlayer: null,
     players: null,
     view: null,
@@ -47,7 +45,6 @@ export function Provider({ children }: Props) {
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
 
   const initialContextValue = createInitialContextValue();
-  const [mapSize, setMapSize] = useState<SizeVo | null>(initialContextValue.mapSize);
   const [playerId, setPlayerid] = useState<string | null>(null);
   const [players, setPlayers] = useState<PlayerEntity[] | null>(initialContextValue.players);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
@@ -61,7 +58,9 @@ export function Provider({ children }: Props) {
   }, [playerId, players]);
 
   const reset = useCallback(() => {
-    setMapSize(initialContextValue.mapSize);
+    setPlayerid(null);
+    setPlayers(initialContextValue.players);
+    setView(initialContextValue.view);
     setItems(initialContextValue.items);
   }, []);
 
@@ -72,16 +71,9 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (
-        newPlayerId: string,
-        newPlayers: PlayerEntity[],
-        newMapSize: SizeVo,
-        newView: ViewVo,
-        newItems: ItemAgg[]
-      ) => {
+      onGameJoined: (newPlayerId: string, newPlayers: PlayerEntity[], newView: ViewVo, newItems: ItemAgg[]) => {
         setPlayerid(newPlayerId);
         setPlayers(newPlayers);
-        setMapSize(newMapSize);
         setView(newView);
         setItems(newItems);
       },
@@ -140,7 +132,6 @@ export function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           gameStatus,
-          mapSize,
           myPlayer,
           players,
           view,
@@ -151,7 +142,7 @@ export function Provider({ children }: Props) {
           placeItem,
           destroyItem,
         }),
-        [gameStatus, mapSize, myPlayer, players, view, items, joinGame, move, leaveGame, placeItem]
+        [gameStatus, myPlayer, players, view, items, joinGame, move, leaveGame, placeItem]
       )}
     >
       {children}
