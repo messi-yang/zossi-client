@@ -10,8 +10,7 @@ type ContextValue = {
   gameStatus: GameStatus;
   mapSize: SizeVo | null;
   myPlayer: PlayerEntity | null;
-  otherPlayers: PlayerEntity[] | null;
-  allPlayers: PlayerEntity[] | null;
+  players: PlayerEntity[] | null;
   view: ViewVo | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
@@ -26,8 +25,7 @@ function createInitialContextValue(): ContextValue {
     gameStatus: 'DISCONNECTED',
     mapSize: null,
     myPlayer: null,
-    otherPlayers: null,
-    allPlayers: null,
+    players: null,
     view: null,
     items: null,
     joinGame: () => {},
@@ -50,16 +48,17 @@ export function Provider({ children }: Props) {
 
   const initialContextValue = createInitialContextValue();
   const [mapSize, setMapSize] = useState<SizeVo | null>(initialContextValue.mapSize);
-  const [myPlayer, setMyPlayer] = useState<PlayerEntity | null>(initialContextValue.myPlayer);
-  const [otherPlayers, setOtherPlayers] = useState<PlayerEntity[] | null>(initialContextValue.otherPlayers);
-  const allPlayers = useMemo(() => {
-    if (!myPlayer || !otherPlayers) {
-      return null;
-    }
-    return [myPlayer, ...otherPlayers];
-  }, [myPlayer, otherPlayers]);
+  const [playerId, setPlayerid] = useState<string | null>(null);
+  const [players, setPlayers] = useState<PlayerEntity[] | null>(initialContextValue.players);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [view, setView] = useState<ViewVo | null>(initialContextValue.view);
+
+  const myPlayer = useMemo(() => {
+    if (!players) {
+      return null;
+    }
+    return players.find((player) => player.getId() === playerId) || null;
+  }, [playerId, players]);
 
   const reset = useCallback(() => {
     setMapSize(initialContextValue.mapSize);
@@ -73,20 +72,14 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (
-        newMyPlayer: PlayerEntity,
-        newOtherPlayers: PlayerEntity[],
-        newMapSize: SizeVo,
-        newView: ViewVo
-      ) => {
-        setMyPlayer(newMyPlayer);
-        setOtherPlayers(newOtherPlayers);
+      onGameJoined: (newPlayerId: string, newPlayers: PlayerEntity[], newMapSize: SizeVo, newView: ViewVo) => {
+        setPlayerid(newPlayerId);
+        setPlayers(newPlayers);
         setMapSize(newMapSize);
         setView(newView);
       },
-      onPlayersUpdated: (newMyPlayer: PlayerEntity, newOtherPlayers: PlayerEntity[]) => {
-        setMyPlayer(newMyPlayer);
-        setOtherPlayers(newOtherPlayers);
+      onPlayersUpdated: (newPlayers: PlayerEntity[]) => {
+        setPlayers(newPlayers);
       },
       onViewUpdated: (newView: ViewVo) => {
         setView(newView);
@@ -145,8 +138,7 @@ export function Provider({ children }: Props) {
           gameStatus,
           mapSize,
           myPlayer,
-          otherPlayers,
-          allPlayers,
+          players,
           view,
           items,
           joinGame,
@@ -155,7 +147,7 @@ export function Provider({ children }: Props) {
           placeItem,
           destroyItem,
         }),
-        [gameStatus, mapSize, myPlayer, otherPlayers, allPlayers, view, items, joinGame, move, leaveGame, placeItem]
+        [gameStatus, mapSize, myPlayer, players, view, items, joinGame, move, leaveGame, placeItem]
       )}
     >
       {children}

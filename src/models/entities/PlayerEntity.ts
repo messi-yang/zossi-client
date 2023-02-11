@@ -22,6 +22,10 @@ export default class PlayerEntity {
     return new PlayerEntity(params);
   }
 
+  public getId(): string {
+    return this.id;
+  }
+
   public getLocation(): LocationVo {
     return this.location;
   }

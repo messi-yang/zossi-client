@@ -31,7 +31,7 @@ const Room: NextPage = function Room() {
       50
     );
   }, [mapContainerRect]);
-  const { mapSize, view, items, myPlayer, allPlayers, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
+  const { mapSize, view, items, myPlayer, players, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
     useContext(GameContext);
   const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
@@ -185,9 +185,9 @@ const Room: NextPage = function Room() {
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {allPlayers && view && viewOffset && items && (
+              {players && view && viewOffset && items && (
                 <MapCanvas
-                  players={allPlayers}
+                  players={players}
                   view={view}
                   viewOffset={viewOffset}
                   unitSize={unitSize}
@@ -225,9 +225,9 @@ const Room: NextPage = function Room() {
           />
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {allPlayers && view && viewOffset && items && (
+              {players && view && viewOffset && items && (
                 <MapCanvas
-                  players={allPlayers}
+                  players={players}
                   view={view}
                   viewOffset={viewOffset}
                   unitSize={unitSize}

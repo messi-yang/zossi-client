@@ -8,18 +8,16 @@ import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
 import { ItemAgg } from '@/models/aggregates';
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [PlayerEntity, PlayerEntity[], SizeVo, ViewVo] {
+function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerEntity[], SizeVo, ViewVo] {
   const mapSize = convertSizeDtoToSize(event.payload.mapSize);
   const view = convertViewDtoToView(event.payload.view);
-  const myPlayer = convertPlayerDtoPlayer(event.payload.myPlayer);
-  const otherPlayers = event.payload.otherPlayers.map(convertPlayerDtoPlayer);
-  return [myPlayer, otherPlayers, mapSize, view];
+  const players = event.payload.players.map(convertPlayerDtoPlayer);
+  return [event.payload.playerId, players, mapSize, view];
 }
 
-function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity, PlayerEntity[]] {
-  const myPlayer = convertPlayerDtoPlayer(event.payload.myPlayer);
-  const otherPlayers = event.payload.otherPlayers.map(convertPlayerDtoPlayer);
-  return [myPlayer, otherPlayers];
+function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity[]] {
+  const otherPlayers = event.payload.players.map(convertPlayerDtoPlayer);
+  return [otherPlayers];
 }
 
 function parseViewUpdatedEvent(event: ViewUpdatedEvent): [ViewVo] {
@@ -37,8 +35,8 @@ export default class GameSocket {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onGameJoined: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[], mapSize: SizeVo, view: ViewVo) => void;
-    onPlayersUpdated: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[]) => void;
+    onGameJoined: (playerId: string, players: PlayerEntity[], mapSize: SizeVo, view: ViewVo) => void;
+    onPlayersUpdated: (players: PlayerEntity[]) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
@@ -57,13 +55,13 @@ export default class GameSocket {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [myPlayer, otherPlayers, mapSize, view] = parseGameJoinedEvent(newMsg);
-        await Promise.all([myPlayer, ...otherPlayers].map((player) => player.loadAsset()));
-        params.onGameJoined(myPlayer, otherPlayers, mapSize, view);
+        const [playerId, players, mapSize, view] = parseGameJoinedEvent(newMsg);
+        await Promise.all(players.map((player) => player.loadAsset()));
+        params.onGameJoined(playerId, players, mapSize, view);
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
-        const [myPlayer, otherPlayers] = parsePlayersUpdatedEvent(newMsg);
-        await Promise.all([myPlayer, ...otherPlayers].map((player) => player.loadAsset()));
-        params.onPlayersUpdated(myPlayer, otherPlayers);
+        const [players] = parsePlayersUpdatedEvent(newMsg);
+        await Promise.all(players.map((player) => player.loadAsset()));
+        params.onPlayersUpdated(players);
       } else if (newMsg.type === EventTypeEnum.ViewUpdated) {
         const [view] = parseViewUpdatedEvent(newMsg);
         params.onViewUpdated(view);
@@ -95,8 +93,8 @@ export default class GameSocket {
   }
 
   static newGameSocket(params: {
-    onGameJoined: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[], mapSize: SizeVo, view: ViewVo) => void;
-    onPlayersUpdated: (myPlayer: PlayerEntity, otherPlayers: PlayerEntity[]) => void;
+    onGameJoined: (playerId: string, players: PlayerEntity[], mapSize: SizeVo, view: ViewVo) => void;
+    onPlayersUpdated: (players: PlayerEntity[]) => void;
     onViewUpdated: (view: ViewVo) => void;
     onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
