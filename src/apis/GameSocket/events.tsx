@@ -4,7 +4,6 @@ enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
   PlayersUpdated = 'PLAYERS_UPDATED',
   ViewUpdated = 'VIEW_UPDATED',
-  ItemsUpdated = 'ITEMS_UPDATED',
 }
 
 type GameJoinedEvent = {
@@ -12,9 +11,9 @@ type GameJoinedEvent = {
   payload: {
     playerId: string;
     players: PlayerDto[];
-    player: PlayerDto;
     mapSize: SizeDto;
     view: ViewDto;
+    items: ItemDto[];
   };
 };
 
@@ -32,14 +31,7 @@ type ViewUpdatedEvent = {
   };
 };
 
-type ItemsUpdatedEvent = {
-  type: EventTypeEnum.ItemsUpdated;
-  payload: {
-    items: ItemDto[];
-  };
-};
-
-type Event = GameJoinedEvent | PlayersUpdatedEvent | ViewUpdatedEvent | ItemsUpdatedEvent;
+type Event = GameJoinedEvent | PlayersUpdatedEvent | ViewUpdatedEvent;
 
 export { EventTypeEnum };
-export type { Event, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent, ItemsUpdatedEvent };
+export type { Event, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent };

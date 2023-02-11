@@ -72,20 +72,24 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (newPlayerId: string, newPlayers: PlayerEntity[], newMapSize: SizeVo, newView: ViewVo) => {
+      onGameJoined: (
+        newPlayerId: string,
+        newPlayers: PlayerEntity[],
+        newMapSize: SizeVo,
+        newView: ViewVo,
+        newItems: ItemAgg[]
+      ) => {
         setPlayerid(newPlayerId);
         setPlayers(newPlayers);
         setMapSize(newMapSize);
         setView(newView);
+        setItems(newItems);
       },
       onPlayersUpdated: (newPlayers: PlayerEntity[]) => {
         setPlayers(newPlayers);
       },
       onViewUpdated: (newView: ViewVo) => {
         setView(newView);
-      },
-      onItemsUpdated: (newItems: ItemAgg[]) => {
-        setItems(newItems);
       },
       onOpen: () => {
         setGameStatus('OPEN');

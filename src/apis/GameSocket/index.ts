@@ -2,17 +2,18 @@ import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { convertSizeDtoToSize, convertPlayerDtoPlayer, convertItemDtoToItem, convertViewDtoToView } from '@/dtos';
 import { LocationVo, SizeVo, ViewVo, DirectionVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
-import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent, ItemsUpdatedEvent } from './events';
+import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
 import { ItemAgg } from '@/models/aggregates';
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerEntity[], SizeVo, ViewVo] {
+function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerEntity[], SizeVo, ViewVo, ItemAgg[]] {
   const mapSize = convertSizeDtoToSize(event.payload.mapSize);
   const view = convertViewDtoToView(event.payload.view);
   const players = event.payload.players.map(convertPlayerDtoPlayer);
-  return [event.payload.playerId, players, mapSize, view];
+  const items = event.payload.items.map(convertItemDtoToItem);
+  return [event.payload.playerId, players, mapSize, view, items];
 }
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity[]] {
@@ -25,20 +26,15 @@ function parseViewUpdatedEvent(event: ViewUpdatedEvent): [ViewVo] {
   return [view];
 }
 
-function parseItemsUpdatedEvent(event: ItemsUpdatedEvent): [ItemAgg[]] {
-  return [event.payload.items.map(convertItemDtoToItem)];
-}
-
 export default class GameSocket {
   private socket: WebSocket;
 
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onGameJoined: (playerId: string, players: PlayerEntity[], mapSize: SizeVo, view: ViewVo) => void;
+    onGameJoined: (playerId: string, players: PlayerEntity[], mapSize: SizeVo, view: ViewVo, items: ItemAgg[]) => void;
     onPlayersUpdated: (players: PlayerEntity[]) => void;
     onViewUpdated: (view: ViewVo) => void;
-    onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
   }) {
@@ -55,9 +51,10 @@ export default class GameSocket {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [playerId, players, mapSize, view] = parseGameJoinedEvent(newMsg);
+        const [playerId, players, mapSize, view, items] = parseGameJoinedEvent(newMsg);
         await Promise.all(players.map((player) => player.loadAsset()));
-        params.onGameJoined(playerId, players, mapSize, view);
+        await Promise.all(items.map((item) => item.loadAsset()));
+        params.onGameJoined(playerId, players, mapSize, view, items);
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [players] = parsePlayersUpdatedEvent(newMsg);
         await Promise.all(players.map((player) => player.loadAsset()));
@@ -65,10 +62,6 @@ export default class GameSocket {
       } else if (newMsg.type === EventTypeEnum.ViewUpdated) {
         const [view] = parseViewUpdatedEvent(newMsg);
         params.onViewUpdated(view);
-      } else if (newMsg.type === EventTypeEnum.ItemsUpdated) {
-        const [items] = parseItemsUpdatedEvent(newMsg);
-        await Promise.all(items.map((item) => item.loadAsset()));
-        params.onItemsUpdated(items);
       }
     };
 
@@ -93,10 +86,9 @@ export default class GameSocket {
   }
 
   static newGameSocket(params: {
-    onGameJoined: (playerId: string, players: PlayerEntity[], mapSize: SizeVo, view: ViewVo) => void;
+    onGameJoined: (playerId: string, players: PlayerEntity[], mapSize: SizeVo, view: ViewVo, items: ItemAgg[]) => void;
     onPlayersUpdated: (players: PlayerEntity[]) => void;
     onViewUpdated: (view: ViewVo) => void;
-    onItemsUpdated: (items: ItemAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
   }): GameSocket {
