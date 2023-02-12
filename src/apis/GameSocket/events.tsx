@@ -8,26 +8,20 @@ enum EventTypeEnum {
 
 type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
-  payload: {
-    playerId: string;
-    players: PlayerDto[];
-    view: ViewDto;
-    items: ItemDto[];
-  };
+  playerId: string;
+  players: PlayerDto[];
+  view: ViewDto;
+  items: ItemDto[];
 };
 
 type PlayersUpdatedEvent = {
   type: EventTypeEnum.PlayersUpdated;
-  payload: {
-    players: PlayerDto[];
-  };
+  players: PlayerDto[];
 };
 
 type ViewUpdatedEvent = {
   type: EventTypeEnum.ViewUpdated;
-  payload: {
-    view: ViewDto;
-  };
+  view: ViewDto;
 };
 
 type Event = GameJoinedEvent | PlayersUpdatedEvent | ViewUpdatedEvent;

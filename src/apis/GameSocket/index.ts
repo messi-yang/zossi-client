@@ -9,19 +9,19 @@ import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } f
 import { ItemAgg } from '@/models/aggregates';
 
 function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerEntity[], ViewVo, ItemAgg[]] {
-  const view = convertViewDtoToView(event.payload.view);
-  const players = event.payload.players.map(convertPlayerDtoPlayer);
-  const items = event.payload.items.map(convertItemDtoToItem);
-  return [event.payload.playerId, players, view, items];
+  const view = convertViewDtoToView(event.view);
+  const players = event.players.map(convertPlayerDtoPlayer);
+  const items = event.items.map(convertItemDtoToItem);
+  return [event.playerId, players, view, items];
 }
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity[]] {
-  const otherPlayers = event.payload.players.map(convertPlayerDtoPlayer);
+  const otherPlayers = event.players.map(convertPlayerDtoPlayer);
   return [otherPlayers];
 }
 
 function parseViewUpdatedEvent(event: ViewUpdatedEvent): [ViewVo] {
-  const view = convertViewDtoToView(event.payload.view);
+  const view = convertViewDtoToView(event.view);
   return [view];
 }
 
@@ -121,9 +121,8 @@ export default class GameSocket {
   public move(direction: DirectionVo) {
     const action: MoveCommand = {
       type: CommandTypeEnum.Move,
-      payload: {
-        direction: direction.toNumber(),
-      },
+
+      direction: direction.toNumber(),
     };
     this.sendMessage(action);
   }
@@ -131,10 +130,8 @@ export default class GameSocket {
   public placeItem(location: LocationVo, itemId: number) {
     const action: PlaceItemCommand = {
       type: CommandTypeEnum.PlaceItem,
-      payload: {
-        location: { x: location.getX(), y: location.getY() },
-        itemId,
-      },
+      location: { x: location.getX(), y: location.getY() },
+      itemId,
     };
     this.sendMessage(action);
   }
@@ -142,9 +139,7 @@ export default class GameSocket {
   public destroyItem(location: LocationVo) {
     const action: DestroyItemCommand = {
       type: CommandTypeEnum.DestroyItem,
-      payload: {
-        location: { x: location.getX(), y: location.getY() },
-      },
+      location: { x: location.getX(), y: location.getY() },
     };
     this.sendMessage(action);
   }
