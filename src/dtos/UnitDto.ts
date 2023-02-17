@@ -2,12 +2,12 @@ import { LocationVo, UnitVo } from '@/models/valueObjects';
 import { LocationDto } from './LocationDto';
 
 type UnitDto = {
-  itemId: string;
+  itemId: number;
   location: LocationDto;
 };
 
 function convertUnitDtoToUnit(unitDto: UnitDto): UnitVo {
-  const location = LocationVo.new(unitDto.location.x, unitDto.location.y);
+  const location = LocationVo.new(unitDto.location.x, unitDto.location.z);
   return UnitVo.new(unitDto.itemId, location);
 }
 

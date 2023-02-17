@@ -1,20 +1,20 @@
 import LocationVo from './LocationVo';
 
 export default class UnitVo {
-  private itemId: string;
+  private itemId: number;
 
   private location: LocationVo;
 
-  constructor(itemId: string, location: LocationVo) {
+  constructor(itemId: number, location: LocationVo) {
     this.itemId = itemId;
     this.location = location;
   }
 
-  static new(itemId: string, location: LocationVo): UnitVo {
+  static new(itemId: number, location: LocationVo): UnitVo {
     return new UnitVo(itemId, location);
   }
 
-  public getItemId(): string {
+  public getItemId(): number {
     return this.itemId;
   }
 

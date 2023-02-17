@@ -18,7 +18,7 @@ export default class BoundVo {
 
   static createPlayerViewBound(playerLocation: LocationVo, playerScreenSize: SizeVo): BoundVo {
     const standarizedX = Math.round(playerLocation.getX() - playerScreenSize.getWidth() / 2);
-    const standarizedY = Math.round(playerLocation.getY() - playerScreenSize.getHeight() / 2);
+    const standarizedY = Math.round(playerLocation.getZ() - playerScreenSize.getHeight() / 2);
 
     return new BoundVo(
       LocationVo.new(standarizedX, standarizedY),
@@ -31,7 +31,7 @@ export default class BoundVo {
   }
 
   public getSize(): SizeVo {
-    return SizeVo.new(this.to.getX() - this.from.getX() + 1, this.to.getY() - this.from.getY() + 1);
+    return SizeVo.new(this.to.getX() - this.from.getX() + 1, this.to.getZ() - this.from.getZ() + 1);
   }
 
   public getFrom(): LocationVo {
@@ -47,19 +47,19 @@ export default class BoundVo {
   }
 
   public getHeight(): number {
-    return this.to.getY() - this.from.getY() + 1;
+    return this.to.getZ() - this.from.getZ() + 1;
   }
 
   public getCenter(): LocationVo {
     const centerX = Math.floor((this.from.getX() + this.to.getX()) / 2);
-    const centerY = Math.floor((this.from.getY() + this.to.getY()) / 2);
+    const centerY = Math.floor((this.from.getZ() + this.to.getZ()) / 2);
     return LocationVo.new(centerX, centerY);
   }
 
   private coversLocation(globalLocation: LocationVo): boolean {
     const x = globalLocation.getX();
-    const y = globalLocation.getY();
-    return this.from.getX() <= x && this.to.getX() >= x && this.from.getY() <= y && this.to.getY() >= y;
+    const z = globalLocation.getZ();
+    return this.from.getX() <= x && this.to.getX() >= x && this.from.getZ() <= z && this.to.getZ() >= z;
   }
 
   public getLocalLocation(globalLocation: LocationVo): LocationVo | null {
@@ -71,6 +71,6 @@ export default class BoundVo {
   }
 
   public calculateOffsetWithBound(boundB: BoundVo): OffsetVo {
-    return OffsetVo.new(this.from.getX() - boundB.getFrom().getX(), this.from.getY() - boundB.getFrom().getY());
+    return OffsetVo.new(this.from.getX() - boundB.getFrom().getX(), this.from.getZ() - boundB.getFrom().getZ());
   }
 }

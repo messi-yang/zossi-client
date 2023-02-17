@@ -130,7 +130,7 @@ export default class GameSocket {
   public placeItem(location: LocationVo, itemId: number) {
     const action: PlaceItemCommand = {
       type: CommandTypeEnum.PlaceItem,
-      location: { x: location.getX(), y: location.getY() },
+      location: { x: location.getX(), z: location.getZ() },
       itemId,
     };
     this.sendMessage(action);
@@ -139,7 +139,7 @@ export default class GameSocket {
   public destroyItem(location: LocationVo) {
     const action: DestroyItemCommand = {
       type: CommandTypeEnum.DestroyItem,
-      location: { x: location.getX(), y: location.getY() },
+      location: { x: location.getX(), z: location.getZ() },
     };
     this.sendMessage(action);
   }

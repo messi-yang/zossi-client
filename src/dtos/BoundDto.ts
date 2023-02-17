@@ -7,7 +7,7 @@ type BoundDto = {
 };
 
 export function convertBoundDtoToBound(boundDto: BoundDto): BoundVo {
-  return BoundVo.new(LocationVo.new(boundDto.from.x, boundDto.from.y), LocationVo.new(boundDto.to.x, boundDto.to.y));
+  return BoundVo.new(LocationVo.new(boundDto.from.x, boundDto.from.z), LocationVo.new(boundDto.to.x, boundDto.to.z));
 }
 
 export type { BoundDto };

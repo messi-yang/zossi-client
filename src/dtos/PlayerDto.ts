@@ -12,7 +12,7 @@ function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerEntity {
   return PlayerEntity.new({
     id: playerDto.id,
     name: playerDto.name,
-    location: LocationVo.new(playerDto.location.x, playerDto.location.y),
+    location: LocationVo.new(playerDto.location.x, playerDto.location.z),
   });
 }
 

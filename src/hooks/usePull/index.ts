@@ -1,8 +1,8 @@
 import { useEffect, useState, RefObject } from 'react';
 
 type Callbacks = {
-  onPullStart?: (x: number, y: number) => void;
-  onPull?: (x: number, y: number) => void;
+  onPullStart?: (x: number, z: number) => void;
+  onPull?: (x: number, z: number) => void;
 };
 
 export default function usePull(ref: RefObject<HTMLElement>, { onPullStart, onPull }: Callbacks) {

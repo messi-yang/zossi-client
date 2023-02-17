@@ -1,22 +1,22 @@
 export default class OffsetVo {
   private x: number;
 
-  private y: number;
+  private z: number;
 
-  constructor(x: number, y: number) {
+  constructor(x: number, z: number) {
     this.x = x;
-    this.y = y;
+    this.z = z;
   }
 
-  static new(x: number, y: number): OffsetVo {
-    return new OffsetVo(x, y);
+  static new(x: number, z: number): OffsetVo {
+    return new OffsetVo(x, z);
   }
 
   public getX(): number {
     return this.x;
   }
 
-  public getY(): number {
-    return this.y;
+  public getZ(): number {
+    return this.z;
   }
 }

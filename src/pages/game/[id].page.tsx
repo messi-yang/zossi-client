@@ -1,13 +1,12 @@
-import { useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useOnHistoryChange from '@/hooks/useOnHistoryChange';
-import useDomRect from '@/hooks/useDomRect';
 import GameContext from '@/contexts/GameContext';
 import StyleContext from '@/contexts/StyleContext';
-import { LocationVo, SizeVo, DirectionVo, BoundVo } from '@/models/valueObjects';
-import MapCanvas from '@/components/canvas/MapCanvas';
+import { LocationVo, DirectionVo } from '@/models/valueObjects';
+import GameCanvas from '@/components/canvas/GameCanvas';
 import GameSideBar from '@/components/sidebars/GameSideBar';
 import SelectItemModal from '@/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
@@ -17,22 +16,8 @@ const Room: NextPage = function Room() {
   const router = useRouter();
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
-  const mapContainerRect = useDomRect(mapContainerRef);
-  const clientViewBoundSize = useMemo(() => {
-    if (!mapContainerRect) {
-      return null;
-    }
-    return SizeVo.newWithResolutionAndUnitSize(
-      {
-        width: mapContainerRect.width,
-        height: mapContainerRect.height,
-      },
-      50
-    );
-  }, [mapContainerRect]);
   const { view, items, myPlayer, players, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
     useContext(GameContext);
-  const [unitSize] = useState(50);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
@@ -64,20 +49,6 @@ const Room: NextPage = function Room() {
     },
     [move]
   );
-
-  const clientViewBound = useMemo(() => {
-    if (!myPlayer || !clientViewBoundSize) {
-      return null;
-    }
-    return BoundVo.createPlayerViewBound(myPlayer.getLocation(), clientViewBoundSize);
-  }, [myPlayer, clientViewBoundSize]);
-
-  const viewOffset = useMemo(() => {
-    if (!view || !clientViewBound) {
-      return null;
-    }
-    return view.getBound().calculateOffsetWithBound(clientViewBound);
-  }, [view, clientViewBound]);
 
   useEffect(function joinGameOnInitEffect() {
     joinGame();
@@ -142,6 +113,7 @@ const Room: NextPage = function Room() {
     },
     [isDestroyingItem, isBuildindItem, selectedItem, placeItem, destroyItem]
   );
+  console.log(handleUnitClick);
 
   const screenSize: 'large' | 'small' = styleContext.getWindowWidth() > 700 ? 'large' : 'small';
 
@@ -177,15 +149,13 @@ const Room: NextPage = function Room() {
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {players && view && viewOffset && items && (
-                <MapCanvas
+              {myPlayer && players && view && items && (
+                <GameCanvas
                   players={players}
+                  cameraLocation={myPlayer.getLocation()}
                   view={view}
-                  viewOffset={viewOffset}
-                  unitSize={unitSize}
                   items={items}
                   selectedItemId={selectedItemId !== undefined ? selectedItemId : null}
-                  onUnitClick={handleUnitClick}
                 />
               )}
             </section>
@@ -212,15 +182,13 @@ const Room: NextPage = function Room() {
           />
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {players && view && viewOffset && items && (
-                <MapCanvas
+              {myPlayer && players && view && items && (
+                <GameCanvas
                   players={players}
+                  cameraLocation={myPlayer.getLocation()}
                   view={view}
-                  viewOffset={viewOffset}
-                  unitSize={unitSize}
                   items={items}
                   selectedItemId={selectedItemId !== undefined ? selectedItemId : null}
-                  onUnitClick={handleUnitClick}
                 />
               )}
             </section>
