@@ -30,6 +30,7 @@ const items = range(10).map((num) =>
     name: `Sample ${num + 1}`,
     traversable: true,
     assetSrc: 'placeholder-item.png',
+    modelSrc: 'placeholder-item.png',
   })
 );
 

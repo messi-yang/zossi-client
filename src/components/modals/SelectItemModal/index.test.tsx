@@ -10,6 +10,7 @@ function renderSelectItemModal(): RenderResult {
       name: `Sample ${num + 1}`,
       traversable: true,
       assetSrc: 'placeholder-item.png',
+      modelSrc: 'placeholder-item.png',
     })
   );
   return render(<SelectItemModal opened width={100} selectedItem={null} items={items} />);

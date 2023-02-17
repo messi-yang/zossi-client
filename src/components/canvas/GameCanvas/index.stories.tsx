@@ -26,6 +26,7 @@ const item = ItemAgg.new({
   name: 'Hello',
   traversable: false,
   assetSrc: 'https://avatars.dicebear.com/api/pixel-art/1.svg',
+  modelSrc: 'placeholder-item.png',
 });
 item.loadAsset();
 Primary.args = {

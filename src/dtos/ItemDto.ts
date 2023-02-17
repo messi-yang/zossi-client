@@ -5,6 +5,7 @@ type ItemDto = {
   name: string;
   traversable: boolean;
   assetSrc: string;
+  modelSrc: string;
 };
 
 function convertItemDtoToItem(itemDto: ItemDto): ItemAgg {
@@ -13,6 +14,7 @@ function convertItemDtoToItem(itemDto: ItemDto): ItemAgg {
     name: itemDto.name,
     traversable: itemDto.traversable,
     assetSrc: itemDto.assetSrc,
+    modelSrc: itemDto.modelSrc,
   });
 }
 

@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useContext } from 'react';
 import * as THREE from 'three';
-// TODO - this is buggy, find another one late and bring back unit test
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
+import ThreeJsContext from '@/contexts/ThreeJsContext';
 import { ViewVo, LocationVo } from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 import { PlayerEntity } from '@/models/entities';
-import dataTestids from './dataTestids';
 import useDomRect from '@/hooks/useDomRect';
+import dataTestids from './dataTestids';
 
 type Props = {
   players: PlayerEntity[];
@@ -18,7 +17,6 @@ type Props = {
 };
 
 function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Props) {
-  console.log(items, selectedItemId);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
   const scene = useRef<THREE.Scene | null>(null);
@@ -26,10 +24,14 @@ function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Pr
   const renderer = useRef<THREE.WebGLRenderer | null>(null);
   const playerModels = useRef<THREE.Group[]>([]);
   const unitModels = useRef<THREE.Group[]>([]);
-  const [playerModelSource, setPlayerModelSource] = useState<THREE.Group | null>(null);
   // const [grassModelSource, setGrassModelSource] = useState<THREE.Group | null>(null);
-  const [torchModelSource, setTorchModelSource] = useState<THREE.Group | null>(null);
-  const [stoneModelSource, setStoneModelSource] = useState<THREE.Group | null>(null);
+  const { cachedModels, loadModel } = useContext(ThreeJsContext);
+
+  useEffect(() => {
+    console.log(selectedItemId);
+    items.forEach((item) => loadModel(item.getModelSrc()));
+    loadModel('/characters/chicken.gltf');
+  }, [items, players]);
 
   useEffect(
     function initScene() {
@@ -123,9 +125,13 @@ function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Pr
 
       const newPlayerModels: THREE.Group[] = [];
       players.forEach((player) => {
-        if (!scene.current || !playerModelSource) {
+        if (!scene.current) {
           return;
         }
+
+        const playerModelSource = cachedModels['/characters/chicken.gltf'];
+        if (!playerModelSource || playerModelSource === 'loading') return;
+
         const newPlayerModel = playerModelSource.clone();
         newPlayerModel.position.set(player.getLocation().getX(), 0, player.getLocation().getZ());
         newPlayerModel.scale.multiplyScalar(1);
@@ -134,12 +140,12 @@ function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Pr
       });
       playerModels.current = newPlayerModels;
     },
-    [playerModelSource, players]
+    [cachedModels, players]
   );
 
   useEffect(
     function handleUnitsUpdated() {
-      if (!torchModelSource || !stoneModelSource || !scene.current) {
+      if (!scene.current) {
         return;
       }
 
@@ -152,42 +158,24 @@ function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Pr
       view.getUnits().forEach((unit) => {
         if (!scene.current) return;
 
-        let newUnitModel: THREE.Group | null = null;
-        if (unit.getItemId() === 0) {
-          newUnitModel = stoneModelSource.clone();
-        } else if (unit.getItemId() === 1) {
-          newUnitModel = torchModelSource.clone();
-        } else {
-          return;
-        }
+        const item = items.find((_item) => _item.getId() === unit.getItemId());
+        if (!item) return;
+
+        const itemModelSource = cachedModels[item.getModelSrc()];
+        if (!itemModelSource || itemModelSource === 'loading') return;
+
+        const newUnitModel = itemModelSource.clone();
         newUnitModel.position.set(unit.getLocation().getX(), 0, unit.getLocation().getZ());
         scene.current.add(newUnitModel);
         newUnitModels.push(newUnitModel);
       });
       unitModels.current = newUnitModels;
     },
-    [torchModelSource, stoneModelSource, view]
+    [cachedModels, items, view]
   );
 
-  useEffect(function aEffect() {
-    const loader = new GLTFLoader();
-    loader.load('/player.gltf', function (gltf) {
-      setPlayerModelSource(gltf.scene);
-    });
-    // loader.load('/grass.gltf', function (gltf) {
-    //   setGrassModelSource(gltf.scene);
-    // });
-    loader.load('/torch.gltf', function (gltf) {
-      setTorchModelSource(gltf.scene);
-    });
-
-    loader.load('/stone.gltf', function (gltf) {
-      setStoneModelSource(gltf.scene);
-    });
-  }, []);
-
   useEffect(function animateEffect() {
-    const animate = function () {
+    const animate = () => {
       requestAnimationFrame(animate);
 
       if (!scene.current || !camera.current || !renderer.current) {
