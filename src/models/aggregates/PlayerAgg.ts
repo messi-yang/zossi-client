@@ -1,6 +1,6 @@
 import { LocationVo, DirectionVo } from '@/models/valueObjects';
 
-export default class PlayerEntity {
+export default class PlayerAgg {
   private id: string;
 
   private name: string;
@@ -21,8 +21,8 @@ export default class PlayerEntity {
     this.assetSrc = `https://avatars.dicebear.com/api/pixel-art/${params.id}.svg`;
   }
 
-  static new(params: { id: string; name: string; location: LocationVo; direction: DirectionVo }): PlayerEntity {
-    return new PlayerEntity(params);
+  static new(params: { id: string; name: string; location: LocationVo; direction: DirectionVo }): PlayerAgg {
+    return new PlayerAgg(params);
   }
 
   public getId(): string {
@@ -39,17 +39,5 @@ export default class PlayerEntity {
 
   public outputAssetAsImageElement(): HTMLImageElement | null {
     return this.imageElem;
-  }
-
-  public async loadAsset() {
-    return new Promise((resolve) => {
-      const image = new Image();
-      image.onload = () => {
-        this.imageElem = image;
-        resolve(true);
-      };
-
-      image.src = this.assetSrc;
-    });
   }
 }

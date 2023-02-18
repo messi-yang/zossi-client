@@ -1,4 +1,4 @@
-import { PlayerEntity } from '@/models/entities';
+import { PlayerAgg } from '@/models/aggregates';
 import { DirectionVo, LocationVo } from '@/models/valueObjects';
 import type { LocationDto } from './LocationDto';
 
@@ -9,8 +9,8 @@ type PlayerDto = {
   direction: 0 | 1 | 2 | 3;
 };
 
-function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerEntity {
-  return PlayerEntity.new({
+function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerAgg {
+  return PlayerAgg.new({
     id: playerDto.id,
     name: playerDto.name,
     location: LocationVo.new(playerDto.location.x, playerDto.location.z),

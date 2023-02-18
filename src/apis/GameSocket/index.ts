@@ -1,14 +1,13 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { convertPlayerDtoPlayer, convertItemDtoToItem, convertUnitDtoToUnit, convertBoundDtoToBound } from '@/dtos';
 import { LocationVo, DirectionVo, BoundVo } from '@/models/valueObjects';
-import { PlayerEntity } from '@/models/entities';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
-import { ItemAgg, UnitAgg } from '@/models/aggregates';
+import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerEntity[], BoundVo, UnitAgg[], ItemAgg[]] {
+function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerAgg[], BoundVo, UnitAgg[], ItemAgg[]] {
   const bound = convertBoundDtoToBound(event.bound);
   const units = event.units.map(convertUnitDtoToUnit);
   const players = event.players.map(convertPlayerDtoPlayer);
@@ -16,7 +15,7 @@ function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerEntity[], 
   return [event.playerId, players, bound, units, items];
 }
 
-function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity[]] {
+function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg[]] {
   const otherPlayers = event.players.map(convertPlayerDtoPlayer);
   return [otherPlayers];
 }
@@ -33,14 +32,8 @@ export default class GameSocket {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onGameJoined: (
-      playerId: string,
-      players: PlayerEntity[],
-      bound: BoundVo,
-      units: UnitAgg[],
-      items: ItemAgg[]
-    ) => void;
-    onPlayersUpdated: (players: PlayerEntity[]) => void;
+    onGameJoined: (playerId: string, players: PlayerAgg[], bound: BoundVo, units: UnitAgg[], items: ItemAgg[]) => void;
+    onPlayersUpdated: (players: PlayerAgg[]) => void;
     onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
@@ -59,12 +52,10 @@ export default class GameSocket {
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
         const [playerId, players, bound, units, items] = parseGameJoinedEvent(newMsg);
-        await Promise.all(players.map((player) => player.loadAsset()));
         await Promise.all(items.map((item) => item.loadAsset()));
         params.onGameJoined(playerId, players, bound, units, items);
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [players] = parsePlayersUpdatedEvent(newMsg);
-        await Promise.all(players.map((player) => player.loadAsset()));
         params.onPlayersUpdated(players);
       } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
         const [bound, units] = parseUnitsUpdatedEvent(newMsg);
@@ -93,14 +84,8 @@ export default class GameSocket {
   }
 
   static newGameSocket(params: {
-    onGameJoined: (
-      playerId: string,
-      players: PlayerEntity[],
-      bound: BoundVo,
-      units: UnitAgg[],
-      items: ItemAgg[]
-    ) => void;
-    onPlayersUpdated: (players: PlayerEntity[]) => void;
+    onGameJoined: (playerId: string, players: PlayerAgg[], bound: BoundVo, units: UnitAgg[], items: ItemAgg[]) => void;
+    onPlayersUpdated: (players: PlayerAgg[]) => void;
     onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;

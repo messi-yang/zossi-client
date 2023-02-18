@@ -3,8 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import GameCanvas from '.';
 import { DirectionVo, LocationVo } from '@/models/valueObjects';
-import { PlayerEntity } from '@/models/entities';
-import { ItemAgg, UnitAgg } from '@/models/aggregates';
+import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 export default {
   title: 'Canvas/GameCanvas',
@@ -31,25 +30,25 @@ const item = ItemAgg.new({
 item.loadAsset();
 Primary.args = {
   players: [
-    PlayerEntity.new({
+    PlayerAgg.new({
       id: '1',
       name: 'Mark',
       location: LocationVo.new(0, 0),
       direction: DirectionVo.new(2),
     }),
-    PlayerEntity.new({
+    PlayerAgg.new({
       id: '1',
       name: 'Mark',
       location: LocationVo.new(2, 2),
       direction: DirectionVo.new(2),
     }),
-    PlayerEntity.new({
+    PlayerAgg.new({
       id: '1',
       name: 'Mark',
       location: LocationVo.new(4, 4),
       direction: DirectionVo.new(2),
     }),
-    PlayerEntity.new({
+    PlayerAgg.new({
       id: '1',
       name: 'Mark',
       location: LocationVo.new(19, 19),

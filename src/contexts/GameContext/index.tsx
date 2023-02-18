@@ -1,15 +1,14 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import GameSocket from '@/apis/GameSocket';
 import { LocationVo, DirectionVo, BoundVo } from '@/models/valueObjects';
-import { ItemAgg, UnitAgg } from '@/models/aggregates';
-import { PlayerEntity } from '@/models/entities';
+import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
 type ContextValue = {
   gameStatus: GameStatus;
-  myPlayer: PlayerEntity | null;
-  players: PlayerEntity[] | null;
+  myPlayer: PlayerAgg | null;
+  players: PlayerAgg[] | null;
   bound: BoundVo | null;
   units: UnitAgg[] | null;
   items: ItemAgg[] | null;
@@ -48,7 +47,7 @@ export function Provider({ children }: Props) {
 
   const initialContextValue = createInitialContextValue();
   const [playerId, setPlayerid] = useState<string | null>(null);
-  const [players, setPlayers] = useState<PlayerEntity[] | null>(initialContextValue.players);
+  const [players, setPlayers] = useState<PlayerAgg[] | null>(initialContextValue.players);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [bound, setBound] = useState<BoundVo | null>(initialContextValue.bound);
   const [units, setUnits] = useState<UnitAgg[] | null>(initialContextValue.units);
@@ -77,7 +76,7 @@ export function Provider({ children }: Props) {
     const newGameSocket = GameSocket.newGameSocket({
       onGameJoined: (
         newPlayerId: string,
-        newPlayers: PlayerEntity[],
+        newPlayers: PlayerAgg[],
         newBound: BoundVo,
         newUnits: UnitAgg[],
         newItems: ItemAgg[]
@@ -88,7 +87,7 @@ export function Provider({ children }: Props) {
         setUnits(newUnits);
         setItems(newItems);
       },
-      onPlayersUpdated: (newPlayers: PlayerEntity[]) => {
+      onPlayersUpdated: (newPlayers: PlayerAgg[]) => {
         setPlayers(newPlayers);
       },
       onUnitsUpdated: (newBound: BoundVo, newUnits: UnitAgg[]) => {

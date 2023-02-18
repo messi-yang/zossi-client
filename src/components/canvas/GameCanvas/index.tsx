@@ -4,8 +4,7 @@ import forEach from 'lodash/forEach';
 
 import ThreeJsContext from '@/contexts/ThreeJsContext';
 import { LocationVo } from '@/models/valueObjects';
-import { ItemAgg, UnitAgg } from '@/models/aggregates';
-import { PlayerEntity } from '@/models/entities';
+import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 import useDomRect from '@/hooks/useDomRect';
 import dataTestids from './dataTestids';
 
@@ -14,7 +13,7 @@ type CachedObjectMap = {
 };
 
 type Props = {
-  players: PlayerEntity[];
+  players: PlayerAgg[];
   units: UnitAgg[];
   cameraLocation: LocationVo;
   items: ItemAgg[];
