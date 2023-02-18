@@ -7,14 +7,14 @@ type CachedModels = {
 };
 
 type ContextValue = {
-  cachedModels: CachedModels;
   loadModel(modelSrc: string): void;
+  cloneModel(modelSrc: string): THREE.Group | null;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
-    cachedModels: {},
     loadModel: () => {},
+    cloneModel: () => null,
   };
 }
 
@@ -25,36 +25,41 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const cachedModelsSource = useRef<CachedModels>({});
-  const [cachedModels, setCachedModels] = useState<CachedModels>(cachedModelsSource.current);
+  const [cacheToken, setCacheToken] = useState(() => Math.random());
+  const cachedModels = useRef<CachedModels>({});
   const [gltfLoader] = useState(() => new GLTFLoader());
 
-  const loadModel = useCallback(
-    (modelSrc: string) => {
-      const cachedModel = cachedModels[modelSrc];
-      if (cachedModel) {
-        return;
-      }
+  const loadModel = useCallback((modelSrc: string) => {
+    if (cachedModels.current[modelSrc]) {
+      return;
+    }
 
-      cachedModelsSource.current[modelSrc] = 'loading';
-      setCachedModels({ ...cachedModelsSource.current });
+    cachedModels.current[modelSrc] = 'loading';
 
-      gltfLoader.load(modelSrc, function (gltf) {
-        cachedModelsSource.current[modelSrc] = gltf.scene;
-        setCachedModels({ ...cachedModelsSource.current });
-      });
+    gltfLoader.load(modelSrc, function (gltf) {
+      cachedModels.current[modelSrc] = gltf.scene;
+      setCacheToken(Math.random());
+    });
+  }, []);
+
+  const cloneModel = useCallback(
+    (modelSrc: string): THREE.Group | null => {
+      const cachedModel = cachedModels.current[modelSrc];
+      if (!cachedModel || cachedModel === 'loading') return null;
+
+      return cachedModel.clone();
     },
-    [cachedModels]
+    [cacheToken]
   );
 
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
         () => ({
-          cachedModels,
           loadModel,
+          cloneModel,
         }),
-        [cachedModels, loadModel]
+        [loadModel, cloneModel]
       )}
     >
       {children}
