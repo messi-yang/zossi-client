@@ -59,5 +59,4 @@ Primary.args = {
   ],
   cameraLocation: LocationVo.new(4, 4),
   items: [item],
-  selectedItemId: null,
 };

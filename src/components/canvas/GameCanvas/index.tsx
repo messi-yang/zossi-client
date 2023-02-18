@@ -18,10 +18,9 @@ type Props = {
   units: UnitAgg[];
   cameraLocation: LocationVo;
   items: ItemAgg[];
-  selectedItemId: number | null;
 };
 
-function GameCanvas({ players, units, cameraLocation, items, selectedItemId }: Props) {
+function GameCanvas({ players, units, cameraLocation, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
   const [scene] = useState<THREE.Scene>(() => {
@@ -60,7 +59,6 @@ function GameCanvas({ players, units, cameraLocation, items, selectedItemId }: P
   const cachedUnitObjects = useRef<CachedObjectMap>({});
 
   useEffect(() => {
-    console.log(selectedItemId);
     items.forEach((item) => loadModel(item.getModelSrc()));
     loadModel('/characters/chicken.gltf');
   }, [items, players]);
