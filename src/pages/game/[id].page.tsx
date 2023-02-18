@@ -5,7 +5,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import useOnHistoryChange from '@/hooks/useOnHistoryChange';
 import GameContext from '@/contexts/GameContext';
 import StyleContext from '@/contexts/StyleContext';
-import { LocationVo, DirectionVo } from '@/models/valueObjects';
+import { DirectionVo } from '@/models/valueObjects';
 import GameCanvas from '@/components/canvas/GameCanvas';
 import GameSideBar from '@/components/sidebars/GameSideBar';
 import SelectItemModal from '@/components/modals/SelectItemModal';
@@ -21,12 +21,12 @@ const Room: NextPage = function Room() {
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
-  const selectedItemId = selectedItem?.getId();
+  const selectedItemId = selectedItem?.getId() || null;
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
 
   useHotkeys(
-    'w,a,s,d',
+    'w,a,s,d,p,o',
     (_, { keys }) => {
       if (!keys) {
         return;
@@ -44,10 +44,19 @@ const Room: NextPage = function Room() {
         case 'a':
           move(DirectionVo.new(3));
           break;
+        case 'p':
+          console.log(myPlayer?.getLocation().shift(1, 0), selectedItemId);
+          if (!myPlayer || selectedItemId === null) break;
+          placeItem(myPlayer.getLocation().shift(1, 0), selectedItemId);
+          break;
+        case 'o':
+          if (!myPlayer) break;
+          destroyItem(myPlayer.getLocation().shift(1, 0));
+          break;
         default:
       }
     },
-    [move]
+    [move, placeItem, destroyItem, myPlayer, selectedItemId]
   );
 
   useEffect(function joinGameOnInitEffect() {
@@ -98,22 +107,6 @@ const Room: NextPage = function Room() {
   const handleRecconectModalConfirmClick = useCallback(() => {
     window.location.reload();
   }, [joinGame]);
-
-  const handleUnitClick = useCallback(
-    (location: LocationVo) => {
-      if (isDestroyingItem) {
-        destroyItem(location);
-      } else if (isBuildindItem) {
-        if (!selectedItem) {
-          return;
-        }
-
-        placeItem(location, selectedItem.getId());
-      }
-    },
-    [isDestroyingItem, isBuildindItem, selectedItem, placeItem, destroyItem]
-  );
-  console.log(handleUnitClick);
 
   const screenSize: 'large' | 'small' = styleContext.getWindowWidth() > 700 ? 'large' : 'small';
 

@@ -14,6 +14,10 @@ export default class UnitVo {
     return new UnitVo(itemId, location);
   }
 
+  public getIdentifier(): string {
+    return `${this.itemId},${this.location.getX()},${this.location.getZ()}`;
+  }
+
   public getItemId(): number {
     return this.itemId;
   }
