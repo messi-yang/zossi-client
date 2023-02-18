@@ -2,7 +2,7 @@ import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { convertPlayerDtoPlayer, convertItemDtoToItem, convertUnitDtoToUnit, convertBoundDtoToBound } from '@/dtos';
 import { LocationVo, DirectionVo, BoundVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
-import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent } from './events';
+import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
@@ -21,7 +21,7 @@ function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity[]] 
   return [otherPlayers];
 }
 
-function parseViewUpdatedEvent(event: ViewUpdatedEvent): [BoundVo, UnitAgg[]] {
+function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [BoundVo, UnitAgg[]] {
   const bound = convertBoundDtoToBound(event.bound);
   const units = event.units.map(convertUnitDtoToUnit);
   return [bound, units];
@@ -41,7 +41,7 @@ export default class GameSocket {
       items: ItemAgg[]
     ) => void;
     onPlayersUpdated: (players: PlayerEntity[]) => void;
-    onViewUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
+    onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
   }) {
@@ -66,9 +66,9 @@ export default class GameSocket {
         const [players] = parsePlayersUpdatedEvent(newMsg);
         await Promise.all(players.map((player) => player.loadAsset()));
         params.onPlayersUpdated(players);
-      } else if (newMsg.type === EventTypeEnum.ViewUpdated) {
-        const [bound, units] = parseViewUpdatedEvent(newMsg);
-        params.onViewUpdated(bound, units);
+      } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
+        const [bound, units] = parseUnitsUpdatedEvent(newMsg);
+        params.onUnitsUpdated(bound, units);
       }
     };
 
@@ -101,7 +101,7 @@ export default class GameSocket {
       items: ItemAgg[]
     ) => void;
     onPlayersUpdated: (players: PlayerEntity[]) => void;
-    onViewUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
+    onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
   }): GameSocket {

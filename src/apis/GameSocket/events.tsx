@@ -3,7 +3,7 @@ import type { BoundDto, ItemDto, PlayerDto, UnitDto } from '@/dtos';
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
   PlayersUpdated = 'PLAYERS_UPDATED',
-  ViewUpdated = 'VIEW_UPDATED',
+  UnitsUpdated = 'UNITS_UPDATED',
 }
 
 type GameJoinedEvent = {
@@ -20,13 +20,13 @@ type PlayersUpdatedEvent = {
   players: PlayerDto[];
 };
 
-type ViewUpdatedEvent = {
-  type: EventTypeEnum.ViewUpdated;
+type UnitsUpdatedEvent = {
+  type: EventTypeEnum.UnitsUpdated;
   bound: BoundDto;
   units: UnitDto[];
 };
 
-type Event = GameJoinedEvent | PlayersUpdatedEvent | ViewUpdatedEvent;
+type Event = GameJoinedEvent | PlayersUpdatedEvent | UnitsUpdatedEvent;
 
 export { EventTypeEnum };
-export type { Event, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent };
+export type { Event, GameJoinedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent };

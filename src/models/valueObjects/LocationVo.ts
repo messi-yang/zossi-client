@@ -24,10 +24,6 @@ export default class LocationVo {
     return this.z;
   }
 
-  public getRelativeLocation(location: LocationVo): LocationVo {
-    return new LocationVo(this.x - location.getX(), this.z - location.getZ());
-  }
-
   public shift(x: number, z: number): LocationVo {
     return new LocationVo(this.x + x, this.z + z);
   }

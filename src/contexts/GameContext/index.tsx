@@ -91,7 +91,7 @@ export function Provider({ children }: Props) {
       onPlayersUpdated: (newPlayers: PlayerEntity[]) => {
         setPlayers(newPlayers);
       },
-      onViewUpdated: (newBound: BoundVo, newUnits: UnitAgg[]) => {
+      onUnitsUpdated: (newBound: BoundVo, newUnits: UnitAgg[]) => {
         setBound(newBound);
         setUnits(newUnits);
       },
