@@ -1,18 +1,19 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
-import { convertPlayerDtoPlayer, convertItemDtoToItem, convertViewDtoToView } from '@/dtos';
-import { LocationVo, ViewVo, DirectionVo } from '@/models/valueObjects';
+import { convertPlayerDtoPlayer, convertItemDtoToItem, convertUnitDtoToUnit, convertBoundDtoToBound } from '@/dtos';
+import { LocationVo, DirectionVo, BoundVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, ViewUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemAgg, UnitAgg } from '@/models/aggregates';
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerEntity[], ViewVo, ItemAgg[]] {
-  const view = convertViewDtoToView(event.view);
+function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerEntity[], BoundVo, UnitAgg[], ItemAgg[]] {
+  const bound = convertBoundDtoToBound(event.bound);
+  const units = event.units.map(convertUnitDtoToUnit);
   const players = event.players.map(convertPlayerDtoPlayer);
   const items = event.items.map(convertItemDtoToItem);
-  return [event.playerId, players, view, items];
+  return [event.playerId, players, bound, units, items];
 }
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity[]] {
@@ -20,9 +21,10 @@ function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerEntity[]] 
   return [otherPlayers];
 }
 
-function parseViewUpdatedEvent(event: ViewUpdatedEvent): [ViewVo] {
-  const view = convertViewDtoToView(event.view);
-  return [view];
+function parseViewUpdatedEvent(event: ViewUpdatedEvent): [BoundVo, UnitAgg[]] {
+  const bound = convertBoundDtoToBound(event.bound);
+  const units = event.units.map(convertUnitDtoToUnit);
+  return [bound, units];
 }
 
 export default class GameSocket {
@@ -31,9 +33,15 @@ export default class GameSocket {
   private disconnectedByClient: boolean = false;
 
   constructor(params: {
-    onGameJoined: (playerId: string, players: PlayerEntity[], view: ViewVo, items: ItemAgg[]) => void;
+    onGameJoined: (
+      playerId: string,
+      players: PlayerEntity[],
+      bound: BoundVo,
+      units: UnitAgg[],
+      items: ItemAgg[]
+    ) => void;
     onPlayersUpdated: (players: PlayerEntity[]) => void;
-    onViewUpdated: (view: ViewVo) => void;
+    onViewUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
   }) {
@@ -50,17 +58,17 @@ export default class GameSocket {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [playerId, players, view, items] = parseGameJoinedEvent(newMsg);
+        const [playerId, players, bound, units, items] = parseGameJoinedEvent(newMsg);
         await Promise.all(players.map((player) => player.loadAsset()));
         await Promise.all(items.map((item) => item.loadAsset()));
-        params.onGameJoined(playerId, players, view, items);
+        params.onGameJoined(playerId, players, bound, units, items);
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [players] = parsePlayersUpdatedEvent(newMsg);
         await Promise.all(players.map((player) => player.loadAsset()));
         params.onPlayersUpdated(players);
       } else if (newMsg.type === EventTypeEnum.ViewUpdated) {
-        const [view] = parseViewUpdatedEvent(newMsg);
-        params.onViewUpdated(view);
+        const [bound, units] = parseViewUpdatedEvent(newMsg);
+        params.onViewUpdated(bound, units);
       }
     };
 
@@ -85,9 +93,15 @@ export default class GameSocket {
   }
 
   static newGameSocket(params: {
-    onGameJoined: (playerId: string, players: PlayerEntity[], view: ViewVo, items: ItemAgg[]) => void;
+    onGameJoined: (
+      playerId: string,
+      players: PlayerEntity[],
+      bound: BoundVo,
+      units: UnitAgg[],
+      items: ItemAgg[]
+    ) => void;
     onPlayersUpdated: (players: PlayerEntity[]) => void;
-    onViewUpdated: (view: ViewVo) => void;
+    onViewUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
     onClose: (disconnectedByClient: boolean) => void;
     onOpen: () => void;
   }): GameSocket {

@@ -2,9 +2,9 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import GameCanvas from '.';
-import { ViewVo, BoundVo, LocationVo, UnitVo } from '@/models/valueObjects';
+import { LocationVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemAgg, UnitAgg } from '@/models/aggregates';
 
 export default {
   title: 'Canvas/GameCanvas',
@@ -52,11 +52,11 @@ Primary.args = {
       location: LocationVo.new(19, 19),
     }),
   ],
-  view: ViewVo.new(BoundVo.new(LocationVo.new(0, 0), LocationVo.new(19, 19)), [
-    UnitVo.new(1, LocationVo.new(0, 0)),
-    UnitVo.new(1, LocationVo.new(0, 1)),
-    UnitVo.new(1, LocationVo.new(0, 2)),
-  ]),
+  units: [
+    UnitAgg.new(1, LocationVo.new(0, 0)),
+    UnitAgg.new(1, LocationVo.new(0, 1)),
+    UnitAgg.new(1, LocationVo.new(0, 2)),
+  ],
   cameraLocation: LocationVo.new(4, 4),
   items: [item],
   selectedItemId: null,

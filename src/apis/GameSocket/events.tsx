@@ -1,4 +1,4 @@
-import type { ItemDto, PlayerDto, ViewDto } from '@/dtos';
+import type { BoundDto, ItemDto, PlayerDto, UnitDto } from '@/dtos';
 
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
@@ -10,7 +10,8 @@ type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
   playerId: string;
   players: PlayerDto[];
-  view: ViewDto;
+  bound: BoundDto;
+  units: UnitDto[];
   items: ItemDto[];
 };
 
@@ -21,7 +22,8 @@ type PlayersUpdatedEvent = {
 
 type ViewUpdatedEvent = {
   type: EventTypeEnum.ViewUpdated;
-  view: ViewDto;
+  bound: BoundDto;
+  units: UnitDto[];
 };
 
 type Event = GameJoinedEvent | PlayersUpdatedEvent | ViewUpdatedEvent;

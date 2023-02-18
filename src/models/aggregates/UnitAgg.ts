@@ -1,6 +1,6 @@
-import LocationVo from './LocationVo';
+import { LocationVo } from '@/models/valueObjects';
 
-export default class UnitVo {
+export default class UnitAgg {
   private itemId: number;
 
   private location: LocationVo;
@@ -10,8 +10,8 @@ export default class UnitVo {
     this.location = location;
   }
 
-  static new(itemId: number, location: LocationVo): UnitVo {
-    return new UnitVo(itemId, location);
+  static new(itemId: number, location: LocationVo): UnitAgg {
+    return new UnitAgg(itemId, location);
   }
 
   public getIdentifier(): string {

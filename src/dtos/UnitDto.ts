@@ -1,4 +1,5 @@
-import { LocationVo, UnitVo } from '@/models/valueObjects';
+import { UnitAgg } from '@/models/aggregates';
+import { LocationVo } from '@/models/valueObjects';
 import { LocationDto } from './LocationDto';
 
 type UnitDto = {
@@ -6,9 +7,9 @@ type UnitDto = {
   location: LocationDto;
 };
 
-function convertUnitDtoToUnit(unitDto: UnitDto): UnitVo {
+function convertUnitDtoToUnit(unitDto: UnitDto): UnitAgg {
   const location = LocationVo.new(unitDto.location.x, unitDto.location.z);
-  return UnitVo.new(unitDto.itemId, location);
+  return UnitAgg.new(unitDto.itemId, location);
 }
 
 export type { UnitDto };

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import GameSocket from '@/apis/GameSocket';
-import { LocationVo, ViewVo, DirectionVo } from '@/models/valueObjects';
-import { ItemAgg } from '@/models/aggregates';
+import { LocationVo, DirectionVo, BoundVo } from '@/models/valueObjects';
+import { ItemAgg, UnitAgg } from '@/models/aggregates';
 import { PlayerEntity } from '@/models/entities';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
@@ -10,7 +10,8 @@ type ContextValue = {
   gameStatus: GameStatus;
   myPlayer: PlayerEntity | null;
   players: PlayerEntity[] | null;
-  view: ViewVo | null;
+  bound: BoundVo | null;
+  units: UnitAgg[] | null;
   items: ItemAgg[] | null;
   joinGame: () => void;
   move: (direction: DirectionVo) => void;
@@ -24,7 +25,8 @@ function createInitialContextValue(): ContextValue {
     gameStatus: 'DISCONNECTED',
     myPlayer: null,
     players: null,
-    view: null,
+    bound: null,
+    units: null,
     items: null,
     joinGame: () => {},
     move: () => {},
@@ -48,7 +50,8 @@ export function Provider({ children }: Props) {
   const [playerId, setPlayerid] = useState<string | null>(null);
   const [players, setPlayers] = useState<PlayerEntity[] | null>(initialContextValue.players);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const [view, setView] = useState<ViewVo | null>(initialContextValue.view);
+  const [bound, setBound] = useState<BoundVo | null>(initialContextValue.bound);
+  const [units, setUnits] = useState<UnitAgg[] | null>(initialContextValue.units);
 
   const myPlayer = useMemo(() => {
     if (!players) {
@@ -60,7 +63,8 @@ export function Provider({ children }: Props) {
   const reset = useCallback(() => {
     setPlayerid(null);
     setPlayers(initialContextValue.players);
-    setView(initialContextValue.view);
+    setBound(initialContextValue.bound);
+    setUnits(initialContextValue.units);
     setItems(initialContextValue.items);
   }, []);
 
@@ -71,17 +75,25 @@ export function Provider({ children }: Props) {
     }
 
     const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (newPlayerId: string, newPlayers: PlayerEntity[], newView: ViewVo, newItems: ItemAgg[]) => {
+      onGameJoined: (
+        newPlayerId: string,
+        newPlayers: PlayerEntity[],
+        newBound: BoundVo,
+        newUnits: UnitAgg[],
+        newItems: ItemAgg[]
+      ) => {
         setPlayerid(newPlayerId);
         setPlayers(newPlayers);
-        setView(newView);
+        setBound(newBound);
+        setUnits(newUnits);
         setItems(newItems);
       },
       onPlayersUpdated: (newPlayers: PlayerEntity[]) => {
         setPlayers(newPlayers);
       },
-      onViewUpdated: (newView: ViewVo) => {
-        setView(newView);
+      onViewUpdated: (newBound: BoundVo, newUnits: UnitAgg[]) => {
+        setBound(newBound);
+        setUnits(newUnits);
       },
       onOpen: () => {
         setGameStatus('OPEN');
@@ -134,7 +146,8 @@ export function Provider({ children }: Props) {
           gameStatus,
           myPlayer,
           players,
-          view,
+          bound,
+          units,
           items,
           joinGame,
           move,
@@ -142,7 +155,7 @@ export function Provider({ children }: Props) {
           placeItem,
           destroyItem,
         }),
-        [gameStatus, myPlayer, players, view, items, joinGame, move, leaveGame, placeItem]
+        [gameStatus, myPlayer, players, bound, units, items, joinGame, move, leaveGame, placeItem]
       )}
     >
       {children}

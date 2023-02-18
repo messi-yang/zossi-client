@@ -16,7 +16,7 @@ const Room: NextPage = function Room() {
   const router = useRouter();
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
-  const { view, items, myPlayer, players, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
+  const { units, items, myPlayer, players, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
     useContext(GameContext);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
@@ -142,11 +142,11 @@ const Room: NextPage = function Room() {
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {myPlayer && players && view && items && (
+              {myPlayer && players && units && items && (
                 <GameCanvas
                   players={players}
                   cameraLocation={myPlayer.getLocation()}
-                  view={view}
+                  units={units}
                   items={items}
                   selectedItemId={selectedItemId !== undefined ? selectedItemId : null}
                 />
@@ -175,11 +175,11 @@ const Room: NextPage = function Room() {
           />
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {myPlayer && players && view && items && (
+              {myPlayer && players && units && items && (
                 <GameCanvas
                   players={players}
                   cameraLocation={myPlayer.getLocation()}
-                  view={view}
+                  units={units}
                   items={items}
                   selectedItemId={selectedItemId !== undefined ? selectedItemId : null}
                 />

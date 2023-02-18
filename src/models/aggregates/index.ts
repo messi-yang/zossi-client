@@ -1,4 +1,4 @@
 import ItemAgg from './ItemAgg';
+import UnitAgg from './UnitAgg';
 
-export { ItemAgg };
-export default {};
+export { ItemAgg, UnitAgg };

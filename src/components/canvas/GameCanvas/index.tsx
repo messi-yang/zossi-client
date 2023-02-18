@@ -3,8 +3,8 @@ import * as THREE from 'three';
 import forEach from 'lodash/forEach';
 
 import ThreeJsContext from '@/contexts/ThreeJsContext';
-import { ViewVo, LocationVo } from '@/models/valueObjects';
-import { ItemAgg } from '@/models/aggregates';
+import { LocationVo } from '@/models/valueObjects';
+import { ItemAgg, UnitAgg } from '@/models/aggregates';
 import { PlayerEntity } from '@/models/entities';
 import useDomRect from '@/hooks/useDomRect';
 import dataTestids from './dataTestids';
@@ -15,13 +15,13 @@ type CachedObjectMap = {
 
 type Props = {
   players: PlayerEntity[];
-  view: ViewVo;
+  units: UnitAgg[];
   cameraLocation: LocationVo;
   items: ItemAgg[];
   selectedItemId: number | null;
 };
 
-function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Props) {
+function GameCanvas({ players, units, cameraLocation, items, selectedItemId }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
   const [scene] = useState<THREE.Scene>(() => {
@@ -55,7 +55,6 @@ function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Pr
     newRender.outputEncoding = THREE.sRGBEncoding;
     return newRender;
   });
-  // const [grassModelSource, setGrassModelSource] = useState<THREE.Group | null>(null);
   const { loadModel, cloneModel } = useContext(ThreeJsContext);
   const cachedPlayerObjects = useRef<CachedObjectMap>({});
   const cachedUnitObjects = useRef<CachedObjectMap>({});
@@ -107,27 +106,6 @@ function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Pr
     [camera, cameraLocation, wrapperDomRect]
   );
 
-  // useEffect(
-  //   function handleGrassUpdated() {
-  //     const sceneCache = scene;
-  //     if (!sceneCache) {
-  //       return;
-  //     }
-  //     const grassModelSourceCache = grassModelSource;
-  //     if (!grassModelSourceCache) {
-  //       return;
-  //     }
-
-  //     const boundSize = view.getBound().getSize();
-  //     rangeMatrix(boundSize.getWidth(), boundSize.getHeight(), (colIdx: number, rowIdx: number) => {
-  // const newGrassModel = grassModelSourceCache.clone();
-  // newGrassModel.position.set(colIdx, 0, rowIdx);
-  // sceneCache.add(newGrassModel);
-  // });
-  //   },
-  //   [view, grassModelSource]
-  // );
-
   useEffect(
     function handlePlayersUpdated() {
       players.forEach((player) => {
@@ -162,7 +140,6 @@ function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Pr
 
   useEffect(
     function handleUnitsUpdated() {
-      const units = view.getUnits();
       units.forEach((unit) => {
         const item = items.find((_item) => _item.getId() === unit.getItemId());
         if (!item) return;
@@ -194,7 +171,7 @@ function GameCanvas({ players, view, cameraLocation, items, selectedItemId }: Pr
         }
       });
     },
-    [scene, cloneModel, items, view]
+    [scene, cloneModel, items, units]
   );
 
   useEffect(
