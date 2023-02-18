@@ -122,7 +122,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
 
         if (!playerObject) return;
 
-        playerObject.position.set(player.getLocation().getX(), 0, player.getLocation().getZ());
+        playerObject.position.set(player.getLocation().getX() + 0.5, 0, player.getLocation().getZ() + 0.5);
       });
 
       const playerKeys = players.map((player) => player.getId());
@@ -158,7 +158,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
 
         if (!unitObject) return;
 
-        unitObject.position.set(unit.getLocation().getX(), 0, unit.getLocation().getZ());
+        unitObject.position.set(unit.getLocation().getX() + 0.5, 0, unit.getLocation().getZ() + 0.5);
       });
 
       const unitIds = units.map((unit) => unit.getIdentifier());
