@@ -123,6 +123,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
         if (!playerObject) return;
 
         playerObject.position.set(player.getLocation().getX() + 0.5, 0, player.getLocation().getZ() + 0.5);
+        playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
       });
 
       const playerKeys = players.map((player) => player.getId());

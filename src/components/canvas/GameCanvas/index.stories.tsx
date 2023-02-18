@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import GameCanvas from '.';
-import { LocationVo } from '@/models/valueObjects';
+import { DirectionVo, LocationVo } from '@/models/valueObjects';
 import { PlayerEntity } from '@/models/entities';
 import { ItemAgg, UnitAgg } from '@/models/aggregates';
 
@@ -35,21 +35,25 @@ Primary.args = {
       id: '1',
       name: 'Mark',
       location: LocationVo.new(0, 0),
+      direction: DirectionVo.new(2),
     }),
     PlayerEntity.new({
       id: '1',
       name: 'Mark',
       location: LocationVo.new(2, 2),
+      direction: DirectionVo.new(2),
     }),
     PlayerEntity.new({
       id: '1',
       name: 'Mark',
       location: LocationVo.new(4, 4),
+      direction: DirectionVo.new(2),
     }),
     PlayerEntity.new({
       id: '1',
       name: 'Mark',
       location: LocationVo.new(19, 19),
+      direction: DirectionVo.new(2),
     }),
   ],
   units: [
