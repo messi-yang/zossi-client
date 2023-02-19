@@ -8,7 +8,7 @@ import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } f
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerAgg[], BoundVo, UnitAgg[], ItemAgg[]] {
-  const bound = convertBoundDtoToBound(event.bound);
+  const bound = convertBoundDtoToBound(event.visionBound);
   const units = event.units.map(convertUnitDtoToUnit);
   const players = event.players.map(convertPlayerDtoPlayer);
   const items = event.items.map(convertItemDtoToItem);
@@ -21,7 +21,7 @@ function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg[]] {
 }
 
 function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [BoundVo, UnitAgg[]] {
-  const bound = convertBoundDtoToBound(event.bound);
+  const bound = convertBoundDtoToBound(event.visionBound);
   const units = event.units.map(convertUnitDtoToUnit);
   return [bound, units];
 }

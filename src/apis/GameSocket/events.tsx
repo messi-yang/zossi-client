@@ -10,7 +10,7 @@ type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
   playerId: string;
   players: PlayerDto[];
-  bound: BoundDto;
+  visionBound: BoundDto;
   units: UnitDto[];
   items: ItemDto[];
 };
@@ -22,7 +22,7 @@ type PlayersUpdatedEvent = {
 
 type UnitsUpdatedEvent = {
   type: EventTypeEnum.UnitsUpdated;
-  bound: BoundDto;
+  visionBound: BoundDto;
   units: UnitDto[];
 };
 
