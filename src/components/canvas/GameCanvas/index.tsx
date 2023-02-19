@@ -26,6 +26,14 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
     const newScene = new THREE.Scene();
     newScene.background = new THREE.Color(0xffffff);
 
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(0, 5, 10);
+    newScene.add(dirLight);
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.5);
+    hemiLight.position.set(0, 20, 0);
+    newScene.add(hemiLight);
+
     const grid = new THREE.GridHelper(1000, 1000, 0x000000, 0x000000);
     // @ts-ignore
     grid.material.opacity = 0.2;
@@ -66,16 +74,6 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
     },
     [wrapperRef.current]
   );
-
-  useEffect(function updateRendererOnWrapperDomRectChange() {
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    dirLight.position.set(0, 10, 0);
-    scene.add(dirLight);
-
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.1);
-    hemiLight.position.set(0, 10, 0);
-    scene.add(hemiLight);
-  }, []);
 
   useEffect(
     function updateRendererOnWrapperDomRectChange() {
