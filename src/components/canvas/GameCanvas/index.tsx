@@ -26,14 +26,6 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
     const newScene = new THREE.Scene();
     newScene.background = new THREE.Color(0xffffff);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff);
-    dirLight.position.set(0, 10, 0);
-    newScene.add(dirLight);
-
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
-    hemiLight.position.set(0, 10, 0);
-    newScene.add(hemiLight);
-
     const grid = new THREE.GridHelper(1000, 1000, 0x000000, 0x000000);
     // @ts-ignore
     grid.material.opacity = 0.2;
@@ -44,13 +36,14 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
     return newScene;
   });
   const [camera] = useState<THREE.PerspectiveCamera>(() => {
-    const newCamera = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
+    const newCamera = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
     scene.add(newCamera);
     return newCamera;
   });
   const [renderer] = useState<THREE.WebGLRenderer>(() => {
     const newRender = new THREE.WebGLRenderer({ antialias: true });
     newRender.outputEncoding = THREE.sRGBEncoding;
+    newRender.shadowMap.enabled = true;
     return newRender;
   });
   const { loadModel, cloneModel } = useContext(ThreeJsContext);
@@ -59,7 +52,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
 
   useEffect(() => {
     items.forEach((item) => loadModel(item.getModelSrc()));
-    loadModel('/characters/chicken.gltf');
+    loadModel('/characters/car.gltf');
     loadModel('/bases/grass.gltf');
   }, [items, players]);
 
@@ -74,6 +67,16 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
     [wrapperRef.current]
   );
 
+  useEffect(function updateRendererOnWrapperDomRectChange() {
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(0, 10, 0);
+    scene.add(dirLight);
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.1);
+    hemiLight.position.set(0, 10, 0);
+    scene.add(hemiLight);
+  }, []);
+
   useEffect(
     function updateRendererOnWrapperDomRectChange() {
       if (!wrapperDomRect) {
@@ -86,11 +89,14 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
   );
 
   useEffect(
-    function updateCameraPositionOnCameraLocationChange() {
-      camera.position.set(cameraLocation.getX(), 10, cameraLocation.getZ() + 30);
-      camera.lookAt(cameraLocation.getX(), 0, cameraLocation.getZ());
+    function updateCameraAndLightOnLocationChange() {
+      const cameraLocationX = cameraLocation.getX();
+      const cameraLocationZ = cameraLocation.getZ();
+
+      camera.position.set(cameraLocationX, 15, cameraLocationZ + 20);
+      camera.lookAt(cameraLocationX, 0, cameraLocationZ);
     },
-    [camera, cameraLocation]
+    [cameraLocation]
   );
 
   useEffect(
@@ -101,7 +107,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
       camera.aspect = wrapperDomRect.width / wrapperDomRect.height;
       camera.updateProjectionMatrix();
     },
-    [camera, cameraLocation, wrapperDomRect]
+    [camera, wrapperDomRect]
   );
 
   useEffect(
@@ -125,7 +131,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
         if (cachedPlayerOject) {
           playerObject = cachedPlayerOject;
         } else {
-          playerObject = cloneModel('/characters/chicken.gltf');
+          playerObject = cloneModel('/characters/car.gltf');
           if (playerObject) {
             scene.add(playerObject);
             cachedPlayerObjects.current[player.getId()] = playerObject;
