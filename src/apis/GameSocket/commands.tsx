@@ -1,5 +1,3 @@
-import { LocationDto } from '@/dtos';
-
 enum CommandTypeEnum {
   Ping = 'PING',
   Move = 'MOVE',
@@ -23,7 +21,6 @@ type PlaceItemCommand = {
 
 type DestroyItemCommand = {
   type: CommandTypeEnum.DestroyItem;
-  location: LocationDto;
 };
 
 export { CommandTypeEnum };

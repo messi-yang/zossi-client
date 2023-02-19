@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import GameSocket from '@/apis/GameSocket';
-import { LocationVo, DirectionVo, BoundVo } from '@/models/valueObjects';
+import { DirectionVo, BoundVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
@@ -15,7 +15,7 @@ type ContextValue = {
   joinGame: () => void;
   move: (direction: DirectionVo) => void;
   placeItem: (itemId: number) => void;
-  destroyItem: (location: LocationVo) => void;
+  destroyItem: () => void;
   leaveGame: () => void;
 };
 
@@ -131,12 +131,9 @@ export function Provider({ children }: Props) {
     [gameSocket]
   );
 
-  const destroyItem = useCallback(
-    (location: LocationVo) => {
-      gameSocket?.destroyItem(location);
-    },
-    [gameSocket]
-  );
+  const destroyItem = useCallback(() => {
+    gameSocket?.destroyItem();
+  }, [gameSocket]);
 
   return (
     <Context.Provider

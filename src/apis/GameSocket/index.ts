@@ -1,6 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { convertPlayerDtoPlayer, convertItemDtoToItem, convertUnitDtoToUnit, convertBoundDtoToBound } from '@/dtos';
-import { LocationVo, DirectionVo, BoundVo } from '@/models/valueObjects';
+import { DirectionVo, BoundVo } from '@/models/valueObjects';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
@@ -134,10 +134,9 @@ export default class GameSocket {
     this.sendMessage(action);
   }
 
-  public destroyItem(location: LocationVo) {
+  public destroyItem() {
     const action: DestroyItemCommand = {
       type: CommandTypeEnum.DestroyItem,
-      location: { x: location.getX(), z: location.getZ() },
     };
     this.sendMessage(action);
   }

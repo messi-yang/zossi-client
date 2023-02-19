@@ -45,12 +45,11 @@ const Room: NextPage = function Room() {
           move(DirectionVo.new(3));
           break;
         case 'p':
-          if (!myPlayer || selectedItemId === null) break;
+          if (selectedItemId === null) break;
           placeItem(selectedItemId);
           break;
         case 'o':
-          if (!myPlayer) break;
-          destroyItem(myPlayer.getLocation().shift(1, 0));
+          destroyItem();
           break;
         default:
       }
