@@ -18,7 +18,6 @@ type MoveCommand = {
 
 type PlaceItemCommand = {
   type: CommandTypeEnum.PlaceItem;
-  location: LocationDto;
   itemId: number;
 };
 

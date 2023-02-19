@@ -14,7 +14,7 @@ type ContextValue = {
   items: ItemAgg[] | null;
   joinGame: () => void;
   move: (direction: DirectionVo) => void;
-  placeItem: (location: LocationVo, itemId: number) => void;
+  placeItem: (itemId: number) => void;
   destroyItem: (location: LocationVo) => void;
   leaveGame: () => void;
 };
@@ -125,8 +125,8 @@ export function Provider({ children }: Props) {
   }, [gameSocket]);
 
   const placeItem = useCallback(
-    (location: LocationVo, itemId: number) => {
-      gameSocket?.placeItem(location, itemId);
+    (itemId: number) => {
+      gameSocket?.placeItem(itemId);
     },
     [gameSocket]
   );

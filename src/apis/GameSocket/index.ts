@@ -126,10 +126,9 @@ export default class GameSocket {
     this.sendMessage(action);
   }
 
-  public placeItem(location: LocationVo, itemId: number) {
+  public placeItem(itemId: number) {
     const action: PlaceItemCommand = {
       type: CommandTypeEnum.PlaceItem,
-      location: { x: location.getX(), z: location.getZ() },
       itemId,
     };
     this.sendMessage(action);

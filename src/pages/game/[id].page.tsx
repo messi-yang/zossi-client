@@ -45,9 +45,8 @@ const Room: NextPage = function Room() {
           move(DirectionVo.new(3));
           break;
         case 'p':
-          console.log(myPlayer?.getLocation().shift(1, 0), selectedItemId);
           if (!myPlayer || selectedItemId === null) break;
-          placeItem(myPlayer.getLocation().shift(1, 0), selectedItemId);
+          placeItem(selectedItemId);
           break;
         case 'o':
           if (!myPlayer) break;
