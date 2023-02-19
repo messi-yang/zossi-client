@@ -34,7 +34,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
     hemiLight.position.set(0, 10, 0);
     newScene.add(hemiLight);
 
-    const grid = new THREE.GridHelper(300, 300, 0x000000, 0x000000);
+    const grid = new THREE.GridHelper(1000, 1000, 0x000000, 0x000000);
     // @ts-ignore
     grid.material.opacity = 0.2;
     // @ts-ignore
@@ -44,7 +44,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
     return newScene;
   });
   const [camera] = useState<THREE.PerspectiveCamera>(() => {
-    const newCamera = new THREE.PerspectiveCamera(30, 1, 0.1, 1000);
+    const newCamera = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
     scene.add(newCamera);
     return newCamera;
   });
@@ -60,6 +60,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
   useEffect(() => {
     items.forEach((item) => loadModel(item.getModelSrc()));
     loadModel('/characters/chicken.gltf');
+    loadModel('/bases/grass.gltf');
   }, [items, players]);
 
   useEffect(
@@ -86,7 +87,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
 
   useEffect(
     function updateCameraPositionOnCameraLocationChange() {
-      camera.position.set(cameraLocation.getX(), 35, cameraLocation.getZ() + 40);
+      camera.position.set(cameraLocation.getX(), 10, cameraLocation.getZ() + 30);
       camera.lookAt(cameraLocation.getX(), 0, cameraLocation.getZ());
     },
     [camera, cameraLocation]
@@ -101,6 +102,18 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
       camera.updateProjectionMatrix();
     },
     [camera, cameraLocation, wrapperDomRect]
+  );
+
+  useEffect(
+    function handleBasesUpdated() {
+      const grassObject = cloneModel('/bases/grass.gltf');
+      if (!grassObject) return;
+
+      grassObject.position.set(0.5, -0.15, 0.5);
+      grassObject.scale.set(1000, 1, 1000);
+      scene.add(grassObject);
+    },
+    [scene, cloneModel]
   );
 
   useEffect(
@@ -119,10 +132,10 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
           }
         }
 
-        if (!playerObject) return;
-
-        playerObject.position.set(player.getLocation().getX() + 0.5, 0, player.getLocation().getZ() + 0.5);
-        playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
+        if (playerObject) {
+          playerObject.position.set(player.getLocation().getX() + 0.5, 0, player.getLocation().getZ() + 0.5);
+          playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
+        }
       });
 
       const playerKeys = players.map((player) => player.getId());
@@ -156,9 +169,9 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
           }
         }
 
-        if (!unitObject) return;
-
-        unitObject.position.set(unit.getLocation().getX() + 0.5, 0, unit.getLocation().getZ() + 0.5);
+        if (unitObject) {
+          unitObject.position.set(unit.getLocation().getX() + 0.5, 0, unit.getLocation().getZ() + 0.5);
+        }
       });
 
       const unitIds = units.map((unit) => unit.getIdentifier());
@@ -174,12 +187,17 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
 
   useEffect(
     function animateEffect() {
+      let animationId: number | null = null;
       const animate = () => {
-        requestAnimationFrame(animate);
+        animationId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
       };
 
       animate();
+
+      return () => {
+        if (animationId !== null) cancelAnimationFrame(animationId);
+      };
     },
     [renderer, scene, camera]
   );
