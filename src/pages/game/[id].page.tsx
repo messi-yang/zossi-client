@@ -1,8 +1,8 @@
 import { useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useHotkeys } from 'react-hotkeys-hook';
 import useOnHistoryChange from '@/hooks/useOnHistoryChange';
+import useKeyPress from '@/hooks/useKeyPress';
 import GameContext from '@/contexts/GameContext';
 import StyleContext from '@/contexts/StyleContext';
 import { DirectionVo } from '@/models/valueObjects';
@@ -25,36 +25,40 @@ const Room: NextPage = function Room() {
   const isBuildindItem = !!selectedItem;
   const isDestroyingItem = !isBuildindItem;
 
-  useHotkeys(
-    'w,a,s,d,p,o',
-    (_, { keys }) => {
-      if (!keys) {
-        return;
-      }
-      switch (keys.join('')) {
-        case 'w':
-          move(DirectionVo.new(0));
-          break;
-        case 'd':
-          move(DirectionVo.new(1));
-          break;
-        case 's':
-          move(DirectionVo.new(2));
-          break;
-        case 'a':
-          move(DirectionVo.new(3));
-          break;
-        case 'p':
-          if (selectedItemId === null) break;
-          placeItem(selectedItemId);
-          break;
-        case 'o':
-          destroyItem();
-          break;
-        default:
-      }
+  useKeyPress('p', {
+    onKeyDown: () => {
+      if (selectedItemId) placeItem(selectedItemId);
     },
-    [move, placeItem, destroyItem, myPlayer, selectedItemId]
+  });
+  useKeyPress('o', { onKeyDown: destroyItem });
+
+  const isUpPressed = useKeyPress('w');
+  const isRightPressed = useKeyPress('d');
+  const isDownPressed = useKeyPress('s');
+  const isLeftPressed = useKeyPress('a');
+  useEffect(
+    function () {
+      let pressedKeysCount = 0;
+      if (isUpPressed) pressedKeysCount += 1;
+      if (isRightPressed) pressedKeysCount += 1;
+      if (isDownPressed) pressedKeysCount += 1;
+      if (isLeftPressed) pressedKeysCount += 1;
+      if (pressedKeysCount !== 1) {
+        return () => {};
+      }
+
+      const goUpInterval = setInterval(() => {
+        if (isUpPressed) move(DirectionVo.new(0));
+        if (isRightPressed) move(DirectionVo.new(1));
+        if (isDownPressed) move(DirectionVo.new(2));
+        if (isLeftPressed) move(DirectionVo.new(3));
+      }, 100);
+
+      return () => {
+        clearInterval(goUpInterval);
+      };
+    },
+    [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, move]
   );
 
   useEffect(function joinGameOnInitEffect() {
