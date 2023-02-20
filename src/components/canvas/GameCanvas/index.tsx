@@ -113,7 +113,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
       const grassObject = cloneModel('/bases/grass.gltf');
       if (!grassObject) return;
 
-      grassObject.position.set(0.5, -0.15, 0.5);
+      grassObject.position.set(0, -0.15, 0);
       grassObject.scale.set(1000, 1, 1000);
       scene.add(grassObject);
     },
