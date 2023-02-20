@@ -23,7 +23,6 @@ const Room: NextPage = function Room() {
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
   const selectedItemId = selectedItem?.getId() || null;
   const isBuildindItem = !!selectedItem;
-  const isDestroyingItem = !isBuildindItem;
 
   useKeyPress('p', {
     onKeyDown: () => {
@@ -85,10 +84,6 @@ const Room: NextPage = function Room() {
     setIsSelectItemModalVisible(true);
   };
 
-  const handleDestroyClick = () => {
-    setSelectedItem(null);
-  };
-
   const handleSelectItemDone = () => {
     setIsSelectItemModalVisible(false);
   };
@@ -138,8 +133,6 @@ const Room: NextPage = function Room() {
               onLogoClick={handleLogoClick}
               isPlaceItemActive={isBuildindItem}
               onPlaceItemClick={handlePlaceItemClick}
-              isDestroyActive={isDestroyingItem}
-              onDestroyClick={handleDestroyClick}
             />
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
@@ -182,8 +175,6 @@ const Room: NextPage = function Room() {
               onLogoClick={handleLogoClick}
               isPlaceItemActive={isBuildindItem}
               onPlaceItemClick={handlePlaceItemClick}
-              isDestroyActive={isDestroyingItem}
-              onDestroyClick={handleDestroyClick}
             />
           </section>
         </main>

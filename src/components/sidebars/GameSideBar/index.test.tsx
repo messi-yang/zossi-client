@@ -2,16 +2,7 @@ import { render, RenderResult, screen } from '@testing-library/react';
 import GameSideBar, { dataTestids } from '.';
 
 function renderGameSideBar(): RenderResult {
-  return render(
-    <GameSideBar
-      align="column"
-      onLogoClick={() => {}}
-      isPlaceItemActive
-      onPlaceItemClick={() => {}}
-      isDestroyActive
-      onDestroyClick={() => {}}
-    />
-  );
+  return render(<GameSideBar align="column" onLogoClick={() => {}} isPlaceItemActive onPlaceItemClick={() => {}} />);
 }
 
 describe('GameSideBar', () => {

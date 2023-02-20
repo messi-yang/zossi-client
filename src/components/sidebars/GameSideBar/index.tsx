@@ -10,20 +10,10 @@ type Props = {
   onLogoClick: () => void;
   isPlaceItemActive: boolean;
   onPlaceItemClick: () => void;
-  isDestroyActive: boolean;
-  onDestroyClick: () => void;
 };
 
-function GameSideBar({
-  align,
-  onLogoClick,
-  isPlaceItemActive,
-  onPlaceItemClick,
-  isDestroyActive,
-  onDestroyClick,
-}: Props) {
+function GameSideBar({ align, onLogoClick, isPlaceItemActive, onPlaceItemClick }: Props) {
   const [isPlaceItemMenuHovered, setIsPlaceItemMenuHovered] = useState<boolean>(false);
-  const [isDestroyMenuHovered, setIsDestroyMenuHovered] = useState<boolean>(false);
 
   return (
     <section
@@ -53,21 +43,6 @@ function GameSideBar({
         }}
       >
         <PlaceItemIcon highlighted={isPlaceItemMenuHovered} active={isPlaceItemActive} />
-      </ItemWrapper>
-      <ItemWrapper
-        label="Destroy"
-        highlighted={isDestroyMenuHovered}
-        active={isDestroyActive}
-        hovered={isDestroyMenuHovered}
-        onClick={onDestroyClick}
-        onMouseEnter={() => {
-          setIsDestroyMenuHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsDestroyMenuHovered(false);
-        }}
-      >
-        <PlaceItemIcon highlighted={isDestroyMenuHovered} active={isDestroyActive} />
       </ItemWrapper>
     </section>
   );
