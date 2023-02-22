@@ -103,7 +103,7 @@ const Room: NextPage = function Room() {
 
   const handleRecconectModalConfirmClick = useCallback(() => {
     window.location.reload();
-  }, [joinGame]);
+  }, []);
 
   const screenSize: 'large' | 'small' = styleContext.getWindowWidth() > 700 ? 'large' : 'small';
 
