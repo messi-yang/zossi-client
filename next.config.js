@@ -13,7 +13,6 @@ const nextConfig = {
   env: {
     API_DOMAIN: process.env.API_DOMAIN || 'localhost:8080',
   },
-  dir: './src',
 };
 
 module.exports = nextConfig;
