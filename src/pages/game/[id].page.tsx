@@ -46,12 +46,15 @@ const Room: NextPage = function Room() {
         return () => {};
       }
 
-      const goUpInterval = setInterval(() => {
+      const doMove = () => {
         if (isUpPressed) move(DirectionVo.new(0));
         if (isRightPressed) move(DirectionVo.new(1));
         if (isDownPressed) move(DirectionVo.new(2));
         if (isLeftPressed) move(DirectionVo.new(3));
-      }, 100);
+      };
+
+      doMove();
+      const goUpInterval = setInterval(doMove, 100);
 
       return () => {
         clearInterval(goUpInterval);
