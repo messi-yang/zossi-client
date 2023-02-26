@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import forEach from 'lodash/forEach';
 
 import ThreeJsContext from '@/contexts/ThreeJsContext';
-import { LocationVo } from '@/models/valueObjects';
+import { PositionVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 import useDomRect from '@/hooks/useDomRect';
 import { enableShadowOnObject } from '@/libs/threeHelper';
@@ -16,14 +16,14 @@ type CachedObjectMap = {
 type Props = {
   players: PlayerAgg[];
   units: UnitAgg[];
-  cameraLocation: LocationVo;
+  cameraPosition: PositionVo;
   items: ItemAgg[];
 };
 
 const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 
-function GameCanvas({ players, units, cameraLocation, items }: Props) {
+function GameCanvas({ players, units, cameraPosition, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
   const [scene] = useState<THREE.Scene>(() => {
@@ -105,18 +105,18 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
   );
 
   useEffect(
-    function updateCameraAndDirLightOnLocationChange() {
-      const cameraLocationX = cameraLocation.getX();
-      const cameraLocationZ = cameraLocation.getZ();
+    function updateCameraAndDirLightOnPositionChange() {
+      const cameraPositionX = cameraPosition.getX();
+      const cameraPositionZ = cameraPosition.getZ();
 
-      camera.position.set(cameraLocationX, 15, cameraLocationZ + 20);
-      camera.lookAt(cameraLocationX, 0, cameraLocationZ);
-      dirLight.position.set(cameraLocationX, DIR_LIGHT_HEIGHT, cameraLocationZ + DIR_LIGHT_Z_OFFSET);
-      dirLight.target.position.set(cameraLocationX, 0, cameraLocationZ);
-      // dirLight.position.set(cameraLocationX, 5, cameraLocationZ + 10);
+      camera.position.set(cameraPositionX, 15, cameraPositionZ + 20);
+      camera.lookAt(cameraPositionX, 0, cameraPositionZ);
+      dirLight.position.set(cameraPositionX, DIR_LIGHT_HEIGHT, cameraPositionZ + DIR_LIGHT_Z_OFFSET);
+      dirLight.target.position.set(cameraPositionX, 0, cameraPositionZ);
+      // dirLight.position.set(cameraPositionX, 5, cameraPositionZ + 10);
       // dirLight.updateMatrixWorld();
     },
-    [cameraLocation]
+    [cameraPosition]
   );
 
   useEffect(
@@ -161,7 +161,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
         }
 
         if (playerObject) {
-          playerObject.position.set(player.getLocation().getX() + 0.5, 0, player.getLocation().getZ() + 0.5);
+          playerObject.position.set(player.getPosition().getX() + 0.5, 0, player.getPosition().getZ() + 0.5);
           playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
         }
       });
@@ -199,7 +199,7 @@ function GameCanvas({ players, units, cameraLocation, items }: Props) {
         }
 
         if (unitObject) {
-          unitObject.position.set(unit.getLocation().getX() + 0.5, 0, unit.getLocation().getZ() + 0.5);
+          unitObject.position.set(unit.getPosition().getX() + 0.5, 0, unit.getPosition().getZ() + 0.5);
         }
       });
 

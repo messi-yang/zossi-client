@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import GameCanvas from '.';
-import { DirectionVo, LocationVo } from '@/models/valueObjects';
+import { DirectionVo, PositionVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 export default {
@@ -33,33 +33,33 @@ Primary.args = {
     PlayerAgg.new({
       id: '1',
       name: 'Mark',
-      location: LocationVo.new(0, 0),
+      position: PositionVo.new(0, 0),
       direction: DirectionVo.new(2),
     }),
     PlayerAgg.new({
       id: '1',
       name: 'Mark',
-      location: LocationVo.new(2, 2),
+      position: PositionVo.new(2, 2),
       direction: DirectionVo.new(2),
     }),
     PlayerAgg.new({
       id: '1',
       name: 'Mark',
-      location: LocationVo.new(4, 4),
+      position: PositionVo.new(4, 4),
       direction: DirectionVo.new(2),
     }),
     PlayerAgg.new({
       id: '1',
       name: 'Mark',
-      location: LocationVo.new(19, 19),
+      position: PositionVo.new(19, 19),
       direction: DirectionVo.new(2),
     }),
   ],
   units: [
-    UnitAgg.new(1, LocationVo.new(0, 0)),
-    UnitAgg.new(1, LocationVo.new(0, 1)),
-    UnitAgg.new(1, LocationVo.new(0, 2)),
+    UnitAgg.new(1, PositionVo.new(0, 0)),
+    UnitAgg.new(1, PositionVo.new(0, 1)),
+    UnitAgg.new(1, PositionVo.new(0, 2)),
   ],
-  cameraLocation: LocationVo.new(4, 4),
+  cameraPosition: PositionVo.new(4, 4),
   items: [item],
 };

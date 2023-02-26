@@ -1,15 +1,15 @@
 import { UnitAgg } from '@/models/aggregates';
-import { LocationVo } from '@/models/valueObjects';
-import { LocationDto } from './LocationDto';
+import { PositionVo } from '@/models/valueObjects';
+import { PositionDto } from './PositionDto';
 
 type UnitDto = {
   itemId: number;
-  location: LocationDto;
+  position: PositionDto;
 };
 
 function convertUnitDtoToUnit(unitDto: UnitDto): UnitAgg {
-  const location = LocationVo.new(unitDto.location.x, unitDto.location.z);
-  return UnitAgg.new(unitDto.itemId, location);
+  const position = PositionVo.new(unitDto.position.x, unitDto.position.z);
+  return UnitAgg.new(unitDto.itemId, position);
 }
 
 export type { UnitDto };

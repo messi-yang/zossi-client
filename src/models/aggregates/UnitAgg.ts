@@ -1,28 +1,28 @@
-import { LocationVo } from '@/models/valueObjects';
+import { PositionVo } from '@/models/valueObjects';
 
 export default class UnitAgg {
   private itemId: number;
 
-  private location: LocationVo;
+  private position: PositionVo;
 
-  constructor(itemId: number, location: LocationVo) {
+  constructor(itemId: number, position: PositionVo) {
     this.itemId = itemId;
-    this.location = location;
+    this.position = position;
   }
 
-  static new(itemId: number, location: LocationVo): UnitAgg {
-    return new UnitAgg(itemId, location);
+  static new(itemId: number, position: PositionVo): UnitAgg {
+    return new UnitAgg(itemId, position);
   }
 
   public getIdentifier(): string {
-    return `${this.itemId},${this.location.getX()},${this.location.getZ()}`;
+    return `${this.itemId},${this.position.getX()},${this.position.getZ()}`;
   }
 
   public getItemId(): number {
     return this.itemId;
   }
 
-  public getLocation(): LocationVo {
-    return this.location;
+  public getPosition(): PositionVo {
+    return this.position;
   }
 }

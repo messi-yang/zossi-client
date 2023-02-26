@@ -1,11 +1,11 @@
-import { LocationVo, DirectionVo } from '@/models/valueObjects';
+import { PositionVo, DirectionVo } from '@/models/valueObjects';
 
 export default class PlayerAgg {
   private id: string;
 
   private name: string;
 
-  private location: LocationVo;
+  private position: PositionVo;
 
   private direction: DirectionVo;
 
@@ -13,15 +13,15 @@ export default class PlayerAgg {
 
   private imageElem: HTMLImageElement | null = null;
 
-  constructor(params: { id: string; name: string; location: LocationVo; direction: DirectionVo }) {
+  constructor(params: { id: string; name: string; position: PositionVo; direction: DirectionVo }) {
     this.id = params.id;
     this.name = params.name;
-    this.location = params.location;
+    this.position = params.position;
     this.direction = params.direction;
     this.assetSrc = `https://avatars.dicebear.com/api/pixel-art/${params.id}.svg`;
   }
 
-  static new(params: { id: string; name: string; location: LocationVo; direction: DirectionVo }): PlayerAgg {
+  static new(params: { id: string; name: string; position: PositionVo; direction: DirectionVo }): PlayerAgg {
     return new PlayerAgg(params);
   }
 
@@ -29,8 +29,8 @@ export default class PlayerAgg {
     return this.id;
   }
 
-  public getLocation(): LocationVo {
-    return this.location;
+  public getPosition(): PositionVo {
+    return this.position;
   }
 
   public getDirection(): DirectionVo {

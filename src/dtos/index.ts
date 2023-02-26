@@ -1,6 +1,6 @@
 import { convertBoundDtoToBound } from './BoundDto';
 import type { BoundDto } from './BoundDto';
-import type { LocationDto } from './LocationDto';
+import type { PositionDto } from './PositionDto';
 import { convertSizeDtoToSize } from './SizeDto';
 import type { SizeDto } from './SizeDto';
 import { convertUnitDtoToUnit } from './UnitDto';
@@ -10,7 +10,7 @@ import type { ItemDto } from './ItemDto';
 import { convertPlayerDtoPlayer } from './PlayerDto';
 import type { PlayerDto } from './PlayerDto';
 
-export type { BoundDto, LocationDto, SizeDto, UnitDto, ItemDto, PlayerDto };
+export type { BoundDto, PositionDto, SizeDto, UnitDto, ItemDto, PlayerDto };
 
 export {
   convertBoundDtoToBound,

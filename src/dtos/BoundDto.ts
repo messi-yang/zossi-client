@@ -1,13 +1,13 @@
-import { BoundVo, LocationVo } from '@/models/valueObjects';
-import type { LocationDto } from './LocationDto';
+import { BoundVo, PositionVo } from '@/models/valueObjects';
+import type { PositionDto } from './PositionDto';
 
 type BoundDto = {
-  from: LocationDto;
-  to: LocationDto;
+  from: PositionDto;
+  to: PositionDto;
 };
 
 export function convertBoundDtoToBound(boundDto: BoundDto): BoundVo {
-  return BoundVo.new(LocationVo.new(boundDto.from.x, boundDto.from.z), LocationVo.new(boundDto.to.x, boundDto.to.z));
+  return BoundVo.new(PositionVo.new(boundDto.from.x, boundDto.from.z), PositionVo.new(boundDto.to.x, boundDto.to.z));
 }
 
 export type { BoundDto };

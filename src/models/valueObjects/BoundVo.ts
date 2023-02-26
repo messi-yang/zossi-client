@@ -1,16 +1,16 @@
-import LocationVo from './LocationVo';
+import PositionVo from './PositionVo';
 
 export default class BoundVo {
-  private from: LocationVo;
+  private from: PositionVo;
 
-  private to: LocationVo;
+  private to: PositionVo;
 
-  constructor(from: LocationVo, to: LocationVo) {
+  constructor(from: PositionVo, to: PositionVo) {
     this.from = from;
     this.to = to;
   }
 
-  static new(from: LocationVo, to: LocationVo): BoundVo {
+  static new(from: PositionVo, to: PositionVo): BoundVo {
     return new BoundVo(from, to);
   }
 
@@ -18,11 +18,11 @@ export default class BoundVo {
     return this.from.isEqual(bound.getFrom()) && this.to.isEqual(bound.getTo());
   }
 
-  public getFrom(): LocationVo {
+  public getFrom(): PositionVo {
     return this.from;
   }
 
-  public getTo(): LocationVo {
+  public getTo(): PositionVo {
     return this.to;
   }
 }

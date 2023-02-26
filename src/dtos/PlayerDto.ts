@@ -1,11 +1,11 @@
 import { PlayerAgg } from '@/models/aggregates';
-import { DirectionVo, LocationVo } from '@/models/valueObjects';
-import type { LocationDto } from './LocationDto';
+import { DirectionVo, PositionVo } from '@/models/valueObjects';
+import type { PositionDto } from './PositionDto';
 
 type PlayerDto = {
   id: string;
   name: string;
-  location: LocationDto;
+  position: PositionDto;
   direction: 0 | 1 | 2 | 3;
 };
 
@@ -13,7 +13,7 @@ function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerAgg {
   return PlayerAgg.new({
     id: playerDto.id,
     name: playerDto.name,
-    location: LocationVo.new(playerDto.location.x, playerDto.location.z),
+    position: PositionVo.new(playerDto.position.x, playerDto.position.z),
     direction: DirectionVo.new(playerDto.direction),
   });
 }
