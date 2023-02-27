@@ -16,14 +16,17 @@ type CachedObjectMap = {
 type Props = {
   players: PlayerAgg[];
   units: UnitAgg[];
-  cameraPosition: PositionVo;
+  myPlayerPosition: PositionVo;
   items: ItemAgg[];
 };
 
+const CAMERA_HEIGHT = 20;
+const CAMERA_Z_OFFSET = 20;
 const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
+const HEMI_LIGHT_HEIGHT = 20;
 
-function GameCanvas({ players, units, cameraPosition, items }: Props) {
+function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
   const [scene] = useState<THREE.Scene>(() => {
@@ -31,7 +34,7 @@ function GameCanvas({ players, units, cameraPosition, items }: Props) {
     newScene.background = new THREE.Color(0xffffff);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.5);
-    hemiLight.position.set(0, 20, 0);
+    hemiLight.position.set(0, HEMI_LIGHT_HEIGHT, 0);
     newScene.add(hemiLight);
 
     const grid = new THREE.GridHelper(1000, 1000, 0x000000, 0x000000);
@@ -106,17 +109,16 @@ function GameCanvas({ players, units, cameraPosition, items }: Props) {
 
   useEffect(
     function updateCameraAndDirLightOnPositionChange() {
-      const cameraPositionX = cameraPosition.getX();
-      const cameraPositionZ = cameraPosition.getZ();
+      const myPlayerPositionX = myPlayerPosition.getX();
+      const myPlayerPositionZ = myPlayerPosition.getZ();
 
-      camera.position.set(cameraPositionX, 15, cameraPositionZ + 20);
-      camera.lookAt(cameraPositionX, 0, cameraPositionZ);
-      dirLight.position.set(cameraPositionX, DIR_LIGHT_HEIGHT, cameraPositionZ + DIR_LIGHT_Z_OFFSET);
-      dirLight.target.position.set(cameraPositionX, 0, cameraPositionZ);
-      // dirLight.position.set(cameraPositionX, 5, cameraPositionZ + 10);
-      // dirLight.updateMatrixWorld();
+      camera.position.set(myPlayerPositionX, CAMERA_HEIGHT, myPlayerPositionZ + CAMERA_Z_OFFSET);
+      camera.lookAt(myPlayerPositionX, 0, myPlayerPositionZ);
+
+      dirLight.position.set(myPlayerPositionX, DIR_LIGHT_HEIGHT, myPlayerPositionZ + DIR_LIGHT_Z_OFFSET);
+      dirLight.target.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
     },
-    [cameraPosition]
+    [myPlayerPosition]
   );
 
   useEffect(

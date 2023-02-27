@@ -141,7 +141,7 @@ const Room: NextPage = function Room() {
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               {myPlayer && players && units && items && (
-                <GameCanvas players={players} cameraPosition={myPlayer.getPosition()} units={units} items={items} />
+                <GameCanvas players={players} myPlayerPosition={myPlayer.getPosition()} units={units} items={items} />
               )}
             </section>
           </section>
@@ -168,7 +168,7 @@ const Room: NextPage = function Room() {
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
               {myPlayer && players && units && items && (
-                <GameCanvas players={players} cameraPosition={myPlayer.getPosition()} units={units} items={items} />
+                <GameCanvas players={players} myPlayerPosition={myPlayer.getPosition()} units={units} items={items} />
               )}
             </section>
           </section>

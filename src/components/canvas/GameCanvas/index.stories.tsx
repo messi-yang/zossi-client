@@ -60,6 +60,6 @@ Primary.args = {
     UnitAgg.new(1, PositionVo.new(0, 1)),
     UnitAgg.new(1, PositionVo.new(0, 2)),
   ],
-  cameraPosition: PositionVo.new(4, 4),
+  myPlayerPosition: PositionVo.new(4, 4),
   items: [item],
 };
