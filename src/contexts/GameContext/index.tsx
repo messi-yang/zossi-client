@@ -12,7 +12,7 @@ type ContextValue = {
   bound: BoundVo | null;
   units: UnitAgg[] | null;
   items: ItemAgg[] | null;
-  joinGame: () => void;
+  joinGame: (gameId: string) => void;
   move: (direction: DirectionVo) => void;
   placeItem: (itemId: number) => void;
   destroyItem: () => void;
@@ -67,50 +67,53 @@ export function Provider({ children }: Props) {
     setItems(initialContextValue.items);
   }, []);
 
-  const joinGame = useCallback(() => {
-    const hasUncleanedConnection = !!gameSocket;
-    if (hasUncleanedConnection) {
-      return;
-    }
+  const joinGame = useCallback(
+    (gameId: string) => {
+      const hasUncleanedConnection = !!gameSocket;
+      if (hasUncleanedConnection) {
+        return;
+      }
 
-    const newGameSocket = GameSocket.newGameSocket({
-      onGameJoined: (
-        newPlayerId: string,
-        newPlayers: PlayerAgg[],
-        newBound: BoundVo,
-        newUnits: UnitAgg[],
-        newItems: ItemAgg[]
-      ) => {
-        setPlayerid(newPlayerId);
-        setPlayers(newPlayers);
-        setBound(newBound);
-        setUnits(newUnits);
-        setItems(newItems);
-      },
-      onPlayersUpdated: (newPlayers: PlayerAgg[]) => {
-        setPlayers(newPlayers);
-      },
-      onUnitsUpdated: (newBound: BoundVo, newUnits: UnitAgg[]) => {
-        setBound(newBound);
-        setUnits(newUnits);
-      },
-      onOpen: () => {
-        setGameStatus('OPEN');
-      },
-      onClose: (disconnectedByClient: boolean) => {
-        if (disconnectedByClient) {
-          setGameStatus('WAITING');
-          setGameSocket(null);
-          reset();
-        } else {
-          setGameStatus('DISCONNECTED');
-          setGameSocket(null);
-        }
-      },
-    });
-    setGameStatus('CONNECTING');
-    setGameSocket(newGameSocket);
-  }, [gameSocket]);
+      const newGameSocket = GameSocket.newGameSocket(gameId, {
+        onGameJoined: (
+          newPlayerId: string,
+          newPlayers: PlayerAgg[],
+          newBound: BoundVo,
+          newUnits: UnitAgg[],
+          newItems: ItemAgg[]
+        ) => {
+          setPlayerid(newPlayerId);
+          setPlayers(newPlayers);
+          setBound(newBound);
+          setUnits(newUnits);
+          setItems(newItems);
+        },
+        onPlayersUpdated: (newPlayers: PlayerAgg[]) => {
+          setPlayers(newPlayers);
+        },
+        onUnitsUpdated: (newBound: BoundVo, newUnits: UnitAgg[]) => {
+          setBound(newBound);
+          setUnits(newUnits);
+        },
+        onOpen: () => {
+          setGameStatus('OPEN');
+        },
+        onClose: (disconnectedByClient: boolean) => {
+          if (disconnectedByClient) {
+            setGameStatus('WAITING');
+            setGameSocket(null);
+            reset();
+          } else {
+            setGameStatus('DISCONNECTED');
+            setGameSocket(null);
+          }
+        },
+      });
+      setGameStatus('CONNECTING');
+      setGameSocket(newGameSocket);
+    },
+    [gameSocket]
+  );
 
   const move = useCallback(
     (direction: DirectionVo) => {

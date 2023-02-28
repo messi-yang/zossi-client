@@ -31,15 +31,24 @@ export default class GameSocket {
 
   private disconnectedByClient: boolean = false;
 
-  constructor(params: {
-    onGameJoined: (playerId: string, players: PlayerAgg[], bound: BoundVo, units: UnitAgg[], items: ItemAgg[]) => void;
-    onPlayersUpdated: (players: PlayerAgg[]) => void;
-    onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
-    onClose: (disconnectedByClient: boolean) => void;
-    onOpen: () => void;
-  }) {
+  constructor(
+    gameId: string,
+    params: {
+      onGameJoined: (
+        playerId: string,
+        players: PlayerAgg[],
+        bound: BoundVo,
+        units: UnitAgg[],
+        items: ItemAgg[]
+      ) => void;
+      onPlayersUpdated: (players: PlayerAgg[]) => void;
+      onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
+      onClose: (disconnectedByClient: boolean) => void;
+      onOpen: () => void;
+    }
+  ) {
     const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
-    const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/`;
+    const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/?id=${gameId}`;
     const socket = new WebSocket(socketUrl);
 
     let pingServerInterval: NodeJS.Timer | null = null;
@@ -83,14 +92,23 @@ export default class GameSocket {
     globalThis.sendMessage = this.sendMessage.bind(this);
   }
 
-  static newGameSocket(params: {
-    onGameJoined: (playerId: string, players: PlayerAgg[], bound: BoundVo, units: UnitAgg[], items: ItemAgg[]) => void;
-    onPlayersUpdated: (players: PlayerAgg[]) => void;
-    onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
-    onClose: (disconnectedByClient: boolean) => void;
-    onOpen: () => void;
-  }): GameSocket {
-    return new GameSocket(params);
+  static newGameSocket(
+    gameId: string,
+    params: {
+      onGameJoined: (
+        playerId: string,
+        players: PlayerAgg[],
+        bound: BoundVo,
+        units: UnitAgg[],
+        items: ItemAgg[]
+      ) => void;
+      onPlayersUpdated: (players: PlayerAgg[]) => void;
+      onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
+      onClose: (disconnectedByClient: boolean) => void;
+      onOpen: () => void;
+    }
+  ): GameSocket {
+    return new GameSocket(gameId, params);
   }
 
   public disconnect() {

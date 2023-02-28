@@ -14,6 +14,7 @@ import ConfirmModal from '@/components/modals/ConfirmModal';
 
 const Room: NextPage = function Room() {
   const router = useRouter();
+  const gameId = router.query.id;
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const { units, items, myPlayer, players, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
@@ -63,9 +64,14 @@ const Room: NextPage = function Room() {
     [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, move]
   );
 
-  useEffect(function joinGameOnInitEffect() {
-    joinGame();
-  }, []);
+  useEffect(
+    function joinGameOnInitEffect() {
+      if (typeof gameId === 'string') {
+        joinGame(gameId);
+      }
+    },
+    [gameId]
+  );
 
   useEffect(
     function handleItemsRead() {
