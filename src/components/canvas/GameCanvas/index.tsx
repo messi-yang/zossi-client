@@ -20,6 +20,8 @@ type Props = {
   items: ItemAgg[];
 };
 
+const CHARACTER_MODEL_SRC = '/characters/robot.gltf';
+const BASE_MODEL_SRC = '/bases/grass.gltf';
 const CAMERA_HEIGHT = 20;
 const CAMERA_Z_OFFSET = 20;
 const DIR_LIGHT_HEIGHT = 20;
@@ -81,8 +83,8 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
 
   useEffect(() => {
     items.forEach((item) => loadModel(item.getModelSrc()));
-    loadModel('/characters/car.gltf');
-    loadModel('/bases/grass.gltf');
+    loadModel(CHARACTER_MODEL_SRC);
+    loadModel(BASE_MODEL_SRC);
   }, [items, players]);
 
   useEffect(
@@ -134,7 +136,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
 
   useEffect(
     function handleBasesUpdated() {
-      const grassObject = cloneModel('/bases/grass.gltf');
+      const grassObject = cloneModel(BASE_MODEL_SRC);
       if (!grassObject) return;
 
       enableShadowOnObject(grassObject);
@@ -154,7 +156,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
         if (cachedPlayerOject) {
           playerObject = cachedPlayerOject;
         } else {
-          playerObject = cloneModel('/characters/car.gltf');
+          playerObject = cloneModel(CHARACTER_MODEL_SRC);
           if (playerObject) {
             scene.add(playerObject);
             cachedPlayerObjects.current[player.getId()] = playerObject;
