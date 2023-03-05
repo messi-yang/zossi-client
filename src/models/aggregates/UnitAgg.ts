@@ -1,16 +1,16 @@
 import { PositionVo } from '@/models/valueObjects';
 
 export default class UnitAgg {
-  private itemId: number;
+  private itemId: string;
 
   private position: PositionVo;
 
-  constructor(itemId: number, position: PositionVo) {
+  constructor(itemId: string, position: PositionVo) {
     this.itemId = itemId;
     this.position = position;
   }
 
-  static new(itemId: number, position: PositionVo): UnitAgg {
+  static new(itemId: string, position: PositionVo): UnitAgg {
     return new UnitAgg(itemId, position);
   }
 
@@ -18,7 +18,7 @@ export default class UnitAgg {
     return `${this.itemId},${this.position.getX()},${this.position.getZ()}`;
   }
 
-  public getItemId(): number {
+  public getItemId(): string {
     return this.itemId;
   }
 

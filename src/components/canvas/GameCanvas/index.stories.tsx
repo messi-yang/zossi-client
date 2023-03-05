@@ -21,7 +21,7 @@ const Template: ComponentStory<typeof GameCanvas> = function Template(args) {
 
 export const Primary = Template.bind({});
 const item = ItemAgg.new({
-  id: 1,
+  id: '414b5703-91d1-42fc-a007-36dd8f25e329',
   name: 'Hello',
   traversable: false,
   assetSrc: 'https://avatars.dicebear.com/api/pixel-art/1.svg',
@@ -56,9 +56,9 @@ Primary.args = {
     }),
   ],
   units: [
-    UnitAgg.new(1, PositionVo.new(0, 0)),
-    UnitAgg.new(1, PositionVo.new(0, 1)),
-    UnitAgg.new(1, PositionVo.new(0, 2)),
+    UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 0)),
+    UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 1)),
+    UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 2)),
   ],
   myPlayerPosition: PositionVo.new(4, 4),
   items: [item],

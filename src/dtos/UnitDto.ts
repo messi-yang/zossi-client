@@ -3,7 +3,7 @@ import { PositionVo } from '@/models/valueObjects';
 import { PositionDto } from './PositionDto';
 
 type UnitDto = {
-  itemId: number;
+  itemId: string;
   position: PositionDto;
 };
 

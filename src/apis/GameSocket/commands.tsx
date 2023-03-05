@@ -16,7 +16,7 @@ type MoveCommand = {
 
 type PlaceItemCommand = {
   type: CommandTypeEnum.PlaceItem;
-  itemId: number;
+  itemId: string;
 };
 
 type DestroyItemCommand = {

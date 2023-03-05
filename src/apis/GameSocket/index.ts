@@ -144,7 +144,7 @@ export default class GameSocket {
     this.sendMessage(action);
   }
 
-  public placeItem(itemId: number) {
+  public placeItem(itemId: string) {
     const action: PlaceItemCommand = {
       type: CommandTypeEnum.PlaceItem,
       itemId,
