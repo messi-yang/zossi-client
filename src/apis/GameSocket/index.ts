@@ -61,7 +61,6 @@ export default class GameSocket {
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
         const [playerId, players, bound, units, items] = parseGameJoinedEvent(newMsg);
-        await Promise.all(items.map((item) => item.loadAsset()));
         params.onGameJoined(playerId, players, bound, units, items);
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [players] = parsePlayersUpdatedEvent(newMsg);

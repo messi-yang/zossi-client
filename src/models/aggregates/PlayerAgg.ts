@@ -9,16 +9,11 @@ export default class PlayerAgg {
 
   private direction: DirectionVo;
 
-  private assetSrc: string;
-
-  private imageElem: HTMLImageElement | null = null;
-
   constructor(params: { id: string; name: string; position: PositionVo; direction: DirectionVo }) {
     this.id = params.id;
     this.name = params.name;
     this.position = params.position;
     this.direction = params.direction;
-    this.assetSrc = `https://avatars.dicebear.com/api/pixel-art/${params.id}.svg`;
   }
 
   static new(params: { id: string; name: string; position: PositionVo; direction: DirectionVo }): PlayerAgg {
@@ -35,9 +30,5 @@ export default class PlayerAgg {
 
   public getDirection(): DirectionVo {
     return this.direction;
-  }
-
-  public outputAssetAsImageElement(): HTMLImageElement | null {
-    return this.imageElem;
   }
 }

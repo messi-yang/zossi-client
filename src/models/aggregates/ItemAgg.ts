@@ -9,8 +9,6 @@ export default class ItemAgg {
 
   private modelSrc: string;
 
-  private imageElem: HTMLImageElement | null = null;
-
   constructor(params: { id: string; name: string; traversable: boolean; assetSrc: string; modelSrc: string }) {
     this.id = params.id;
     this.name = params.name;
@@ -37,21 +35,5 @@ export default class ItemAgg {
 
   public getModelSrc(): string {
     return this.modelSrc;
-  }
-
-  public outputAssetAsImageElement(): HTMLImageElement | null {
-    return this.imageElem;
-  }
-
-  public async loadAsset() {
-    return new Promise((resolve) => {
-      const image = new Image();
-      image.onload = () => {
-        this.imageElem = image;
-        resolve(true);
-      };
-
-      image.src = this.assetSrc;
-    });
   }
 }
