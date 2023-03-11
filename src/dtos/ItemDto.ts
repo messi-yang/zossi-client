@@ -4,7 +4,7 @@ type ItemDto = {
   id: string;
   name: string;
   traversable: boolean;
-  assetSrc: string;
+  thumbnailSrc: string;
   modelSrc: string;
 };
 
@@ -13,7 +13,7 @@ function convertItemDtoToItem(itemDto: ItemDto): ItemAgg {
     id: itemDto.id,
     name: itemDto.name,
     traversable: itemDto.traversable,
-    assetSrc: itemDto.assetSrc,
+    thumbnailSrc: itemDto.thumbnailSrc,
     modelSrc: itemDto.modelSrc,
   });
 }

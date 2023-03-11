@@ -9,7 +9,7 @@ function renderSelectItemModal(): RenderResult {
       id: '414b5703-91d1-42fc-a007-36dd8f25e329',
       name: `Sample ${num + 1}`,
       traversable: true,
-      assetSrc: 'placeholder-item.png',
+      thumbnailSrc: 'placeholder-item.png',
       modelSrc: 'placeholder-item.png',
     })
   );

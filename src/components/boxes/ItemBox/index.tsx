@@ -29,7 +29,7 @@ function ItemBox({ item, active, onClick }: Props) {
       tabIndex={0}
       role="button"
     >
-      <img className="w-full h-full" src={item.getAssetSrc()} alt={item.getName()} />
+      <img className="w-full h-full" src={item.getThumbnailSrc()} alt={item.getName()} />
     </div>
   );
 }

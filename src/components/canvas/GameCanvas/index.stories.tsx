@@ -24,7 +24,7 @@ const item = ItemAgg.new({
   id: '414b5703-91d1-42fc-a007-36dd8f25e329',
   name: 'Hello',
   traversable: false,
-  assetSrc: 'https://avatars.dicebear.com/api/pixel-art/1.svg',
+  thumbnailSrc: 'https://avatars.dicebear.com/api/pixel-art/1.svg',
   modelSrc: 'placeholder-item.png',
 });
 Primary.args = {

@@ -5,19 +5,19 @@ export default class ItemAgg {
 
   private traversable: boolean;
 
-  private assetSrc: string;
+  private thumbnailSrc: string;
 
   private modelSrc: string;
 
-  constructor(params: { id: string; name: string; traversable: boolean; assetSrc: string; modelSrc: string }) {
+  constructor(params: { id: string; name: string; traversable: boolean; thumbnailSrc: string; modelSrc: string }) {
     this.id = params.id;
     this.name = params.name;
     this.traversable = params.traversable;
-    this.assetSrc = params.assetSrc;
+    this.thumbnailSrc = params.thumbnailSrc;
     this.modelSrc = params.modelSrc;
   }
 
-  static new(params: { id: string; name: string; traversable: boolean; assetSrc: string; modelSrc: string }) {
+  static new(params: { id: string; name: string; traversable: boolean; thumbnailSrc: string; modelSrc: string }) {
     return new ItemAgg(params);
   }
 
@@ -29,8 +29,8 @@ export default class ItemAgg {
     return this.name;
   }
 
-  public getAssetSrc(): string {
-    return this.assetSrc;
+  public getThumbnailSrc(): string {
+    return this.thumbnailSrc;
   }
 
   public getModelSrc(): string {

@@ -36,7 +36,7 @@ function SelectItemModal({ opened, width, selectedItem, items, onSelect = () => 
                   id: '',
                   name: 'Empty',
                   traversable: true,
-                  assetSrc: '/placeholder-item.png',
+                  thumbnailSrc: '/placeholder-item.png',
                   modelSrc: 'placeholder-item.png',
                 })
               }
