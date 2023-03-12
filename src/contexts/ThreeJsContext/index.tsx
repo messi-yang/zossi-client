@@ -2,19 +2,17 @@ import { createContext, useCallback, useState, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-type CachedModels = {
-  [modelSrc: string]: THREE.Group | 'loading' | undefined;
-};
+type LoadedModelMap = Record<string, THREE.Group | 'loading' | undefined>;
 
 type ContextValue = {
   loadModel(modelSrc: string): void;
-  cloneModel(modelSrc: string): THREE.Group | null;
+  createObject(modelSrc: string): THREE.Group | null;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
     loadModel: () => {},
-    cloneModel: () => null,
+    createObject: () => null,
   };
 }
 
@@ -25,31 +23,31 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const [cacheToken, setCacheToken] = useState(() => Math.random());
-  const cachedModels = useRef<CachedModels>({});
+  const [rerenderToken, setRerenderToken] = useState(() => Math.random());
+  const loadedModelMap = useRef<LoadedModelMap>({});
   const [gltfLoader] = useState(() => new GLTFLoader());
 
   const loadModel = useCallback((modelSrc: string) => {
-    if (cachedModels.current[modelSrc]) {
+    if (loadedModelMap.current[modelSrc]) {
       return;
     }
 
-    cachedModels.current[modelSrc] = 'loading';
+    loadedModelMap.current[modelSrc] = 'loading';
 
     gltfLoader.load(modelSrc, function (gltf) {
-      cachedModels.current[modelSrc] = gltf.scene;
-      setCacheToken(Math.random());
+      loadedModelMap.current[modelSrc] = gltf.scene;
+      setRerenderToken(Math.random());
     });
   }, []);
 
-  const cloneModel = useCallback(
+  const createObject = useCallback(
     (modelSrc: string): THREE.Group | null => {
-      const cachedModel = cachedModels.current[modelSrc];
+      const cachedModel = loadedModelMap.current[modelSrc];
       if (!cachedModel || cachedModel === 'loading') return null;
 
       return cachedModel.clone();
     },
-    [cacheToken]
+    [rerenderToken]
   );
 
   return (
@@ -57,9 +55,9 @@ export function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           loadModel,
-          cloneModel,
+          createObject,
         }),
-        [loadModel, cloneModel]
+        [loadModel, createObject]
       )}
     >
       {children}

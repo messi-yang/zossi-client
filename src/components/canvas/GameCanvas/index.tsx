@@ -68,7 +68,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
     newRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
     return newRenderer;
   });
-  const { loadModel, cloneModel } = useContext(ThreeJsContext);
+  const { loadModel, createObject } = useContext(ThreeJsContext);
   const cachedPlayerObjects = useRef<CachedObjectMap>({});
   const cachedUnitObjects = useRef<CachedObjectMap>({});
 
@@ -135,7 +135,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
 
   useEffect(
     function handleBasesUpdated() {
-      const grassObject = cloneModel(BASE_MODEL_SRC);
+      const grassObject = createObject(BASE_MODEL_SRC);
       if (!grassObject) return;
 
       enableShadowOnObject(grassObject);
@@ -143,7 +143,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
       grassObject.scale.set(1000, 1, 1000);
       scene.add(grassObject);
     },
-    [scene, cloneModel]
+    [scene, createObject]
   );
 
   useEffect(
@@ -155,7 +155,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
         if (cachedPlayerOject) {
           playerObject = cachedPlayerOject;
         } else {
-          playerObject = cloneModel(CHARACTER_MODEL_SRC);
+          playerObject = createObject(CHARACTER_MODEL_SRC);
           if (playerObject) {
             scene.add(playerObject);
             cachedPlayerObjects.current[player.getId()] = playerObject;
@@ -177,7 +177,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
         }
       });
     },
-    [scene, cloneModel, players]
+    [scene, createObject, players]
   );
 
   useEffect(
@@ -193,7 +193,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
         if (cachedUnitOject) {
           unitObject = cachedUnitOject;
         } else {
-          unitObject = cloneModel(item.getModelSrc());
+          unitObject = createObject(item.getModelSrc());
           if (unitObject) {
             enableShadowOnObject(unitObject);
             scene.add(unitObject);
@@ -214,7 +214,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
         }
       });
     },
-    [scene, cloneModel, items, units]
+    [scene, createObject, items, units]
   );
 
   useEffect(
