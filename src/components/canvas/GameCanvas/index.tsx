@@ -19,6 +19,7 @@ type Props = {
 
 const CHARACTER_MODEL_SRC = '/characters/robot.gltf';
 const BASE_MODEL_SRC = '/bases/grass.gltf';
+const CAMERA_FOV = 35;
 const CAMERA_HEIGHT = 20;
 const CAMERA_Z_OFFSET = 20;
 const DIR_LIGHT_HEIGHT = 20;
@@ -77,7 +78,7 @@ function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Pr
     return newDirLight;
   });
   const [camera] = useState<THREE.PerspectiveCamera>(() => {
-    const newCamera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
+    const newCamera = new THREE.PerspectiveCamera(CAMERA_FOV, 1, 0.1, 1000);
     scene.add(newCamera);
     return newCamera;
   });
