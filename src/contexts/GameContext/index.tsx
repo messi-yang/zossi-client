@@ -9,7 +9,7 @@ type ContextValue = {
   gameStatus: GameStatus;
   myPlayer: PlayerAgg | null;
   players: PlayerAgg[] | null;
-  bound: BoundVo | null;
+  visionBound: BoundVo | null;
   units: UnitAgg[] | null;
   items: ItemAgg[] | null;
   joinGame: (gameId: string) => void;
@@ -24,7 +24,7 @@ function createInitialContextValue(): ContextValue {
     gameStatus: 'DISCONNECTED',
     myPlayer: null,
     players: null,
-    bound: null,
+    visionBound: null,
     units: null,
     items: null,
     joinGame: () => {},
@@ -49,7 +49,7 @@ export function Provider({ children }: Props) {
   const [playerId, setPlayerid] = useState<string | null>(null);
   const [players, setPlayers] = useState<PlayerAgg[] | null>(initialContextValue.players);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
-  const [bound, setBound] = useState<BoundVo | null>(initialContextValue.bound);
+  const [visionBound, setVisionBound] = useState<BoundVo | null>(initialContextValue.visionBound);
   const [units, setUnits] = useState<UnitAgg[] | null>(initialContextValue.units);
 
   const myPlayer = useMemo(() => {
@@ -62,7 +62,7 @@ export function Provider({ children }: Props) {
   const reset = useCallback(() => {
     setPlayerid(null);
     setPlayers(initialContextValue.players);
-    setBound(initialContextValue.bound);
+    setVisionBound(initialContextValue.visionBound);
     setUnits(initialContextValue.units);
     setItems(initialContextValue.items);
   }, []);
@@ -78,21 +78,21 @@ export function Provider({ children }: Props) {
         onGameJoined: (
           newPlayerId: string,
           newPlayers: PlayerAgg[],
-          newBound: BoundVo,
+          newVisionBound: BoundVo,
           newUnits: UnitAgg[],
           newItems: ItemAgg[]
         ) => {
           setPlayerid(newPlayerId);
           setPlayers(newPlayers);
-          setBound(newBound);
+          setVisionBound(newVisionBound);
           setUnits(newUnits);
           setItems(newItems);
         },
         onPlayersUpdated: (newPlayers: PlayerAgg[]) => {
           setPlayers(newPlayers);
         },
-        onUnitsUpdated: (newBound: BoundVo, newUnits: UnitAgg[]) => {
-          setBound(newBound);
+        onUnitsUpdated: (newVisionBound: BoundVo, newUnits: UnitAgg[]) => {
+          setVisionBound(newVisionBound);
           setUnits(newUnits);
         },
         onOpen: () => {
@@ -145,7 +145,7 @@ export function Provider({ children }: Props) {
           gameStatus,
           myPlayer,
           players,
-          bound,
+          visionBound,
           units,
           items,
           joinGame,
@@ -154,7 +154,7 @@ export function Provider({ children }: Props) {
           placeItem,
           destroyItem,
         }),
-        [gameStatus, myPlayer, players, bound, units, items, joinGame, move, leaveGame, placeItem]
+        [gameStatus, myPlayer, players, visionBound, units, items, joinGame, move, leaveGame, placeItem]
       )}
     >
       {children}

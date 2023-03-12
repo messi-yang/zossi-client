@@ -8,11 +8,11 @@ import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } f
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerAgg[], BoundVo, UnitAgg[], ItemAgg[]] {
-  const bound = convertBoundDtoToBound(event.visionBound);
+  const visionBound = convertBoundDtoToBound(event.visionBound);
   const units = event.units.map(convertUnitDtoToUnit);
   const players = event.players.map(convertPlayerDtoPlayer);
   const items = event.items.map(convertItemDtoToItem);
-  return [event.playerId, players, bound, units, items];
+  return [event.playerId, players, visionBound, units, items];
 }
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg[]] {
@@ -21,9 +21,9 @@ function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg[]] {
 }
 
 function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [BoundVo, UnitAgg[]] {
-  const bound = convertBoundDtoToBound(event.visionBound);
+  const visionBound = convertBoundDtoToBound(event.visionBound);
   const units = event.units.map(convertUnitDtoToUnit);
-  return [bound, units];
+  return [visionBound, units];
 }
 
 export default class GameSocket {
@@ -60,14 +60,14 @@ export default class GameSocket {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [playerId, players, bound, units, items] = parseGameJoinedEvent(newMsg);
-        params.onGameJoined(playerId, players, bound, units, items);
+        const [playerId, players, visionBound, units, items] = parseGameJoinedEvent(newMsg);
+        params.onGameJoined(playerId, players, visionBound, units, items);
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [players] = parsePlayersUpdatedEvent(newMsg);
         params.onPlayersUpdated(players);
       } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
-        const [bound, units] = parseUnitsUpdatedEvent(newMsg);
-        params.onUnitsUpdated(bound, units);
+        const [visionBound, units] = parseUnitsUpdatedEvent(newMsg);
+        params.onUnitsUpdated(visionBound, units);
       }
     };
 
