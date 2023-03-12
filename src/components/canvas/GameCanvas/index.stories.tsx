@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import GameCanvas from '.';
-import { DirectionVo, PositionVo } from '@/models/valueObjects';
+import { PositionVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 export default {
@@ -20,45 +20,19 @@ const Template: ComponentStory<typeof GameCanvas> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-const item = ItemAgg.new({
-  id: '414b5703-91d1-42fc-a007-36dd8f25e329',
-  name: 'Hello',
-  traversable: false,
-  thumbnailSrc: 'https://avatars.dicebear.com/api/pixel-art/1.svg',
-  modelSrc: 'placeholder-item.png',
-});
+const item = ItemAgg.newMockupItem();
 Primary.args = {
-  players: [
-    PlayerAgg.new({
-      id: '1',
-      name: 'Mark',
-      position: PositionVo.new(0, 0),
-      direction: DirectionVo.new(2),
-    }),
-    PlayerAgg.new({
-      id: '1',
-      name: 'Mark',
-      position: PositionVo.new(2, 2),
-      direction: DirectionVo.new(2),
-    }),
-    PlayerAgg.new({
-      id: '1',
-      name: 'Mark',
-      position: PositionVo.new(4, 4),
-      direction: DirectionVo.new(2),
-    }),
-    PlayerAgg.new({
-      id: '1',
-      name: 'Mark',
-      position: PositionVo.new(19, 19),
-      direction: DirectionVo.new(2),
-    }),
+  myPlayer: PlayerAgg.newMockupPlayer(),
+  otherPlayers: [
+    PlayerAgg.newMockupPlayer(),
+    PlayerAgg.newMockupPlayer(),
+    PlayerAgg.newMockupPlayer(),
+    PlayerAgg.newMockupPlayer(),
   ],
   units: [
     UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 0)),
     UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 1)),
     UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 2)),
   ],
-  myPlayerPosition: PositionVo.new(4, 4),
   items: [item],
 };

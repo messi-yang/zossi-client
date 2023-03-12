@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export default class ItemAgg {
   private id: string;
 
@@ -19,6 +21,16 @@ export default class ItemAgg {
 
   static new(params: { id: string; name: string; traversable: boolean; thumbnailSrc: string; modelSrc: string }) {
     return new ItemAgg(params);
+  }
+
+  static newMockupItem(): ItemAgg {
+    return ItemAgg.new({
+      id: uuidv4(),
+      name: 'stone',
+      traversable: true,
+      thumbnailSrc: 'placeholder-item.png',
+      modelSrc: 'placeholder-item.png',
+    });
   }
 
   public getId(): string {

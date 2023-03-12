@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import * as THREE from 'three';
 
-import { BoundVo, PositionVo } from '@/models/valueObjects';
+import { BoundVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 import useDomRect from '@/hooks/useDomRect';
 
@@ -10,9 +10,9 @@ import useObjectCache from './useObjectCache';
 import dataTestids from './dataTestids';
 
 type Props = {
-  players: PlayerAgg[];
+  otherPlayers: PlayerAgg[];
+  myPlayer: PlayerAgg;
   units: UnitAgg[];
-  myPlayerPosition: PositionVo;
   items: ItemAgg[];
   visionBound: BoundVo;
 };
@@ -26,7 +26,7 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Props) {
+function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
   const [scene] = useState<THREE.Scene>(() => {
@@ -90,6 +90,7 @@ function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Pr
     return newRenderer;
   });
   const { loadModel, createObject } = useContext(ThreeJsContext);
+  const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
   const playerObjectCache = useObjectCache(scene);
   const unitObjectCache = useObjectCache(scene);
 
@@ -97,7 +98,7 @@ function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Pr
     items.forEach((item) => loadModel(item.getModelSrc()));
     loadModel(CHARACTER_MODEL_SRC);
     loadModel(BASE_MODEL_SRC);
-  }, [items, players]);
+  }, [items]);
 
   useEffect(
     function putRendererOnWrapperRefReady() {
@@ -123,34 +124,25 @@ function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Pr
 
   useEffect(
     function updateCameraOnPositionChange() {
-      const myPlayerPositionX = myPlayerPosition.getX();
-      const myPlayerPositionZ = myPlayerPosition.getZ();
-
       camera.position.set(myPlayerPositionX, CAMERA_HEIGHT, myPlayerPositionZ + CAMERA_Z_OFFSET);
       camera.lookAt(myPlayerPositionX, 0, myPlayerPositionZ);
     },
-    [myPlayerPosition]
+    [myPlayerPositionX, myPlayerPositionZ]
   );
 
   useEffect(
     function updateDirLightOnPositionChange() {
-      const myPlayerPositionX = myPlayerPosition.getX();
-      const myPlayerPositionZ = myPlayerPosition.getZ();
-
       dirLight.position.set(myPlayerPositionX, DIR_LIGHT_HEIGHT, myPlayerPositionZ + DIR_LIGHT_Z_OFFSET);
       dirLight.target.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
     },
-    [myPlayerPosition]
+    [myPlayerPositionX, myPlayerPositionZ]
   );
 
   useEffect(
     function updateGridOnPositionChange() {
-      const myPlayerPositionX = myPlayerPosition.getX();
-      const myPlayerPositionZ = myPlayerPosition.getZ();
-
       grid.position.set(myPlayerPositionX, 0.01, myPlayerPositionZ);
     },
-    [myPlayerPosition]
+    [myPlayerPositionX, myPlayerPositionZ]
   );
 
   useEffect(
@@ -196,19 +188,36 @@ function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Pr
       const grassObject = createObject(BASE_MODEL_SRC);
       if (!grassObject) return () => {};
 
-      grassObject.position.set(myPlayerPosition.getX(), 0, myPlayerPosition.getZ());
+      grassObject.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
       scene.add(grassObject);
 
       return () => {
         scene.remove(grassObject);
       };
     },
-    [scene, createObject, myPlayerPosition]
+    [scene, createObject, myPlayerPositionX, myPlayerPositionZ]
+  );
+
+  useEffect(
+    function updateOnMyPlayerChange() {
+      const playerObject = createObject(CHARACTER_MODEL_SRC);
+      if (!playerObject) return () => {};
+
+      scene.add(playerObject);
+
+      playerObject.position.set(myPlayer.getPosition().getX() + 0.5, 0, myPlayer.getPosition().getZ() + 0.5);
+      playerObject.rotation.y = Math.PI - (myPlayer.getDirection().toNumber() * Math.PI) / 2;
+
+      return () => {
+        scene.remove(playerObject);
+      };
+    },
+    [scene, createObject, myPlayer]
   );
 
   useEffect(
     function handlePlayersUpdated() {
-      players.forEach((player) => {
+      otherPlayers.forEach((player) => {
         let playerObject = playerObjectCache.getObjectFromScene(player.getId());
         if (!playerObject) {
           playerObject = createObject(CHARACTER_MODEL_SRC);
@@ -221,10 +230,10 @@ function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Pr
         playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
       });
 
-      const playerKeys = players.map((player) => player.getId());
+      const playerKeys = otherPlayers.map((player) => player.getId());
       playerObjectCache.recycleObjectsFromScene(playerKeys);
     },
-    [scene, createObject, players]
+    [scene, createObject, otherPlayers]
   );
 
   useEffect(

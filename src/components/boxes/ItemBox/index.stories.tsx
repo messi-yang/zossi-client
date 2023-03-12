@@ -20,11 +20,5 @@ const Template: ComponentStory<typeof ItemBox> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  item: ItemAgg.new({
-    id: '414b5703-91d1-42fc-a007-36dd8f25e329',
-    name: 'stone',
-    traversable: true,
-    thumbnailSrc: 'placeholder-item.png',
-    modelSrc: 'placeholder-item.png',
-  }),
+  item: ItemAgg.newMockupItem(),
 };
