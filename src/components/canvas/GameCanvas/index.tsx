@@ -46,16 +46,18 @@ function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Pr
     const boundheight = visionBound.getHeight();
     const newGrid = new THREE.Group();
     for (let x = 0; x < boundWidth; x += 1) {
-      const points: THREE.Vector3[] = [];
-      points.push(new THREE.Vector3(x + offsetX, 0, offsetZ));
-      points.push(new THREE.Vector3(x + offsetX, 0, offsetZ + boundheight));
+      const points: THREE.Vector3[] = [
+        new THREE.Vector3(x + offsetX, 0, offsetZ),
+        new THREE.Vector3(x + offsetX, 0, offsetZ + boundheight),
+      ];
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       newGrid.add(new THREE.Line(geometry, material));
     }
     for (let z = 0; z < boundheight; z += 1) {
-      const points: THREE.Vector3[] = [];
-      points.push(new THREE.Vector3(offsetX, 0, z + offsetZ));
-      points.push(new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ));
+      const points: THREE.Vector3[] = [
+        new THREE.Vector3(offsetX, 0, z + offsetZ),
+        new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ),
+      ];
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       newGrid.add(new THREE.Line(geometry, material));
     }
@@ -68,20 +70,14 @@ function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Pr
     newDirLight.castShadow = true;
     newDirLight.position.set(0, DIR_LIGHT_HEIGHT, DIR_LIGHT_Z_OFFSET);
     newDirLight.target.position.set(0, 0, 0);
-    newDirLight.shadow.mapSize.width = 4096;
-    newDirLight.shadow.mapSize.height = 4096;
-    newDirLight.shadow.camera.top = 100;
-    newDirLight.shadow.camera.bottom = -100;
-    newDirLight.shadow.camera.left = -100;
-    newDirLight.shadow.camera.right = 100;
-    newDirLight.shadow.camera.near = 0.5;
-    newDirLight.shadow.camera.far = 500;
+    newDirLight.shadow.mapSize.set(4096, 4096);
+    newDirLight.shadow.camera = new THREE.OrthographicCamera(-100, 100, 100, -100, 0.5, 500);
     scene.add(newDirLight);
     scene.add(newDirLight.target);
     return newDirLight;
   });
   const [camera] = useState<THREE.PerspectiveCamera>(() => {
-    const newCamera = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
+    const newCamera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
     scene.add(newCamera);
     return newCamera;
   });
