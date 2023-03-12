@@ -161,11 +161,15 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
   useEffect(
     function handleBasesUpdated() {
       const grassObject = createObject(BASE_MODEL_SRC);
-      if (!grassObject) return;
+      if (!grassObject) return () => {};
 
       grassObject.position.set(myPlayerPosition.getX(), -0.15, myPlayerPosition.getZ());
       grassObject.scale.set(1000, 1, 1000);
       scene.add(grassObject);
+
+      return () => {
+        scene.remove(grassObject);
+      };
     },
     [scene, createObject, myPlayerPosition]
   );
