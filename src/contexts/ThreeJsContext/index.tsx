@@ -4,6 +4,15 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 type LoadedModelMap = Record<string, THREE.Group | 'loading' | undefined>;
 
+export const enableShadowOnObject = (object: THREE.Group) => {
+  object.traverse((node) => {
+    /* eslint-disable */
+    node.castShadow = true;
+    /* eslint-disable */
+    node.receiveShadow = true;
+  });
+};
+
 type ContextValue = {
   loadModel(modelSrc: string): void;
   createObject(modelSrc: string): THREE.Group | null;
@@ -45,7 +54,9 @@ export function Provider({ children }: Props) {
       const cachedModel = loadedModelMap.current[modelSrc];
       if (!cachedModel || cachedModel === 'loading') return null;
 
-      return cachedModel.clone();
+      const clonedModel = cachedModel.clone();
+      enableShadowOnObject(clonedModel);
+      return clonedModel;
     },
     [rerenderToken]
   );

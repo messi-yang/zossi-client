@@ -1,15 +1,13 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import * as THREE from 'three';
-import forEach from 'lodash/forEach';
 
-import ThreeJsContext from '@/contexts/ThreeJsContext';
 import { PositionVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 import useDomRect from '@/hooks/useDomRect';
-import { enableShadowOnObject } from '@/libs/threeHelper';
-import dataTestids from './dataTestids';
 
-type CachedObjectMap = Record<number | string, THREE.Group | undefined>;
+import ThreeJsContext from '@/contexts/ThreeJsContext';
+import useObjectCache from './useObjectCache';
+import dataTestids from './dataTestids';
 
 type Props = {
   players: PlayerAgg[];
@@ -69,8 +67,8 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
     return newRenderer;
   });
   const { loadModel, createObject } = useContext(ThreeJsContext);
-  const cachedPlayerObjects = useRef<CachedObjectMap>({});
-  const cachedUnitObjects = useRef<CachedObjectMap>({});
+  const playerObjectCache = useObjectCache(scene);
+  const unitObjectCache = useObjectCache(scene);
 
   useEffect(() => {
     items.forEach((item) => loadModel(item.getModelSrc()));
@@ -138,7 +136,6 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
       const grassObject = createObject(BASE_MODEL_SRC);
       if (!grassObject) return;
 
-      enableShadowOnObject(grassObject);
       grassObject.position.set(0, -0.15, 0);
       grassObject.scale.set(1000, 1, 1000);
       scene.add(grassObject);
@@ -149,33 +146,20 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
   useEffect(
     function handlePlayersUpdated() {
       players.forEach((player) => {
-        let playerObject: THREE.Group | null;
-        const cachedPlayerOject = cachedPlayerObjects.current[player.getId()];
-
-        if (cachedPlayerOject) {
-          playerObject = cachedPlayerOject;
-        } else {
+        let playerObject = playerObjectCache.getObjectFromScene(player.getId());
+        if (!playerObject) {
           playerObject = createObject(CHARACTER_MODEL_SRC);
-          if (playerObject) {
-            scene.add(playerObject);
-            cachedPlayerObjects.current[player.getId()] = playerObject;
-            enableShadowOnObject(playerObject);
-          }
+          if (!playerObject) return;
+
+          playerObjectCache.addObjectToScene(player.getId(), playerObject);
         }
 
-        if (playerObject) {
-          playerObject.position.set(player.getPosition().getX() + 0.5, 0, player.getPosition().getZ() + 0.5);
-          playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
-        }
+        playerObject.position.set(player.getPosition().getX() + 0.5, 0, player.getPosition().getZ() + 0.5);
+        playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
       });
 
       const playerKeys = players.map((player) => player.getId());
-      forEach(cachedPlayerObjects.current, (playerObject, playerId) => {
-        if (!playerKeys.includes(playerId) && playerObject) {
-          scene.remove(playerObject);
-          delete cachedPlayerObjects.current[playerId];
-        }
-      });
+      playerObjectCache.recycleObjectsFromScene(playerKeys);
     },
     [scene, createObject, players]
   );
@@ -186,33 +170,19 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
         const item = items.find((_item) => _item.getId() === unit.getItemId());
         if (!item) return;
 
-        const unitId = unit.getIdentifier();
-        let unitObject: THREE.Group | null;
-        const cachedUnitOject = cachedUnitObjects.current[unitId];
-
-        if (cachedUnitOject) {
-          unitObject = cachedUnitOject;
-        } else {
+        let unitObject = unitObjectCache.getObjectFromScene(unit.getIdentifier());
+        if (!unitObject) {
           unitObject = createObject(item.getModelSrc());
-          if (unitObject) {
-            enableShadowOnObject(unitObject);
-            scene.add(unitObject);
-            cachedUnitObjects.current[unitId] = unitObject;
-          }
+          if (!unitObject) return;
+
+          unitObjectCache.addObjectToScene(unit.getIdentifier(), unitObject);
         }
 
-        if (unitObject) {
-          unitObject.position.set(unit.getPosition().getX() + 0.5, 0, unit.getPosition().getZ() + 0.5);
-        }
+        unitObject.position.set(unit.getPosition().getX() + 0.5, 0, unit.getPosition().getZ() + 0.5);
       });
 
       const unitIds = units.map((unit) => unit.getIdentifier());
-      forEach(cachedUnitObjects.current, (unitObject, unitId) => {
-        if (!unitIds.includes(unitId) && unitObject) {
-          scene.remove(unitObject);
-          delete cachedUnitObjects.current[unitId];
-        }
-      });
+      unitObjectCache.recycleObjectsFromScene(unitIds);
     },
     [scene, createObject, items, units]
   );
