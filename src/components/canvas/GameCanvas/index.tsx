@@ -9,9 +9,7 @@ import useDomRect from '@/hooks/useDomRect';
 import { enableShadowOnObject } from '@/libs/threeHelper';
 import dataTestids from './dataTestids';
 
-type CachedObjectMap = {
-  [key: number | string]: THREE.Group | undefined;
-};
+type CachedObjectMap = Record<number | string, THREE.Group | undefined>;
 
 type Props = {
   players: PlayerAgg[];
@@ -38,13 +36,6 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.5);
     hemiLight.position.set(0, HEMI_LIGHT_HEIGHT, 0);
     newScene.add(hemiLight);
-
-    const grid = new THREE.GridHelper(1000, 1000, 0x000000, 0x000000);
-    // @ts-ignore
-    grid.material.opacity = 0.2;
-    // @ts-ignore
-    grid.material.transparent = true;
-    newScene.add(grid);
 
     return newScene;
   });
@@ -110,12 +101,20 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
   );
 
   useEffect(
-    function updateCameraAndDirLightOnPositionChange() {
+    function updateCameraOnPositionChange() {
       const myPlayerPositionX = myPlayerPosition.getX();
       const myPlayerPositionZ = myPlayerPosition.getZ();
 
       camera.position.set(myPlayerPositionX, CAMERA_HEIGHT, myPlayerPositionZ + CAMERA_Z_OFFSET);
       camera.lookAt(myPlayerPositionX, 0, myPlayerPositionZ);
+    },
+    [myPlayerPosition]
+  );
+
+  useEffect(
+    function updateDirLightOnPositionChange() {
+      const myPlayerPositionX = myPlayerPosition.getX();
+      const myPlayerPositionZ = myPlayerPosition.getZ();
 
       dirLight.position.set(myPlayerPositionX, DIR_LIGHT_HEIGHT, myPlayerPositionZ + DIR_LIGHT_Z_OFFSET);
       dirLight.target.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
