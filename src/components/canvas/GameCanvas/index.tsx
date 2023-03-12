@@ -131,16 +131,43 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
     [camera, wrapperDomRect]
   );
 
+  // const baseObjectCache = useObjectCache(scene);
+  // useEffect(
+  //   function handleBasesUpdated() {
+  //     const xOffset = bound.getFrom().getX();
+  //     const zOffset = bound.getFrom().getZ();
+
+  //     const baseObjectIds: string[] = [];
+  //     rangeMatrix(bound.getWidth(), bound.getHeight(), (colIdx, rowIdx) => {
+  //       const baseObjectId = `${xOffset + colIdx},${zOffset + rowIdx}`;
+  //       baseObjectIds.push(baseObjectId);
+
+  //       let baseObject = baseObjectCache.getObjectFromScene(baseObjectId);
+  //       if (!baseObject) {
+  //         baseObject = createObject(BASE_MODEL_SRC);
+  //         if (!baseObject) return;
+
+  //         baseObjectCache.addObjectToScene(baseObjectId, baseObject);
+  //       }
+
+  //       baseObject.position.set(xOffset + colIdx + 0.5, 0, zOffset + rowIdx + 0.5);
+  //     });
+
+  //     baseObjectCache.recycleObjectsFromScene(baseObjectIds);
+  //   },
+  //   [scene, createObject]
+  // );
+
   useEffect(
     function handleBasesUpdated() {
       const grassObject = createObject(BASE_MODEL_SRC);
       if (!grassObject) return;
 
-      grassObject.position.set(0, -0.15, 0);
+      grassObject.position.set(myPlayerPosition.getX(), -0.15, myPlayerPosition.getZ());
       grassObject.scale.set(1000, 1, 1000);
       scene.add(grassObject);
     },
-    [scene, createObject]
+    [scene, createObject, myPlayerPosition]
   );
 
   useEffect(
