@@ -1,1 +1,262 @@
-{"asset":{"generator":"Khronos glTF Spline I/O v0.0.1","version":"2.0"},"scenes":[{"nodes":[0]}],"nodes":[{"name":"","children":[1,2],"matrix":[0.01,0,0,0,0,0.01,0,0,0,0,0.01,0,0,0,0,1]},{"name":"","camera":0,"translation":[589.1329577151588,581.3317800066005,577.3502691896257],"rotation":[-0.279848139615856,0.3647052017160318,0.11591690251935428,0.8804762383535013]},{"name":"Group","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[3]},{"name":"Cube","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,-17.856742986226465,0,1],"mesh":0}],"cameras":[{"type":"orthographic","orthographic":{"xmag":1512,"ymag":809,"zfar":100000,"znear":-100000}}],"meshes":[{"primitives":[{"attributes":{"POSITION":1,"NORMAL":2,"TEXCOORD_0":3},"indices":0,"material":0}]}],"materials":[{"pbrMetallicRoughness":{"baseColorFactor":[0.8786815542035398,0.5289997787599067,0.3116300264571079,1],"metallicFactor":0,"roughnessFactor":0.3},"doubleSided":false}],"buffers":[{"uri":"data:application/octet-stream;base64,AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAABIQgAAAkIAAEhCAABIQgAAAkIAAEjCAABIQgAAAsIAAEhCAABIQgAAAsIAAEjCAABIwgAAAkIAAEjCAABIwgAAAkIAAEhCAABIwgAAAsIAAEjCAABIwgAAAsIAAEhCAABIwgAAAkIAAEjCAABIQgAAAkIAAEjCAABIwgAAAkIAAEhCAABIQgAAAkIAAEhCAABIwgAAAsIAAEhCAABIQgAAAsIAAEhCAABIwgAAAsIAAEjCAABIQgAAAsIAAEjCAABIwgAAAkIAAEhCAABIQgAAAkIAAEhCAABIwgAAAsIAAEhCAABIQgAAAsIAAEhCAABIQgAAAkIAAEjCAABIwgAAAkIAAEjCAABIQgAAAsIAAEjCAABIwgAAAsIAAEjCAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAA","byteLength":840}],"bufferViews":[{"buffer":0,"byteOffset":0,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":72,"byteLength":288,"target":34962},{"buffer":0,"byteOffset":360,"byteLength":288,"target":34962},{"buffer":0,"byteOffset":648,"byteLength":192,"target":34962}],"accessors":[{"bufferView":0,"byteOffset":0,"componentType":5123,"count":36,"type":"SCALAR","min":[0],"max":[23]},{"bufferView":1,"byteOffset":0,"componentType":5126,"count":24,"type":"VEC3","min":[-50,-32.5,-50],"max":[50,32.5,50]},{"bufferView":2,"byteOffset":0,"componentType":5126,"count":24,"type":"VEC3","min":[-1,-1,-1],"max":[1,1,1]},{"bufferView":3,"byteOffset":0,"componentType":5126,"count":24,"type":"VEC2","min":[0,0],"max":[1,1]}],"extensions":{"KHR_lights_punctual":{"lights":[]}},"extensionsUsed":["KHR_lights_punctual"]}
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "THREE.GLTFExporter"
+  },
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "scene": 0,
+  "nodes": [
+    {
+      "children": [
+        2,
+        3,
+        4
+      ],
+      "matrix": [
+        0.01,
+        0,
+        0,
+        0,
+        0,
+        0.01,
+        0,
+        0,
+        0,
+        0,
+        0.01,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "matrix": [
+        0.9999999999999583,
+        -2.465190328815559e-31,
+        -3.8857805861878837e-16,
+        0,
+        5.5511151231255516e-17,
+        0.9999999999999583,
+        -9.860761315262237e-32,
+        0,
+        4.4408920985004413e-16,
+        1.1102230246251093e-16,
+        0.9999999999999583,
+        0,
+        -1.061550847225557e-11,
+        -9.844498886950163,
+        7.105427357600706e-15,
+        1
+      ],
+      "name": "landbottom",
+      "mesh": 0
+    },
+    {
+      "name": "House",
+      "children": [
+        1
+      ]
+    },
+    {
+      "matrix": [
+        0.7071067811865477,
+        -2.7755575615628914e-17,
+        -0.7071067811865474,
+        0,
+        -0.408248290463863,
+        0.816496580927726,
+        -0.40824829046386313,
+        0,
+        0.5773502691896256,
+        0.5773502691896258,
+        0.5773502691896258,
+        0,
+        744.0776827035335,
+        864.9227524467071,
+        382.31817963574963,
+        1
+      ],
+      "camera": 0
+    },
+    {
+      "matrix": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1
+      ],
+      "name": "Default Ambient Light"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 288,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 288,
+      "byteLength": 288,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 576,
+      "byteLength": 192,
+      "target": 34962,
+      "byteStride": 8
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 768,
+      "byteLength": 72,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 840,
+      "uri": "data:application/octet-stream;base64,AMBaRQAAIEEAwFpFAMBaRQAAIEEAwFrFAMBaRQAAIMEAwFpFAMBaRQAAIMEAwFrFAMBaxQAAIEEAwFrFAMBaxQAAIEEAwFpFAMBaxQAAIMEAwFrFAMBaxQAAIMEAwFpFAMBaxQAAIEEAwFrFAMBaRQAAIEEAwFrFAMBaxQAAIEEAwFpFAMBaRQAAIEEAwFpFAMBaxQAAIMEAwFpFAMBaRQAAIMEAwFpFAMBaxQAAIMEAwFrFAMBaRQAAIMEAwFrFAMBaxQAAIEEAwFpFAMBaRQAAIEEAwFpFAMBaxQAAIMEAwFpFAMBaRQAAIMEAwFpFAMBaRQAAIEEAwFrFAMBaxQAAIEEAwFrFAMBaRQAAIMEAwFrFAMBaxQAAIMEAwFrFAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUA"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        3500,
+        10,
+        3500
+      ],
+      "min": [
+        -3500,
+        -10,
+        -3500
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        1,
+        1
+      ],
+      "min": [
+        0,
+        0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 36,
+      "max": [
+        23
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.7529422167708612,
+          0.450785782828426,
+          0.2663556047920505,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.99
+      },
+      "doubleSided": false
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "mode": 4,
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "extras": {
+            "parameters": {
+              "width": 7000,
+              "widthSegments": 1,
+              "heightSegments": 1,
+              "depthSegments": 1,
+              "cornerRadius": 0,
+              "cornerSegments": 8,
+              "height": 20,
+              "depth": 7000,
+              "type": "CubeGeometry"
+            },
+            "type": "CubeGeometry"
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "cameras": [
+    {
+      "type": "orthographic",
+      "orthographic": {
+        "xmag": 15.502128105303191,
+        "ymag": 8.294458754755476,
+        "zfar": 100000,
+        "znear": 0
+      }
+    }
+  ]
+}

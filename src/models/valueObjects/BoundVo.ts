@@ -25,4 +25,12 @@ export default class BoundVo {
   public getTo(): PositionVo {
     return this.to;
   }
+
+  public getWidth(): number {
+    return this.to.getX() - this.from.getX();
+  }
+
+  public getHeight(): number {
+    return this.to.getZ() - this.from.getZ();
+  }
 }

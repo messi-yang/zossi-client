@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import * as THREE from 'three';
 
-import { PositionVo } from '@/models/valueObjects';
+import { BoundVo, PositionVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 import useDomRect from '@/hooks/useDomRect';
 
@@ -14,6 +14,7 @@ type Props = {
   units: UnitAgg[];
   myPlayerPosition: PositionVo;
   items: ItemAgg[];
+  visionBound: BoundVo;
 };
 
 const CHARACTER_MODEL_SRC = '/characters/robot.gltf';
@@ -24,7 +25,7 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
+function GameCanvas({ players, units, myPlayerPosition, items, visionBound }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
   const [scene] = useState<THREE.Scene>(() => {
@@ -36,6 +37,31 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
     newScene.add(hemiLight);
 
     return newScene;
+  });
+  const [grid] = useState<THREE.Group>(() => {
+    const material = new THREE.LineBasicMaterial({ color: 0xffaf82 });
+    const offsetX = visionBound.getFrom().getX();
+    const offsetZ = visionBound.getFrom().getZ();
+    const boundWidth = visionBound.getWidth();
+    const boundheight = visionBound.getHeight();
+    const newGrid = new THREE.Group();
+    for (let x = 0; x < boundWidth; x += 1) {
+      const points: THREE.Vector3[] = [];
+      points.push(new THREE.Vector3(x + offsetX, 0, offsetZ));
+      points.push(new THREE.Vector3(x + offsetX, 0, offsetZ + boundheight));
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      newGrid.add(new THREE.Line(geometry, material));
+    }
+    for (let z = 0; z < boundheight; z += 1) {
+      const points: THREE.Vector3[] = [];
+      points.push(new THREE.Vector3(offsetX, 0, z + offsetZ));
+      points.push(new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ));
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      newGrid.add(new THREE.Line(geometry, material));
+    }
+    newGrid.position.set(0, 0.01, 0);
+    scene.add(newGrid);
+    return newGrid;
   });
   const [dirLight] = useState<THREE.DirectionalLight>(() => {
     const newDirLight = new THREE.DirectionalLight(0xffffff, 0.5);
@@ -121,6 +147,16 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
   );
 
   useEffect(
+    function updateGridOnPositionChange() {
+      const myPlayerPositionX = myPlayerPosition.getX();
+      const myPlayerPositionZ = myPlayerPosition.getZ();
+
+      grid.position.set(myPlayerPositionX, 0.01, myPlayerPositionZ);
+    },
+    [myPlayerPosition]
+  );
+
+  useEffect(
     function updateCameraAspectOnWrapperDomRectChange() {
       if (!wrapperDomRect) {
         return;
@@ -163,8 +199,7 @@ function GameCanvas({ players, units, myPlayerPosition, items }: Props) {
       const grassObject = createObject(BASE_MODEL_SRC);
       if (!grassObject) return () => {};
 
-      grassObject.position.set(myPlayerPosition.getX(), -0.15, myPlayerPosition.getZ());
-      grassObject.scale.set(1000, 1, 1000);
+      grassObject.position.set(myPlayerPosition.getX(), 0, myPlayerPosition.getZ());
       scene.add(grassObject);
 
       return () => {

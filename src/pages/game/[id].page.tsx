@@ -17,8 +17,19 @@ const Room: NextPage = function Room() {
   const gameId = router.query.id;
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
-  const { units, items, myPlayer, players, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
-    useContext(GameContext);
+  const {
+    units,
+    items,
+    myPlayer,
+    players,
+    visionBound,
+    gameStatus,
+    joinGame,
+    move,
+    leaveGame,
+    placeItem,
+    destroyItem,
+  } = useContext(GameContext);
   const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
@@ -146,8 +157,14 @@ const Room: NextPage = function Room() {
           </section>
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {myPlayer && players && units && items && (
-                <GameCanvas players={players} myPlayerPosition={myPlayer.getPosition()} units={units} items={items} />
+              {myPlayer && players && units && items && visionBound && (
+                <GameCanvas
+                  players={players}
+                  myPlayerPosition={myPlayer.getPosition()}
+                  units={units}
+                  items={items}
+                  visionBound={visionBound}
+                />
               )}
             </section>
           </section>
@@ -173,8 +190,14 @@ const Room: NextPage = function Room() {
           />
           <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
             <section className="w-full h-full">
-              {myPlayer && players && units && items && (
-                <GameCanvas players={players} myPlayerPosition={myPlayer.getPosition()} units={units} items={items} />
+              {myPlayer && players && units && items && visionBound && (
+                <GameCanvas
+                  players={players}
+                  myPlayerPosition={myPlayer.getPosition()}
+                  units={units}
+                  items={items}
+                  visionBound={visionBound}
+                />
               )}
             </section>
           </section>
