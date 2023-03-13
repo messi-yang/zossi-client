@@ -4,15 +4,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 type LoadedModelMap = Record<string, THREE.Group | 'loading' | undefined>;
 
-export const enableShadowOnObject = (object: THREE.Group) => {
-  object.traverse((node) => {
-    /* eslint-disable */
-    node.castShadow = true;
-    /* eslint-disable */
-    node.receiveShadow = true;
-  });
-};
-
 type ContextValue = {
   loadModel(modelSrc: string): void;
   createObject(modelSrc: string): THREE.Group | null;
@@ -44,6 +35,15 @@ export function Provider({ children }: Props) {
     loadedModelMap.current[modelSrc] = 'loading';
 
     gltfLoader.load(modelSrc, function (gltf) {
+      gltf.scene.traverse((node) => {
+        // TODO - if THREE improves their TS supports, remove the hack below
+        if ((node as THREE.Mesh).isMesh) {
+          const nextNode = node as THREE.Mesh;
+          nextNode.castShadow = true;
+          nextNode.receiveShadow = true;
+          nextNode.frustumCulled = true;
+        }
+      });
       loadedModelMap.current[modelSrc] = gltf.scene;
       setRerenderToken(Math.random());
     });
@@ -55,7 +55,6 @@ export function Provider({ children }: Props) {
       if (!cachedModel || cachedModel === 'loading') return null;
 
       const clonedModel = cachedModel.clone();
-      enableShadowOnObject(clonedModel);
       return clonedModel;
     },
     [rerenderToken]
