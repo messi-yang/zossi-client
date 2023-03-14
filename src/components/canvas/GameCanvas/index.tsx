@@ -10,6 +10,13 @@ import { rangeMatrix } from '@/libs/common';
 import useObjectCache from './useObjectCache';
 import dataTestids from './dataTestids';
 
+type InstancedMeshInfo = {
+  mesh: THREE.InstancedMesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
+  worldScale: THREE.Vector3;
+  worldPosition: THREE.Vector3;
+  worldQuaternion: THREE.Quaternion;
+};
+
 type Props = {
   otherPlayers: PlayerAgg[];
   myPlayer: PlayerAgg;
@@ -93,7 +100,6 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
   const { loadModel, createObject } = useContext(ThreeJsContext);
   const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
   const playerObjectCache = useObjectCache(scene);
-  const unitObjectCache = useObjectCache(scene);
 
   useEffect(() => {
     items.forEach((item) => loadModel(item.getModelSrc()));
@@ -167,22 +173,31 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
       const visionBoundWidth = visionBound.getWidth();
       const visionBoundHeight = visionBound.getHeight();
 
-      const objMeshes: THREE.Mesh[] = [];
+      const baseObjMeshes: THREE.Mesh[] = [];
       baseObject.traverse((node) => {
         const currentNode = node as THREE.Mesh;
-        if (currentNode.isMesh) objMeshes.push(currentNode);
+        if (currentNode.isMesh) baseObjMeshes.push(currentNode);
       });
 
-      const instancedMeshes = objMeshes.map((mesh) => ({
-        mesh: new THREE.InstancedMesh(mesh.geometry, mesh.material, visionBoundWidth * visionBoundHeight),
-        worldScale: mesh.getWorldScale(new THREE.Vector3()),
-        worldPosition: mesh.getWorldPosition(new THREE.Vector3()),
-        worldQuaternion: mesh.getWorldQuaternion(new THREE.Quaternion()),
-      }));
+      const grassObjInstancedMeshInfos: InstancedMeshInfo[] = baseObjMeshes.map((baseObjMesh) => {
+        const mesh = new THREE.InstancedMesh(
+          baseObjMesh.geometry,
+          baseObjMesh.material,
+          visionBoundWidth * visionBoundHeight
+        );
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        return {
+          mesh,
+          worldScale: baseObjMesh.getWorldScale(new THREE.Vector3()),
+          worldPosition: baseObjMesh.getWorldPosition(new THREE.Vector3()),
+          worldQuaternion: baseObjMesh.getWorldQuaternion(new THREE.Quaternion()),
+        };
+      });
 
       let index = 0;
       rangeMatrix(visionBoundWidth, visionBoundHeight, (colIdx, rowIdx) => {
-        instancedMeshes.forEach(({ mesh, worldScale, worldQuaternion, worldPosition }) => {
+        grassObjInstancedMeshInfos.forEach(({ mesh, worldScale, worldQuaternion, worldPosition }) => {
           const objectPosX = boundOffsetX + colIdx + 0.5;
           const objectPosZ = boundOffsetZ + rowIdx + 0.5;
           const position = new THREE.Vector3(
@@ -196,12 +211,12 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
         index += 1;
       });
 
-      instancedMeshes.forEach(({ mesh }) => {
+      grassObjInstancedMeshInfos.forEach(({ mesh }) => {
         scene.add(mesh);
       });
 
       return () => {
-        instancedMeshes.forEach(({ mesh }) => {
+        grassObjInstancedMeshInfos.forEach(({ mesh }) => {
           scene.remove(mesh);
         });
       };
@@ -249,40 +264,86 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
 
   useEffect(
     function updateUnits() {
+      const itemUnitsMap: Record<string, UnitAgg[]> = {};
       units.forEach((unit) => {
-        const item = items.find((_item) => _item.getId() === unit.getItemId());
-        if (!item) return;
-
-        let unitObject = unitObjectCache.getObjectFromScene(unit.getIdentifier());
-        if (!unitObject) {
-          unitObject = createObject(item.getModelSrc());
-          if (!unitObject) return;
-
-          unitObjectCache.addObjectToScene(unit.getIdentifier(), unitObject);
+        if (!itemUnitsMap[unit.getItemId()]) {
+          itemUnitsMap[unit.getItemId()] = [];
         }
-
-        unitObject.position.set(unit.getPosition().getX() + 0.5, 0, unit.getPosition().getZ() + 0.5);
+        itemUnitsMap[unit.getItemId()].push(unit);
       });
 
-      const unitIds = units.map((unit) => unit.getIdentifier());
-      unitObjectCache.recycleObjectsFromScene(unitIds);
+      let totalItemIntstancedMeshInfosMap: InstancedMeshInfo[] = [];
+      Object.keys(itemUnitsMap).forEach((itemId) => {
+        const itemUnits = itemUnitsMap[itemId];
+        const item = items.find((_item) => _item.getId() === itemId);
+        if (!item) return;
+
+        const itemObj = createObject(item.getModelSrc());
+        if (!itemObj) return;
+
+        const itemObjMeshes: THREE.Mesh[] = [];
+        itemObj.traverse((node) => {
+          const currentNode = node as THREE.Mesh;
+          if (currentNode.isMesh) itemObjMeshes.push(currentNode);
+        });
+        const itemInstancedMeshInfos: InstancedMeshInfo[] = itemObjMeshes.map((itemObjMesh) => {
+          const mesh = new THREE.InstancedMesh(itemObjMesh.geometry, itemObjMesh.material, itemUnits.length);
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          return {
+            mesh,
+            worldScale: itemObjMesh.getWorldScale(new THREE.Vector3()),
+            worldPosition: itemObjMesh.getWorldPosition(new THREE.Vector3()),
+            worldQuaternion: itemObjMesh.getWorldQuaternion(new THREE.Quaternion()),
+          };
+        });
+        totalItemIntstancedMeshInfosMap = totalItemIntstancedMeshInfosMap.concat(itemInstancedMeshInfos);
+
+        itemUnits.forEach((unit, unitIdx) => {
+          itemInstancedMeshInfos.forEach(({ mesh, worldScale, worldQuaternion, worldPosition }) => {
+            const [objectPosX, objectPosZ] = [unit.getPosition().getX() + 0.5, unit.getPosition().getZ() + 0.5];
+            const position = new THREE.Vector3(
+              objectPosX + worldPosition.x,
+              worldPosition.y,
+              objectPosZ + worldPosition.z
+            );
+            const matrix = new THREE.Matrix4().compose(position, worldQuaternion, worldScale);
+            mesh.setMatrixAt(unitIdx, matrix);
+          });
+        });
+        itemInstancedMeshInfos.forEach(({ mesh }) => {
+          scene.add(mesh);
+        });
+      });
+
+      return () => {
+        totalItemIntstancedMeshInfosMap.forEach(({ mesh }) => {
+          scene.remove(mesh);
+        });
+      };
     },
     [scene, createObject, items, units]
   );
 
   useEffect(
     function animateEffect() {
-      let animationId: number | null = null;
-      const animate = () => {
-        animationId = requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-      };
+      const maxFPS = 60;
+      const frameDelay = 1000 / maxFPS;
+      let lastFrameTime = 0;
+      let animateCount = 0;
 
+      function animate() {
+        const currentTime = performance.now();
+        const elapsed = currentTime - lastFrameTime;
+        if (elapsed > frameDelay) {
+          if (animateCount % 60 === 0) console.log(`Render Information: ${JSON.stringify(renderer.info.render)}`);
+          lastFrameTime = currentTime - (elapsed % frameDelay);
+          renderer.render(scene, camera);
+          animateCount += 1;
+        }
+        requestAnimationFrame(animate);
+      }
       animate();
-
-      return () => {
-        if (animationId !== null) cancelAnimationFrame(animationId);
-      };
     },
     [renderer, scene, camera]
   );
