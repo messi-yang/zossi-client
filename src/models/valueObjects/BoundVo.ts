@@ -27,10 +27,10 @@ export default class BoundVo {
   }
 
   public getWidth(): number {
-    return this.to.getX() - this.from.getX();
+    return this.to.getX() - this.from.getX() + 1;
   }
 
   public getHeight(): number {
-    return this.to.getZ() - this.from.getZ();
+    return this.to.getZ() - this.from.getZ() + 1;
   }
 }

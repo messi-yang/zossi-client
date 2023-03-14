@@ -6,6 +6,7 @@ import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 import useDomRect from '@/hooks/useDomRect';
 
 import ThreeJsContext from '@/contexts/ThreeJsContext';
+import { rangeMatrix } from '@/libs/common';
 import useObjectCache from './useObjectCache';
 import dataTestids from './dataTestids';
 
@@ -46,7 +47,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
     const boundWidth = visionBound.getWidth();
     const boundheight = visionBound.getHeight();
     const newGrid = new THREE.Group();
-    for (let x = 0; x < boundWidth; x += 1) {
+    for (let x = 0; x <= boundWidth; x += 1) {
       const points: THREE.Vector3[] = [
         new THREE.Vector3(x + offsetX, 0, offsetZ),
         new THREE.Vector3(x + offsetX, 0, offsetZ + boundheight),
@@ -54,7 +55,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       newGrid.add(new THREE.Line(geometry, material));
     }
-    for (let z = 0; z < boundheight; z += 1) {
+    for (let z = 0; z <= boundheight; z += 1) {
       const points: THREE.Vector3[] = [
         new THREE.Vector3(offsetX, 0, z + offsetZ),
         new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ),
@@ -62,7 +63,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       newGrid.add(new THREE.Line(geometry, material));
     }
-    newGrid.position.set(0, 0.01, 0);
+    newGrid.position.set(0, 0, 0);
     scene.add(newGrid);
     return newGrid;
   });
@@ -156,46 +157,56 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
     [camera, wrapperDomRect]
   );
 
-  // const baseObjectCache = useObjectCache(scene);
-  // useEffect(
-  //   function handleBasesUpdated() {
-  //     const xOffset = bound.getFrom().getX();
-  //     const zOffset = bound.getFrom().getZ();
-
-  //     const baseObjectIds: string[] = [];
-  //     rangeMatrix(bound.getWidth(), bound.getHeight(), (colIdx, rowIdx) => {
-  //       const baseObjectId = `${xOffset + colIdx},${zOffset + rowIdx}`;
-  //       baseObjectIds.push(baseObjectId);
-
-  //       let baseObject = baseObjectCache.getObjectFromScene(baseObjectId);
-  //       if (!baseObject) {
-  //         baseObject = createObject(BASE_MODEL_SRC);
-  //         if (!baseObject) return;
-
-  //         baseObjectCache.addObjectToScene(baseObjectId, baseObject);
-  //       }
-
-  //       baseObject.position.set(xOffset + colIdx + 0.5, 0, zOffset + rowIdx + 0.5);
-  //     });
-
-  //     baseObjectCache.recycleObjectsFromScene(baseObjectIds);
-  //   },
-  //   [scene, createObject]
-  // );
-
   useEffect(
-    function handleBasesUpdated() {
-      const grassObject = createObject(BASE_MODEL_SRC);
-      if (!grassObject) return () => {};
+    function updateBaseOnVisionUpdate() {
+      const baseObject = createObject(BASE_MODEL_SRC);
+      if (!baseObject) return () => {};
 
-      grassObject.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
-      scene.add(grassObject);
+      const boundOffsetX = visionBound.getFrom().getX();
+      const boundOffsetZ = visionBound.getFrom().getZ();
+      const visionBoundWidth = visionBound.getWidth();
+      const visionBoundHeight = visionBound.getHeight();
+
+      const objMeshes: THREE.Mesh[] = [];
+      baseObject.traverse((node) => {
+        const currentNode = node as THREE.Mesh;
+        if (currentNode.isMesh) objMeshes.push(currentNode);
+      });
+
+      const instancedMeshes = objMeshes.map((mesh) => ({
+        mesh: new THREE.InstancedMesh(mesh.geometry, mesh.material, visionBoundWidth * visionBoundHeight),
+        worldScale: mesh.getWorldScale(new THREE.Vector3()),
+        worldPosition: mesh.getWorldPosition(new THREE.Vector3()),
+        worldQuaternion: mesh.getWorldQuaternion(new THREE.Quaternion()),
+      }));
+
+      let index = 0;
+      rangeMatrix(visionBoundWidth, visionBoundHeight, (colIdx, rowIdx) => {
+        instancedMeshes.forEach(({ mesh, worldScale, worldQuaternion, worldPosition }) => {
+          const objectPosX = boundOffsetX + colIdx + 0.5;
+          const objectPosZ = boundOffsetZ + rowIdx + 0.5;
+          const position = new THREE.Vector3(
+            objectPosX + worldPosition.x,
+            worldPosition.y,
+            objectPosZ + worldPosition.z
+          );
+          const matrix = new THREE.Matrix4().compose(position, worldQuaternion, worldScale);
+          mesh.setMatrixAt(index, matrix);
+        });
+        index += 1;
+      });
+
+      instancedMeshes.forEach(({ mesh }) => {
+        scene.add(mesh);
+      });
 
       return () => {
-        scene.remove(grassObject);
+        instancedMeshes.forEach(({ mesh }) => {
+          scene.remove(mesh);
+        });
       };
     },
-    [scene, createObject, myPlayerPositionX, myPlayerPositionZ]
+    [scene, createObject, visionBound, myPlayerPositionX, myPlayerPositionZ]
   );
 
   useEffect(
@@ -216,7 +227,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
   );
 
   useEffect(
-    function handlePlayersUpdated() {
+    function updatePlayers() {
       otherPlayers.forEach((player) => {
         let playerObject = playerObjectCache.getObjectFromScene(player.getId());
         if (!playerObject) {
@@ -237,7 +248,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
   );
 
   useEffect(
-    function handleUnitsUpdated() {
+    function updateUnits() {
       units.forEach((unit) => {
         const item = items.find((_item) => _item.getId() === unit.getItemId());
         if (!item) return;
