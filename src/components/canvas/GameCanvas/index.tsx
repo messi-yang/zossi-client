@@ -221,7 +221,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
         });
       };
     },
-    [scene, createObject, visionBound, myPlayerPositionX, myPlayerPositionZ]
+    [scene, createObject, visionBound]
   );
 
   useEffect(
