@@ -7,7 +7,7 @@ import useDomRect from '@/hooks/useDomRect';
 
 import ThreeJsContext from '@/contexts/ThreeJsContext';
 import { rangeMatrix } from '@/libs/common';
-import useObjectCache from './useObjectCache';
+import use3dObjectPool from './use3dObjectPool';
 import dataTestids from './dataTestids';
 
 type InstancedMeshInfo = {
@@ -99,7 +99,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
   });
   const { loadModel, createObject } = useContext(ThreeJsContext);
   const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
-  const playerObjectCache = useObjectCache(scene);
+  const player3dObjectPool = use3dObjectPool(scene);
 
   useEffect(() => {
     items.forEach((item) => loadModel(item.getModelSrc()));
@@ -240,12 +240,12 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
   useEffect(
     function updatePlayers() {
       otherPlayers.forEach((player) => {
-        let playerObject = playerObjectCache.getObjectFromScene(player.getId());
+        let playerObject = player3dObjectPool.getObjectFromScene(player.getId());
         if (!playerObject) {
           playerObject = createObject(CHARACTER_MODEL_SRC);
           if (!playerObject) return;
 
-          playerObjectCache.addObjectToScene(player.getId(), playerObject);
+          player3dObjectPool.addObjectToScene(player.getId(), playerObject);
         }
 
         playerObject.position.set(player.getPosition().getX() + 0.5, 0, player.getPosition().getZ() + 0.5);
@@ -253,7 +253,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
       });
 
       const playerKeys = otherPlayers.map((player) => player.getId());
-      playerObjectCache.recycleObjectsFromScene(playerKeys);
+      player3dObjectPool.recycleObjectsFromScene(playerKeys);
     },
     [scene, createObject, otherPlayers]
   );
