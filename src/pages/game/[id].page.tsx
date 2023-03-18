@@ -59,10 +59,10 @@ const Room: NextPage = function Room() {
       }
 
       const doMove = () => {
-        if (isUpPressed) move(DirectionVo.new(0));
-        if (isRightPressed) move(DirectionVo.new(1));
-        if (isDownPressed) move(DirectionVo.new(2));
-        if (isLeftPressed) move(DirectionVo.new(3));
+        if (isUpPressed) move(DirectionVo.newUp());
+        if (isRightPressed) move(DirectionVo.newRight());
+        if (isDownPressed) move(DirectionVo.newDown());
+        if (isLeftPressed) move(DirectionVo.newLeft());
       };
 
       doMove();

@@ -2,7 +2,6 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import GameCanvas from '.';
-import { PositionVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 export default {
@@ -29,10 +28,6 @@ Primary.args = {
     PlayerAgg.newMockupPlayer(),
     PlayerAgg.newMockupPlayer(),
   ],
-  units: [
-    UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 0)),
-    UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 1)),
-    UnitAgg.new('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 2)),
-  ],
+  units: [UnitAgg.newMockupUnit(), UnitAgg.newMockupUnit(), UnitAgg.newMockupUnit()],
   items: [item],
 };

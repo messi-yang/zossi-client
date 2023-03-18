@@ -12,9 +12,9 @@ import dataTestids from './dataTestids';
 
 type InstancedMeshInfo = {
   mesh: THREE.InstancedMesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
-  worldScale: THREE.Vector3;
-  worldPosition: THREE.Vector3;
-  worldQuaternion: THREE.Quaternion;
+  meshScale: THREE.Vector3;
+  meshPosition: THREE.Vector3;
+  meshQuaternion: THREE.Quaternion;
 };
 
 type Props = {
@@ -189,23 +189,19 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
         mesh.receiveShadow = true;
         return {
           mesh,
-          worldScale: baseObjMesh.getWorldScale(new THREE.Vector3()),
-          worldPosition: baseObjMesh.getWorldPosition(new THREE.Vector3()),
-          worldQuaternion: baseObjMesh.getWorldQuaternion(new THREE.Quaternion()),
+          meshScale: baseObjMesh.getWorldScale(new THREE.Vector3()),
+          meshPosition: baseObjMesh.getWorldPosition(new THREE.Vector3()),
+          meshQuaternion: baseObjMesh.getWorldQuaternion(new THREE.Quaternion()),
         };
       });
 
       let index = 0;
       rangeMatrix(visionBoundWidth, visionBoundHeight, (colIdx, rowIdx) => {
-        grassObjInstancedMeshInfos.forEach(({ mesh, worldScale, worldQuaternion, worldPosition }) => {
-          const objectPosX = boundOffsetX + colIdx + 0.5;
-          const objectPosZ = boundOffsetZ + rowIdx + 0.5;
-          const position = new THREE.Vector3(
-            objectPosX + worldPosition.x,
-            worldPosition.y,
-            objectPosZ + worldPosition.z
-          );
-          const matrix = new THREE.Matrix4().compose(position, worldQuaternion, worldScale);
+        grassObjInstancedMeshInfos.forEach(({ mesh, meshScale, meshQuaternion, meshPosition }) => {
+          const posX = boundOffsetX + colIdx + 0.5;
+          const posZ = boundOffsetZ + rowIdx + 0.5;
+          const position = new THREE.Vector3(posX + meshPosition.x, meshPosition.y, posZ + meshPosition.z);
+          const matrix = new THREE.Matrix4().compose(position, meshQuaternion, meshScale);
           mesh.setMatrixAt(index, matrix);
         });
         index += 1;
@@ -232,7 +228,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
       scene.add(playerObject);
 
       playerObject.position.set(myPlayer.getPosition().getX() + 0.5, 0, myPlayer.getPosition().getZ() + 0.5);
-      playerObject.rotation.y = Math.PI - (myPlayer.getDirection().toNumber() * Math.PI) / 2;
+      playerObject.rotation.y = (myPlayer.getDirection().toNumber() * Math.PI) / 2;
 
       return () => {
         scene.remove(playerObject);
@@ -292,22 +288,34 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
           mesh.receiveShadow = true;
           return {
             mesh,
-            worldScale: itemObjMesh.getWorldScale(new THREE.Vector3()),
-            worldPosition: itemObjMesh.getWorldPosition(new THREE.Vector3()),
-            worldQuaternion: itemObjMesh.getWorldQuaternion(new THREE.Quaternion()),
+            meshScale: itemObjMesh.getWorldScale(new THREE.Vector3()),
+            meshPosition: itemObjMesh.getWorldPosition(new THREE.Vector3()),
+            meshQuaternion: itemObjMesh.getWorldQuaternion(new THREE.Quaternion()),
           };
         });
         totalItemIntstancedMeshInfosMap = totalItemIntstancedMeshInfosMap.concat(itemInstancedMeshInfos);
 
         itemUnits.forEach((unit, unitIdx) => {
-          itemInstancedMeshInfos.forEach(({ mesh, worldScale, worldQuaternion, worldPosition }) => {
-            const [objectPosX, objectPosZ] = [unit.getPosition().getX() + 0.5, unit.getPosition().getZ() + 0.5];
-            const position = new THREE.Vector3(
-              objectPosX + worldPosition.x,
-              worldPosition.y,
-              objectPosZ + worldPosition.z
+          itemInstancedMeshInfos.forEach(({ mesh, meshScale, meshQuaternion, meshPosition }) => {
+            const [unitPosX, unitPosZ] = [unit.getPosition().getX() + 0.5, unit.getPosition().getZ() + 0.5];
+            const unitRotate = (Math.PI / 2) * unit.getDirection().toNumber();
+
+            const meshOrbitRadius = Math.sqrt(meshPosition.x * meshPosition.x + meshPosition.z * meshPosition.z);
+            let meshOrbitalAngle = meshOrbitRadius !== 0 ? Math.asin(meshPosition.z / meshOrbitRadius) : 0;
+            meshOrbitalAngle = meshPosition.x >= 0 ? meshOrbitalAngle : Math.PI - meshOrbitalAngle;
+
+            const meshPosAfterRotation = new THREE.Vector3(
+              meshOrbitRadius * Math.cos(meshOrbitalAngle - unitRotate),
+              meshPosition.y,
+              meshOrbitRadius * Math.sin(meshOrbitalAngle - unitRotate)
             );
-            const matrix = new THREE.Matrix4().compose(position, worldQuaternion, worldScale);
+
+            const position = new THREE.Vector3(unitPosX, 0, unitPosZ).add(meshPosAfterRotation);
+            const quaternion = new THREE.Quaternion()
+              .setFromAxisAngle(new THREE.Vector3(0, 1, 0), unitRotate)
+              .multiply(meshQuaternion);
+
+            const matrix = new THREE.Matrix4().compose(position, quaternion, meshScale);
             mesh.setMatrixAt(unitIdx, matrix);
           });
         });
@@ -332,6 +340,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
       let lastFrameTime = 0;
       let animateCount = 0;
 
+      let animateId: number | null = null;
       function animate() {
         const currentTime = performance.now();
         const elapsed = currentTime - lastFrameTime;
@@ -341,9 +350,15 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
           renderer.render(scene, camera);
           animateCount += 1;
         }
-        requestAnimationFrame(animate);
+        animateId = requestAnimationFrame(animate);
       }
       animate();
+
+      return () => {
+        if (animateId !== null) {
+          cancelAnimationFrame(animateId);
+        }
+      };
     },
     [renderer, scene, camera]
   );
