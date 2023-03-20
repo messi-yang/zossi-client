@@ -124,7 +124,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
         return;
       }
       renderer.setSize(wrapperDomRect.width, wrapperDomRect.height);
-      renderer.setPixelRatio(wrapperDomRect.width / wrapperDomRect.height);
+      renderer.setPixelRatio(2);
     },
     [renderer, wrapperDomRect]
   );
