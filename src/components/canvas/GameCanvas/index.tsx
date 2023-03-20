@@ -25,8 +25,8 @@ type Props = {
   visionBound: BoundVo;
 };
 
-const CHARACTER_MODEL_SRC = '/characters/robot.gltf';
-const BASE_MODEL_SRC = '/bases/grass.gltf';
+const CHARACTER_MODEL_SRC = '/characters/car.gltf';
+const BASE_MODEL_SRC = '/bases/dirt.gltf';
 const CAMERA_FOV = 35;
 const CAMERA_HEIGHT = 20;
 const CAMERA_Z_OFFSET = 20;
