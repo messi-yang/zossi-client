@@ -33,4 +33,11 @@ export default class BoundVo {
   public getHeight(): number {
     return this.to.getZ() - this.from.getZ() + 1;
   }
+
+  public getCenter(): PositionVo {
+    return PositionVo.new(
+      Math.floor((this.from.getX() + this.to.getX()) / 2),
+      Math.floor((this.from.getZ() + this.to.getZ()) / 2)
+    );
+  }
 }

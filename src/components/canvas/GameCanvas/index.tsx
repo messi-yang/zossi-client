@@ -147,9 +147,10 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
 
   useEffect(
     function updateGridOnPositionChange() {
-      grid.position.set(myPlayerPositionX, 0.01, myPlayerPositionZ);
+      const visionBoundCenter = visionBound.getCenter();
+      grid.position.set(visionBoundCenter.getX(), 0, visionBoundCenter.getZ());
     },
-    [myPlayerPositionX, myPlayerPositionZ]
+    [visionBound]
   );
 
   useEffect(
