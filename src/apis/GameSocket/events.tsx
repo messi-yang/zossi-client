@@ -10,8 +10,6 @@ type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
   playerId: string;
   players: PlayerDto[];
-  visionBound: BoundDto;
-  units: UnitDto[];
   items: ItemDto[];
 };
 
