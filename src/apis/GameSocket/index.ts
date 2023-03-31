@@ -7,10 +7,9 @@ import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string, PlayerAgg[], ItemAgg[]] {
-  const players = event.players.map(convertPlayerDtoPlayer);
+function parseGameJoinedEvent(event: GameJoinedEvent): [string, ItemAgg[]] {
   const items = event.items.map(convertItemDtoToItem);
-  return [event.playerId, players, items];
+  return [event.playerId, items];
 }
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg[]] {
@@ -32,7 +31,7 @@ export default class GameSocket {
   constructor(
     gameId: string,
     params: {
-      onGameJoined: (playerId: string, players: PlayerAgg[], items: ItemAgg[]) => void;
+      onGameJoined: (playerId: string, items: ItemAgg[]) => void;
       onPlayersUpdated: (players: PlayerAgg[]) => void;
       onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
       onClose: (disconnectedByClient: boolean) => void;
@@ -52,8 +51,8 @@ export default class GameSocket {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [playerId, players, items] = parseGameJoinedEvent(newMsg);
-        params.onGameJoined(playerId, players, items);
+        const [playerId, items] = parseGameJoinedEvent(newMsg);
+        params.onGameJoined(playerId, items);
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [players] = parsePlayersUpdatedEvent(newMsg);
         params.onPlayersUpdated(players);
@@ -86,7 +85,7 @@ export default class GameSocket {
   static newGameSocket(
     gameId: string,
     params: {
-      onGameJoined: (playerId: string, players: PlayerAgg[], items: ItemAgg[]) => void;
+      onGameJoined: (playerId: string, items: ItemAgg[]) => void;
       onPlayersUpdated: (players: PlayerAgg[]) => void;
       onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
       onClose: (disconnectedByClient: boolean) => void;

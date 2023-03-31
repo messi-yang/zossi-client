@@ -82,9 +82,8 @@ export function Provider({ children }: Props) {
       }
 
       const newGameSocket = GameSocket.newGameSocket(gameId, {
-        onGameJoined: (newPlayerId: string, newPlayers: PlayerAgg[], newItems: ItemAgg[]) => {
+        onGameJoined: (newPlayerId: string, newItems: ItemAgg[]) => {
           setPlayerid(newPlayerId);
-          setPlayers(newPlayers);
           setItems(newItems);
         },
         onPlayersUpdated: (newPlayers: PlayerAgg[]) => {

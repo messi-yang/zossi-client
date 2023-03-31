@@ -9,7 +9,6 @@ enum EventTypeEnum {
 type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
   playerId: string;
-  players: PlayerDto[];
   items: ItemDto[];
 };
 
