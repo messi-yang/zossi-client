@@ -30,11 +30,11 @@ const Room: NextPage = function Room() {
     placeItem,
     destroyItem,
   } = useContext(GameContext);
-  const [isReconnectModalVisible, setIsReconnectModalVisible] = useState<boolean>(false);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
   const selectedItemId = selectedItem?.getId() || null;
   const isBuildindItem = !!selectedItem;
+  const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
 
   useKeyPress('p', {
     onKeyDown: () => {
@@ -111,15 +111,6 @@ const Room: NextPage = function Room() {
   const handleItemSelect = (item: ItemAgg) => {
     setSelectedItem(item);
   };
-
-  useEffect(
-    function onDisconnectEffect() {
-      if (gameStatus === 'DISCONNECTED') {
-        setIsReconnectModalVisible(true);
-      }
-    },
-    [gameStatus]
-  );
 
   const handleRecconectModalConfirmClick = useCallback(() => {
     window.location.reload();

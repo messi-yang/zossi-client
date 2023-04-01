@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   /**
    * We have special extensions here for page components, because we want to
    * test unit tests right beside our page, and having extension this way
