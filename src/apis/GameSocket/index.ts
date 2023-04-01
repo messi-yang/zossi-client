@@ -76,9 +76,6 @@ export default class GameSocket {
     };
 
     this.socket = socket;
-
-    // @ts-ignore
-    globalThis.sendMessage = this.sendMessage.bind(this);
   }
 
   static newGameSocket(
