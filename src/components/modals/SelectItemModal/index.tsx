@@ -9,16 +9,19 @@ import dataTestids from './dataTestids';
 type Props = {
   opened: boolean;
   width: number;
-  selectedItem: ItemAgg | null;
+  selectedItemId: string | null;
   items: ItemAgg[] | null;
   onSelect?: (item: ItemAgg) => void;
   onDone?: () => void;
 };
 
-function SelectItemModal({ opened, width, selectedItem, items, onSelect = () => {}, onDone = () => {} }: Props) {
+function SelectItemModal({ opened, width, selectedItemId, items, onSelect = () => {}, onDone = () => {} }: Props) {
   const handleItemSelect = (item: ItemAgg) => {
     onSelect(item);
   };
+
+  const selectedItem = items?.find((item) => item.getId() === selectedItemId) || null;
+  console.log(selectedItem, selectedItemId);
 
   return (
     <BaseModal width={width} opened={opened} onBackgroundClick={onDone}>

@@ -22,16 +22,11 @@ const Room: NextPage = function Room() {
     useContext(GameContext);
   const { items } = useContext(ItemContext);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
-  const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
-  const selectedItemId = selectedItem?.getId() || null;
-  const isBuildindItem = !!selectedItem;
+  const heldItemId = myPlayer?.getHeldItemid() || null;
+  const isBuildindItem = !!heldItemId;
   const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
 
-  useKeyPress('KeyP', {
-    onKeyDown: () => {
-      if (selectedItemId) placeItem(selectedItemId);
-    },
-  });
+  useKeyPress('KeyP', { onKeyDown: placeItem });
   useKeyPress('KeyO', { onKeyDown: destroyItem });
 
   const isUpPressed = useKeyPress('KeyW');
@@ -77,7 +72,7 @@ const Room: NextPage = function Room() {
 
   useEffect(
     function handleItemsRead() {
-      setSelectedItem(items?.[0] || null);
+      // setSelectedItem(items?.[0] || null);
     },
     [items]
   );
@@ -100,7 +95,7 @@ const Room: NextPage = function Room() {
   };
 
   const handleItemSelect = (item: ItemAgg) => {
-    setSelectedItem(item);
+    console.log(item);
   };
 
   const handleRecconectModalConfirmClick = useCallback(() => {
@@ -124,7 +119,7 @@ const Room: NextPage = function Room() {
           <SelectItemModal
             opened={isSelectItemModalVisible}
             width={560}
-            selectedItem={selectedItem}
+            selectedItemId={heldItemId}
             items={items || []}
             onSelect={handleItemSelect}
             onDone={handleSelectItemDone}
@@ -165,7 +160,7 @@ const Room: NextPage = function Room() {
           <SelectItemModal
             opened={isSelectItemModalVisible}
             width={styleContext.getWindowWidth()}
-            selectedItem={selectedItem}
+            selectedItemId={heldItemId}
             items={items}
             onSelect={handleItemSelect}
             onDone={handleSelectItemDone}

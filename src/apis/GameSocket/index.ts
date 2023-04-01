@@ -124,10 +124,9 @@ export default class GameSocket {
     this.sendMessage(action);
   }
 
-  public placeItem(itemId: string) {
+  public placeItem() {
     const action: PlaceItemCommand = {
       type: CommandTypeEnum.PlaceItem,
-      itemId,
     };
     this.sendMessage(action);
   }

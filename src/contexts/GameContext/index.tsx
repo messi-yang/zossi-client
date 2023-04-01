@@ -13,7 +13,7 @@ type ContextValue = {
   units: UnitAgg[] | null;
   joinGame: (gameId: string) => void;
   move: (direction: DirectionVo) => void;
-  placeItem: (itemId: string) => void;
+  placeItem: () => void;
   destroyItem: () => void;
   leaveGame: () => void;
 };
@@ -105,12 +105,9 @@ export function Provider({ children }: Props) {
     gameSocket?.disconnect();
   }, [gameSocket]);
 
-  const placeItem = useCallback(
-    (itemId: string) => {
-      gameSocket?.placeItem(itemId);
-    },
-    [gameSocket]
-  );
+  const placeItem = useCallback(() => {
+    gameSocket?.placeItem();
+  }, [gameSocket]);
 
   const destroyItem = useCallback(() => {
     gameSocket?.destroyItem();

@@ -31,5 +31,5 @@ Primary.args = {
   opened: true,
   width: 300,
   items,
-  selectedItem: items[0],
+  selectedItemId: items[0].getId(),
 };

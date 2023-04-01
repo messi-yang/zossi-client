@@ -7,6 +7,7 @@ type PlayerDto = {
   name: string;
   position: PositionDto;
   direction: 0 | 1 | 2 | 3;
+  heldItemId: string | null;
 };
 
 function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerAgg {
@@ -15,6 +16,7 @@ function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerAgg {
     name: playerDto.name,
     position: PositionVo.new(playerDto.position.x, playerDto.position.z),
     direction: DirectionVo.new(playerDto.direction),
+    heldItemId: playerDto.heldItemId,
   });
 }
 
