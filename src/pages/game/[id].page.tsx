@@ -27,17 +27,17 @@ const Room: NextPage = function Room() {
   const isBuildindItem = !!selectedItem;
   const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
 
-  useKeyPress('p', {
+  useKeyPress('KeyP', {
     onKeyDown: () => {
       if (selectedItemId) placeItem(selectedItemId);
     },
   });
-  useKeyPress('o', { onKeyDown: destroyItem });
+  useKeyPress('KeyO', { onKeyDown: destroyItem });
 
-  const isUpPressed = useKeyPress('w');
-  const isRightPressed = useKeyPress('d');
-  const isDownPressed = useKeyPress('s');
-  const isLeftPressed = useKeyPress('a');
+  const isUpPressed = useKeyPress('KeyW');
+  const isRightPressed = useKeyPress('KeyD');
+  const isDownPressed = useKeyPress('KeyS');
+  const isLeftPressed = useKeyPress('KeyA');
   useEffect(
     function () {
       let pressedKeysCount = 0;

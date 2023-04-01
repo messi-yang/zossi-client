@@ -3,15 +3,15 @@ import { useEffect, useState } from 'react';
 export default function useKeyPress(targetKey: string, options?: { onKeyDown?: () => void }) {
   const [keyPressed, setKeyPressed] = useState(false);
 
-  const keyDownHandler: (this: Window, ev: KeyboardEvent) => void = ({ key }) => {
-    if (key === targetKey) {
+  const keyDownHandler: (this: Window, ev: KeyboardEvent) => void = ({ code }) => {
+    if (code === targetKey) {
       setKeyPressed(true);
       options?.onKeyDown?.();
     }
   };
 
-  const keyUpHandler: (this: Window, ev: KeyboardEvent) => void = ({ key }) => {
-    if (key === targetKey) setKeyPressed(false);
+  const keyUpHandler: (this: Window, ev: KeyboardEvent) => void = ({ code }) => {
+    if (code === targetKey) setKeyPressed(false);
   };
 
   useEffect(() => {
