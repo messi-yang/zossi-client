@@ -26,7 +26,7 @@ type Props = {
 };
 
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
-const BASE_MODEL_SRC = '/bases/dirt.gltf';
+const BASE_MODEL_SRC = '/bases/lawn.gltf';
 const CAMERA_FOV = 35;
 const CAMERA_HEIGHT = 20;
 const CAMERA_Z_OFFSET = 20;
