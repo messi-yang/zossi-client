@@ -1,4 +1,4 @@
-import type { BoundDto, ItemDto, PlayerDto, UnitDto } from '@/dtos';
+import type { BoundDto, PlayerDto, UnitDto } from '@/dtos';
 
 enum EventTypeEnum {
   GameJoined = 'GAME_JOINED',
@@ -8,7 +8,6 @@ enum EventTypeEnum {
 
 type GameJoinedEvent = {
   type: EventTypeEnum.GameJoined;
-  items: ItemDto[];
 };
 
 type PlayersUpdatedEvent = {

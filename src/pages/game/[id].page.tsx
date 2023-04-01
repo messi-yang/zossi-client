@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import useOnHistoryChange from '@/hooks/useOnHistoryChange';
 import useKeyPress from '@/hooks/useKeyPress';
 import GameContext from '@/contexts/GameContext';
+import ItemContext from '@/contexts/ItemContext';
 import StyleContext from '@/contexts/StyleContext';
 import { DirectionVo } from '@/models/valueObjects';
 import GameCanvas from '@/components/canvas/GameCanvas';
@@ -17,19 +18,9 @@ const Room: NextPage = function Room() {
   const gameId = router.query.id;
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
-  const {
-    units,
-    items,
-    myPlayer,
-    otherPlayers,
-    visionBound,
-    gameStatus,
-    joinGame,
-    move,
-    leaveGame,
-    placeItem,
-    destroyItem,
-  } = useContext(GameContext);
+  const { units, myPlayer, otherPlayers, visionBound, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
+    useContext(GameContext);
+  const { items } = useContext(ItemContext);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<ItemAgg | null>(null);
   const selectedItemId = selectedItem?.getId() || null;

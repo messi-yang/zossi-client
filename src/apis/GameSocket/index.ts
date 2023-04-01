@@ -1,15 +1,15 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
-import { convertPlayerDtoPlayer, convertItemDtoToItem, convertUnitDtoToUnit, convertBoundDtoToBound } from '@/dtos';
+import { convertPlayerDtoPlayer, convertUnitDtoToUnit, convertBoundDtoToBound } from '@/dtos';
 import { DirectionVo, BoundVo } from '@/models/valueObjects';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
-import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
+import { UnitAgg, PlayerAgg } from '@/models/aggregates';
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [ItemAgg[]] {
-  const items = event.items.map(convertItemDtoToItem);
-  return [items];
+function parseGameJoinedEvent(event: GameJoinedEvent): [] {
+  console.log(event);
+  return [];
 }
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg, PlayerAgg[]] {
@@ -30,7 +30,7 @@ export default class GameSocket {
   constructor(
     gameId: string,
     params: {
-      onGameJoined: (items: ItemAgg[]) => void;
+      onGameJoined: () => void;
       onPlayersUpdated: (myPlayer: PlayerAgg, otherPlayers: PlayerAgg[]) => void;
       onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
       onClose: (disconnectedByClient: boolean) => void;
@@ -50,8 +50,8 @@ export default class GameSocket {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [items] = parseGameJoinedEvent(newMsg);
-        params.onGameJoined(items);
+        parseGameJoinedEvent(newMsg);
+        params.onGameJoined();
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [myPlayer, otherPlayers] = parsePlayersUpdatedEvent(newMsg);
         params.onPlayersUpdated(myPlayer, otherPlayers);
@@ -81,7 +81,7 @@ export default class GameSocket {
   static newGameSocket(
     gameId: string,
     params: {
-      onGameJoined: (items: ItemAgg[]) => void;
+      onGameJoined: () => void;
       onPlayersUpdated: (myPlayer: PlayerAgg, otherPlayers: PlayerAgg[]) => void;
       onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
       onClose: (disconnectedByClient: boolean) => void;

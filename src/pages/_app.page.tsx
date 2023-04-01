@@ -1,6 +1,7 @@
 import './tailwind.css';
 import type { AppProps } from 'next/app';
 import { Provider as GameContextProvider } from '@/contexts/GameContext';
+import { Provider as ItemContextProvider } from '@/contexts/ItemContext';
 import { Provider as StyleContextProvider } from '@/contexts/StyleContext';
 import { Provider as ThreeJsContextProvider } from '@/contexts/ThreeJsContext';
 
@@ -9,7 +10,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     <StyleContextProvider>
       <ThreeJsContextProvider>
         <GameContextProvider>
-          <Component {...pageProps} />
+          <ItemContextProvider>
+            <Component {...pageProps} />
+          </ItemContextProvider>
         </GameContextProvider>
       </ThreeJsContextProvider>
     </StyleContextProvider>
