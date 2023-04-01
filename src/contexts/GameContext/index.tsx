@@ -46,29 +46,15 @@ export function Provider({ children }: Props) {
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
 
   const initialContextValue = createInitialContextValue();
-  const [playerId, setPlayerid] = useState<string | null>(null);
-  const [players, setPlayers] = useState<PlayerAgg[] | null>([]);
+  const [myPlayer, setMyPlayer] = useState<PlayerAgg | null>(null);
+  const [otherPlayers, setOtherPlayers] = useState<PlayerAgg[] | null>([]);
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
   const [visionBound, setVisionBound] = useState<BoundVo | null>(initialContextValue.visionBound);
   const [units, setUnits] = useState<UnitAgg[] | null>(initialContextValue.units);
 
-  const myPlayer = useMemo(() => {
-    if (!players) {
-      return null;
-    }
-    return players.find((player) => player.getId() === playerId) || null;
-  }, [playerId, players]);
-
-  const otherPlayers = useMemo(() => {
-    if (!players) {
-      return null;
-    }
-    return players.filter((player) => player.getId() !== playerId);
-  }, [playerId, players]);
-
   const reset = useCallback(() => {
-    setPlayerid(null);
-    setPlayers([]);
+    setMyPlayer(null);
+    setOtherPlayers([]);
     setVisionBound(initialContextValue.visionBound);
     setUnits(initialContextValue.units);
     setItems(initialContextValue.items);
@@ -82,12 +68,12 @@ export function Provider({ children }: Props) {
       }
 
       const newGameSocket = GameSocket.newGameSocket(gameId, {
-        onGameJoined: (newPlayerId: string, newItems: ItemAgg[]) => {
-          setPlayerid(newPlayerId);
+        onGameJoined: (newItems: ItemAgg[]) => {
           setItems(newItems);
         },
-        onPlayersUpdated: (newPlayers: PlayerAgg[]) => {
-          setPlayers(newPlayers);
+        onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerAgg[]) => {
+          setMyPlayer(newMyPlayer);
+          setOtherPlayers(newOtherPlayers);
         },
         onUnitsUpdated: (newVisionBound: BoundVo, newUnits: UnitAgg[]) => {
           setVisionBound(newVisionBound);

@@ -7,14 +7,13 @@ import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 
-function parseGameJoinedEvent(event: GameJoinedEvent): [string, ItemAgg[]] {
+function parseGameJoinedEvent(event: GameJoinedEvent): [ItemAgg[]] {
   const items = event.items.map(convertItemDtoToItem);
-  return [event.playerId, items];
+  return [items];
 }
 
-function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg[]] {
-  const otherPlayers = event.players.map(convertPlayerDtoPlayer);
-  return [otherPlayers];
+function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg, PlayerAgg[]] {
+  return [convertPlayerDtoPlayer(event.myPlayer), event.otherPlayers.map(convertPlayerDtoPlayer)];
 }
 
 function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [BoundVo, UnitAgg[]] {
@@ -31,8 +30,8 @@ export default class GameSocket {
   constructor(
     gameId: string,
     params: {
-      onGameJoined: (playerId: string, items: ItemAgg[]) => void;
-      onPlayersUpdated: (players: PlayerAgg[]) => void;
+      onGameJoined: (items: ItemAgg[]) => void;
+      onPlayersUpdated: (myPlayer: PlayerAgg, otherPlayers: PlayerAgg[]) => void;
       onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
       onClose: (disconnectedByClient: boolean) => void;
       onOpen: () => void;
@@ -51,11 +50,11 @@ export default class GameSocket {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.GameJoined) {
-        const [playerId, items] = parseGameJoinedEvent(newMsg);
-        params.onGameJoined(playerId, items);
+        const [items] = parseGameJoinedEvent(newMsg);
+        params.onGameJoined(items);
       } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
-        const [players] = parsePlayersUpdatedEvent(newMsg);
-        params.onPlayersUpdated(players);
+        const [myPlayer, otherPlayers] = parsePlayersUpdatedEvent(newMsg);
+        params.onPlayersUpdated(myPlayer, otherPlayers);
       } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
         const [visionBound, units] = parseUnitsUpdatedEvent(newMsg);
         params.onUnitsUpdated(visionBound, units);
@@ -85,8 +84,8 @@ export default class GameSocket {
   static newGameSocket(
     gameId: string,
     params: {
-      onGameJoined: (playerId: string, items: ItemAgg[]) => void;
-      onPlayersUpdated: (players: PlayerAgg[]) => void;
+      onGameJoined: (items: ItemAgg[]) => void;
+      onPlayersUpdated: (myPlayer: PlayerAgg, otherPlayers: PlayerAgg[]) => void;
       onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
       onClose: (disconnectedByClient: boolean) => void;
       onOpen: () => void;
