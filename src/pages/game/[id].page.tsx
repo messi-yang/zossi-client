@@ -18,8 +18,19 @@ const Room: NextPage = function Room() {
   const gameId = router.query.id;
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
-  const { units, myPlayer, otherPlayers, visionBound, gameStatus, joinGame, move, leaveGame, placeItem, destroyItem } =
-    useContext(GameContext);
+  const {
+    units,
+    myPlayer,
+    otherPlayers,
+    visionBound,
+    gameStatus,
+    joinGame,
+    move,
+    leaveGame,
+    changeHeldItem,
+    placeItem,
+    destroyItem,
+  } = useContext(GameContext);
   const { items } = useContext(ItemContext);
   const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const heldItemId = myPlayer?.getHeldItemid() || null;
@@ -70,13 +81,6 @@ const Room: NextPage = function Room() {
     [gameId]
   );
 
-  useEffect(
-    function handleItemsRead() {
-      // setSelectedItem(items?.[0] || null);
-    },
-    [items]
-  );
-
   const handleRouterLeave = useCallback(() => {
     leaveGame();
   }, [leaveGame]);
@@ -95,7 +99,7 @@ const Room: NextPage = function Room() {
   };
 
   const handleItemSelect = (item: ItemAgg) => {
-    console.log(item);
+    changeHeldItem(item.getId());
   };
 
   const handleRecconectModalConfirmClick = useCallback(() => {

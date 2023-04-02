@@ -4,7 +4,7 @@ import { DirectionVo, BoundVo } from '@/models/valueObjects';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
-import type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
+import type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, DestroyItemCommand } from './commands';
 import { UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 function parseGameJoinedEvent(event: GameJoinedEvent): [] {
@@ -120,6 +120,14 @@ export default class GameSocket {
       type: CommandTypeEnum.Move,
 
       direction: direction.toNumber(),
+    };
+    this.sendMessage(action);
+  }
+
+  public changeHeldItem(itemId: string) {
+    const action: ChangeHeldItemCommand = {
+      type: CommandTypeEnum.ChangeHeldItem,
+      itemId,
     };
     this.sendMessage(action);
   }

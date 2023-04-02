@@ -1,6 +1,7 @@
 enum CommandTypeEnum {
   Ping = 'PING',
   Move = 'MOVE',
+  ChangeHeldItem = 'CHANGE_HELD_ITEM',
   PlaceItem = 'PLACE_ITEM',
   DestroyItem = 'DESTROY_ITEM',
 }
@@ -14,6 +15,11 @@ type MoveCommand = {
   direction: number;
 };
 
+type ChangeHeldItemCommand = {
+  type: CommandTypeEnum.ChangeHeldItem;
+  itemId: string;
+};
+
 type PlaceItemCommand = {
   type: CommandTypeEnum.PlaceItem;
 };
@@ -24,4 +30,4 @@ type DestroyItemCommand = {
 
 export { CommandTypeEnum };
 
-export type { PingCommand, MoveCommand, PlaceItemCommand, DestroyItemCommand };
+export type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, DestroyItemCommand };
