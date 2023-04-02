@@ -48,7 +48,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
     return newScene;
   });
   const [grid] = useState<THREE.Group>(() => {
-    const material = new THREE.LineBasicMaterial({ color: 0xffaf82 });
+    const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.4, transparent: true });
     const offsetX = visionBound.getFrom().getX();
     const offsetZ = visionBound.getFrom().getZ();
     const boundWidth = visionBound.getWidth();
