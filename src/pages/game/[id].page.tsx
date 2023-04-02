@@ -15,7 +15,7 @@ import ConfirmModal from '@/components/modals/ConfirmModal';
 
 const Room: NextPage = function Room() {
   const router = useRouter();
-  const gameId = router.query.id;
+  const gameId = router.query.id as string | null;
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
@@ -74,7 +74,7 @@ const Room: NextPage = function Room() {
 
   useEffect(
     function joinGameOnInitEffect() {
-      if (typeof gameId === 'string') {
+      if (gameId) {
         joinGame(gameId);
       }
     },

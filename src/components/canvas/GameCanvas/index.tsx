@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import * as THREE from 'three';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
 import { BoundVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
@@ -27,6 +28,7 @@ type Props = {
 
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
 const BASE_MODEL_SRC = '/bases/lawn.gltf';
+const FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
 const CAMERA_FOV = 35;
 const CAMERA_HEIGHT = 20;
 const CAMERA_Z_OFFSET = 20;
@@ -97,15 +99,22 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
     newRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
     return newRenderer;
   });
-  const { loadModel, createObject } = useContext(ThreeJsContext);
+  const { loadModel, createObject, loadFont, getFont } = useContext(ThreeJsContext);
   const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
   const player3dObjectPool = use3dObjectPool(scene);
 
-  useEffect(() => {
-    items.forEach((item) => loadModel(item.getModelSrc()));
-    loadModel(CHARACTER_MODEL_SRC);
-    loadModel(BASE_MODEL_SRC);
-  }, [items]);
+  useEffect(
+    function loadModelsOnItemsChange() {
+      items.forEach((item) => loadModel(item.getModelSrc()));
+      loadModel(CHARACTER_MODEL_SRC);
+      loadModel(BASE_MODEL_SRC);
+    },
+    [items]
+  );
+
+  useEffect(function loadFontOnInit() {
+    loadFont(FONT_SRC);
+  }, []);
 
   useEffect(
     function putRendererOnWrapperRefReady() {
@@ -222,25 +231,11 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
   );
 
   useEffect(
-    function updateOnMyPlayerChange() {
-      const playerObject = createObject(CHARACTER_MODEL_SRC);
-      if (!playerObject) return () => {};
-
-      scene.add(playerObject);
-
-      playerObject.position.set(myPlayer.getPosition().getX() + 0.5, 0, myPlayer.getPosition().getZ() + 0.5);
-      playerObject.rotation.y = (myPlayer.getDirection().toNumber() * Math.PI) / 2;
-
-      return () => {
-        scene.remove(playerObject);
-      };
-    },
-    [scene, createObject, myPlayer]
-  );
-
-  useEffect(
     function updatePlayers() {
-      otherPlayers.forEach((player) => {
+      const playerNameMeshes: THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial>[] = [];
+      const font = getFont(FONT_SRC);
+      const allPlayers = [...otherPlayers, myPlayer];
+      allPlayers.forEach((player) => {
         let playerObject = player3dObjectPool.getObjectFromScene(player.getId());
         if (!playerObject) {
           playerObject = createObject(CHARACTER_MODEL_SRC);
@@ -248,15 +243,36 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
 
           player3dObjectPool.addObjectToScene(player.getId(), playerObject);
         }
-
         playerObject.position.set(player.getPosition().getX() + 0.5, 0, player.getPosition().getZ() + 0.5);
         playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
+
+        if (font) {
+          const textGeometry = new TextGeometry(myPlayer.getName(), {
+            font,
+            size: 0.3,
+            height: 0.02,
+          });
+          const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.3, transparent: true });
+          const playerNameMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+          textGeometry.computeBoundingBox();
+          textGeometry.center();
+          playerNameMesh.position.set(player.getPosition().getX() + 0.5, 1.5, player.getPosition().getZ() + 0.5);
+          playerNameMeshes.push(playerNameMesh);
+          scene.add(playerNameMesh);
+        }
       });
 
-      const playerKeys = otherPlayers.map((player) => player.getId());
+      const playerKeys = allPlayers.map((player) => player.getId());
       player3dObjectPool.recycleObjectsFromScene(playerKeys);
+
+      return () => {
+        playerNameMeshes.forEach((playerNameMesh) => {
+          scene.remove(playerNameMesh);
+        });
+      };
     },
-    [scene, createObject, otherPlayers]
+    [scene, createObject, getFont, myPlayer, otherPlayers]
   );
 
   useEffect(

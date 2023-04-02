@@ -50,6 +50,10 @@ export default class PlayerAgg {
     return this.id;
   }
 
+  public getName(): string {
+    return this.name;
+  }
+
   public getPosition(): PositionVo {
     return this.position;
   }
