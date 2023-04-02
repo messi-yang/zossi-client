@@ -15,7 +15,7 @@ import SmallLogo from '@/components/logos/SmallLogo';
 
 const Room: NextPage = function Room() {
   const router = useRouter();
-  const gameId = router.query.id as string | null;
+  const worldId = router.query.id as string | null;
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
@@ -24,8 +24,8 @@ const Room: NextPage = function Room() {
     otherPlayers,
     visionBound,
     gameStatus,
-    joinGame,
     move,
+    joinGame,
     leaveGame,
     changeHeldItem,
     placeItem,
@@ -34,6 +34,7 @@ const Room: NextPage = function Room() {
   const { items } = useContext(ItemContext);
   const heldItemId = myPlayer?.getHeldItemid() || null;
   const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
+  const isJoinGameModalVisible = gameStatus === 'WAITING';
 
   const switchToNextItem = useCallback(() => {
     if (!items) {
@@ -79,15 +80,6 @@ const Room: NextPage = function Room() {
     [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, move]
   );
 
-  useEffect(
-    function joinGameOnInitEffect() {
-      if (gameId) {
-        joinGame(gameId);
-      }
-    },
-    [gameId]
-  );
-
   const handleRouterLeave = useCallback(() => {
     leaveGame();
   }, [leaveGame]);
@@ -109,9 +101,17 @@ const Room: NextPage = function Room() {
     changeHeldItem(item.getId());
   };
 
+  const handleJoinGameModalConfirmClick = useCallback(() => {
+    if (worldId) {
+      joinGame(worldId);
+    }
+  }, [joinGame, worldId]);
+
   const handleRecconectModalConfirmClick = useCallback(() => {
-    window.location.reload();
-  }, []);
+    if (worldId) {
+      joinGame(worldId);
+    }
+  }, [joinGame, worldId]);
 
   return (
     <main
@@ -120,8 +120,15 @@ const Room: NextPage = function Room() {
     >
       <ConfirmModal
         opened={isReconnectModalVisible}
+        message="You're disconnected to the game."
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
+      />
+      <ConfirmModal
+        opened={isJoinGameModalVisible}
+        message="Join game?"
+        buttonCopy="Let's go"
+        onComfirm={handleJoinGameModalConfirmClick}
       />
       <section className="absolute bottom-2 left-1/2 translate-x-[-50%] z-10">
         <SelectItemsBar items={items} selectedItemId={heldItemId} onSelect={handleItemSelect} />

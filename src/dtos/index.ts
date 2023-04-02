@@ -9,8 +9,10 @@ import { convertItemDtoToItem } from './ItemDto';
 import type { ItemDto } from './ItemDto';
 import { convertPlayerDtoPlayer } from './PlayerDto';
 import type { PlayerDto } from './PlayerDto';
+import { convertWorldDtoToUnit } from './WorldDto';
+import type { WorldDto } from './WorldDto';
 
-export type { BoundDto, PositionDto, SizeDto, UnitDto, ItemDto, PlayerDto };
+export type { BoundDto, PositionDto, SizeDto, UnitDto, ItemDto, PlayerDto, WorldDto };
 
 export {
   convertBoundDtoToBound,
@@ -18,4 +20,5 @@ export {
   convertUnitDtoToUnit,
   convertItemDtoToItem,
   convertPlayerDtoPlayer,
+  convertWorldDtoToUnit,
 };

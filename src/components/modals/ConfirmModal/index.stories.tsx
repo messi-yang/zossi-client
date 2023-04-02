@@ -16,5 +16,6 @@ const Template: ComponentStory<typeof ConfirmModal> = function Template(args) {
 export const Primary = Template.bind({});
 Primary.args = {
   opened: true,
+  message: 'Hello~~',
   buttonCopy: 'Confirm',
 };

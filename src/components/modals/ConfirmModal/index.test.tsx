@@ -2,7 +2,7 @@ import { render, RenderResult, screen } from '@testing-library/react';
 import ConfirmModal, { dataTestids } from '.';
 
 function renderConfirmModal(): RenderResult {
-  return render(<ConfirmModal opened buttonCopy="Confirm" onComfirm={() => {}} />);
+  return render(<ConfirmModal opened message="Hello~~" buttonCopy="Confirm" onComfirm={() => {}} />);
 }
 
 describe('ConfirmModal', () => {

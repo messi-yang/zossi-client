@@ -3,18 +3,28 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import StyleContext from '@/contexts/StyleContext';
+import WorldContext from '@/contexts/WorldContext';
+import GameContext from '@/contexts/GameContext';
 
 import BigLogo from '@/components/logos/BigLogo';
 import Button from '@/components/buttons/Button';
 
 const Landing: NextPage = function Landing() {
   const styleContext = useContext(StyleContext);
+  const { worlds } = useContext(WorldContext);
+  const { joinGame } = useContext(GameContext);
   const deviceSize: 'large' | 'small' = styleContext.getWindowWidth() > 475 ? 'large' : 'small';
 
   const router = useRouter();
 
   const onStartClick = () => {
-    router.push('/game/a');
+    if (!worlds) return;
+
+    const worldId = worlds[0].getId() as string | null;
+    if (!worldId) return;
+
+    joinGame(worldId);
+    router.push(`/game/${worldId}`);
   };
 
   return (
