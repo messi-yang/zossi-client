@@ -21,7 +21,6 @@ function SelectItemModal({ opened, width, selectedItemId, items, onSelect = () =
   };
 
   const selectedItem = items?.find((item) => item.getId() === selectedItemId) || null;
-  console.log(selectedItem, selectedItemId);
 
   return (
     <BaseModal width={width} opened={opened} onBackgroundClick={onDone}>
