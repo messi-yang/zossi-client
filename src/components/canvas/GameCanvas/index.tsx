@@ -244,7 +244,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
           player3dObjectPool.addObjectToScene(player.getId(), playerObject);
         }
         playerObject.position.set(player.getPosition().getX() + 0.5, 0, player.getPosition().getZ() + 0.5);
-        playerObject.rotation.y = Math.PI - (player.getDirection().toNumber() * Math.PI) / 2;
+        playerObject.rotation.y = (player.getDirection().toNumber() * Math.PI) / 2;
 
         if (font) {
           const textGeometry = new TextGeometry(myPlayer.getName(), {
