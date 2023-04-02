@@ -29,7 +29,7 @@ const Room: NextPage = function Room() {
     leaveGame,
     changeHeldItem,
     placeItem,
-    destroyItem,
+    removeItem,
   } = useContext(GameContext);
   const { items } = useContext(ItemContext);
   const heldItemId = myPlayer?.getHeldItemid() || null;
@@ -44,7 +44,7 @@ const Room: NextPage = function Room() {
   }, [items, heldItemId]);
 
   useKeyPress('KeyP', { onKeyDown: placeItem });
-  useKeyPress('KeyO', { onKeyDown: destroyItem });
+  useKeyPress('KeyO', { onKeyDown: removeItem });
   useKeyPress('Space', { onKeyDown: switchToNextItem });
 
   const isUpPressed = useKeyPress('KeyW');

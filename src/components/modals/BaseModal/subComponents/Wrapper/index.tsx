@@ -19,7 +19,7 @@ export default function Wrapper({ visible, children }: WrapperProps) {
         'justify-center',
         'items-center',
         'overflow-hidden',
-        'z-10',
+        'z-50',
       ])}
     >
       {children}
