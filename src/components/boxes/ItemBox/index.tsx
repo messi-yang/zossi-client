@@ -19,13 +19,14 @@ function ItemBox({ item, active, onClick }: Props) {
         'items-center',
         'justify-center',
         'border-4',
-        active ? 'border-[#01D6C9]' : 'border-transparent',
+        active ? 'border-[#01D6C9]' : 'border-stone-500',
         'box-border',
         'cursor-pointer',
-        'bg-black'
+        'bg-black',
+        'outline-none'
       )}
       onClick={onClick}
-      onKeyPress={onClick}
+      onKeyDown={onClick}
       tabIndex={0}
       role="button"
     >

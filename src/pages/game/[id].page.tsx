@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useContext, useEffect, useCallback, useRef, KeyboardEventHandler } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useOnHistoryChange from '@/hooks/useOnHistoryChange';
@@ -8,10 +8,10 @@ import ItemContext from '@/contexts/ItemContext';
 import StyleContext from '@/contexts/StyleContext';
 import { DirectionVo } from '@/models/valueObjects';
 import GameCanvas from '@/components/canvas/GameCanvas';
-import GameSideBar from '@/components/sidebars/GameSideBar';
-import SelectItemModal from '@/components/modals/SelectItemModal';
 import { ItemAgg } from '@/models/aggregates';
 import ConfirmModal from '@/components/modals/ConfirmModal';
+import SelectItemsBar from '@/components/bars/SelectItemsBar';
+import SmallLogo from '@/components/logos/SmallLogo';
 
 const Room: NextPage = function Room() {
   const router = useRouter();
@@ -32,13 +32,20 @@ const Room: NextPage = function Room() {
     destroyItem,
   } = useContext(GameContext);
   const { items } = useContext(ItemContext);
-  const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState<boolean>(false);
   const heldItemId = myPlayer?.getHeldItemid() || null;
-  const isBuildindItem = !!heldItemId;
   const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
+
+  const switchToNextItem = useCallback(() => {
+    if (!items) {
+      return;
+    }
+    const targetItemIdIndex = items.findIndex((item) => item.getId() === heldItemId) + 1;
+    changeHeldItem(items[targetItemIdIndex % items.length].getId());
+  }, [items, heldItemId]);
 
   useKeyPress('KeyP', { onKeyDown: placeItem });
   useKeyPress('KeyO', { onKeyDown: destroyItem });
+  useKeyPress('Space', { onKeyDown: switchToNextItem });
 
   const isUpPressed = useKeyPress('KeyW');
   const isRightPressed = useKeyPress('KeyD');
@@ -86,16 +93,16 @@ const Room: NextPage = function Room() {
   }, [leaveGame]);
   useOnHistoryChange(handleRouterLeave);
 
-  const handleLogoClick = () => {
+  const goToLandingPage = () => {
     router.push('/');
   };
-
-  const handlePlaceItemClick = () => {
-    setIsSelectItemModalVisible(true);
+  const handleLogoClick = () => {
+    goToLandingPage();
   };
-
-  const handleSelectItemDone = () => {
-    setIsSelectItemModalVisible(false);
+  const handleLogoKeyDown: KeyboardEventHandler<HTMLElement> = (evt) => {
+    if (evt.code === 'Enter') {
+      goToLandingPage();
+    }
   };
 
   const handleItemSelect = (item: ItemAgg) => {
@@ -106,93 +113,42 @@ const Room: NextPage = function Room() {
     window.location.reload();
   }, []);
 
-  const screenSize: 'large' | 'small' = styleContext.getWindowWidth() > 700 ? 'large' : 'small';
-
   return (
-    <>
-      {screenSize === 'large' && (
-        <main
-          className="w-screen h-screen flex"
-          style={{ width: styleContext.windowWidth, height: styleContext.windowHeight }}
-        >
-          <ConfirmModal
-            opened={isReconnectModalVisible}
-            buttonCopy="Reconnect"
-            onComfirm={handleRecconectModalConfirmClick}
-          />
-          <SelectItemModal
-            opened={isSelectItemModalVisible}
-            width={560}
-            selectedItemId={heldItemId}
-            items={items || []}
-            onSelect={handleItemSelect}
-            onDone={handleSelectItemDone}
-          />
-          <section className="shrink-0">
-            <GameSideBar
-              align="column"
-              onLogoClick={handleLogoClick}
-              isPlaceItemActive={isBuildindItem}
-              onPlaceItemClick={handlePlaceItemClick}
+    <main
+      className="relative w-screen h-screen flex"
+      style={{ width: styleContext.windowWidth, height: styleContext.windowHeight }}
+    >
+      <ConfirmModal
+        opened={isReconnectModalVisible}
+        buttonCopy="Reconnect"
+        onComfirm={handleRecconectModalConfirmClick}
+      />
+      <section className="absolute bottom-2 left-1/2 translate-x-[-50%] z-10">
+        <SelectItemsBar items={items} selectedItemId={heldItemId} onSelect={handleItemSelect} />
+      </section>
+      <section
+        className="absolute top-2 left-2 z-10 bg-black p-2 rounded-lg"
+        role="button"
+        tabIndex={0}
+        onClick={handleLogoClick}
+        onKeyDown={handleLogoKeyDown}
+      >
+        <SmallLogo />
+      </section>
+      <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
+        <section className="w-full h-full">
+          {myPlayer && otherPlayers && units && items && visionBound && (
+            <GameCanvas
+              otherPlayers={otherPlayers}
+              myPlayer={myPlayer}
+              units={units}
+              items={items}
+              visionBound={visionBound}
             />
-          </section>
-          <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
-            <section className="w-full h-full">
-              {myPlayer && otherPlayers && units && items && visionBound && (
-                <GameCanvas
-                  otherPlayers={otherPlayers}
-                  myPlayer={myPlayer}
-                  units={units}
-                  items={items}
-                  visionBound={visionBound}
-                />
-              )}
-            </section>
-          </section>
-        </main>
-      )}
-      {screenSize === 'small' && (
-        <main
-          className="w-screen h-screen flex flex-col"
-          style={{ width: styleContext.windowWidth, height: styleContext.windowHeight }}
-        >
-          <ConfirmModal
-            opened={isReconnectModalVisible}
-            buttonCopy="Reconnect"
-            onComfirm={handleRecconectModalConfirmClick}
-          />
-          <SelectItemModal
-            opened={isSelectItemModalVisible}
-            width={styleContext.getWindowWidth()}
-            selectedItemId={heldItemId}
-            items={items}
-            onSelect={handleItemSelect}
-            onDone={handleSelectItemDone}
-          />
-          <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
-            <section className="w-full h-full">
-              {myPlayer && otherPlayers && units && items && visionBound && (
-                <GameCanvas
-                  otherPlayers={otherPlayers}
-                  myPlayer={myPlayer}
-                  units={units}
-                  items={items}
-                  visionBound={visionBound}
-                />
-              )}
-            </section>
-          </section>
-          <section className="shrink-0">
-            <GameSideBar
-              align="row"
-              onLogoClick={handleLogoClick}
-              isPlaceItemActive={isBuildindItem}
-              onPlaceItemClick={handlePlaceItemClick}
-            />
-          </section>
-        </main>
-      )}
-    </>
+          )}
+        </section>
+      </section>
+    </main>
   );
 };
 

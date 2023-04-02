@@ -29,7 +29,7 @@ export default class ItemAgg {
       name: 'stone',
       traversable: true,
       thumbnailSrc: 'placeholder-item.png',
-      modelSrc: 'placeholder-item.png',
+      modelSrc: 'characters/car.gltf',
     });
   }
 
