@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState, useMemo } from 'react';
+import { createContext, useCallback, useRef, useState, useMemo, MutableRefObject } from 'react';
 import GameSocket from '@/apis/GameSocket';
 import { DirectionVo, BoundVo } from '@/models/valueObjects';
 import { UnitAgg, PlayerAgg } from '@/models/aggregates';
@@ -42,9 +42,9 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const [gameSocket, setGameSocket] = useState<GameSocket | null>(null);
-  const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
+  const gameSocket: MutableRefObject<GameSocket | null> = useRef(null);
 
+  const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
   const [myPlayer, setMyPlayer] = useState<PlayerAgg | null>(null);
   const [otherPlayers, setOtherPlayers] = useState<PlayerAgg[] | null>([]);
@@ -60,8 +60,7 @@ export function Provider({ children }: Props) {
 
   const joinGame = useCallback(
     (gameId: string) => {
-      const hasUncleanedConnection = !!gameSocket;
-      if (hasUncleanedConnection) {
+      if (gameSocket.current) {
         return;
       }
 
@@ -81,46 +80,40 @@ export function Provider({ children }: Props) {
         onClose: (disconnectedByClient: boolean) => {
           if (disconnectedByClient) {
             setGameStatus('WAITING');
-            setGameSocket(null);
+            gameSocket.current = null;
             reset();
           } else {
             setGameStatus('DISCONNECTED');
-            setGameSocket(null);
+            gameSocket.current = null;
           }
         },
       });
       setGameStatus('CONNECTING');
-      setGameSocket(newGameSocket);
+      gameSocket.current = newGameSocket;
     },
     [gameSocket]
   );
 
-  const move = useCallback(
-    (direction: DirectionVo) => {
-      gameSocket?.move(direction);
-    },
-    [gameSocket]
-  );
+  const move = useCallback((direction: DirectionVo) => {
+    gameSocket.current?.move(direction);
+  }, []);
 
   const leaveGame = useCallback(() => {
     setGameStatus('DISCONNECTING');
-    gameSocket?.disconnect();
-  }, [gameSocket]);
+    gameSocket.current?.disconnect();
+  }, []);
 
-  const changeHeldItem = useCallback(
-    (itemId: string) => {
-      gameSocket?.changeHeldItem(itemId);
-    },
-    [gameSocket]
-  );
+  const changeHeldItem = useCallback((itemId: string) => {
+    gameSocket.current?.changeHeldItem(itemId);
+  }, []);
 
   const placeItem = useCallback(() => {
-    gameSocket?.placeItem();
-  }, [gameSocket]);
+    gameSocket.current?.placeItem();
+  }, []);
 
   const removeItem = useCallback(() => {
-    gameSocket?.removeItem();
-  }, [gameSocket]);
+    gameSocket.current?.removeItem();
+  }, []);
 
   return (
     <Context.Provider
