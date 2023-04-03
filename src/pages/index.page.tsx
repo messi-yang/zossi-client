@@ -24,7 +24,7 @@ const Landing: NextPage = function Landing() {
     if (!worldId) return;
 
     joinGame(worldId);
-    router.push(`/game/${worldId}`);
+    router.push(`/world/${worldId}`);
   };
 
   return (
