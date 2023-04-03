@@ -1,4 +1,4 @@
-import Text from '@/components/text/Text';
+import Text from '@/components/texts/Text';
 import BaseModal from '@/components/modals/BaseModal';
 import Button from '@/components/buttons/Button';
 import dataTestids from './dataTestids';

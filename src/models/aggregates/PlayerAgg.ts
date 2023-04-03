@@ -58,6 +58,10 @@ export default class PlayerAgg {
     return this.position;
   }
 
+  public getPositionText(): string {
+    return `(${this.position.getX()}, ${this.position.getZ()})`;
+  }
+
   public getDirection(): DirectionVo {
     return this.direction;
   }

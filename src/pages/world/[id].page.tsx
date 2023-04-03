@@ -12,6 +12,7 @@ import { ItemAgg } from '@/models/aggregates';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import SelectItemsBar from '@/components/bars/SelectItemsBar';
 import SmallLogo from '@/components/logos/SmallLogo';
+import Text from '@/components/texts/Text';
 
 const Room: NextPage = function Room() {
   const router = useRouter();
@@ -130,6 +131,9 @@ const Room: NextPage = function Room() {
         buttonCopy="Let's go"
         onComfirm={handleJoinGameModalConfirmClick}
       />
+      <div className="absolute top-1 right-1 z-10 flex">
+        {myPlayer && <Text copy={myPlayer.getPositionText()} size={20} color="white" lineHeight={1} />}
+      </div>
       <section className="absolute bottom-2 left-1/2 translate-x-[-50%] z-10">
         <SelectItemsBar items={items} selectedItemId={heldItemId} onSelect={handleItemSelect} />
       </section>

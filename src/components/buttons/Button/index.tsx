@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import Text from '@/components/text/Text';
+import Text from '@/components/texts/Text';
 
 import ContentWrapper from './subComponents/ContentWrapper';
 import dataTestids from './dataTestids';
