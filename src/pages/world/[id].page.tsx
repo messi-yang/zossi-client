@@ -131,7 +131,7 @@ const Room: NextPage = function Room() {
         buttonCopy="Let's go"
         onComfirm={handleJoinGameModalConfirmClick}
       />
-      <div className="absolute top-1 right-1 z-10 flex">
+      <div className="absolute top-2 right-3 z-10 flex">
         {myPlayer && <Text copy={myPlayer.getPositionText()} size={20} color="white" lineHeight={1} />}
       </div>
       <section className="absolute bottom-2 left-1/2 translate-x-[-50%] z-10">

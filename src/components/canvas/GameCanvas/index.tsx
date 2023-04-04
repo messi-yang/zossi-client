@@ -29,7 +29,7 @@ type Props = {
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
 const BASE_MODEL_SRC = '/bases/lawn.gltf';
 const FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
-const CAMERA_FOV = 35;
+const CAMERA_FOV = 50;
 const CAMERA_HEIGHT = 20;
 const CAMERA_Z_OFFSET = 20;
 const DIR_LIGHT_HEIGHT = 20;
@@ -50,7 +50,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
     return newScene;
   });
   const [grid] = useState<THREE.Group>(() => {
-    const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.4, transparent: true });
+    const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
     const offsetX = visionBound.getFrom().getX();
     const offsetZ = visionBound.getFrom().getZ();
     const boundWidth = visionBound.getWidth();
@@ -195,7 +195,6 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
           baseObjMesh.material,
           visionBoundWidth * visionBoundHeight
         );
-        mesh.castShadow = true;
         mesh.receiveShadow = true;
         return {
           mesh,
