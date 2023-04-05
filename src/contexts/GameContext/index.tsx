@@ -1,6 +1,6 @@
 import { createContext, useCallback, useRef, useState, useMemo, MutableRefObject } from 'react';
 import GameSocket from '@/apis/GameSocket';
-import { DirectionVo, BoundVo } from '@/models/valueObjects';
+import { DirectionVo } from '@/models/valueObjects';
 import { UnitAgg, PlayerAgg } from '@/models/aggregates';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
@@ -9,7 +9,6 @@ type ContextValue = {
   gameStatus: GameStatus;
   myPlayer: PlayerAgg | null;
   otherPlayers: PlayerAgg[] | null;
-  visionBound: BoundVo | null;
   units: UnitAgg[] | null;
   joinGame: (gameId: string) => void;
   move: (direction: DirectionVo) => void;
@@ -24,7 +23,6 @@ function createInitialContextValue(): ContextValue {
     gameStatus: 'WAITING',
     myPlayer: null,
     otherPlayers: null,
-    visionBound: null,
     units: null,
     joinGame: () => {},
     move: () => {},
@@ -48,13 +46,11 @@ export function Provider({ children }: Props) {
   const initialContextValue = createInitialContextValue();
   const [myPlayer, setMyPlayer] = useState<PlayerAgg | null>(null);
   const [otherPlayers, setOtherPlayers] = useState<PlayerAgg[] | null>([]);
-  const [visionBound, setVisionBound] = useState<BoundVo | null>(initialContextValue.visionBound);
   const [units, setUnits] = useState<UnitAgg[] | null>(initialContextValue.units);
 
   const reset = useCallback(() => {
     setMyPlayer(null);
     setOtherPlayers([]);
-    setVisionBound(initialContextValue.visionBound);
     setUnits(initialContextValue.units);
   }, []);
 
@@ -70,8 +66,7 @@ export function Provider({ children }: Props) {
           setMyPlayer(newMyPlayer);
           setOtherPlayers(newOtherPlayers);
         },
-        onUnitsUpdated: (newVisionBound: BoundVo, newUnits: UnitAgg[]) => {
-          setVisionBound(newVisionBound);
+        onUnitsUpdated: (newUnits: UnitAgg[]) => {
           setUnits(newUnits);
         },
         onOpen: () => {
@@ -122,7 +117,6 @@ export function Provider({ children }: Props) {
           gameStatus,
           myPlayer,
           otherPlayers,
-          visionBound,
           units,
           joinGame,
           move,
@@ -131,7 +125,7 @@ export function Provider({ children }: Props) {
           placeItem,
           removeItem,
         }),
-        [gameStatus, myPlayer, otherPlayers, visionBound, units, joinGame, move, changeHeldItem, placeItem, leaveGame]
+        [gameStatus, myPlayer, otherPlayers, units, joinGame, move, changeHeldItem, placeItem, leaveGame]
       )}
     >
       {children}

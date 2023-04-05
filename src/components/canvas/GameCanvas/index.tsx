@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useState, useRef, useContext, useMemo } from 'react';
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
-import { BoundVo } from '@/models/valueObjects';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 import useDomRect from '@/hooks/useDomRect';
 
@@ -23,7 +22,6 @@ type Props = {
   myPlayer: PlayerAgg;
   units: UnitAgg[];
   items: ItemAgg[];
-  visionBound: BoundVo;
 };
 
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
@@ -36,9 +34,13 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props) {
+function GameCanvas({ otherPlayers, units, myPlayer, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
+
+  const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
+  const visionBound = useMemo(() => myPlayer.getVisionBound(), [myPlayer]);
+
   const [scene] = useState<THREE.Scene>(() => {
     const newScene = new THREE.Scene();
     newScene.background = new THREE.Color(0xffffff);
@@ -100,7 +102,6 @@ function GameCanvas({ otherPlayers, units, myPlayer, items, visionBound }: Props
     return newRenderer;
   });
   const { loadModel, createObject, loadFont, getFont } = useContext(ThreeJsContext);
-  const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
   const player3dObjectPool = use3dObjectPool(scene);
 
   useEffect(

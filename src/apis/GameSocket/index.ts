@@ -1,6 +1,6 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
-import { convertPlayerDtoPlayer, convertUnitDtoToUnit, convertBoundDtoToBound } from '@/dtos';
-import { DirectionVo, BoundVo } from '@/models/valueObjects';
+import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
+import { DirectionVo } from '@/models/valueObjects';
 import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
@@ -16,10 +16,9 @@ function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg, Playe
   return [convertPlayerDtoPlayer(event.myPlayer), event.otherPlayers.map(convertPlayerDtoPlayer)];
 }
 
-function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [BoundVo, UnitAgg[]] {
-  const visionBound = convertBoundDtoToBound(event.visionBound);
+function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [UnitAgg[]] {
   const units = event.units.map(convertUnitDtoToUnit);
-  return [visionBound, units];
+  return [units];
 }
 
 export default class GameSocket {
@@ -32,7 +31,7 @@ export default class GameSocket {
     params: {
       onGameJoined: () => void;
       onPlayersUpdated: (myPlayer: PlayerAgg, otherPlayers: PlayerAgg[]) => void;
-      onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
+      onUnitsUpdated: (units: UnitAgg[]) => void;
       onClose: (disconnectedByClient: boolean) => void;
       onOpen: () => void;
     }
@@ -56,8 +55,8 @@ export default class GameSocket {
         const [myPlayer, otherPlayers] = parsePlayersUpdatedEvent(newMsg);
         params.onPlayersUpdated(myPlayer, otherPlayers);
       } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
-        const [visionBound, units] = parseUnitsUpdatedEvent(newMsg);
-        params.onUnitsUpdated(visionBound, units);
+        const [units] = parseUnitsUpdatedEvent(newMsg);
+        params.onUnitsUpdated(units);
       }
     };
 
@@ -83,7 +82,7 @@ export default class GameSocket {
     params: {
       onGameJoined: () => void;
       onPlayersUpdated: (myPlayer: PlayerAgg, otherPlayers: PlayerAgg[]) => void;
-      onUnitsUpdated: (bound: BoundVo, units: UnitAgg[]) => void;
+      onUnitsUpdated: (units: UnitAgg[]) => void;
       onClose: (disconnectedByClient: boolean) => void;
       onOpen: () => void;
     }

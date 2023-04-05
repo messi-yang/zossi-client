@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionVo, DirectionVo } from '@/models/valueObjects';
+import { PositionVo, DirectionVo, BoundVo } from '@/models/valueObjects';
 
 export default class PlayerAgg {
   private id: string;
@@ -10,6 +10,8 @@ export default class PlayerAgg {
 
   private direction: DirectionVo;
 
+  private visionBound: BoundVo;
+
   private heldItemId: string | null;
 
   constructor(params: {
@@ -17,12 +19,14 @@ export default class PlayerAgg {
     name: string;
     position: PositionVo;
     direction: DirectionVo;
+    visionBound: BoundVo;
     heldItemId: string | null;
   }) {
     this.id = params.id;
     this.name = params.name;
     this.position = params.position;
     this.direction = params.direction;
+    this.visionBound = params.visionBound;
     this.heldItemId = params.heldItemId;
   }
 
@@ -31,6 +35,7 @@ export default class PlayerAgg {
     name: string;
     position: PositionVo;
     direction: DirectionVo;
+    visionBound: BoundVo;
     heldItemId: string | null;
   }): PlayerAgg {
     return new PlayerAgg(params);
@@ -42,6 +47,7 @@ export default class PlayerAgg {
       name: 'Test Player',
       position: PositionVo.new(0, 0),
       direction: DirectionVo.new(2),
+      visionBound: BoundVo.new(PositionVo.new(-10, -10), PositionVo.new(10, 10)),
       heldItemId: null,
     });
   }
@@ -64,6 +70,10 @@ export default class PlayerAgg {
 
   public getDirection(): DirectionVo {
     return this.direction;
+  }
+
+  public getVisionBound(): BoundVo {
+    return this.visionBound;
   }
 
   public getHeldItemid(): string | null {

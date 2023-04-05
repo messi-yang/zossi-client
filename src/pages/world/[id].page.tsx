@@ -23,7 +23,6 @@ const Room: NextPage = function Room() {
     units,
     myPlayer,
     otherPlayers,
-    visionBound,
     gameStatus,
     move,
     joinGame,
@@ -148,14 +147,8 @@ const Room: NextPage = function Room() {
       </section>
       <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
         <section className="w-full h-full">
-          {myPlayer && otherPlayers && units && items && visionBound && (
-            <GameCanvas
-              otherPlayers={otherPlayers}
-              myPlayer={myPlayer}
-              units={units}
-              items={items}
-              visionBound={visionBound}
-            />
+          {myPlayer && otherPlayers && units && items && (
+            <GameCanvas otherPlayers={otherPlayers} myPlayer={myPlayer} units={units} items={items} />
           )}
         </section>
       </section>

@@ -3,7 +3,6 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import GameCanvas from '.';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
-import { BoundVo, PositionVo } from '@/models/valueObjects';
 
 export default {
   title: 'Canvas/GameCanvas',
@@ -31,5 +30,4 @@ Primary.args = {
   ],
   units: [UnitAgg.newMockupUnit(), UnitAgg.newMockupUnit(), UnitAgg.newMockupUnit()],
   items: [item],
-  visionBound: BoundVo.new(PositionVo.new(-10, -10), PositionVo.new(10, 10)),
 };
