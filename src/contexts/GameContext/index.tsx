@@ -10,7 +10,7 @@ type ContextValue = {
   myPlayer: PlayerAgg | null;
   otherPlayers: PlayerAgg[] | null;
   units: UnitAgg[] | null;
-  joinGame: (gameId: string) => boolean;
+  joinGame: (gameId: string) => void;
   move: (direction: DirectionVo) => void;
   changeHeldItem: (itemId: string) => void;
   placeItem: () => void;
@@ -24,7 +24,7 @@ function createInitialContextValue(): ContextValue {
     myPlayer: null,
     otherPlayers: null,
     units: null,
-    joinGame: () => false,
+    joinGame: () => {},
     move: () => {},
     changeHeldItem: () => {},
     placeItem: () => {},
@@ -56,9 +56,7 @@ export function Provider({ children }: Props) {
 
   const joinGame = useCallback(
     (gameId: string) => {
-      if (gameSocket.current) {
-        return false;
-      }
+      if (gameSocket.current) return;
 
       const newGameSocket = GameSocket.newGameSocket(gameId, {
         onGameJoined: () => {},
@@ -85,7 +83,6 @@ export function Provider({ children }: Props) {
       });
       setGameStatus('CONNECTING');
       gameSocket.current = newGameSocket;
-      return true;
     },
     [gameSocket]
   );
