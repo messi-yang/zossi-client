@@ -18,18 +18,8 @@ const Room: NextPage = function Room() {
   const worldId = router.query.id as string | null;
   const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
-  const {
-    units,
-    myPlayer,
-    otherPlayers,
-    gameStatus,
-    move,
-    joinGame,
-    leaveGame,
-    changeHeldItem,
-    placeItem,
-    removeItem,
-  } = useContext(GameContext);
+  const { units, myPlayer, otherPlayers, gameStatus, move, joinGame, changeHeldItem, placeItem, removeItem } =
+    useContext(GameContext);
   const { items } = useContext(ItemContext);
   const heldItemId = myPlayer?.getHeldItemid() || null;
   const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
@@ -77,17 +67,6 @@ const Room: NextPage = function Room() {
       };
     },
     [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, move]
-  );
-
-  useEffect(
-    function leaveGameWhenDestroy() {
-      return () => {
-        if (gameStatus === 'OPEN') {
-          leaveGame();
-        }
-      };
-    },
-    [gameStatus, leaveGame]
   );
 
   const goToLandingPage = () => {
