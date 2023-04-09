@@ -1,7 +1,6 @@
 import { useContext, useEffect, useCallback, useRef, KeyboardEventHandler } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import useOnHistoryChange from '@/hooks/useOnHistoryChange';
 import useKeyPress from '@/hooks/useKeyPress';
 import GameContext from '@/contexts/GameContext';
 import ItemContext from '@/contexts/ItemContext';
@@ -80,10 +79,16 @@ const Room: NextPage = function Room() {
     [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, move]
   );
 
-  const handleRouterLeave = useCallback(() => {
-    leaveGame();
-  }, [leaveGame]);
-  useOnHistoryChange(handleRouterLeave);
+  useEffect(
+    function leaveGameWhenDestroy() {
+      return () => {
+        if (gameStatus === 'OPEN') {
+          leaveGame();
+        }
+      };
+    },
+    [gameStatus, leaveGame]
+  );
 
   const goToLandingPage = () => {
     router.push('/');

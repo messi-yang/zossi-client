@@ -23,8 +23,10 @@ const Landing: NextPage = function Landing() {
     const worldId = worlds[0].getId() as string | null;
     if (!worldId) return;
 
-    joinGame(worldId);
-    router.push(`/world/${worldId}`);
+    const succeeded = joinGame(worldId);
+    if (succeeded) {
+      router.push(`/world/${worldId}`);
+    }
   };
 
   return (
