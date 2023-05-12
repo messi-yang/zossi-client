@@ -1,4 +1,4 @@
-export default class SizeVo {
+export class SizeModel {
   private width: number;
 
   private height: number;
@@ -8,11 +8,11 @@ export default class SizeVo {
     this.height = height;
   }
 
-  static new(width: number, height: number): SizeVo {
-    return new SizeVo(width, height);
+  static new(width: number, height: number): SizeModel {
+    return new SizeModel(width, height);
   }
 
-  public isEqual(size: SizeVo): boolean {
+  public isEqual(size: SizeModel): boolean {
     return this.width === size.width && this.height === size.height;
   }
 }

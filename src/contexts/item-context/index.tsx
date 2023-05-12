@@ -1,10 +1,9 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
 import { ItemService } from '@/apis/services/item-service';
-import {} from '@/models/valueObjects';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemModel } from '@/models';
 
 type ContextValue = {
-  items: ItemAgg[] | null;
+  items: ItemModel[] | null;
 };
 
 function createInitialContextValue(): ContextValue {
@@ -22,7 +21,7 @@ type Props = {
 function Provider({ children }: Props) {
   const [itemService] = useState<ItemService>(() => ItemService.new());
   const initialContextValue = createInitialContextValue();
-  const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
+  const [items, setItems] = useState<ItemModel[] | null>(initialContextValue.items);
 
   const getItems = useCallback(async () => {
     const newItems = await itemService.getItems();

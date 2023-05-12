@@ -1,4 +1,4 @@
-import { WorldAgg } from '@/models/aggregates';
+import { WorldModel } from '@/models';
 
 type WorldDto = {
   id: string;
@@ -6,8 +6,8 @@ type WorldDto = {
   userId: string;
 };
 
-function convertWorldDtoToUnit(dto: WorldDto): WorldAgg {
-  return WorldAgg.new(dto.id, dto.name, dto.userId);
+function convertWorldDtoToUnit(dto: WorldDto): WorldModel {
+  return WorldModel.new(dto.id, dto.name, dto.userId);
 }
 
 export type { WorldDto };

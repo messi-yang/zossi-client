@@ -1,17 +1,16 @@
 import { createContext, useCallback, useRef, useState, useMemo, MutableRefObject } from 'react';
 import { GameConnectionService } from '@/apis/services/game-connection-service';
-import { DirectionVo } from '@/models/valueObjects';
-import { UnitAgg, PlayerAgg } from '@/models/aggregates';
+import { UnitModel, PlayerModel, DirectionModel } from '@/models';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
 type ContextValue = {
   gameStatus: GameStatus;
-  myPlayer: PlayerAgg | null;
-  otherPlayers: PlayerAgg[] | null;
-  units: UnitAgg[] | null;
+  myPlayer: PlayerModel | null;
+  otherPlayers: PlayerModel[] | null;
+  units: UnitModel[] | null;
   joinGame: (gameId: string) => void;
-  move: (direction: DirectionVo) => void;
+  move: (direction: DirectionModel) => void;
   changeHeldItem: (itemId: string) => void;
   placeItem: () => void;
   removeItem: () => void;
@@ -44,9 +43,9 @@ export function Provider({ children }: Props) {
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
-  const [myPlayer, setMyPlayer] = useState<PlayerAgg | null>(null);
-  const [otherPlayers, setOtherPlayers] = useState<PlayerAgg[] | null>([]);
-  const [units, setUnits] = useState<UnitAgg[] | null>(initialContextValue.units);
+  const [myPlayer, setMyPlayer] = useState<PlayerModel | null>(null);
+  const [otherPlayers, setOtherPlayers] = useState<PlayerModel[] | null>([]);
+  const [units, setUnits] = useState<UnitModel[] | null>(initialContextValue.units);
 
   const reset = useCallback(() => {
     setMyPlayer(null);
@@ -60,11 +59,11 @@ export function Provider({ children }: Props) {
 
       const newGameConnectionService = GameConnectionService.new(gameId, {
         onGameJoined: () => {},
-        onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerAgg[]) => {
+        onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerModel[]) => {
           setMyPlayer(newMyPlayer);
           setOtherPlayers(newOtherPlayers);
         },
-        onUnitsUpdated: (newUnits: UnitAgg[]) => {
+        onUnitsUpdated: (newUnits: UnitModel[]) => {
           setUnits(newUnits);
         },
         onOpen: () => {
@@ -87,7 +86,7 @@ export function Provider({ children }: Props) {
     [gameConnectionService]
   );
 
-  const move = useCallback((direction: DirectionVo) => {
+  const move = useCallback((direction: DirectionModel) => {
     gameConnectionService.current?.move(direction);
   }, []);
 

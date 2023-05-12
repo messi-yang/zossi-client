@@ -1,25 +1,27 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionVo, DirectionVo, BoundVo } from '@/models/valueObjects';
+import { PositionModel } from './position-model';
+import { DirectionModel } from './direction-model';
+import { BoundModel } from './bound-model';
 
-export default class PlayerAgg {
+export class PlayerModel {
   private id: string;
 
   private name: string;
 
-  private position: PositionVo;
+  private position: PositionModel;
 
-  private direction: DirectionVo;
+  private direction: DirectionModel;
 
-  private visionBound: BoundVo;
+  private visionBound: BoundModel;
 
   private heldItemId: string | null;
 
   constructor(params: {
     id: string;
     name: string;
-    position: PositionVo;
-    direction: DirectionVo;
-    visionBound: BoundVo;
+    position: PositionModel;
+    direction: DirectionModel;
+    visionBound: BoundModel;
     heldItemId: string | null;
   }) {
     this.id = params.id;
@@ -33,21 +35,21 @@ export default class PlayerAgg {
   static new(params: {
     id: string;
     name: string;
-    position: PositionVo;
-    direction: DirectionVo;
-    visionBound: BoundVo;
+    position: PositionModel;
+    direction: DirectionModel;
+    visionBound: BoundModel;
     heldItemId: string | null;
-  }): PlayerAgg {
-    return new PlayerAgg(params);
+  }): PlayerModel {
+    return new PlayerModel(params);
   }
 
-  static newMockupPlayer(): PlayerAgg {
-    return PlayerAgg.new({
+  static newMockupPlayer(): PlayerModel {
+    return PlayerModel.new({
       id: uuidv4(),
       name: 'Test Player',
-      position: PositionVo.new(0, 0),
-      direction: DirectionVo.new(2),
-      visionBound: BoundVo.new(PositionVo.new(-10, -10), PositionVo.new(10, 10)),
+      position: PositionModel.new(0, 0),
+      direction: DirectionModel.new(2),
+      visionBound: BoundModel.new(PositionModel.new(-10, -10), PositionModel.new(10, 10)),
       heldItemId: null,
     });
   }
@@ -60,7 +62,7 @@ export default class PlayerAgg {
     return this.name;
   }
 
-  public getPosition(): PositionVo {
+  public getPosition(): PositionModel {
     return this.position;
   }
 
@@ -68,11 +70,11 @@ export default class PlayerAgg {
     return `(${this.position.getX()}, ${this.position.getZ()})`;
   }
 
-  public getDirection(): DirectionVo {
+  public getDirection(): DirectionModel {
     return this.direction;
   }
 
-  public getVisionBound(): BoundVo {
+  public getVisionBound(): BoundModel {
     return this.visionBound;
   }
 

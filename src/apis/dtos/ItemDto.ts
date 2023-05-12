@@ -1,4 +1,4 @@
-import { ItemAgg } from '@/models/aggregates';
+import { ItemModel } from '@/models';
 
 type ItemDto = {
   id: string;
@@ -8,8 +8,8 @@ type ItemDto = {
   modelSrc: string;
 };
 
-function convertItemDtoToItem(itemDto: ItemDto): ItemAgg {
-  return ItemAgg.new({
+function convertItemDtoToItem(itemDto: ItemDto): ItemModel {
+  return ItemModel.new({
     id: itemDto.id,
     name: itemDto.name,
     traversable: itemDto.traversable,

@@ -1,10 +1,10 @@
 import { KeyboardEventHandler } from 'react';
 import classnames from 'classnames';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemModel } from '@/models';
 import dataTestids from './dataTestids';
 
 type Props = {
-  item: ItemAgg;
+  item: ItemModel;
   active?: boolean;
   onClick?: () => void;
 };

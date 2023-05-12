@@ -1,16 +1,16 @@
 import classnames from 'classnames';
 import ItemBox from '@/components/boxes/ItemBox';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemModel } from '@/models';
 import dataTestids from './dataTestids';
 
 type Props = {
   selectedItemId: string | null;
-  items: ItemAgg[] | null;
-  onSelect?: (item: ItemAgg) => void;
+  items: ItemModel[] | null;
+  onSelect?: (item: ItemModel) => void;
 };
 
 function SelectItemsBar({ selectedItemId, items, onSelect = () => {} }: Props) {
-  const handleItemSelect = (item: ItemAgg) => {
+  const handleItemSelect = (item: ItemModel) => {
     onSelect(item);
   };
 

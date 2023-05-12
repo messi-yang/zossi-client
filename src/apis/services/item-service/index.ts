@@ -1,6 +1,6 @@
 import axios, { Axios } from 'axios';
 import { ItemDto, convertItemDtoToItem } from '@/apis/dtos';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemModel } from '@/models';
 
 export class ItemService {
   private axios: Axios;
@@ -16,7 +16,7 @@ export class ItemService {
     return new ItemService();
   }
 
-  async getItems(): Promise<ItemAgg[]> {
+  async getItems(): Promise<ItemModel[]> {
     const { data } = await this.axios.get<ItemDto[]>('/');
     return data.map(convertItemDtoToItem);
   }

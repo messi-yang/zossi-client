@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemModel } from '@/models';
 
 import SelectItemsBar from '.';
 
@@ -14,7 +14,7 @@ export default {
 const Template: ComponentStory<typeof SelectItemsBar> = function Template(args) {
   const [, updateArgs] = useArgs();
 
-  const handleItemSelect = (item: ItemAgg) => {
+  const handleItemSelect = (item: ItemModel) => {
     updateArgs({
       selectedItemId: item.getId(),
     });
@@ -23,7 +23,7 @@ const Template: ComponentStory<typeof SelectItemsBar> = function Template(args) 
   return <SelectItemsBar {...args} onSelect={handleItemSelect} />;
 };
 
-const items = [ItemAgg.newMockupItem(), ItemAgg.newMockupItem(), ItemAgg.newMockupItem()];
+const items = [ItemModel.newMockupItem(), ItemModel.newMockupItem(), ItemModel.newMockupItem()];
 
 export const Primary = Template.bind({});
 Primary.args = {

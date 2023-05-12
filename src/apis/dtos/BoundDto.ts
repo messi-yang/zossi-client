@@ -1,4 +1,4 @@
-import { BoundVo, PositionVo } from '@/models/valueObjects';
+import { BoundModel, PositionModel } from '@/models';
 import type { PositionDto } from './PositionDto';
 
 type BoundDto = {
@@ -6,8 +6,11 @@ type BoundDto = {
   to: PositionDto;
 };
 
-export function convertBoundDtoToBound(boundDto: BoundDto): BoundVo {
-  return BoundVo.new(PositionVo.new(boundDto.from.x, boundDto.from.z), PositionVo.new(boundDto.to.x, boundDto.to.z));
+export function convertBoundDtoToBound(boundDto: BoundDto): BoundModel {
+  return BoundModel.new(
+    PositionModel.new(boundDto.from.x, boundDto.from.z),
+    PositionModel.new(boundDto.to.x, boundDto.to.z)
+  );
 }
 
 export type { BoundDto };

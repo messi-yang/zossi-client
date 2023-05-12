@@ -1,4 +1,4 @@
-export default class PositionVo {
+export class PositionModel {
   private x: number;
 
   private z: number;
@@ -8,11 +8,11 @@ export default class PositionVo {
     this.z = z;
   }
 
-  static new(x: number, z: number): PositionVo {
-    return new PositionVo(x, z);
+  static new(x: number, z: number): PositionModel {
+    return new PositionModel(x, z);
   }
 
-  public isEqual(position: PositionVo): boolean {
+  public isEqual(position: PositionModel): boolean {
     return this.x === position.getX() && this.z === position.getZ();
   }
 

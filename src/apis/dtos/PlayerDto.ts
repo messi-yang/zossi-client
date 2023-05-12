@@ -1,5 +1,4 @@
-import { PlayerAgg } from '@/models/aggregates';
-import { DirectionVo, PositionVo } from '@/models/valueObjects';
+import { PlayerModel, DirectionModel, PositionModel } from '@/models';
 import { BoundDto, convertBoundDtoToBound } from './BoundDto';
 import type { PositionDto } from './PositionDto';
 
@@ -12,12 +11,12 @@ type PlayerDto = {
   heldItemId: string | null;
 };
 
-function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerAgg {
-  return PlayerAgg.new({
+function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerModel {
+  return PlayerModel.new({
     id: playerDto.id,
     name: playerDto.name,
-    position: PositionVo.new(playerDto.position.x, playerDto.position.z),
-    direction: DirectionVo.new(playerDto.direction),
+    position: PositionModel.new(playerDto.position.x, playerDto.position.z),
+    direction: DirectionModel.new(playerDto.direction),
     visionBound: convertBoundDtoToBound(playerDto.visionBound),
     heldItemId: playerDto.heldItemId,
   });

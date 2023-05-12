@@ -1,6 +1,6 @@
 import axios, { Axios } from 'axios';
 import { WorldDto, convertWorldDtoToUnit } from '@/apis/dtos';
-import { WorldAgg } from '@/models/aggregates';
+import { WorldModel } from '@/models';
 
 export class WorldService {
   private axios: Axios;
@@ -16,7 +16,7 @@ export class WorldService {
     return new WorldService();
   }
 
-  async getWorlds(): Promise<WorldAgg[]> {
+  async getWorlds(): Promise<WorldModel[]> {
     const { data } = await this.axios.get<WorldDto[]>('/');
     return data.map(convertWorldDtoToUnit);
   }

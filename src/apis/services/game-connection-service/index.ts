@@ -1,17 +1,16 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/apis/dtos';
-import { DirectionVo } from '@/models/valueObjects';
 import { EventTypeEnum, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, RemoveItemCommand } from './commands';
-import { UnitAgg, PlayerAgg } from '@/models/aggregates';
+import { UnitModel, PlayerModel, DirectionModel } from '@/models';
 
-function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg, PlayerAgg[]] {
+function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerModel, PlayerModel[]] {
   return [convertPlayerDtoPlayer(event.myPlayer), event.otherPlayers.map(convertPlayerDtoPlayer)];
 }
 
-function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [UnitAgg[]] {
+function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [UnitModel[]] {
   const units = event.units.map(convertUnitDtoToUnit);
   return [units];
 }
@@ -25,8 +24,8 @@ export class GameConnectionService {
     gameId: string,
     params: {
       onGameJoined: () => void;
-      onPlayersUpdated: (myPlayer: PlayerAgg, otherPlayers: PlayerAgg[]) => void;
-      onUnitsUpdated: (units: UnitAgg[]) => void;
+      onPlayersUpdated: (myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
+      onUnitsUpdated: (units: UnitModel[]) => void;
       onClose: (disconnectedByClient: boolean) => void;
       onOpen: () => void;
     }
@@ -73,8 +72,8 @@ export class GameConnectionService {
     gameId: string,
     params: {
       onGameJoined: () => void;
-      onPlayersUpdated: (myPlayer: PlayerAgg, otherPlayers: PlayerAgg[]) => void;
-      onUnitsUpdated: (units: UnitAgg[]) => void;
+      onPlayersUpdated: (myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
+      onUnitsUpdated: (units: UnitModel[]) => void;
       onClose: (disconnectedByClient: boolean) => void;
       onOpen: () => void;
     }
@@ -106,7 +105,7 @@ export class GameConnectionService {
     this.sendMessage(action);
   }
 
-  public move(direction: DirectionVo) {
+  public move(direction: DirectionModel) {
     const action: MoveCommand = {
       type: CommandTypeEnum.Move,
 

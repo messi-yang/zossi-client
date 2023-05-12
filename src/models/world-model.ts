@@ -1,4 +1,4 @@
-export default class WorldAgg {
+export class WorldModel {
   private id: string;
 
   private name: string;
@@ -11,8 +11,8 @@ export default class WorldAgg {
     this.userId = userId;
   }
 
-  static new(id: string, name: string, userId: string): WorldAgg {
-    return new WorldAgg(id, name, userId);
+  static new(id: string, name: string, userId: string): WorldModel {
+    return new WorldModel(id, name, userId);
   }
 
   public getId(): string {

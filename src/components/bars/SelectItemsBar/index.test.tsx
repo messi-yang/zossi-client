@@ -1,9 +1,9 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemModel } from '@/models';
 import SelectItemsBar, { dataTestids } from '.';
 
 function renderSelectItemsBar(): RenderResult {
-  return render(<SelectItemsBar selectedItemId={null} items={[ItemAgg.newMockupItem()]} />);
+  return render(<SelectItemsBar selectedItemId={null} items={[ItemModel.newMockupItem()]} />);
 }
 
 describe('SelectItemsBar', () => {

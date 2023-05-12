@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { ItemAgg } from '@/models/aggregates';
+import { ItemModel } from '@/models';
 
 import ItemBox from '.';
 
@@ -20,5 +20,5 @@ const Template: ComponentStory<typeof ItemBox> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  item: ItemAgg.newMockupItem(),
+  item: ItemModel.newMockupItem(),
 };

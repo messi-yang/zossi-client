@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import GameCanvas from '.';
-import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
+import { ItemModel, UnitModel, PlayerModel } from '@/models';
 
 export default {
   title: 'Canvas/GameCanvas',
@@ -19,15 +19,15 @@ const Template: ComponentStory<typeof GameCanvas> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-const item = ItemAgg.newMockupItem();
+const item = ItemModel.newMockupItem();
 Primary.args = {
-  myPlayer: PlayerAgg.newMockupPlayer(),
+  myPlayer: PlayerModel.newMockupPlayer(),
   otherPlayers: [
-    PlayerAgg.newMockupPlayer(),
-    PlayerAgg.newMockupPlayer(),
-    PlayerAgg.newMockupPlayer(),
-    PlayerAgg.newMockupPlayer(),
+    PlayerModel.newMockupPlayer(),
+    PlayerModel.newMockupPlayer(),
+    PlayerModel.newMockupPlayer(),
+    PlayerModel.newMockupPlayer(),
   ],
-  units: [UnitAgg.newMockupUnit(), UnitAgg.newMockupUnit(), UnitAgg.newMockupUnit()],
+  units: [UnitModel.newMockupUnit(), UnitModel.newMockupUnit(), UnitModel.newMockupUnit()],
   items: [item],
 };

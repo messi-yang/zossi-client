@@ -5,9 +5,8 @@ import { useKeyPress } from '@/hooks/use-key-press';
 import { GameContext } from '@/contexts/game-context';
 import { ItemContext } from '@/contexts/item-context';
 import { StyleContext } from '@/contexts/style-context';
-import { DirectionVo } from '@/models/valueObjects';
+import { DirectionModel, ItemModel } from '@/models';
 import GameCanvas from '@/components/canvas/GameCanvas';
-import { ItemAgg } from '@/models/aggregates';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import SelectItemsBar from '@/components/bars/SelectItemsBar';
 import SmallLogo from '@/components/logos/SmallLogo';
@@ -53,10 +52,10 @@ const Room: NextPage = function Room() {
       }
 
       const doMove = () => {
-        if (isUpPressed) move(DirectionVo.newUp());
-        if (isRightPressed) move(DirectionVo.newRight());
-        if (isDownPressed) move(DirectionVo.newDown());
-        if (isLeftPressed) move(DirectionVo.newLeft());
+        if (isUpPressed) move(DirectionModel.newUp());
+        if (isRightPressed) move(DirectionModel.newRight());
+        if (isDownPressed) move(DirectionModel.newDown());
+        if (isLeftPressed) move(DirectionModel.newLeft());
       };
 
       doMove();
@@ -81,7 +80,7 @@ const Room: NextPage = function Room() {
     }
   };
 
-  const handleItemSelect = (item: ItemAgg) => {
+  const handleItemSelect = (item: ItemModel) => {
     changeHeldItem(item.getId());
   };
 

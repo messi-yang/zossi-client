@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useContext, useMemo } from 'react';
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
-import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
+import { ItemModel, UnitModel, PlayerModel } from '@/models';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { ThreeJsContext } from '@/contexts/three-js-context';
@@ -18,10 +18,10 @@ type InstancedMeshInfo = {
 };
 
 type Props = {
-  otherPlayers: PlayerAgg[];
-  myPlayer: PlayerAgg;
-  units: UnitAgg[];
-  items: ItemAgg[];
+  otherPlayers: PlayerModel[];
+  myPlayer: PlayerModel;
+  units: UnitModel[];
+  items: ItemModel[];
 };
 
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
@@ -277,7 +277,7 @@ function GameCanvas({ otherPlayers, units, myPlayer, items }: Props) {
 
   useEffect(
     function updateUnits() {
-      const itemUnitsMap: Record<string, UnitAgg[]> = {};
+      const itemUnitsMap: Record<string, UnitModel[]> = {};
       units.forEach((unit) => {
         if (!itemUnitsMap[unit.getItemId()]) {
           itemUnitsMap[unit.getItemId()] = [];

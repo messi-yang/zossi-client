@@ -1,12 +1,12 @@
-import { SizeVo } from '@/models/valueObjects';
+import { SizeModel } from '@/models';
 
 type SizeDto = {
   width: number;
   height: number;
 };
 
-function convertSizeDtoToSize(sizeDto: SizeDto): SizeVo {
-  return SizeVo.new(sizeDto.width, sizeDto.height);
+function convertSizeDtoToSize(sizeDto: SizeDto): SizeModel {
+  return SizeModel.new(sizeDto.width, sizeDto.height);
 }
 
 export type { SizeDto };
