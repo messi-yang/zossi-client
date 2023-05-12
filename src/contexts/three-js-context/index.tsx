@@ -28,7 +28,7 @@ type Props = {
   children: JSX.Element;
 };
 
-export function Provider({ children }: Props) {
+function Provider({ children }: Props) {
   const [rerenderToken, setRerenderToken] = useState(() => Math.random());
   const loadedModelMap = useRef<LoadedModelMap>({});
   const [gltfLoader] = useState(() => new GLTFLoader());
@@ -105,4 +105,4 @@ export function Provider({ children }: Props) {
   );
 }
 
-export default Context;
+export { Provider as ThreeJsProvider, Context as ThreeJsContext };

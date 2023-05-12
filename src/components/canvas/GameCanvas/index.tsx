@@ -5,7 +5,7 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
 import useDomRect from '@/hooks/useDomRect';
 
-import ThreeJsContext from '@/contexts/ThreeJsContext';
+import { ThreeJsContext } from '@/contexts/three-js-context';
 import { rangeMatrix } from '@/libs/common';
 import use3dObjectPool from './use3dObjectPool';
 import dataTestids from './dataTestids';
