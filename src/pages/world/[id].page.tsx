@@ -1,7 +1,7 @@
 import { useContext, useEffect, useCallback, useRef, KeyboardEventHandler } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import useKeyPress from '@/hooks/useKeyPress';
+import { useKeyPress } from '@/hooks/use-key-press';
 import { GameContext } from '@/contexts/game-context';
 import { ItemContext } from '@/contexts/item-context';
 import { StyleContext } from '@/contexts/style-context';

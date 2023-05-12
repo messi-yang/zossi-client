@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
 import { ItemAgg, UnitAgg, PlayerAgg } from '@/models/aggregates';
-import useDomRect from '@/hooks/useDomRect';
+import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { ThreeJsContext } from '@/contexts/three-js-context';
 import { rangeMatrix } from '@/libs/common';

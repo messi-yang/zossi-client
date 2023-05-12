@@ -1,6 +1,6 @@
 import { createRef, MutableRefObject } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import useDomRect from './index';
+import { useDomRect } from './index';
 
 function createElementRef(): MutableRefObject<HTMLDivElement | null> {
   const ref: MutableRefObject<HTMLDivElement | null> = createRef();

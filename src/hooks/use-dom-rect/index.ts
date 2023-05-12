@@ -1,7 +1,7 @@
 import { useState, RefObject, useEffect } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
-export default function useDomRect(ref: RefObject<HTMLElement>): DOMRect | null {
+export function useDomRect(ref: RefObject<HTMLElement>): DOMRect | null {
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
