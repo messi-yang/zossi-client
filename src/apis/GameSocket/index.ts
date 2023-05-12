@@ -1,16 +1,11 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
 import { DirectionVo } from '@/models/valueObjects';
-import { EventTypeEnum, GameJoinedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
+import { EventTypeEnum, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, RemoveItemCommand } from './commands';
 import { UnitAgg, PlayerAgg } from '@/models/aggregates';
-
-function parseGameJoinedEvent(event: GameJoinedEvent): [] {
-  console.log(event);
-  return [];
-}
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerAgg, PlayerAgg[]] {
   return [convertPlayerDtoPlayer(event.myPlayer), event.otherPlayers.map(convertPlayerDtoPlayer)];
@@ -48,10 +43,7 @@ export default class GameSocket {
       const newMsg: Event = JSON.parse(eventJsonString);
 
       console.log(newMsg);
-      if (newMsg.type === EventTypeEnum.GameJoined) {
-        parseGameJoinedEvent(newMsg);
-        params.onGameJoined();
-      } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
+      if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [myPlayer, otherPlayers] = parsePlayersUpdatedEvent(newMsg);
         params.onPlayersUpdated(myPlayer, otherPlayers);
       } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
