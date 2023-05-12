@@ -1,5 +1,5 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
-import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
+import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/apis/dtos';
 import { DirectionVo } from '@/models/valueObjects';
 import { EventTypeEnum, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
@@ -16,7 +16,7 @@ function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [UnitAgg[]] {
   return [units];
 }
 
-export default class GameSocket {
+export class GameConnectionService {
   private socket: WebSocket;
 
   private disconnectedByClient: boolean = false;
@@ -69,7 +69,7 @@ export default class GameSocket {
     this.socket = socket;
   }
 
-  static newGameSocket(
+  static new(
     gameId: string,
     params: {
       onGameJoined: () => void;
@@ -78,8 +78,8 @@ export default class GameSocket {
       onClose: (disconnectedByClient: boolean) => void;
       onOpen: () => void;
     }
-  ): GameSocket {
-    return new GameSocket(gameId, params);
+  ): GameConnectionService {
+    return new GameConnectionService(gameId, params);
   }
 
   public disconnect() {

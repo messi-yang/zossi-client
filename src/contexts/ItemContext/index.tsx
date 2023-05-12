@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
-import ItemApi from '@/apis/ItemApi';
+import { ItemService } from '@/apis/services/item-service';
 import {} from '@/models/valueObjects';
 import { ItemAgg } from '@/models/aggregates';
 
@@ -20,12 +20,12 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const [itemApi] = useState<ItemApi>(() => ItemApi.new());
+  const [itemService] = useState<ItemService>(() => ItemService.new());
   const initialContextValue = createInitialContextValue();
   const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
 
   const getItems = useCallback(async () => {
-    const newItems = await itemApi.getItems();
+    const newItems = await itemService.getItems();
     setItems(newItems);
   }, []);
 

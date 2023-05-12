@@ -1,5 +1,5 @@
 import { createContext, useCallback, useRef, useState, useMemo, MutableRefObject } from 'react';
-import GameSocket from '@/apis/GameSocket';
+import { GameConnectionService } from '@/apis/services/game-connection-service';
 import { DirectionVo } from '@/models/valueObjects';
 import { UnitAgg, PlayerAgg } from '@/models/aggregates';
 
@@ -40,7 +40,7 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const gameSocket: MutableRefObject<GameSocket | null> = useRef(null);
+  const gameConnectionService: MutableRefObject<GameConnectionService | null> = useRef(null);
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
@@ -56,9 +56,9 @@ export function Provider({ children }: Props) {
 
   const joinGame = useCallback(
     (gameId: string) => {
-      if (gameSocket.current) return;
+      if (gameConnectionService.current) return;
 
-      const newGameSocket = GameSocket.newGameSocket(gameId, {
+      const newGameConnectionService = GameConnectionService.new(gameId, {
         onGameJoined: () => {},
         onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerAgg[]) => {
           setMyPlayer(newMyPlayer);
@@ -73,39 +73,39 @@ export function Provider({ children }: Props) {
         onClose: (disconnectedByClient: boolean) => {
           if (disconnectedByClient) {
             setGameStatus('WAITING');
-            gameSocket.current = null;
+            gameConnectionService.current = null;
             reset();
           } else {
             setGameStatus('DISCONNECTED');
-            gameSocket.current = null;
+            gameConnectionService.current = null;
           }
         },
       });
       setGameStatus('CONNECTING');
-      gameSocket.current = newGameSocket;
+      gameConnectionService.current = newGameConnectionService;
     },
-    [gameSocket]
+    [gameConnectionService]
   );
 
   const move = useCallback((direction: DirectionVo) => {
-    gameSocket.current?.move(direction);
+    gameConnectionService.current?.move(direction);
   }, []);
 
   const leaveGame = useCallback(() => {
     setGameStatus('DISCONNECTING');
-    gameSocket.current?.disconnect();
+    gameConnectionService.current?.disconnect();
   }, []);
 
   const changeHeldItem = useCallback((itemId: string) => {
-    gameSocket.current?.changeHeldItem(itemId);
+    gameConnectionService.current?.changeHeldItem(itemId);
   }, []);
 
   const placeItem = useCallback(() => {
-    gameSocket.current?.placeItem();
+    gameConnectionService.current?.placeItem();
   }, []);
 
   const removeItem = useCallback(() => {
-    gameSocket.current?.removeItem();
+    gameConnectionService.current?.removeItem();
   }, []);
 
   return (

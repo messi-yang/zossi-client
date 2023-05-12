@@ -1,8 +1,8 @@
 import axios, { Axios } from 'axios';
-import { WorldDto, convertWorldDtoToUnit } from '@/dtos';
+import { WorldDto, convertWorldDtoToUnit } from '@/apis/dtos';
 import { WorldAgg } from '@/models/aggregates';
 
-export default class WorldApi {
+export class WorldService {
   private axios: Axios;
 
   constructor() {
@@ -12,8 +12,8 @@ export default class WorldApi {
     });
   }
 
-  static new(): WorldApi {
-    return new WorldApi();
+  static new(): WorldService {
+    return new WorldService();
   }
 
   async getWorlds(): Promise<WorldAgg[]> {

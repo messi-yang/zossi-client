@@ -1,8 +1,8 @@
 import axios, { Axios } from 'axios';
-import { ItemDto, convertItemDtoToItem } from '@/dtos';
+import { ItemDto, convertItemDtoToItem } from '@/apis/dtos';
 import { ItemAgg } from '@/models/aggregates';
 
-export default class ItemApi {
+export class ItemService {
   private axios: Axios;
 
   constructor() {
@@ -12,8 +12,8 @@ export default class ItemApi {
     });
   }
 
-  static new(): ItemApi {
-    return new ItemApi();
+  static new(): ItemService {
+    return new ItemService();
   }
 
   async getItems(): Promise<ItemAgg[]> {

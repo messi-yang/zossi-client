@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
-import WorldApi from '@/apis/WorldApi';
+import { WorldService } from '@/apis/services/world-service';
 import {} from '@/models/valueObjects';
 import { WorldAgg } from '@/models/aggregates';
 
@@ -20,12 +20,12 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const [worldApi] = useState<WorldApi>(() => WorldApi.new());
+  const [worldService] = useState<WorldService>(() => WorldService.new());
   const initialContextValue = createInitialContextValue();
   const [worlds, setWorlds] = useState<WorldAgg[] | null>(initialContextValue.worlds);
 
   const getWorlds = useCallback(async () => {
-    const newWorlds = await worldApi.getWorlds();
+    const newWorlds = await worldService.getWorlds();
     setWorlds(newWorlds);
   }, []);
 
