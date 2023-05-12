@@ -1,15 +1,15 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
-import { ItemService } from '@/apis/services/item-service';
+import { WorldService } from '@/apis/services/world-service';
 import {} from '@/models/valueObjects';
-import { ItemAgg } from '@/models/aggregates';
+import { WorldAgg } from '@/models/aggregates';
 
 type ContextValue = {
-  items: ItemAgg[] | null;
+  worlds: WorldAgg[] | null;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
-    items: null,
+    worlds: null,
   };
 }
 
@@ -19,27 +19,27 @@ type Props = {
   children: JSX.Element;
 };
 
-export function Provider({ children }: Props) {
-  const [itemService] = useState<ItemService>(() => ItemService.new());
+function Provider({ children }: Props) {
+  const [worldService] = useState<WorldService>(() => WorldService.new());
   const initialContextValue = createInitialContextValue();
-  const [items, setItems] = useState<ItemAgg[] | null>(initialContextValue.items);
+  const [worlds, setWorlds] = useState<WorldAgg[] | null>(initialContextValue.worlds);
 
-  const getItems = useCallback(async () => {
-    const newItems = await itemService.getItems();
-    setItems(newItems);
+  const getWorlds = useCallback(async () => {
+    const newWorlds = await worldService.getWorlds();
+    setWorlds(newWorlds);
   }, []);
 
   useEffect(() => {
-    getItems();
+    getWorlds();
   }, []);
 
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
         () => ({
-          items,
+          worlds,
         }),
-        [items]
+        [worlds]
       )}
     >
       {children}
@@ -47,4 +47,4 @@ export function Provider({ children }: Props) {
   );
 }
 
-export default Context;
+export { Provider as WorldProvider, Context as WorldContext };

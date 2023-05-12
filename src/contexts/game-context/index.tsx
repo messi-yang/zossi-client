@@ -131,4 +131,4 @@ export function Provider({ children }: Props) {
   );
 }
 
-export default Context;
+export { Provider as GameProvider, Context as GameContext };

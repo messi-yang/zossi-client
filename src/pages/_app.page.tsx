@@ -1,24 +1,24 @@
 import './tailwind.css';
 import type { AppProps } from 'next/app';
-import { Provider as GameContextProvider } from '@/contexts/GameContext';
-import { Provider as ItemContextProvider } from '@/contexts/ItemContext';
-import { Provider as WorldContextProvider } from '@/contexts/WorldContext';
-import { Provider as StyleContextProvider } from '@/contexts/StyleContext';
+import { GameProvider } from '@/contexts/game-context';
+import { ItemProvider } from '@/contexts/item-context';
+import { WorldProvider } from '@/contexts/world-context';
+import { StyleProvider } from '@/contexts/style-context';
 import { Provider as ThreeJsContextProvider } from '@/contexts/ThreeJsContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <StyleContextProvider>
+    <StyleProvider>
       <ThreeJsContextProvider>
-        <GameContextProvider>
-          <ItemContextProvider>
-            <WorldContextProvider>
+        <GameProvider>
+          <ItemProvider>
+            <WorldProvider>
               <Component {...pageProps} />
-            </WorldContextProvider>
-          </ItemContextProvider>
-        </GameContextProvider>
+            </WorldProvider>
+          </ItemProvider>
+        </GameProvider>
       </ThreeJsContextProvider>
-    </StyleContextProvider>
+    </StyleProvider>
   );
 }
 

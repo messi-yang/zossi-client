@@ -24,7 +24,7 @@ type Props = {
   children: JSX.Element;
 };
 
-export function Provider({ children }: Props) {
+function Provider({ children }: Props) {
   const [windowWidth, setWindowWidth] = useState<number | undefined>(undefined);
   const [windowHeight, setWindowHeight] = useState<number | undefined>(undefined);
   const [isWindowSizeReady, setIsWindowSizeReady] = useState(false);
@@ -68,4 +68,4 @@ export function Provider({ children }: Props) {
   );
 }
 
-export default Context;
+export { Provider as StyleProvider, Context as StyleContext };

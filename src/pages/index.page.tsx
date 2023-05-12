@@ -2,9 +2,9 @@ import { useContext } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import StyleContext from '@/contexts/StyleContext';
-import WorldContext from '@/contexts/WorldContext';
-import GameContext from '@/contexts/GameContext';
+import { StyleContext } from '@/contexts/style-context';
+import { WorldContext } from '@/contexts/world-context';
+import { GameContext } from '@/contexts/game-context';
 
 import BigLogo from '@/components/logos/BigLogo';
 import Button from '@/components/buttons/Button';
