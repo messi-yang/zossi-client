@@ -12,14 +12,14 @@ type PlayerDto = {
 };
 
 function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerModel {
-  return PlayerModel.new({
-    id: playerDto.id,
-    name: playerDto.name,
-    position: PositionModel.new(playerDto.position.x, playerDto.position.z),
-    direction: DirectionModel.new(playerDto.direction),
-    visionBound: convertBoundDtoToBound(playerDto.visionBound),
-    heldItemId: playerDto.heldItemId,
-  });
+  return PlayerModel.new(
+    playerDto.id,
+    playerDto.name,
+    PositionModel.new(playerDto.position.x, playerDto.position.z),
+    DirectionModel.new(playerDto.direction),
+    convertBoundDtoToBound(playerDto.visionBound),
+    playerDto.heldItemId
+  );
 }
 
 export type { PlayerDto };

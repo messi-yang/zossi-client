@@ -4,54 +4,35 @@ import { DirectionModel } from './direction-model';
 import { BoundModel } from './bound-model';
 
 export class PlayerModel {
-  private id: string;
+  constructor(
+    private id: string,
+    private name: string,
+    private position: PositionModel,
+    private direction: DirectionModel,
+    private visionBound: BoundModel,
+    private heldItemId: string | null
+  ) {}
 
-  private name: string;
-
-  private position: PositionModel;
-
-  private direction: DirectionModel;
-
-  private visionBound: BoundModel;
-
-  private heldItemId: string | null;
-
-  constructor(params: {
-    id: string;
-    name: string;
-    position: PositionModel;
-    direction: DirectionModel;
-    visionBound: BoundModel;
-    heldItemId: string | null;
-  }) {
-    this.id = params.id;
-    this.name = params.name;
-    this.position = params.position;
-    this.direction = params.direction;
-    this.visionBound = params.visionBound;
-    this.heldItemId = params.heldItemId;
-  }
-
-  static new(params: {
-    id: string;
-    name: string;
-    position: PositionModel;
-    direction: DirectionModel;
-    visionBound: BoundModel;
-    heldItemId: string | null;
-  }): PlayerModel {
-    return new PlayerModel(params);
+  static new(
+    id: string,
+    name: string,
+    position: PositionModel,
+    direction: DirectionModel,
+    visionBound: BoundModel,
+    heldItemId: string | null
+  ): PlayerModel {
+    return new PlayerModel(id, name, position, direction, visionBound, heldItemId);
   }
 
   static newMockupPlayer(): PlayerModel {
-    return PlayerModel.new({
-      id: uuidv4(),
-      name: 'Test Player',
-      position: PositionModel.new(0, 0),
-      direction: DirectionModel.new(2),
-      visionBound: BoundModel.new(PositionModel.new(-10, -10), PositionModel.new(10, 10)),
-      heldItemId: null,
-    });
+    return PlayerModel.new(
+      uuidv4(),
+      'Test Player',
+      PositionModel.new(0, 0),
+      DirectionModel.new(2),
+      BoundModel.new(PositionModel.new(-10, -10), PositionModel.new(10, 10)),
+      null
+    );
   }
 
   public getId(): string {

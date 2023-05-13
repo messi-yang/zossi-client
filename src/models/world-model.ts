@@ -1,19 +1,7 @@
 export class WorldModel {
-  private id: string;
+  constructor(private id: string, private name: string, private userId: string) {}
 
-  private name: string;
-
-  private userId: string;
-
-  constructor(id: string, name: string, userId: string) {
-    this.id = id;
-    this.name = name;
-    this.userId = userId;
-  }
-
-  static new(id: string, name: string, userId: string): WorldModel {
-    return new WorldModel(id, name, userId);
-  }
+  static new = (id: string, name: string, userId: string): WorldModel => new WorldModel(id, name, userId);
 
   public getId(): string {
     return this.id;

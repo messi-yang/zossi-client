@@ -1,15 +1,9 @@
 type Direction = 0 | 1 | 2 | 3;
 
 export class DirectionModel {
-  private direction: Direction;
+  constructor(private direction: Direction) {}
 
-  constructor(direction: Direction) {
-    this.direction = direction;
-  }
-
-  static new(direction: Direction): DirectionModel {
-    return new DirectionModel(direction);
-  }
+  static new = (direction: Direction): DirectionModel => new DirectionModel(direction);
 
   static newDown(): DirectionModel {
     return new DirectionModel(0);

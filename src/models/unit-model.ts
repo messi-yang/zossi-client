@@ -2,21 +2,10 @@ import { DirectionModel } from './direction-model';
 import { PositionModel } from './position-model';
 
 export class UnitModel {
-  private itemId: string;
+  constructor(private itemId: string, private position: PositionModel, private direction: DirectionModel) {}
 
-  private position: PositionModel;
-
-  private direction: DirectionModel;
-
-  constructor(itemId: string, position: PositionModel, direction: DirectionModel) {
-    this.itemId = itemId;
-    this.position = position;
-    this.direction = direction;
-  }
-
-  static new(itemId: string, position: PositionModel, direction: DirectionModel): UnitModel {
-    return new UnitModel(itemId, position, direction);
-  }
+  static new = (itemId: string, position: PositionModel, direction: DirectionModel): UnitModel =>
+    new UnitModel(itemId, position, direction);
 
   static newMockupUnit(): UnitModel {
     return new UnitModel('414b5703-91d1-42fc-a007-36dd8f25e329', PositionModel.new(0, 0), DirectionModel.newDown());

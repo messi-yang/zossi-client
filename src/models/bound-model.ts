@@ -1,18 +1,9 @@
 import { PositionModel } from './position-model';
 
 export class BoundModel {
-  private from: PositionModel;
+  constructor(private from: PositionModel, private to: PositionModel) {}
 
-  private to: PositionModel;
-
-  constructor(from: PositionModel, to: PositionModel) {
-    this.from = from;
-    this.to = to;
-  }
-
-  static new(from: PositionModel, to: PositionModel): BoundModel {
-    return new BoundModel(from, to);
-  }
+  static new = (from: PositionModel, to: PositionModel): BoundModel => new BoundModel(from, to);
 
   public isEqual(bound: BoundModel): Boolean {
     return this.from.isEqual(bound.getFrom()) && this.to.isEqual(bound.getTo());

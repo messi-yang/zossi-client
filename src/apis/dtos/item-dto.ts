@@ -9,13 +9,7 @@ type ItemDto = {
 };
 
 function convertItemDtoToItem(itemDto: ItemDto): ItemModel {
-  return ItemModel.new({
-    id: itemDto.id,
-    name: itemDto.name,
-    traversable: itemDto.traversable,
-    thumbnailSrc: itemDto.thumbnailSrc,
-    modelSrc: itemDto.modelSrc,
-  });
+  return ItemModel.new(itemDto.id, itemDto.name, itemDto.traversable, itemDto.thumbnailSrc, itemDto.modelSrc);
 }
 
 export type { ItemDto };
