@@ -1,6 +1,6 @@
 import { Text } from '@/components/texts/text';
 import { BaseModal } from '@/components/modals/base-modal';
-import { Button } from '@/components/buttons/button';
+import { Button } from '@/components/buttons/tmp-button';
 import { dataTestids } from './data-test-ids';
 
 type Props = {
