@@ -1,6 +1,6 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import { ItemModel } from '@/models';
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 import { SelectItemsBar } from '.';
 
 function renderSelectItemsBar(): RenderResult {

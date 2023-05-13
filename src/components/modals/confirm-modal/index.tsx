@@ -1,7 +1,7 @@
 import { Text } from '@/components/texts/text';
 import { BaseModal } from '@/components/modals/base-modal';
 import { Button } from '@/components/buttons/button';
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 
 type Props = {
   opened: boolean;

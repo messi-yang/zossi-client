@@ -1,16 +1,16 @@
-import { convertBoundDtoToBound } from './BoundDto';
-import type { BoundDto } from './BoundDto';
-import type { PositionDto } from './PositionDto';
-import { convertSizeDtoToSize } from './SizeDto';
-import type { SizeDto } from './SizeDto';
-import { convertUnitDtoToUnit } from './UnitDto';
-import type { UnitDto } from './UnitDto';
-import { convertItemDtoToItem } from './ItemDto';
-import type { ItemDto } from './ItemDto';
-import { convertPlayerDtoPlayer } from './PlayerDto';
-import type { PlayerDto } from './PlayerDto';
-import { convertWorldDtoToUnit } from './WorldDto';
-import type { WorldDto } from './WorldDto';
+import { convertBoundDtoToBound } from './bound-dto';
+import type { BoundDto } from './bound-dto';
+import type { PositionDto } from './position-dto';
+import { convertSizeDtoToSize } from './size-dto';
+import type { SizeDto } from './size-dto';
+import { convertUnitDtoToUnit } from './unit-dto';
+import type { UnitDto } from './unit-dto';
+import { convertItemDtoToItem } from './item-dto';
+import type { ItemDto } from './item-dto';
+import { convertPlayerDtoPlayer } from './player-dto';
+import type { PlayerDto } from './player-dto';
+import { convertWorldDtoToUnit } from './world-dto';
+import type { WorldDto } from './world-dto';
 
 export type { BoundDto, PositionDto, SizeDto, UnitDto, ItemDto, PlayerDto, WorldDto };
 

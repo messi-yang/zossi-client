@@ -1,4 +1,4 @@
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 
 export function SmallLogo() {
   return (

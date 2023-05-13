@@ -1,5 +1,5 @@
 import { UnitModel, DirectionModel, PositionModel } from '@/models';
-import { PositionDto } from './PositionDto';
+import { PositionDto } from './position-dto';
 
 type UnitDto = {
   itemId: string;

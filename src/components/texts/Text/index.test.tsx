@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 import { Text } from '.';
 
 function renderText(): RenderResult {

@@ -8,7 +8,7 @@ import { useDomRect } from '@/hooks/use-dom-rect';
 import { ThreeJsContext } from '@/contexts/three-js-context';
 import { rangeMatrix } from '@/libs/common';
 import use3dObjectPool from './use3dObjectPool';
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 
 type InstancedMeshInfo = {
   mesh: THREE.InstancedMesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;

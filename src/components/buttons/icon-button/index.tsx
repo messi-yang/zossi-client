@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 import { CrossIcon } from '@/components/icons/cross-icon';
 
 export type Icon = 'cross';

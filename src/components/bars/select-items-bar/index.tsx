@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import { ItemBox } from '@/components/boxes/item-box';
 import { ItemModel } from '@/models';
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 
 type Props = {
   selectedItemId: string | null;

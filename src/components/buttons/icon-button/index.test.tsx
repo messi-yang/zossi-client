@@ -1,5 +1,5 @@
 import { render, RenderResult, screen, fireEvent } from '@testing-library/react';
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 import { IconButton } from '.';
 import type { Icon } from '.';
 

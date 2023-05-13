@@ -1,6 +1,6 @@
 import { PlayerModel, DirectionModel, PositionModel } from '@/models';
-import { BoundDto, convertBoundDtoToBound } from './BoundDto';
-import type { PositionDto } from './PositionDto';
+import { BoundDto, convertBoundDtoToBound } from './bound-dto';
+import type { PositionDto } from './position-dto';
 
 type PlayerDto = {
   id: string;

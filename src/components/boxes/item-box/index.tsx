@@ -1,7 +1,7 @@
 import { KeyboardEventHandler } from 'react';
 import classnames from 'classnames';
 import { ItemModel } from '@/models';
-import { dataTestids } from './dataTestids';
+import { dataTestids } from './data-test-ids';
 
 type Props = {
   item: ItemModel;

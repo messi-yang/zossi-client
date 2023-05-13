@@ -1,5 +1,5 @@
 import { BoundModel, PositionModel } from '@/models';
-import type { PositionDto } from './PositionDto';
+import type { PositionDto } from './position-dto';
 
 type BoundDto = {
   from: PositionDto;
