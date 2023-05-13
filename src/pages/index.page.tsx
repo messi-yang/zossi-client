@@ -1,19 +1,16 @@
 import { useContext } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
-import { StyleContext } from '@/contexts/style-context';
 import { WorldContext } from '@/contexts/world-context';
 import { GameContext } from '@/contexts/game-context';
 
-import { BigLogo } from '@/components/logos/big-logo';
 import { Button } from '@/components/buttons/button';
 
 const Landing: NextPage = function Landing() {
-  const styleContext = useContext(StyleContext);
   const { worlds } = useContext(WorldContext);
   const { joinGame } = useContext(GameContext);
-  const deviceSize: 'large' | 'small' = styleContext.getWindowWidth() > 475 ? 'large' : 'small';
 
   const router = useRouter();
 
@@ -28,15 +25,14 @@ const Landing: NextPage = function Landing() {
   };
 
   return (
-    <main
-      className="w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1E1E1E]"
-      style={{
-        width: styleContext.windowWidth,
-        height: styleContext.windowHeight,
-      }}
-    >
-      <BigLogo width={deviceSize === 'large' ? undefined : styleContext.getWindowWidth() * 0.8} />
-      <div className="mt-[100px]">
+    <main className="w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1E1E1E]">
+      <div className="sm:hidden">
+        <Image src="/assets/big-logo.png" alt="big logo" width={203} height={150} />
+      </div>
+      <div className="hidden sm:inline-block">
+        <Image src="/assets/big-logo.png" alt="big logo" width={406} height={231} />
+      </div>
+      <div className="mt-8 sm:mt-20">
         <Button text="Start" onClick={onStartClick} />
       </div>
     </main>

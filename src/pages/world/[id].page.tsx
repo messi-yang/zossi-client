@@ -1,21 +1,20 @@
 import { useContext, useEffect, useCallback, useRef, KeyboardEventHandler } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
+
 import { useKeyPress } from '@/hooks/use-key-press';
 import { GameContext } from '@/contexts/game-context';
 import { ItemContext } from '@/contexts/item-context';
-import { StyleContext } from '@/contexts/style-context';
 import { DirectionModel, ItemModel } from '@/models';
 import { GameCanvas } from '@/components/canvas/game-canvas';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
-import { SmallLogo } from '@/components/logos/small-logo';
 import { Text } from '@/components/texts/text';
 
 const Room: NextPage = function Room() {
   const router = useRouter();
   const worldId = router.query.id as string | null;
-  const styleContext = useContext(StyleContext);
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const { units, myPlayer, otherPlayers, gameStatus, move, joinGame, changeHeldItem, placeItem, removeItem } =
     useContext(GameContext);
@@ -97,10 +96,7 @@ const Room: NextPage = function Room() {
   }, [joinGame, worldId]);
 
   return (
-    <main
-      className="relative w-screen h-screen flex"
-      style={{ width: styleContext.windowWidth, height: styleContext.windowHeight }}
-    >
+    <main className="relative w-screen h-screen">
       <ConfirmModal
         opened={isReconnectModalVisible}
         message="You're disconnected to the game."
@@ -126,9 +122,9 @@ const Room: NextPage = function Room() {
         onClick={handleLogoClick}
         onKeyDown={handleLogoKeyDown}
       >
-        <SmallLogo />
+        <Image src="/assets/small-logo.png" alt="small logo" width={28} height={28} />
       </section>
-      <section ref={mapContainerRef} className="relative grow overflow-hidden bg-black">
+      <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
         <section className="w-full h-full">
           {myPlayer && otherPlayers && units && items && (
             <GameCanvas otherPlayers={otherPlayers} myPlayer={myPlayer} units={units} items={items} />
