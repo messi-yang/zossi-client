@@ -11,7 +11,7 @@ const nextConfig = {
     dirs: ['src'],
   },
   env: {
-    API_DOMAIN: process.env.API_DOMAIN || 'localhost:8080',
+    API_DOMAIN: process.env.API_DOMAIN,
   },
 };
 
