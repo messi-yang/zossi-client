@@ -30,8 +30,7 @@ export class GameConnectionService {
       onOpen: () => void;
     }
   ) {
-    const schema = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
-    const socketUrl = `${schema}://${process.env.API_DOMAIN}/ws/game/?id=${gameId}`;
+    const socketUrl = `${process.env.API_SOCKET_URL}/ws/game/?id=${gameId}`;
     const socket = new WebSocket(socketUrl);
 
     let pingServerInterval: NodeJS.Timer | null = null;

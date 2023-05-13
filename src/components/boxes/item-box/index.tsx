@@ -1,4 +1,5 @@
 import { KeyboardEventHandler } from 'react';
+import Image from 'next/image';
 import classnames from 'classnames';
 import { ItemModel } from '@/models';
 import { dataTestids } from './data-test-ids';
@@ -20,6 +21,7 @@ export function ItemBox({ item, active, onClick }: Props) {
     <div
       data-testid={dataTestids.root}
       className={classnames(
+        'relative',
         'w-full',
         'h-full',
         'flex',
@@ -36,7 +38,7 @@ export function ItemBox({ item, active, onClick }: Props) {
       tabIndex={0}
       role="button"
     >
-      <img className="w-full h-full" src={item.getThumbnailSrc()} alt={item.getName()} />
+      <Image src={item.getThumbnailSrc()} alt={item.getName()} fill />
     </div>
   );
 }

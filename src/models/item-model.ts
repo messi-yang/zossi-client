@@ -13,7 +13,7 @@ export class ItemModel {
     new ItemModel(id, name, traversable, thumbnailSrc, modelSrc);
 
   static newMockupItem(): ItemModel {
-    return ItemModel.new(uuidv4(), 'stone', true, 'placeholder-item.png', 'characters/car.gltf');
+    return ItemModel.new(uuidv4(), 'stone', true, '/placeholder-item.png', 'characters/car.gltf');
   }
 
   public getId(): string {

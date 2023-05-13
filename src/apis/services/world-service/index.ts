@@ -6,9 +6,8 @@ export class WorldService {
   private axios: Axios;
 
   constructor() {
-    const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     this.axios = axios.create({
-      baseURL: `${schema}://${process.env.API_DOMAIN}/api/worlds`,
+      baseURL: `${process.env.API_URL}/api/worlds`,
     });
   }
 
