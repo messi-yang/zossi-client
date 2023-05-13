@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { WorldContext } from '@/contexts/world-context';
 import { GameContext } from '@/contexts/game-context';
 
-import { Button } from '@/components/buttons/tmp-button';
+import { Button } from '@/components/buttons/button';
 
 const Landing: NextPage = function Landing() {
   const { worlds } = useContext(WorldContext);

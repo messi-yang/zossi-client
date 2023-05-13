@@ -10,7 +10,7 @@ import { DirectionModel, ItemModel } from '@/models';
 import { GameCanvas } from '@/components/canvas/game-canvas';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
-import { Text } from '@/components/texts/text';
+import { Text } from '@/components/texts/tmp-text';
 
 const Room: NextPage = function Room() {
   const router = useRouter();
