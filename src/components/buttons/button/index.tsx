@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text } from '@/components/texts/tmp-text';
+import { Text } from '@/components/texts/text';
 import { ContentWrapper } from './sub-components/content-wrapper';
 import { dataTestids } from './data-test-ids';
 
