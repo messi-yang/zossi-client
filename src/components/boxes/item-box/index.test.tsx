@@ -1,15 +1,16 @@
 import { render, RenderResult, screen } from '@testing-library/react';
+import { ItemModel } from '@/models';
 import { dataTestids } from './dataTestids';
-import { Text } from '.';
+import { ItemBox } from '.';
 
-function renderText(): RenderResult {
-  return render(<Text />);
+function renderItemBox(): RenderResult {
+  return render(<ItemBox item={ItemModel.newMockupItem()} />);
 }
 
-describe('Text', () => {
+describe('ItemBox', () => {
   it('Should render component successfully.', () => {
     try {
-      renderText();
+      renderItemBox();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

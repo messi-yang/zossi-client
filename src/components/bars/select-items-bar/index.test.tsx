@@ -1,15 +1,16 @@
 import { render, RenderResult, screen } from '@testing-library/react';
+import { ItemModel } from '@/models';
 import { dataTestids } from './dataTestids';
-import { Text } from '.';
+import { SelectItemsBar } from '.';
 
-function renderText(): RenderResult {
-  return render(<Text />);
+function renderSelectItemsBar(): RenderResult {
+  return render(<SelectItemsBar selectedItemId={null} items={[ItemModel.newMockupItem()]} />);
 }
 
-describe('Text', () => {
+describe('SelectItemsBar', () => {
   it('Should render component successfully.', () => {
     try {
-      renderText();
+      renderSelectItemsBar();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

@@ -1,16 +1,16 @@
 import { useState } from 'react';
 
-import Text from '@/components/texts/Text';
+import { Text } from '@/components/texts/text';
 
-import ContentWrapper from './subComponents/ContentWrapper';
-import dataTestids from './dataTestids';
+import { ContentWrapper } from './sub-components/content-wrapper';
+import { dataTestids } from './dataTestids';
 
 type Props = {
   text: string;
   onClick?: () => any;
 };
 
-function Button({ text, onClick = () => {} }: Props) {
+export function Button({ text, onClick = () => {} }: Props) {
   const [highlighted, setHighlighted] = useState(false);
 
   const handleMouseEnter = () => {
@@ -58,6 +58,3 @@ function Button({ text, onClick = () => {} }: Props) {
     </button>
   );
 }
-
-export default Button;
-export { dataTestids };

@@ -1,24 +1,24 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import { Button } from '.';
+import { IconButton } from '.';
 
 export default {
-  title: 'Button/Button',
-  component: Button,
+  title: 'Button/IconButton',
+  component: IconButton,
   argTypes: {
     text: {
       control: 'string',
     },
     onClick: { action: true },
   },
-} as ComponentMeta<typeof Button>;
+} as ComponentMeta<typeof IconButton>;
 
-const Template: ComponentStory<typeof Button> = function Template(args) {
-  return <Button {...args} />;
+const Template: ComponentStory<typeof IconButton> = function Template(args) {
+  return <IconButton {...args} />;
 };
 
 export const Primary = Template.bind({});
 Primary.args = {
-  text: 'Click',
+  icon: 'cross',
 };

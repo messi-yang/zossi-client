@@ -1,15 +1,15 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import { dataTestids } from './dataTestids';
-import { Text } from '.';
+import { SmallLogo } from '.';
 
-function renderText(): RenderResult {
-  return render(<Text />);
+function renderSmallLogo(): RenderResult {
+  return render(<SmallLogo />);
 }
 
-describe('Text', () => {
+describe('SmallLogo', () => {
   it('Should render component successfully.', () => {
     try {
-      renderText();
+      renderSmallLogo();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

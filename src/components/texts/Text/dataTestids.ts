@@ -1,5 +1,5 @@
 import { generateDataTestid } from '@/libs/test';
 
-export default {
+export const dataTestids = {
   root: generateDataTestid(),
 };

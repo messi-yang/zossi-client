@@ -6,8 +6,8 @@ import { StyleContext } from '@/contexts/style-context';
 import { WorldContext } from '@/contexts/world-context';
 import { GameContext } from '@/contexts/game-context';
 
-import BigLogo from '@/components/logos/BigLogo';
-import Button from '@/components/buttons/Button';
+import { BigLogo } from '@/components/logos/big-logo';
+import { Button } from '@/components/buttons/button';
 
 const Landing: NextPage = function Landing() {
   const styleContext = useContext(StyleContext);

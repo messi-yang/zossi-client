@@ -6,11 +6,11 @@ import { GameContext } from '@/contexts/game-context';
 import { ItemContext } from '@/contexts/item-context';
 import { StyleContext } from '@/contexts/style-context';
 import { DirectionModel, ItemModel } from '@/models';
-import GameCanvas from '@/components/canvas/GameCanvas';
-import ConfirmModal from '@/components/modals/ConfirmModal';
-import SelectItemsBar from '@/components/bars/SelectItemsBar';
-import SmallLogo from '@/components/logos/SmallLogo';
-import Text from '@/components/texts/Text';
+import { GameCanvas } from '@/components/canvas/game-canvas';
+import { ConfirmModal } from '@/components/modals/confirm-modal';
+import { SelectItemsBar } from '@/components/bars/select-items-bar';
+import { SmallLogo } from '@/components/logos/small-logo';
+import { Text } from '@/components/texts/text';
 
 const Room: NextPage = function Room() {
   const router = useRouter();

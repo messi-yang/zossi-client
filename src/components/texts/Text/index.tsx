@@ -1,4 +1,4 @@
-import dataTestids from './dataTestids';
+import { dataTestids } from './dataTestids';
 
 type Props = {
   copy?: string;
@@ -8,7 +8,7 @@ type Props = {
   weight?: 'regular' | 'bold';
 };
 
-function Text({ copy = '', color = 'black', size = 16, lineHeight = 1.2, weight = 'regular' }: Props) {
+export function Text({ copy = '', color = 'black', size = 16, lineHeight = 1.2, weight = 'regular' }: Props) {
   return (
     <span
       data-testid={dataTestids.root}
@@ -23,6 +23,3 @@ function Text({ copy = '', color = 'black', size = 16, lineHeight = 1.2, weight 
     </span>
   );
 }
-
-export default Text;
-export { dataTestids };

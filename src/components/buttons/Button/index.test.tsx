@@ -1,5 +1,6 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import Button, { dataTestids } from '.';
+import { dataTestids } from './dataTestids';
+import { Button } from '.';
 
 function renderButton(): RenderResult {
   return render(<Button text="Hello" />);
