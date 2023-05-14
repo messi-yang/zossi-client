@@ -1,5 +1,5 @@
 import { useContext, useEffect, useCallback, useRef, KeyboardEventHandler } from 'react';
-import type { NextPage } from 'next';
+import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
@@ -12,7 +12,7 @@ import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
 import { Text } from '@/components/texts/text';
 
-const Room: NextPage = function Room() {
+const Worlds: NextPage = function Worlds() {
   const router = useRouter();
   const worldId = router.query.id as string | null;
   const mapContainerRef = useRef<HTMLElement | null>(null);
@@ -112,7 +112,7 @@ const Room: NextPage = function Room() {
       <div className="absolute top-2 right-3 z-10 flex">
         {myPlayer && <Text copy={myPlayer.getPositionText()} size={20} color="white" lineHeight={1} />}
       </div>
-      <section className="absolute bottom-2 left-1/2 translate-x-[-50%] z-10">
+      <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
         <SelectItemsBar items={items} selectedItemId={heldItemId} onSelect={handleItemSelect} />
       </section>
       <section
@@ -135,4 +135,13 @@ const Room: NextPage = function Room() {
   );
 };
 
-export default Room;
+export const getStaticPaths: GetStaticPaths = async () => ({
+  paths: [],
+  fallback: true,
+});
+
+export const getStaticProps: GetStaticProps = async () => ({
+  props: {},
+});
+
+export default Worlds;

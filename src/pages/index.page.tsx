@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import type { NextPage } from 'next';
+import type { NextPage, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
@@ -21,7 +21,7 @@ const Landing: NextPage = function Landing() {
     if (!worldId) return;
 
     joinGame(worldId);
-    router.push(`/world/${worldId}`);
+    router.push(`/worlds/${worldId}`);
   };
 
   return (
@@ -38,5 +38,9 @@ const Landing: NextPage = function Landing() {
     </main>
   );
 };
+
+export const getStaticProps: GetStaticProps = async () => ({
+  props: {},
+});
 
 export default Landing;
