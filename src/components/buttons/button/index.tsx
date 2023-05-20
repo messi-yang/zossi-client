@@ -50,7 +50,9 @@ export function Button({ text, onClick = () => {} }: Props) {
             highlighted ? 'bg-white' : 'bg-none',
           ].join(' ')}
         >
-          <Text color={highlighted ? 'black' : 'white'} copy={text} size={16} />
+          <Text color={highlighted ? 'text-black' : 'text-white'} size="text-base">
+            {text}
+          </Text>
         </div>
       </ContentWrapper>
     </button>

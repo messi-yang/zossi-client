@@ -1,14 +1,13 @@
-import axios, { Axios } from 'axios';
+import { Axios } from 'axios';
 import { ItemDto, convertItemDtoToItem } from '@/apis/dtos';
 import { ItemModel } from '@/models';
+import { AxiosProvider } from '@/apis/axios-provider';
 
 export class ItemService {
   private axios: Axios;
 
   constructor() {
-    this.axios = axios.create({
-      baseURL: `${process.env.API_URL}/api/items`,
-    });
+    this.axios = AxiosProvider.newAxiosInstance(`${process.env.API_URL}/api/items`);
   }
 
   static new(): ItemService {

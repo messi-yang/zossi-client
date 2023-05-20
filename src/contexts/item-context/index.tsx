@@ -1,14 +1,16 @@
-import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
+import { createContext, useCallback, useState, useMemo } from 'react';
 import { ItemService } from '@/apis/services/item-service';
 import { ItemModel } from '@/models';
 
 type ContextValue = {
   items: ItemModel[] | null;
+  fetchItems: () => Promise<void>;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
     items: null,
+    fetchItems: async () => {},
   };
 }
 
@@ -23,13 +25,9 @@ function Provider({ children }: Props) {
   const initialContextValue = createInitialContextValue();
   const [items, setItems] = useState<ItemModel[] | null>(initialContextValue.items);
 
-  const getItems = useCallback(async () => {
+  const fetchItems = useCallback(async () => {
     const newItems = await itemService.getItems();
     setItems(newItems);
-  }, []);
-
-  useEffect(() => {
-    getItems();
   }, []);
 
   return (
@@ -37,8 +35,9 @@ function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           items,
+          fetchItems,
         }),
-        [items]
+        [items, fetchItems]
       )}
     >
       {children}

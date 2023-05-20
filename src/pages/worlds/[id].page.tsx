@@ -12,13 +12,17 @@ import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
 import { Text } from '@/components/texts/text';
 
-const Worlds: NextPage = function Worlds() {
+const Page: NextPage = function Page() {
   const router = useRouter();
   const worldId = router.query.id as string | null;
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const { units, myPlayer, otherPlayers, gameStatus, move, joinGame, changeHeldItem, placeItem, removeItem } =
     useContext(GameContext);
-  const { items } = useContext(ItemContext);
+  const { items, fetchItems } = useContext(ItemContext);
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
   const heldItemId = myPlayer?.getHeldItemid() || null;
   const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
   const isJoinGameModalVisible = gameStatus === 'WAITING';
@@ -110,7 +114,9 @@ const Worlds: NextPage = function Worlds() {
         onComfirm={handleJoinGameModalConfirmClick}
       />
       <div className="absolute top-2 right-3 z-10 flex">
-        {myPlayer && <Text copy={myPlayer.getPositionText()} size={20} color="white" lineHeight={1} />}
+        <Text size="text-xl" color="text-white">
+          {myPlayer?.getPositionText() || null}
+        </Text>
       </div>
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
         <SelectItemsBar items={items} selectedItemId={heldItemId} onSelect={handleItemSelect} />
@@ -144,4 +150,4 @@ export const getStaticProps: GetStaticProps = async () => ({
   props: {},
 });
 
-export default Worlds;
+export default Page;

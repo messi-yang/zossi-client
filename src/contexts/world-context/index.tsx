@@ -1,14 +1,16 @@
-import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
+import { createContext, useCallback, useState, useMemo } from 'react';
 import { WorldService } from '@/apis/services/world-service';
 import { WorldModel } from '@/models';
 
 type ContextValue = {
   worlds: WorldModel[] | null;
+  fetchWorlds: () => Promise<void>;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
     worlds: null,
+    fetchWorlds: async () => {},
   };
 }
 
@@ -23,13 +25,9 @@ function Provider({ children }: Props) {
   const initialContextValue = createInitialContextValue();
   const [worlds, setWorlds] = useState<WorldModel[] | null>(initialContextValue.worlds);
 
-  const getWorlds = useCallback(async () => {
+  const fetchWorlds = useCallback(async () => {
     const newWorlds = await worldService.getWorlds();
     setWorlds(newWorlds);
-  }, []);
-
-  useEffect(() => {
-    getWorlds();
   }, []);
 
   return (
@@ -37,8 +35,9 @@ function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           worlds,
+          fetchWorlds,
         }),
-        [worlds]
+        [worlds, fetchWorlds]
       )}
     >
       {children}

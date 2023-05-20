@@ -1,14 +1,13 @@
-import axios, { Axios } from 'axios';
+import { Axios } from 'axios';
 import { WorldDto, convertWorldDtoToUnit } from '@/apis/dtos';
 import { WorldModel } from '@/models';
+import { AxiosProvider } from '@/apis/axios-provider';
 
 export class WorldService {
   private axios: Axios;
 
   constructor() {
-    this.axios = axios.create({
-      baseURL: `${process.env.API_URL}/api/worlds`,
-    });
+    this.axios = AxiosProvider.newAxiosInstance(`${process.env.API_URL}/api/worlds`);
   }
 
   static new(): WorldService {

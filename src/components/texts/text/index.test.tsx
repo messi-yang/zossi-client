@@ -3,7 +3,7 @@ import { dataTestids } from './data-test-ids';
 import { Text } from '.';
 
 function renderText(): RenderResult {
-  return render(<Text />);
+  return render(<Text>Hi</Text>);
 }
 
 describe('Text', () => {
