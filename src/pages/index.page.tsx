@@ -13,7 +13,7 @@ import { Text } from '@/components/texts/text';
 const Landing: NextPage = function Landing() {
   const { worlds, fetchWorlds } = useContext(WorldContext);
   const { joinGame } = useContext(GameContext);
-  const { singedIn } = useContext(AuthContext);
+  const { singedIn, signOut } = useContext(AuthContext);
 
   const router = useRouter();
 
@@ -31,12 +31,26 @@ const Landing: NextPage = function Landing() {
     router.push(`/worlds/${worldId}`);
   };
 
+  const handleLogOutClick = () => {
+    signOut();
+  };
+
   return (
     <main className="relative w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1E1E1E]">
       <div className="absolute top-0 left-0 w-full flex justify-end h-10 px-6">
-        {!singedIn && (
-          <Link href="auth/signin" className="flex items-center">
-            <Text color="text-white">Log in</Text>
+        {singedIn ? (
+          <section
+            className="flex items-center"
+            role="button"
+            tabIndex={0}
+            onClick={handleLogOutClick}
+            onKeyDown={handleLogOutClick}
+          >
+            <Text color="text-white">Log Out</Text>
+          </section>
+        ) : (
+          <Link href="auth/sign-in" className="flex items-center">
+            <Text color="text-white">Log In</Text>
           </Link>
         )}
       </div>

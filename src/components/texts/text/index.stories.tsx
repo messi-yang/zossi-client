@@ -12,10 +12,12 @@ export default {
 const Template: ComponentStory<typeof Text> = function Template(args) {
   return (
     <div className="w-screen h-screen flex justify-center items-center">
-      <Text {...args}>{args.children}</Text>
+      <Text {...args} />
     </div>
   );
 };
 
 export const Primary = Template.bind({});
-Primary.args = {};
+Primary.args = {
+  children: 'Hello World',
+};

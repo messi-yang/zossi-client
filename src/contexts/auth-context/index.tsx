@@ -4,14 +4,16 @@ import { AuthService } from '@/apis/services/auth-service';
 type ContextValue = {
   singedIn: boolean;
   goToGoogleOauthPage: () => void;
-  signin: (accessToken: string) => void;
+  signIn: (accessToken: string) => void;
+  signOut: () => void;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
     singedIn: false,
     goToGoogleOauthPage: () => {},
-    signin: () => {},
+    signIn: () => {},
+    signOut: () => {},
   };
 }
 
@@ -36,9 +38,14 @@ function Provider({ children }: Props) {
     authService.goToGoogleOauthPage();
   }, []);
 
-  const signin = useCallback((accessToken: string) => {
+  const signIn = useCallback((accessToken: string) => {
     localStorage.setItem('access_token', accessToken);
     setLoggedIn(true);
+  }, []);
+
+  const signOut = useCallback(() => {
+    localStorage.removeItem('access_token');
+    setLoggedIn(false);
   }, []);
 
   return (
@@ -47,9 +54,10 @@ function Provider({ children }: Props) {
         () => ({
           singedIn,
           goToGoogleOauthPage,
-          signin,
+          signIn,
+          signOut,
         }),
-        [singedIn, goToGoogleOauthPage, signin]
+        [singedIn, goToGoogleOauthPage, signIn, signOut]
       )}
     >
       {children}

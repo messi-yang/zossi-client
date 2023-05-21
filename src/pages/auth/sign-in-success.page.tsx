@@ -8,10 +8,10 @@ const Page: NextPage = function Page() {
   const router = useRouter();
   const accessToken = router.query.access_token as string | null;
 
-  const { signin } = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext);
   useEffect(() => {
     if (accessToken) {
-      signin(accessToken);
+      signIn(accessToken);
       router.push('/');
     }
   }, [accessToken]);
