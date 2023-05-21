@@ -8,7 +8,6 @@ import { WorldContext } from '@/contexts/world-context';
 import { GameContext } from '@/contexts/game-context';
 import { AuthContext } from '@/contexts/auth-context';
 import { Button } from '@/components/buttons/button';
-import { Text } from '@/components/texts/text';
 
 const Landing: NextPage = function Landing() {
   const { worlds, fetchWorlds } = useContext(WorldContext);
@@ -37,28 +36,23 @@ const Landing: NextPage = function Landing() {
 
   return (
     <main className="relative w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1E1E1E]">
-      <div className="absolute top-0 left-0 w-full flex justify-end h-10 px-6">
-        {singedIn ? (
-          <section
-            className="flex items-center"
-            role="button"
-            tabIndex={0}
-            onClick={handleLogOutClick}
-            onKeyDown={handleLogOutClick}
-          >
-            <Text color="text-white">Log Out</Text>
-          </section>
-        ) : (
-          <Link href="auth/sign-in" className="flex items-center">
-            <Text color="text-white">Log In</Text>
-          </Link>
-        )}
+      <div className="absolute top-0 left-0 w-full h-20 px-16 flex justify-between items-center">
+        <Image src="/assets/images/logos/wordmark-logo.png" alt="wordmark logo" width={270} height={21} />
+        <div>
+          {singedIn ? (
+            <Button text="Log Out" onClick={handleLogOutClick} />
+          ) : (
+            <Link href="auth/sign-in" className="flex items-center">
+              <Button text="Log In" />
+            </Link>
+          )}
+        </div>
       </div>
       <div className="sm:hidden">
-        <Image src="/assets/big-logo.png" alt="big logo" width={203} height={150} />
+        <Image src="/assets/images/logos/big-logo.png" alt="big logo" width={203} height={150} />
       </div>
       <div className="hidden sm:inline-block">
-        <Image src="/assets/big-logo.png" alt="big logo" width={406} height={231} />
+        <Image src="/assets/images/logos/big-logo.png" alt="big logo" width={406} height={231} />
       </div>
       <div className="mt-8 sm:mt-20">
         <Button text="Start" onClick={onStartClick} />

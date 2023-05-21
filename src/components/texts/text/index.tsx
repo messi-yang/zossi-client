@@ -8,9 +8,9 @@ type Props = {
   size?: 'text-base' | 'text-lg' | 'text-xl';
 };
 
-export function Text({ children, color = 'text-black', size = 'text-base' }: Props) {
+export function Text({ children, color = 'text-white', size = 'text-base' }: Props) {
   return (
-    <span data-testid={dataTestids.root} className={classnames(color, size, 'font-silkscreen', 'tracking-tightest')}>
+    <span data-testid={dataTestids.root} className={classnames(color, size, 'font-exo-2', 'tracking-wider')}>
       {children}
     </span>
   );

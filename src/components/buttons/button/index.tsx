@@ -1,14 +1,15 @@
 import { useState } from 'react';
+import classnames from 'classnames';
 import { Text } from '@/components/texts/text';
-import { ContentWrapper } from './sub-components/content-wrapper';
 import { dataTestids } from './data-test-ids';
 
 type Props = {
   text: string;
+  rightChild?: JSX.Element;
   onClick?: () => any;
 };
 
-export function Button({ text, onClick = () => {} }: Props) {
+export function Button({ text, onClick = () => {}, rightChild }: Props) {
   const [highlighted, setHighlighted] = useState(false);
 
   const handleMouseEnter = () => {
@@ -31,30 +32,52 @@ export function Button({ text, onClick = () => {} }: Props) {
     <button
       data-testid={dataTestids.root}
       type="button"
-      className="border-none outline-none cursor-pointer bg-none"
+      className={classnames('relative', 'rounded-lg', 'overflow-hidden', 'backdrop-blur', 'h-10', 'px-5')}
       onClick={onClick}
       onFocus={handleFocus}
       onBlur={handleBlure}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <ContentWrapper highlighted={highlighted}>
-        <div
-          className={[
-            'h-full',
-            'flex',
-            'py-0',
-            'px-12',
-            'justify-center',
-            'items-center',
-            highlighted ? 'bg-white' : 'bg-none',
-          ].join(' ')}
-        >
-          <Text color={highlighted ? 'text-black' : 'text-white'} size="text-base">
-            {text}
-          </Text>
-        </div>
-      </ContentWrapper>
+      <div
+        className={classnames(
+          'absolute',
+          'left-0',
+          'top-0',
+          'w-full',
+          'h-full',
+          'transition-opacity',
+          'duration-200',
+          'ease-out',
+          highlighted ? 'opacity-0' : 'opacity-100'
+        )}
+        style={{
+          backgroundImage: 'linear-gradient(90.02deg, rgba(255, 255, 255, 0.2) 0.01%, rgba(255, 255, 255, 0.1) 99.98%)',
+        }}
+      />
+      <div
+        className={classnames(
+          'absolute',
+          'left-0',
+          'top-0',
+          'w-full',
+          'h-full',
+          'transition-opacity',
+          'duration-200',
+          'ease-out',
+          highlighted ? 'opacity-100' : 'opacity-0'
+        )}
+        style={{
+          backgroundImage:
+            'linear-gradient(92.88deg, rgba(255, 255, 255, 0.25) 14.49%, rgba(255, 255, 255, 0.12) 98.56%)',
+        }}
+      />
+      <div className={classnames('relative', 'z-10', 'w-full', 'h-full', 'flex', 'justify-center', 'items-center')}>
+        <Text color="text-white" size="text-lg">
+          {text}
+        </Text>
+        {rightChild && <div className="ml-2">{rightChild}</div>}
+      </div>
     </button>
   );
 }

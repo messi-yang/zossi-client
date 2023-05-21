@@ -128,7 +128,7 @@ const Page: NextPage = function Page() {
         onClick={handleLogoClick}
         onKeyDown={handleLogoKeyDown}
       >
-        <Image src="/assets/small-logo.png" alt="small logo" width={28} height={28} />
+        <Image src="/assets/images/logos/small-logo.png" alt="small logo" width={28} height={28} />
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
         <section className="w-full h-full">
