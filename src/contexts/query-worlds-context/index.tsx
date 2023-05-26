@@ -45,4 +45,4 @@ function Provider({ children }: Props) {
   );
 }
 
-export { Provider as SearchWorldProvider, Context as SearchWorldContext };
+export { Provider as QueryWorldsProvider, Context as QueryWorldsContext };

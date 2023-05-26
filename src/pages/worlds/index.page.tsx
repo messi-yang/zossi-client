@@ -2,11 +2,11 @@ import { useContext, useEffect } from 'react';
 import type { NextPage, GetStaticProps } from 'next';
 import Link from 'next/link';
 
-import { SearchWorldContext } from '@/contexts/query-world-context';
+import { QueryWorldsContext } from '@/contexts/query-worlds-context';
 // import { GameContext } from '@/contexts/game-context';
 
 const Landing: NextPage = function Landing() {
-  const { worlds, queryWorlds } = useContext(SearchWorldContext);
+  const { worlds, queryWorlds } = useContext(QueryWorldsContext);
   // const { joinGame } = useContext(GameContext);
 
   useEffect(() => {
