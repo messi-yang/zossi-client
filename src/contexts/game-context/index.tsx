@@ -1,4 +1,4 @@
-import { createContext, useCallback, useRef, useState, useMemo, MutableRefObject } from 'react';
+import { createContext, useCallback, useState, useMemo } from 'react';
 import { GameConnectionService } from '@/apis/services/game-connection-service';
 import { UnitModel, PlayerModel, DirectionModel } from '@/models';
 
@@ -39,7 +39,7 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const gameConnectionService: MutableRefObject<GameConnectionService | null> = useRef(null);
+  const [gameConnectionService, setGameConnectionService] = useState<GameConnectionService | null>(null);
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
@@ -55,7 +55,9 @@ export function Provider({ children }: Props) {
 
   const joinGame = useCallback(
     (gameId: string) => {
-      if (gameConnectionService.current) return;
+      if (gameConnectionService) {
+        return;
+      }
 
       const newGameConnectionService = GameConnectionService.new(gameId, {
         onGameJoined: () => {},
@@ -69,43 +71,47 @@ export function Provider({ children }: Props) {
         onOpen: () => {
           setGameStatus('OPEN');
         },
-        onClose: (disconnectedByClient: boolean) => {
-          if (disconnectedByClient) {
-            setGameStatus('WAITING');
-            gameConnectionService.current = null;
-            reset();
-          } else {
-            setGameStatus('DISCONNECTED');
-            gameConnectionService.current = null;
-          }
+        onClose: () => {
+          setGameStatus('DISCONNECTED');
+          setGameConnectionService(null);
+          reset();
         },
       });
       setGameStatus('CONNECTING');
-      gameConnectionService.current = newGameConnectionService;
+      setGameConnectionService(newGameConnectionService);
     },
     [gameConnectionService]
   );
 
-  const move = useCallback((direction: DirectionModel) => {
-    gameConnectionService.current?.move(direction);
-  }, []);
+  const move = useCallback(
+    (direction: DirectionModel) => {
+      gameConnectionService?.move(direction);
+    },
+    [gameConnectionService]
+  );
 
   const leaveGame = useCallback(() => {
+    if (!gameConnectionService) {
+      return;
+    }
     setGameStatus('DISCONNECTING');
-    gameConnectionService.current?.disconnect();
-  }, []);
+    gameConnectionService.disconnect();
+  }, [gameConnectionService]);
 
-  const changeHeldItem = useCallback((itemId: string) => {
-    gameConnectionService.current?.changeHeldItem(itemId);
-  }, []);
+  const changeHeldItem = useCallback(
+    (itemId: string) => {
+      gameConnectionService?.changeHeldItem(itemId);
+    },
+    [gameConnectionService]
+  );
 
   const placeItem = useCallback(() => {
-    gameConnectionService.current?.placeItem();
-  }, []);
+    gameConnectionService?.placeItem();
+  }, [gameConnectionService]);
 
   const removeItem = useCallback(() => {
-    gameConnectionService.current?.removeItem();
-  }, []);
+    gameConnectionService?.removeItem();
+  }, [gameConnectionService]);
 
   return (
     <Context.Provider

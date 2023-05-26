@@ -16,8 +16,18 @@ const Page: NextPage = function Page() {
   const router = useRouter();
   const worldId = router.query.id as string | null;
   const mapContainerRef = useRef<HTMLElement | null>(null);
-  const { units, myPlayer, otherPlayers, gameStatus, move, joinGame, changeHeldItem, placeItem, removeItem } =
-    useContext(GameContext);
+  const {
+    units,
+    myPlayer,
+    otherPlayers,
+    gameStatus,
+    move,
+    joinGame,
+    leaveGame,
+    changeHeldItem,
+    placeItem,
+    removeItem,
+  } = useContext(GameContext);
   const { items, fetchItems } = useContext(ItemContext);
   useEffect(() => {
     fetchItems();
@@ -25,7 +35,19 @@ const Page: NextPage = function Page() {
 
   const heldItemId = myPlayer?.getHeldItemid() || null;
   const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
-  const isJoinGameModalVisible = gameStatus === 'WAITING';
+
+  useEffect(
+    function joinGameOnInit() {
+      if (!worldId) {
+        return () => {};
+      }
+      joinGame(worldId);
+      return () => {
+        leaveGame();
+      };
+    },
+    [worldId, joinGame, leaveGame]
+  );
 
   const switchToNextItem = useCallback(() => {
     if (!items) {
@@ -87,12 +109,6 @@ const Page: NextPage = function Page() {
     changeHeldItem(item.getId());
   };
 
-  const handleJoinGameModalConfirmClick = useCallback(() => {
-    if (worldId) {
-      joinGame(worldId);
-    }
-  }, [joinGame, worldId]);
-
   const handleRecconectModalConfirmClick = useCallback(() => {
     if (worldId) {
       joinGame(worldId);
@@ -106,12 +122,6 @@ const Page: NextPage = function Page() {
         message="You're disconnected to the game."
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
-      />
-      <ConfirmModal
-        opened={isJoinGameModalVisible}
-        message="Join game?"
-        buttonCopy="Let's go"
-        onComfirm={handleJoinGameModalConfirmClick}
       />
       <div className="absolute top-2 right-3 z-10 flex">
         <Text size="text-xl" color="text-white">

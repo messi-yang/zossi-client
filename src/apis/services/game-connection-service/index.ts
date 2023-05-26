@@ -18,15 +18,13 @@ function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [UnitModel[]] {
 export class GameConnectionService {
   private socket: WebSocket;
 
-  private disconnectedByClient: boolean = false;
-
   constructor(
     gameId: string,
     params: {
       onGameJoined: () => void;
       onPlayersUpdated: (myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
       onUnitsUpdated: (units: UnitModel[]) => void;
-      onClose: (disconnectedByClient: boolean) => void;
+      onClose: () => void;
       onOpen: () => void;
     }
   ) {
@@ -54,7 +52,7 @@ export class GameConnectionService {
       if (pingServerInterval) {
         clearInterval(pingServerInterval);
       }
-      params.onClose(this.disconnectedByClient);
+      params.onClose();
     };
 
     socket.onopen = () => {
@@ -73,7 +71,7 @@ export class GameConnectionService {
       onGameJoined: () => void;
       onPlayersUpdated: (myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
       onUnitsUpdated: (units: UnitModel[]) => void;
-      onClose: (disconnectedByClient: boolean) => void;
+      onClose: () => void;
       onOpen: () => void;
     }
   ): GameConnectionService {
@@ -81,7 +79,6 @@ export class GameConnectionService {
   }
 
   public disconnect() {
-    this.disconnectedByClient = true;
     this.socket.close();
   }
 
