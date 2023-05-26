@@ -14,8 +14,13 @@ export class WorldService {
     return new WorldService();
   }
 
-  async getWorlds(): Promise<WorldModel[]> {
-    const { data } = await this.axios.get<WorldDto[]>('/');
+  async queryWorlds(limit: number, offset: number): Promise<WorldModel[]> {
+    const { data } = await this.axios.get<WorldDto[]>('/', {
+      params: {
+        limit,
+        offset,
+      },
+    });
     return data.map(convertWorldDtoToUnit);
   }
 }

@@ -4,20 +4,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
-import { WorldContext } from '@/contexts/world-context';
+import { SearchWorldContext } from '@/contexts/query-world-context';
 import { GameContext } from '@/contexts/game-context';
 import { AuthContext } from '@/contexts/auth-context';
 import { Button } from '@/components/buttons/button';
 
 const Landing: NextPage = function Landing() {
-  const { worlds, fetchWorlds } = useContext(WorldContext);
+  const { worlds, queryWorlds } = useContext(SearchWorldContext);
   const { joinGame } = useContext(GameContext);
   const { singedIn, signOut } = useContext(AuthContext);
 
   const router = useRouter();
 
   useEffect(() => {
-    fetchWorlds();
+    queryWorlds();
   }, []);
 
   const onStartClick = () => {

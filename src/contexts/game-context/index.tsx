@@ -59,6 +59,7 @@ export function Provider({ children }: Props) {
         return;
       }
 
+      console.log('JOIN');
       const newGameConnectionService = GameConnectionService.new(gameId, {
         onGameJoined: () => {},
         onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerModel[]) => {
@@ -95,6 +96,7 @@ export function Provider({ children }: Props) {
       return;
     }
     setGameStatus('DISCONNECTING');
+    console.log('Leave');
     gameConnectionService.disconnect();
   }, [gameConnectionService]);
 

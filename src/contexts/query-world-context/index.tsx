@@ -4,13 +4,13 @@ import { WorldModel } from '@/models';
 
 type ContextValue = {
   worlds: WorldModel[] | null;
-  fetchWorlds: () => Promise<void>;
+  queryWorlds: () => Promise<void>;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
     worlds: null,
-    fetchWorlds: async () => {},
+    queryWorlds: async () => {},
   };
 }
 
@@ -25,8 +25,8 @@ function Provider({ children }: Props) {
   const initialContextValue = createInitialContextValue();
   const [worlds, setWorlds] = useState<WorldModel[] | null>(initialContextValue.worlds);
 
-  const fetchWorlds = useCallback(async () => {
-    const newWorlds = await worldService.getWorlds();
+  const queryWorlds = useCallback(async () => {
+    const newWorlds = await worldService.queryWorlds(10, 0);
     setWorlds(newWorlds);
   }, []);
 
@@ -35,9 +35,9 @@ function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           worlds,
-          fetchWorlds,
+          queryWorlds,
         }),
-        [worlds, fetchWorlds]
+        [worlds, queryWorlds]
       )}
     >
       {children}
@@ -45,4 +45,4 @@ function Provider({ children }: Props) {
   );
 }
 
-export { Provider as WorldProvider, Context as WorldContext };
+export { Provider as SearchWorldProvider, Context as SearchWorldContext };
