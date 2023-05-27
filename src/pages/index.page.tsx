@@ -1,31 +1,13 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import type { NextPage, GetStaticProps } from 'next';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
 
-import { QueryWorldsContext } from '@/contexts/query-worlds-context';
 import { AuthContext } from '@/contexts/auth-context';
 import { Button } from '@/components/buttons/button';
 
 const Landing: NextPage = function Landing() {
-  const { worlds, queryWorlds } = useContext(QueryWorldsContext);
   const { singedIn, signOut } = useContext(AuthContext);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    queryWorlds();
-  }, []);
-
-  const onStartClick = () => {
-    if (!worlds) return;
-
-    const worldId = worlds[0].getId() as string | null;
-    if (!worldId) return;
-
-    router.push(`/worlds/${worldId}`);
-  };
 
   const handleLogOutClick = () => {
     signOut();
@@ -51,8 +33,12 @@ const Landing: NextPage = function Landing() {
       <div className="hidden sm:inline-block">
         <Image src="/assets/images/logos/big-logo.png" alt="big logo" width={406} height={231} />
       </div>
-      <div className="mt-8 sm:mt-20">
-        <Button text="Start" onClick={onStartClick} />
+      <div className="mt-8 sm:mt-20 flex flex-col items-center">
+        <div className="mt-4">
+          <Link href="/worlds">
+            <Button text="Browse Worlds" />
+          </Link>
+        </div>
       </div>
     </main>
   );

@@ -3,12 +3,10 @@ import type { NextPage, GetStaticProps } from 'next';
 import Link from 'next/link';
 
 import { QueryWorldsContext } from '@/contexts/query-worlds-context';
-// import { GameContext } from '@/contexts/game-context';
 import { Text } from '@/components/texts/text';
 
 const Landing: NextPage = function Landing() {
   const { worlds, queryWorlds } = useContext(QueryWorldsContext);
-  // const { joinGame } = useContext(GameContext);
 
   useEffect(() => {
     queryWorlds();
