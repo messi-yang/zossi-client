@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 
 import { GameCanvas } from '.';
 import { ItemModel, UnitModel, PlayerModel } from '@/models';
@@ -8,9 +8,9 @@ export default {
   title: 'Canvas/GameCanvas',
   component: GameCanvas,
   argTypes: {},
-} as ComponentMeta<typeof GameCanvas>;
+} as Meta<typeof GameCanvas>;
 
-const Template: ComponentStory<typeof GameCanvas> = function Template(args) {
+const Template: StoryFn<typeof GameCanvas> = function Template(args) {
   return (
     <div className="w-screen h-screen">
       <GameCanvas {...args} />

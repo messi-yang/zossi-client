@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 
 import { BaseModal } from '.';
@@ -8,9 +8,9 @@ export default {
   title: 'Modal/BaseModal',
   component: BaseModal,
   argTypes: {},
-} as ComponentMeta<typeof BaseModal>;
+} as Meta<typeof BaseModal>;
 
-const Template: ComponentStory<typeof BaseModal> = function Template(args) {
+const Template: StoryFn<typeof BaseModal> = function Template(args) {
   const [, updateArgs] = useArgs();
   const handleBackgroundClick = () => {
     updateArgs({ opened: false });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 import { ItemModel } from '@/models';
 
@@ -9,9 +9,9 @@ export default {
   title: 'Bar/SelectItemsBar',
   component: SelectItemsBar,
   argTypes: {},
-} as ComponentMeta<typeof SelectItemsBar>;
+} as Meta<typeof SelectItemsBar>;
 
-const Template: ComponentStory<typeof SelectItemsBar> = function Template(args) {
+const Template: StoryFn<typeof SelectItemsBar> = function Template(args) {
   const [, updateArgs] = useArgs();
 
   const handleItemSelect = (item: ItemModel) => {

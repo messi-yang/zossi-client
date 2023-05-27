@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 
 import { CrossIcon } from '.';
 
@@ -7,9 +7,9 @@ export default {
   title: 'Icon/CrossIcon',
   component: CrossIcon,
   argTypes: {},
-} as ComponentMeta<typeof CrossIcon>;
+} as Meta<typeof CrossIcon>;
 
-const Template: ComponentStory<typeof CrossIcon> = function Template(args) {
+const Template: StoryFn<typeof CrossIcon> = function Template(args) {
   return <CrossIcon {...args} />;
 };
 

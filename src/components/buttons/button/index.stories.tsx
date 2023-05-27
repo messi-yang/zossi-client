@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 
 import { Button } from '.';
 
@@ -13,9 +13,9 @@ export default {
     },
     onClick: { action: true },
   },
-} as ComponentMeta<typeof Button>;
+} as Meta<typeof Button>;
 
-const Template: ComponentStory<typeof Button> = function Template(args) {
+const Template: StoryFn<typeof Button> = function Template(args) {
   return (
     <div
       className="w-screen h-screen flex justify-center items-center bg-no-repeat bg-cover"

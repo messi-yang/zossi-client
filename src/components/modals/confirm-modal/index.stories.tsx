@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 
 import { ConfirmModal } from '.';
 
@@ -7,9 +7,9 @@ export default {
   title: 'Modal/ConfirmModal',
   component: ConfirmModal,
   argTypes: {},
-} as ComponentMeta<typeof ConfirmModal>;
+} as Meta<typeof ConfirmModal>;
 
-const Template: ComponentStory<typeof ConfirmModal> = function Template(args) {
+const Template: StoryFn<typeof ConfirmModal> = function Template(args) {
   return <ConfirmModal {...args} />;
 };
 

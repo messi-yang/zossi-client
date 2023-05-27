@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 
 import { IconButton } from '.';
 
@@ -12,9 +12,9 @@ export default {
     },
     onClick: { action: true },
   },
-} as ComponentMeta<typeof IconButton>;
+} as Meta<typeof IconButton>;
 
-const Template: ComponentStory<typeof IconButton> = function Template(args) {
+const Template: StoryFn<typeof IconButton> = function Template(args) {
   return <IconButton {...args} />;
 };
 
