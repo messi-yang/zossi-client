@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
-import { AuthService } from '@/apis/services/auth-service';
+import { AuthApiService } from '@/api-services/auth-api-service';
 
 type ContextValue = {
   singedIn: boolean;
@@ -24,7 +24,7 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [authService] = useState<AuthService>(() => AuthService.new());
+  const [authApiService] = useState<AuthApiService>(() => AuthApiService.new());
 
   const [singedIn, setLoggedIn] = useState(false);
   useEffect(() => {
@@ -35,7 +35,7 @@ function Provider({ children }: Props) {
   }, []);
 
   const goToGoogleOauthPage = useCallback(() => {
-    authService.goToGoogleOauthPage();
+    authApiService.goToGoogleOauthPage();
   }, []);
 
   const signIn = useCallback((accessToken: string) => {

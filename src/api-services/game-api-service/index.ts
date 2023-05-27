@@ -1,5 +1,5 @@
 import { ungzipBlob, gzipBlob } from '@/libs/compression';
-import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/apis/dtos';
+import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
 import { EventTypeEnum, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
@@ -15,7 +15,7 @@ function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [UnitModel[]] {
   return [units];
 }
 
-export class GameConnectionService {
+export class GameApiService {
   private socket: WebSocket;
 
   constructor(
@@ -74,8 +74,8 @@ export class GameConnectionService {
       onClose: () => void;
       onOpen: () => void;
     }
-  ): GameConnectionService {
-    return new GameConnectionService(gameId, params);
+  ): GameApiService {
+    return new GameApiService(gameId, params);
   }
 
   public disconnect() {

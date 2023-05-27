@@ -1,12 +1,12 @@
-export class AuthService {
+export class AuthApiService {
   private url: string;
 
   constructor() {
     this.url = `${process.env.API_URL}/api/auth`;
   }
 
-  static new(): AuthService {
-    return new AuthService();
+  static new(): AuthApiService {
+    return new AuthApiService();
   }
 
   async goToGoogleOauthPage() {

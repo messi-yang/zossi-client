@@ -1,4 +1,4 @@
-import type { BoundDto, PlayerDto, UnitDto } from '@/apis/dtos';
+import type { BoundDto, PlayerDto, UnitDto } from '@/dtos';
 
 enum EventTypeEnum {
   PlayersUpdated = 'PLAYERS_UPDATED',

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useRef, useState, useMemo } from 'react';
-import { GameConnectionService } from '@/apis/services/game-connection-service';
+import { GameApiService } from '@/api-services/game-api-service';
 import { UnitModel, PlayerModel, DirectionModel } from '@/models';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
@@ -39,7 +39,7 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const gameConnectionService = useRef<GameConnectionService | null>(null);
+  const gameApiService = useRef<GameApiService | null>(null);
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
@@ -54,11 +54,11 @@ export function Provider({ children }: Props) {
   }, []);
 
   const joinGame = useCallback((gameId: string) => {
-    if (gameConnectionService.current) {
+    if (gameApiService.current) {
       return;
     }
 
-    const newGameConnectionService = GameConnectionService.new(gameId, {
+    const newGameApiService = GameApiService.new(gameId, {
       onGameJoined: () => {},
       onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerModel[]) => {
         setMyPlayer(newMyPlayer);
@@ -72,36 +72,36 @@ export function Provider({ children }: Props) {
       },
       onClose: () => {
         setGameStatus('DISCONNECTED');
-        gameConnectionService.current = null;
+        gameApiService.current = null;
         reset();
       },
     });
     setGameStatus('CONNECTING');
-    gameConnectionService.current = newGameConnectionService;
+    gameApiService.current = newGameApiService;
   }, []);
 
   const move = useCallback((direction: DirectionModel) => {
-    gameConnectionService.current?.move(direction);
+    gameApiService.current?.move(direction);
   }, []);
 
   const leaveGame = useCallback(() => {
-    if (!gameConnectionService.current) {
+    if (!gameApiService.current) {
       return;
     }
     setGameStatus('DISCONNECTING');
-    gameConnectionService.current.disconnect();
+    gameApiService.current.disconnect();
   }, []);
 
   const changeHeldItem = useCallback((itemId: string) => {
-    gameConnectionService.current?.changeHeldItem(itemId);
+    gameApiService.current?.changeHeldItem(itemId);
   }, []);
 
   const placeItem = useCallback(() => {
-    gameConnectionService.current?.placeItem();
+    gameApiService.current?.placeItem();
   }, []);
 
   const removeItem = useCallback(() => {
-    gameConnectionService.current?.removeItem();
+    gameApiService.current?.removeItem();
   }, []);
 
   return (

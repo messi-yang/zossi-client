@@ -1,17 +1,17 @@
 import { Axios } from 'axios';
-import { WorldDto, convertWorldDtoToUnit } from '@/apis/dtos';
+import { WorldDto, convertWorldDtoToUnit } from '@/dtos';
 import { WorldModel } from '@/models';
-import { AxiosProvider } from '@/apis/axios-provider';
+import { AxiosProvider } from '@/providers/axios-provider';
 
-export class WorldService {
+export class WorldApiService {
   private axios: Axios;
 
   constructor() {
-    this.axios = AxiosProvider.newAxiosInstance(`${process.env.API_URL}/api/worlds`);
+    this.axios = AxiosProvider.new(`${process.env.API_URL}/api/worlds`);
   }
 
-  static new(): WorldService {
-    return new WorldService();
+  static new(): WorldApiService {
+    return new WorldApiService();
   }
 
   async queryWorlds(limit: number, offset: number): Promise<WorldModel[]> {

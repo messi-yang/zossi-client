@@ -1,7 +1,7 @@
 import axios, { Axios } from 'axios';
 
 export class AxiosProvider {
-  static newAxiosInstance(baseURL: string): Axios {
+  static new(baseURL: string): Axios {
     const newAxios = axios.create({
       baseURL,
     });

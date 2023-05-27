@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
-import { ItemService } from '@/apis/services/item-service';
+import { ItemApiService } from '@/api-services/item-api-service';
 import { ItemModel } from '@/models';
 
 type ContextValue = {
@@ -21,12 +21,12 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [itemService] = useState<ItemService>(() => ItemService.new());
+  const [itemApiService] = useState<ItemApiService>(() => ItemApiService.new());
   const initialContextValue = createInitialContextValue();
   const [items, setItems] = useState<ItemModel[] | null>(initialContextValue.items);
 
   const fetchItems = useCallback(async () => {
-    const newItems = await itemService.getItems();
+    const newItems = await itemApiService.getItems();
     setItems(newItems);
   }, []);
 
