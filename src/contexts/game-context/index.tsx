@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState, useMemo } from 'react';
+import { createContext, useCallback, useRef, useState, useMemo } from 'react';
 import { GameConnectionService } from '@/apis/services/game-connection-service';
 import { UnitModel, PlayerModel, DirectionModel } from '@/models';
 
@@ -39,7 +39,7 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const [gameConnectionService, setGameConnectionService] = useState<GameConnectionService | null>(null);
+  const gameConnectionService = useRef<GameConnectionService | null>(null);
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
@@ -53,67 +53,56 @@ export function Provider({ children }: Props) {
     setUnits(initialContextValue.units);
   }, []);
 
-  const joinGame = useCallback(
-    (gameId: string) => {
-      if (gameConnectionService) {
-        return;
-      }
+  const joinGame = useCallback((gameId: string) => {
+    if (gameConnectionService.current) {
+      return;
+    }
 
-      console.log('JOIN');
-      const newGameConnectionService = GameConnectionService.new(gameId, {
-        onGameJoined: () => {},
-        onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerModel[]) => {
-          setMyPlayer(newMyPlayer);
-          setOtherPlayers(newOtherPlayers);
-        },
-        onUnitsUpdated: (newUnits: UnitModel[]) => {
-          setUnits(newUnits);
-        },
-        onOpen: () => {
-          setGameStatus('OPEN');
-        },
-        onClose: () => {
-          setGameStatus('DISCONNECTED');
-          setGameConnectionService(null);
-          reset();
-        },
-      });
-      setGameStatus('CONNECTING');
-      setGameConnectionService(newGameConnectionService);
-    },
-    [gameConnectionService]
-  );
+    const newGameConnectionService = GameConnectionService.new(gameId, {
+      onGameJoined: () => {},
+      onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerModel[]) => {
+        setMyPlayer(newMyPlayer);
+        setOtherPlayers(newOtherPlayers);
+      },
+      onUnitsUpdated: (newUnits: UnitModel[]) => {
+        setUnits(newUnits);
+      },
+      onOpen: () => {
+        setGameStatus('OPEN');
+      },
+      onClose: () => {
+        setGameStatus('DISCONNECTED');
+        gameConnectionService.current = null;
+        reset();
+      },
+    });
+    setGameStatus('CONNECTING');
+    gameConnectionService.current = newGameConnectionService;
+  }, []);
 
-  const move = useCallback(
-    (direction: DirectionModel) => {
-      gameConnectionService?.move(direction);
-    },
-    [gameConnectionService]
-  );
+  const move = useCallback((direction: DirectionModel) => {
+    gameConnectionService.current?.move(direction);
+  }, []);
 
   const leaveGame = useCallback(() => {
-    if (!gameConnectionService) {
+    if (!gameConnectionService.current) {
       return;
     }
     setGameStatus('DISCONNECTING');
-    console.log('Leave');
-    gameConnectionService.disconnect();
-  }, [gameConnectionService]);
+    gameConnectionService.current.disconnect();
+  }, []);
 
-  const changeHeldItem = useCallback(
-    (itemId: string) => {
-      gameConnectionService?.changeHeldItem(itemId);
-    },
-    [gameConnectionService]
-  );
+  const changeHeldItem = useCallback((itemId: string) => {
+    gameConnectionService.current?.changeHeldItem(itemId);
+  }, []);
 
   const placeItem = useCallback(() => {
-    gameConnectionService?.placeItem();
-  }, [gameConnectionService]);
+    gameConnectionService.current?.placeItem();
+  }, []);
 
   const removeItem = useCallback(() => {
-    gameConnectionService?.removeItem();
-  }, [gameConnectionService]);
+    gameConnectionService.current?.removeItem();
+  }, []);
 
   return (
     <Context.Provider

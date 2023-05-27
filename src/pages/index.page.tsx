@@ -5,13 +5,11 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 
 import { QueryWorldsContext } from '@/contexts/query-worlds-context';
-import { GameContext } from '@/contexts/game-context';
 import { AuthContext } from '@/contexts/auth-context';
 import { Button } from '@/components/buttons/button';
 
 const Landing: NextPage = function Landing() {
   const { worlds, queryWorlds } = useContext(QueryWorldsContext);
-  const { joinGame } = useContext(GameContext);
   const { singedIn, signOut } = useContext(AuthContext);
 
   const router = useRouter();
@@ -26,7 +24,6 @@ const Landing: NextPage = function Landing() {
     const worldId = worlds[0].getId() as string | null;
     if (!worldId) return;
 
-    joinGame(worldId);
     router.push(`/worlds/${worldId}`);
   };
 

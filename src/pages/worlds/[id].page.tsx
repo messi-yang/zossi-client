@@ -46,7 +46,7 @@ const Page: NextPage = function Page() {
         leaveGame();
       };
     },
-    [worldId, joinGame, leaveGame]
+    [worldId]
   );
 
   const switchToNextItem = useCallback(() => {
