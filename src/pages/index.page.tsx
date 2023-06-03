@@ -19,7 +19,12 @@ const Landing: NextPage = function Landing() {
         <Image src="/assets/images/logos/wordmark-logo.png" alt="wordmark logo" width={270} height={21} />
         <div>
           {singedIn ? (
-            <Button text="Log Out" onClick={handleLogOutClick} />
+            <div className="grid grid-flow-col gap-3">
+              <Link href="/user/me" className="flex items-center">
+                <Button text="Profile" />
+              </Link>
+              <Button text="Log Out" onClick={handleLogOutClick} />
+            </div>
           ) : (
             <Link href="auth/sign-in" className="flex items-center">
               <Button text="Log In" />

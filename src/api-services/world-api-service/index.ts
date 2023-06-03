@@ -1,5 +1,5 @@
 import { Axios } from 'axios';
-import { WorldDto, convertWorldDtoToUnit } from '@/dtos';
+import { WorldDto, convertWorldDtoToWorld } from '@/dtos';
 import { WorldModel } from '@/models';
 import { AxiosProvider } from '@/providers/axios-provider';
 
@@ -21,6 +21,6 @@ export class WorldApiService {
         offset,
       },
     });
-    return data.map(convertWorldDtoToUnit);
+    return data.map(convertWorldDtoToWorld);
   }
 }

@@ -1,3 +1,4 @@
+export { UserModel } from './user-model';
 export { ItemModel } from './item-model';
 export { UnitModel } from './unit-model';
 export { PlayerModel } from './player-model';

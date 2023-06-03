@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react';
 import type { NextPage, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { AuthContext } from '@/contexts/auth-context';
+import { UserContext } from '@/contexts/user-context';
 import { Text } from '@/components/texts/text';
 
 const Page: NextPage = function Page() {
@@ -9,9 +10,11 @@ const Page: NextPage = function Page() {
   const accessToken = router.query.access_token as string | null;
 
   const { signIn } = useContext(AuthContext);
+  const { getMyUser } = useContext(UserContext);
   useEffect(() => {
     if (accessToken) {
       signIn(accessToken);
+      getMyUser();
       router.push('/');
     }
   }, [accessToken]);

@@ -6,9 +6,9 @@ type WorldDto = {
   userId: string;
 };
 
-function convertWorldDtoToUnit(dto: WorldDto): WorldModel {
+function convertWorldDtoToWorld(dto: WorldDto): WorldModel {
   return WorldModel.new(dto.id, dto.name, dto.userId);
 }
 
 export type { WorldDto };
-export { convertWorldDtoToUnit };
+export { convertWorldDtoToWorld };
