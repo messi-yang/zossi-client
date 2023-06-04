@@ -20,7 +20,7 @@ const Landing: NextPage = function Landing() {
         <div>
           {singedIn ? (
             <div className="grid grid-flow-col gap-3">
-              <Link href="/user/me" className="flex items-center">
+              <Link href="/account/profile" className="flex items-center">
                 <Button text="Profile" />
               </Link>
               <Button text="Log Out" onClick={handleLogOutClick} />

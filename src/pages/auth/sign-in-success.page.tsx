@@ -15,7 +15,7 @@ const Page: NextPage = function Page() {
     if (accessToken) {
       signIn(accessToken);
       getMyUser();
-      router.push('/');
+      router.push('/worlds');
     }
   }, [accessToken]);
 

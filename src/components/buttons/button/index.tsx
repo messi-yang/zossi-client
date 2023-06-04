@@ -5,11 +5,12 @@ import { dataTestids } from './data-test-ids';
 
 type Props = {
   text: string;
+  fullWidth?: boolean;
   rightChild?: JSX.Element;
   onClick?: () => any;
 };
 
-export function Button({ text, onClick = () => {}, rightChild }: Props) {
+export function Button({ text, fullWidth = false, onClick = () => {}, rightChild }: Props) {
   const [highlighted, setHighlighted] = useState(false);
 
   const handleMouseEnter = () => {
@@ -32,7 +33,15 @@ export function Button({ text, onClick = () => {}, rightChild }: Props) {
     <button
       data-testid={dataTestids.root}
       type="button"
-      className={classnames('relative', 'rounded-lg', 'overflow-hidden', 'backdrop-blur', 'h-10', 'px-5')}
+      className={classnames(
+        'relative',
+        'rounded-lg',
+        'overflow-hidden',
+        'backdrop-blur',
+        'h-10',
+        fullWidth ? 'w-full' : undefined,
+        'px-5'
+      )}
       onClick={onClick}
       onFocus={handleFocus}
       onBlur={handleBlure}

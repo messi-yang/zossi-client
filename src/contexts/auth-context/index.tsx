@@ -1,4 +1,5 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { AuthApiService } from '@/api-services/auth-api-service';
 
 type ContextValue = {
@@ -25,12 +26,13 @@ type Props = {
 
 function Provider({ children }: Props) {
   const [authApiService] = useState<AuthApiService>(() => AuthApiService.new());
+  const router = useRouter();
 
-  const [singedIn, setLoggedIn] = useState(false);
+  const [singedIn, setSignedIn] = useState(false);
   useEffect(() => {
     const accessToken = localStorage.getItem('access_token');
     if (accessToken) {
-      setLoggedIn(true);
+      setSignedIn(true);
     }
   }, []);
 
@@ -40,12 +42,14 @@ function Provider({ children }: Props) {
 
   const signIn = useCallback((accessToken: string) => {
     localStorage.setItem('access_token', accessToken);
-    setLoggedIn(true);
+    setSignedIn(true);
   }, []);
 
-  const signOut = useCallback(() => {
+  const signOut = useCallback(async () => {
     localStorage.removeItem('access_token');
-    setLoggedIn(false);
+
+    await router.push('/');
+    window.location.reload();
   }, []);
 
   return (
