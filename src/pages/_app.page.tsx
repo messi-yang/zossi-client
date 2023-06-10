@@ -4,7 +4,7 @@ import { UserProvider } from '@/contexts/user-context';
 import { AuthProvider } from '@/contexts/auth-context';
 import { GameProvider } from '@/contexts/game-context';
 import { ItemProvider } from '@/contexts/item-context';
-import { QueryWorldsProvider } from '@/contexts/query-worlds-context';
+import { MyWorldsProvider } from '@/contexts/my-worlds-context';
 import { ThreeJsProvider } from '@/contexts/three-js-context';
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -14,9 +14,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ThreeJsProvider>
           <GameProvider>
             <ItemProvider>
-              <QueryWorldsProvider>
+              <MyWorldsProvider>
                 <Component {...pageProps} />
-              </QueryWorldsProvider>
+              </MyWorldsProvider>
             </ItemProvider>
           </GameProvider>
         </ThreeJsProvider>

@@ -1,56 +1,24 @@
-import { useCallback, useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
 import { Button } from '@/components/buttons/button';
 import { AuthContext } from '@/contexts/auth-context';
-import { Text } from '@/components/texts/text';
 
 type Props = {
   children: JSX.Element;
 };
 
 export function DashboardLayout({ children }: Props) {
-  const { singedIn, signOut } = useContext(AuthContext);
-  const { setOauthClientRedirectPath, startGoogleOauthFlow } = useContext(AuthContext);
-  const router = useRouter();
-  useEffect(() => {
-    setOauthClientRedirectPath(router.asPath);
-  }, [router.asPath]);
-
-  const handleGoogleLoginClick = useCallback(() => {
-    startGoogleOauthFlow();
-  }, [startGoogleOauthFlow]);
-
-  if (!singedIn) {
-    return (
-      <main className="relative w-full h-screen flex justify-center items-center bg-[#1E1E1E]">
-        <div className="flex flex-col items-center">
-          <Text color="text-white" size="text-base">
-            Please login to continue on this page
-          </Text>
-          <div className="mt-5">
-            <Button
-              text="Continue with"
-              onClick={handleGoogleLoginClick}
-              rightChild={<Image src="/assets/images/third-party/google.png" alt="google" width={71} height={24} />}
-            />
-          </div>
-        </div>
-      </main>
-    );
-  }
-
+  const { signOut } = useContext(AuthContext);
   const handleLogoutClick = () => {
     signOut();
   };
 
   return (
     <div className="h-screen flex flex-row">
-      <div className="bg-stone-800 basis-40 shrink-0 h-full flex flex-col">
+      <div className="bg-stone-800 basis-60 shrink-0 h-full flex flex-col">
         <div className="grow p-5 flex flex-col">
           <Link href="/dashboard/worlds">
-            <Button text="Worlds" fullWidth />
+            <Button text="My worlds" fullWidth />
           </Link>
           <Link href="/dashboard/account/profile" className="mt-3">
             <Button text="Profile" fullWidth />

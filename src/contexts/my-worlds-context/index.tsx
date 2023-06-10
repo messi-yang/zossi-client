@@ -3,14 +3,14 @@ import { WorldApiService } from '@/api-services/world-api-service';
 import { WorldModel } from '@/models';
 
 type ContextValue = {
-  worlds: WorldModel[] | null;
-  queryWorlds: () => Promise<void>;
+  myWorlds: WorldModel[] | null;
+  getMyWorlds: () => Promise<void>;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
-    worlds: null,
-    queryWorlds: async () => {},
+    myWorlds: null,
+    getMyWorlds: async () => {},
   };
 }
 
@@ -23,21 +23,21 @@ type Props = {
 function Provider({ children }: Props) {
   const [worldApiService] = useState<WorldApiService>(() => WorldApiService.new());
   const initialContextValue = createInitialContextValue();
-  const [worlds, setWorlds] = useState<WorldModel[] | null>(initialContextValue.worlds);
+  const [myWorlds, setMyWorlds] = useState<WorldModel[] | null>(initialContextValue.myWorlds);
 
-  const queryWorlds = useCallback(async () => {
-    const newWorlds = await worldApiService.queryWorlds(10, 0);
-    setWorlds(newWorlds);
+  const getMyWorlds = useCallback(async () => {
+    const newMyWorlds = await worldApiService.getMyWorlds();
+    setMyWorlds(newMyWorlds);
   }, []);
 
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
         () => ({
-          worlds,
-          queryWorlds,
+          myWorlds,
+          getMyWorlds,
         }),
-        [worlds, queryWorlds]
+        [myWorlds, getMyWorlds]
       )}
     >
       {children}
@@ -45,4 +45,4 @@ function Provider({ children }: Props) {
   );
 }
 
-export { Provider as QueryWorldsProvider, Context as QueryWorldsContext };
+export { Provider as MyWorldsProvider, Context as MyWorldsContext };

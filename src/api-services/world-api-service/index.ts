@@ -23,4 +23,9 @@ export class WorldApiService {
     });
     return data.map(convertWorldDtoToWorld);
   }
+
+  async getMyWorlds(): Promise<WorldModel[]> {
+    const { data } = await this.axios.get<WorldDto[]>('/mine');
+    return data.map(convertWorldDtoToWorld);
+  }
 }

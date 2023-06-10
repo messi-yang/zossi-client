@@ -2,9 +2,10 @@ import { createContext, useCallback, useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/router';
 import { AuthApiService } from '@/api-services/auth-api-service';
 import { LocalStorage } from '@/storages/local-storage';
+import { AuthEvent } from '@/events/auth-event';
 
 type ContextValue = {
-  singedIn: boolean;
+  isSingedIn: boolean;
   setOauthClientRedirectPath: (path: string) => void;
   startGoogleOauthFlow: () => void;
   signIn: (accessToken: string) => void;
@@ -13,7 +14,7 @@ type ContextValue = {
 
 function createInitialContextValue(): ContextValue {
   return {
-    singedIn: false,
+    isSingedIn: false,
     setOauthClientRedirectPath: () => {},
     startGoogleOauthFlow: () => {},
     signIn: () => {},
@@ -37,11 +38,11 @@ function Provider({ children }: Props) {
     setClientRedirectPath(path);
   }, []);
 
-  const [singedIn, setSignedIn] = useState(false);
+  const [isSingedIn, setIsSignedIn] = useState(false);
   useEffect(() => {
     const accessToken = localStorage.getAccessToken();
     if (accessToken) {
-      setSignedIn(true);
+      setIsSignedIn(true);
     }
   }, [localStorage]);
 
@@ -52,7 +53,7 @@ function Provider({ children }: Props) {
   const signIn = useCallback(
     (accessToken: string) => {
       localStorage.setAccessToken(accessToken);
-      setSignedIn(true);
+      setIsSignedIn(true);
     },
     [localStorage]
   );
@@ -64,17 +65,29 @@ function Provider({ children }: Props) {
     window.location.reload();
   }, [localStorage]);
 
+  useEffect(() => {
+    const unauthorizeHandler = () => {
+      setClientRedirectPath(router.asPath);
+      router.push('/auth/sign-in');
+    };
+    window.addEventListener(AuthEvent.Unauthorized, unauthorizeHandler);
+
+    return () => {
+      window.removeEventListener(AuthEvent.Unauthorized, unauthorizeHandler);
+    };
+  }, [router]);
+
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
         () => ({
-          singedIn,
+          isSingedIn,
           setOauthClientRedirectPath,
           startGoogleOauthFlow,
           signIn,
           signOut,
         }),
-        [singedIn, setOauthClientRedirectPath, startGoogleOauthFlow, signIn, signOut]
+        [isSingedIn, setOauthClientRedirectPath, startGoogleOauthFlow, signIn, signOut]
       )}
     >
       {children}

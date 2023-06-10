@@ -1,11 +1,15 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import type { NextPage, GetStaticProps } from 'next';
 import { DashboardLayout } from '@/layouts/dashboard-layout';
 import { UserContext } from '@/contexts/user-context';
 import { Text } from '@/components/texts/text';
 
 const Page: NextPage = function Page() {
-  const { user } = useContext(UserContext);
+  const { user, getMyUser } = useContext(UserContext);
+
+  useEffect(() => {
+    getMyUser();
+  }, [getMyUser]);
 
   return (
     <DashboardLayout>

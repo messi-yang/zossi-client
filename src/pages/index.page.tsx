@@ -7,7 +7,7 @@ import { AuthContext } from '@/contexts/auth-context';
 import { Button } from '@/components/buttons/button';
 
 const Page: NextPage = function Page() {
-  const { singedIn, signOut } = useContext(AuthContext);
+  const { isSingedIn, signOut } = useContext(AuthContext);
 
   const handleLogOutClick = () => {
     signOut();
@@ -18,7 +18,7 @@ const Page: NextPage = function Page() {
       <div className="absolute top-0 left-0 w-full h-20 px-16 flex justify-between items-center">
         <Image src="/assets/images/logos/wordmark-logo.png" alt="wordmark logo" width={270} height={21} />
         <div>
-          {singedIn ? (
+          {isSingedIn ? (
             <div className="grid grid-flow-col gap-3">
               <Link href="/dashboard/account/profile" className="flex items-center">
                 <Button text="Profile" />
