@@ -1,6 +1,7 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
 import { UserApiService } from '@/api-services/user-api-service';
 import { UserModel } from '@/models';
+import { LocalStorage } from '@/storages/local-storage';
 
 type ContextValue = {
   user: UserModel | null;
@@ -23,6 +24,7 @@ type Props = {
 function Provider({ children }: Props) {
   const [userApiService] = useState<UserApiService>(() => UserApiService.new());
   const [user, setUer] = useState<UserModel | null>(null);
+  const [localStorage] = useState(() => LocalStorage.get());
 
   const getMyUser = useCallback(async () => {
     const returnedUser = await userApiService.getMyUser();
@@ -30,12 +32,12 @@ function Provider({ children }: Props) {
   }, []);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('access_token');
+    const accessToken = localStorage.getAccessToken();
     if (!accessToken) {
       return;
     }
     getMyUser();
-  }, []);
+  }, [localStorage]);
 
   return (
     <Context.Provider

@@ -116,7 +116,7 @@ const Page: NextPage = function Page() {
   }, [joinGame, worldId]);
 
   return (
-    <main className="relative w-screen h-screen">
+    <main className="relative w-full h-screen">
       <ConfirmModal
         opened={isReconnectModalVisible}
         message="You're disconnected to the game."

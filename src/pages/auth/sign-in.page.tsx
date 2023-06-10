@@ -9,11 +9,11 @@ const Page: NextPage = function Page() {
   const { goToGoogleOauthPage } = useContext(AuthContext);
 
   const handleGoogleLoginClick = () => {
-    goToGoogleOauthPage();
+    goToGoogleOauthPage('/dashboard/world/my-worlds');
   };
 
   return (
-    <main className="relative w-screen h-screen flex justify-center items-center bg-[#1E1E1E]">
+    <main className="relative w-full h-screen flex justify-center items-center bg-[#1E1E1E]">
       <div className="flex flex-col items-center">
         <Text color="text-white" size="text-base">
           Welcome To

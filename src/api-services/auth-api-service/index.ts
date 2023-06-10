@@ -9,7 +9,7 @@ export class AuthApiService {
     return new AuthApiService();
   }
 
-  async goToGoogleOauthPage() {
-    window.location.replace(`${this.url}/oauth2/google`);
+  async goToGoogleOauthPage(clientPath: string) {
+    window.location.replace(`${this.url}/oauth2/google?client_path=${clientPath}`);
   }
 }

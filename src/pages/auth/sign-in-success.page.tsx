@@ -8,6 +8,7 @@ import { Text } from '@/components/texts/text';
 const Page: NextPage = function Page() {
   const router = useRouter();
   const accessToken = router.query.access_token as string | null;
+  const clientPath = router.query.client_path as string | null;
 
   const { signIn } = useContext(AuthContext);
   const { getMyUser } = useContext(UserContext);
@@ -15,12 +16,12 @@ const Page: NextPage = function Page() {
     if (accessToken) {
       signIn(accessToken);
       getMyUser();
-      router.push('/worlds');
+      router.push(clientPath || '/');
     }
   }, [accessToken]);
 
   return (
-    <main className="relative w-screen h-screen flex justify-center items-center bg-[#1E1E1E]">
+    <main className="relative w-full h-screen flex justify-center items-center bg-[#1E1E1E]">
       <div className="flex flex-col items-center">
         <Text color="text-white">Login Success!</Text>
       </div>

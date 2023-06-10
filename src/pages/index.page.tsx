@@ -20,13 +20,13 @@ const Landing: NextPage = function Landing() {
         <div>
           {singedIn ? (
             <div className="grid grid-flow-col gap-3">
-              <Link href="/account/profile" className="flex items-center">
+              <Link href="/dashboard/account/profile" className="flex items-center">
                 <Button text="Profile" />
               </Link>
               <Button text="Log Out" onClick={handleLogOutClick} />
             </div>
           ) : (
-            <Link href="auth/sign-in" className="flex items-center">
+            <Link href="/auth/sign-in" className="flex items-center">
               <Button text="Log In" />
             </Link>
           )}
@@ -40,7 +40,7 @@ const Landing: NextPage = function Landing() {
       </div>
       <div className="mt-8 sm:mt-20 flex flex-col items-center">
         <div className="mt-4">
-          <Link href="/worlds">
+          <Link href="/dashboard/world/my-worlds">
             <Button text="Browse Worlds" />
           </Link>
         </div>

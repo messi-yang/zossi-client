@@ -15,7 +15,7 @@ const Landing: NextPage = function Landing() {
 
   return (
     <DashboardLayout>
-      <main className="relative w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1E1E1E]">
+      <main className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden bg-[#1E1E1E]">
         {worlds?.map((world) => (
           <Link key={world.getId()} href={`/worlds/${world.getId()}`} className="mb-5">
             <WorldCard world={world} />
