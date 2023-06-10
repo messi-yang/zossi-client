@@ -16,8 +16,9 @@ export function DashboardLayout({ children }: Props) {
   const router = useRouter();
 
   const handleGoogleLoginClick = () => {
-    goToGoogleOauthPage(router.pathname);
+    goToGoogleOauthPage(router.asPath);
   };
+  console.log(router);
 
   if (!singedIn) {
     return (
