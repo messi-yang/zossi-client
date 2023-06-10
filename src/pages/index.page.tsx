@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { AuthContext } from '@/contexts/auth-context';
 import { Button } from '@/components/buttons/button';
 
-const Landing: NextPage = function Landing() {
+const Page: NextPage = function Page() {
   const { singedIn, signOut } = useContext(AuthContext);
 
   const handleLogOutClick = () => {
@@ -40,7 +40,7 @@ const Landing: NextPage = function Landing() {
       </div>
       <div className="mt-8 sm:mt-20 flex flex-col items-center">
         <div className="mt-4">
-          <Link href="/dashboard/world/my-worlds">
+          <Link href="/dashboard/worlds">
             <Button text="Browse Worlds" />
           </Link>
         </div>
@@ -53,4 +53,4 @@ export const getStaticProps: GetStaticProps = async () => ({
   props: {},
 });
 
-export default Landing;
+export default Page;

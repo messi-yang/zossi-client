@@ -6,7 +6,7 @@ import { QueryWorldsContext } from '@/contexts/query-worlds-context';
 import { WorldCard } from '@/components/cards/world-card';
 import { DashboardLayout } from '@/layouts/dashboard-layout';
 
-const Landing: NextPage = function Landing() {
+const Page: NextPage = function Page() {
   const { worlds, queryWorlds } = useContext(QueryWorldsContext);
 
   useEffect(() => {
@@ -30,4 +30,4 @@ export const getStaticProps: GetStaticProps = async () => ({
   props: {},
 });
 
-export default Landing;
+export default Page;

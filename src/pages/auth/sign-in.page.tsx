@@ -6,10 +6,11 @@ import { Text } from '@/components/texts/text';
 import { Button } from '@/components/buttons/button';
 
 const Page: NextPage = function Page() {
-  const { goToGoogleOauthPage } = useContext(AuthContext);
+  const { setOauthClientRedirectPath, startGoogleOauthFlow } = useContext(AuthContext);
 
   const handleGoogleLoginClick = () => {
-    goToGoogleOauthPage('/dashboard/world/my-worlds');
+    setOauthClientRedirectPath('/dashboard/worlds');
+    startGoogleOauthFlow();
   };
 
   return (

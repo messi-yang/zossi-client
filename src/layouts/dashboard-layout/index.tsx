@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -12,13 +12,15 @@ type Props = {
 
 export function DashboardLayout({ children }: Props) {
   const { singedIn, signOut } = useContext(AuthContext);
-  const { goToGoogleOauthPage } = useContext(AuthContext);
+  const { setOauthClientRedirectPath, startGoogleOauthFlow } = useContext(AuthContext);
   const router = useRouter();
+  useEffect(() => {
+    setOauthClientRedirectPath(router.asPath);
+  }, [router.asPath]);
 
-  const handleGoogleLoginClick = () => {
-    goToGoogleOauthPage(router.asPath);
-  };
-  console.log(router);
+  const handleGoogleLoginClick = useCallback(() => {
+    startGoogleOauthFlow();
+  }, [startGoogleOauthFlow]);
 
   if (!singedIn) {
     return (
@@ -47,7 +49,7 @@ export function DashboardLayout({ children }: Props) {
     <div className="h-screen flex flex-row">
       <div className="bg-stone-800 basis-40 shrink-0 h-full flex flex-col">
         <div className="grow p-5 flex flex-col">
-          <Link href="/dashboard/world/my-worlds">
+          <Link href="/dashboard/worlds">
             <Button text="Worlds" fullWidth />
           </Link>
           <Link href="/dashboard/account/profile" className="mt-3">

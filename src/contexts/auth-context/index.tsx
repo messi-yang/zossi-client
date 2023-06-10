@@ -5,7 +5,8 @@ import { LocalStorage } from '@/storages/local-storage';
 
 type ContextValue = {
   singedIn: boolean;
-  goToGoogleOauthPage: (clientPath: string) => void;
+  setOauthClientRedirectPath: (path: string) => void;
+  startGoogleOauthFlow: () => void;
   signIn: (accessToken: string) => void;
   signOut: () => void;
 };
@@ -13,7 +14,8 @@ type ContextValue = {
 function createInitialContextValue(): ContextValue {
   return {
     singedIn: false,
-    goToGoogleOauthPage: () => {},
+    setOauthClientRedirectPath: () => {},
+    startGoogleOauthFlow: () => {},
     signIn: () => {},
     signOut: () => {},
   };
@@ -30,6 +32,11 @@ function Provider({ children }: Props) {
   const [localStorage] = useState(() => LocalStorage.get());
   const router = useRouter();
 
+  const [clientRedirectPath, setClientRedirectPath] = useState('/dashboard/worlds');
+  const setOauthClientRedirectPath = useCallback((path: string) => {
+    setClientRedirectPath(path);
+  }, []);
+
   const [singedIn, setSignedIn] = useState(false);
   useEffect(() => {
     const accessToken = localStorage.getAccessToken();
@@ -38,9 +45,9 @@ function Provider({ children }: Props) {
     }
   }, [localStorage]);
 
-  const goToGoogleOauthPage = useCallback((clientPath: string) => {
-    authApiService.goToGoogleOauthPage(clientPath);
-  }, []);
+  const startGoogleOauthFlow = useCallback(() => {
+    authApiService.startGoogleOauthFlow(clientRedirectPath);
+  }, [clientRedirectPath]);
 
   const signIn = useCallback(
     (accessToken: string) => {
@@ -62,11 +69,12 @@ function Provider({ children }: Props) {
       value={useMemo<ContextValue>(
         () => ({
           singedIn,
-          goToGoogleOauthPage,
+          setOauthClientRedirectPath,
+          startGoogleOauthFlow,
           signIn,
           signOut,
         }),
-        [singedIn, goToGoogleOauthPage, signIn, signOut]
+        [singedIn, setOauthClientRedirectPath, startGoogleOauthFlow, signIn, signOut]
       )}
     >
       {children}
