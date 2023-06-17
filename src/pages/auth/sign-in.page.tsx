@@ -1,12 +1,19 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import type { NextPage, GetStaticProps } from 'next';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { AuthContext } from '@/contexts/auth-context';
 import { Text } from '@/components/texts/text';
 import { Button } from '@/components/buttons/button';
 
 const Page: NextPage = function Page() {
-  const { setOauthClientRedirectPath, startGoogleOauthFlow } = useContext(AuthContext);
+  const { isSingedIn, setOauthClientRedirectPath, startGoogleOauthFlow } = useContext(AuthContext);
+  const router = useRouter();
+  useEffect(() => {
+    if (isSingedIn) {
+      router.push('/dashboard/worlds');
+    }
+  }, [isSingedIn]);
 
   const handleGoogleLoginClick = () => {
     setOauthClientRedirectPath('/dashboard/worlds');

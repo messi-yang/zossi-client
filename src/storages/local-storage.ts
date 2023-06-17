@@ -11,11 +11,11 @@ export class LocalStorage {
   }
 
   getAccessToken(): string | null {
-    return this.webStorage.getItem('access_token') || null;
+    return this.webStorage?.getItem('access_token') || null;
   }
 
   setAccessToken(accessToken: string) {
-    return this.webStorage.setItem('access_token', accessToken);
+    return this.webStorage?.setItem('access_token', accessToken);
   }
 
   removeAccessToken() {

@@ -6,7 +6,7 @@ export class UserModel {
   static new = (id: string, emailAddress: string, username: string): UserModel =>
     new UserModel(id, emailAddress, username);
 
-  static newMockupWorld = (): UserModel => new UserModel(uuidv4(), 'Hello World', uuidv4());
+  static newMockupUser = (): UserModel => new UserModel(uuidv4(), 'example@gmail.com', 'my_username');
 
   public getId(): string {
     return this.id;
@@ -18,5 +18,9 @@ export class UserModel {
 
   public getUsername(): string {
     return this.username;
+  }
+
+  public getInitials(): string {
+    return this.username.charAt(0).toUpperCase();
   }
 }

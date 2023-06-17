@@ -37,7 +37,7 @@ function Provider({ children }: Props) {
       return;
     }
     getMyUser();
-  }, [localStorage]);
+  }, [localStorage.getAccessToken()]);
 
   return (
     <Context.Provider
