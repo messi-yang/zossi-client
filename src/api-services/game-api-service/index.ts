@@ -1,4 +1,3 @@
-import { ungzipBlob, gzipBlob } from '@/libs/compression';
 import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
 import { EventTypeEnum, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
@@ -34,8 +33,7 @@ export class GameApiService {
     let pingServerInterval: NodeJS.Timer | null = null;
 
     socket.onmessage = async ({ data }: any) => {
-      const decompressedBlob = await ungzipBlob(data as Blob);
-      const eventJsonString = await decompressedBlob.text();
+      const eventJsonString: string = await data.text();
       const newMsg: Event = JSON.parse(eventJsonString);
 
       console.log(newMsg);
@@ -86,12 +84,11 @@ export class GameApiService {
     console.log(msg);
     const jsonString = JSON.stringify(msg);
     const jsonBlob = new Blob([jsonString]);
-    const compressedJsonBlob = await gzipBlob(jsonBlob);
 
     if (this.socket.readyState !== this.socket.OPEN) {
       return;
     }
-    this.socket.send(compressedJsonBlob);
+    this.socket.send(jsonBlob);
   }
 
   public ping() {
