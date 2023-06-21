@@ -60,12 +60,17 @@ export function Provider({ children }: Props) {
 
     const newGameApiService = GameApiService.new(gameId, {
       onGameJoined: () => {},
-      onPlayersUpdated: (newMyPlayer, newOtherPlayers: PlayerModel[]) => {
-        setMyPlayer(newMyPlayer);
-        setOtherPlayers(newOtherPlayers);
+      onWorldEntered: (_units, _myPlayer, _otherPlayers) => {
+        setUnits(_units);
+        setMyPlayer(_myPlayer);
+        setOtherPlayers(_otherPlayers);
       },
-      onUnitsUpdated: (newUnits: UnitModel[]) => {
-        setUnits(newUnits);
+      onPlayersUpdated: (_myPlayer, _otherPlayers: PlayerModel[]) => {
+        setMyPlayer(_myPlayer);
+        setOtherPlayers(_otherPlayers);
+      },
+      onUnitsUpdated: (_units: UnitModel[]) => {
+        setUnits(_units);
       },
       onOpen: () => {
         setGameStatus('OPEN');

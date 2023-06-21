@@ -1,9 +1,17 @@
 import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
-import { EventTypeEnum, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
+import { EventTypeEnum, WorldEnteredEvent, PlayersUpdatedEvent, UnitsUpdatedEvent } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, RemoveItemCommand } from './commands';
 import { UnitModel, PlayerModel, DirectionModel } from '@/models';
+
+function parseWorldEnteredEvent(event: WorldEnteredEvent): [UnitModel[], PlayerModel, PlayerModel[]] {
+  return [
+    event.units.map(convertUnitDtoToUnit),
+    convertPlayerDtoPlayer(event.myPlayer),
+    event.otherPlayers.map(convertPlayerDtoPlayer),
+  ];
+}
 
 function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerModel, PlayerModel[]] {
   return [convertPlayerDtoPlayer(event.myPlayer), event.otherPlayers.map(convertPlayerDtoPlayer)];
@@ -21,6 +29,7 @@ export class GameApiService {
     gameId: string,
     params: {
       onGameJoined: () => void;
+      onWorldEntered: (units: UnitModel[], myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
       onPlayersUpdated: (myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
       onUnitsUpdated: (units: UnitModel[]) => void;
       onClose: () => void;
@@ -37,7 +46,10 @@ export class GameApiService {
       const newMsg: Event = JSON.parse(eventJsonString);
 
       console.log(newMsg);
-      if (newMsg.type === EventTypeEnum.PlayersUpdated) {
+      if (newMsg.type === EventTypeEnum.WorldEntered) {
+        const [units, myPlayer, otherPlayers] = parseWorldEnteredEvent(newMsg);
+        params.onWorldEntered(units, myPlayer, otherPlayers);
+      } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
         const [myPlayer, otherPlayers] = parsePlayersUpdatedEvent(newMsg);
         params.onPlayersUpdated(myPlayer, otherPlayers);
       } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
@@ -67,6 +79,7 @@ export class GameApiService {
     gameId: string,
     params: {
       onGameJoined: () => void;
+      onWorldEntered: (units: UnitModel[], myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
       onPlayersUpdated: (myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
       onUnitsUpdated: (units: UnitModel[]) => void;
       onClose: () => void;
