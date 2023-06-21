@@ -362,7 +362,7 @@ export function GameCanvas({ otherPlayers, units, myPlayer, items }: Props) {
         const currentTime = performance.now();
         const elapsed = currentTime - lastFrameTime;
         if (elapsed > frameDelay) {
-          if (animateCount % 60 === 0) console.log(`Render Information: ${JSON.stringify(renderer.info.render)}`);
+          if (animateCount % 600 === 0) console.log(`Render Information: ${JSON.stringify(renderer.info.render)}`);
           lastFrameTime = currentTime - (elapsed % frameDelay);
           renderer.render(scene, camera);
           animateCount += 1;

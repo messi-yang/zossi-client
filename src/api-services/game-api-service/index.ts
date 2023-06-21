@@ -56,7 +56,7 @@ export class GameApiService {
     socket.onopen = () => {
       pingServerInterval = setInterval(() => {
         this.ping();
-      }, 3000);
+      }, 10000);
       params.onOpen();
     };
 
