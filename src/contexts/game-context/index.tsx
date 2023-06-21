@@ -1,6 +1,6 @@
 import { createContext, useCallback, useRef, useState, useMemo } from 'react';
 import { GameApiService } from '@/api-services/game-api-service';
-import { UnitModel, PlayerModel, DirectionModel } from '@/models';
+import { UnitModel, PlayerModel, DirectionModel, PositionModel } from '@/models';
 
 type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -53,6 +53,20 @@ export function Provider({ children }: Props) {
     setUnits(initialContextValue.units);
   }, []);
 
+  const removeUnitFromUnits = useCallback((position: PositionModel) => {
+    setUnits((_units) => {
+      if (!_units) return null;
+      return _units.filter((_unit) => !_unit.getPosition().isEqual(position));
+    });
+  }, []);
+
+  const addUnitToUnits = useCallback((unit: UnitModel) => {
+    setUnits((_units) => {
+      if (!_units) return null;
+      return [..._units, unit];
+    });
+  }, []);
+
   const joinGame = useCallback((gameId: string) => {
     if (gameApiService.current) {
       return;
@@ -64,6 +78,13 @@ export function Provider({ children }: Props) {
         setUnits(_units);
         setMyPlayer(_myPlayer);
         setOtherPlayers(_otherPlayers);
+      },
+      onUnitCreated: (_unit) => {
+        removeUnitFromUnits(_unit.getPosition());
+        addUnitToUnits(_unit);
+      },
+      onUnitDeleted(_position) {
+        removeUnitFromUnits(_position);
       },
       onPlayersUpdated: (_myPlayer, _otherPlayers: PlayerModel[]) => {
         setMyPlayer(_myPlayer);
