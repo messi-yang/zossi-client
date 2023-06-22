@@ -34,7 +34,7 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-export function GameCanvas({ otherPlayers, units, myPlayer, items }: Props) {
+export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
 

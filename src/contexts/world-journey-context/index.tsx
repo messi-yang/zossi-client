@@ -1,15 +1,15 @@
 import { createContext, useCallback, useRef, useState, useMemo } from 'react';
-import { GameApiService } from '@/api-services/game-api-service';
+import { WorldJourneyApiService } from '@/api-services/world-journey-api-service';
 import { UnitModel, PlayerModel, DirectionModel, PositionModel } from '@/models';
 
-type GameStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
+type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
 type ContextValue = {
-  gameStatus: GameStatus;
+  connectionStatus: ConnectionStatus;
   myPlayer: PlayerModel | null;
   otherPlayers: PlayerModel[] | null;
   units: UnitModel[] | null;
-  enterWorld: (gameId: string) => void;
+  enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
   changeHeldItem: (itemId: string) => void;
   placeItem: () => void;
@@ -19,7 +19,7 @@ type ContextValue = {
 
 function createInitialContextValue(): ContextValue {
   return {
-    gameStatus: 'WAITING',
+    connectionStatus: 'WAITING',
     myPlayer: null,
     otherPlayers: null,
     units: null,
@@ -39,9 +39,9 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const gameApiService = useRef<GameApiService | null>(null);
+  const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
 
-  const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const [players, setPlayers] = useState<PlayerModel[] | null>([]);
@@ -89,13 +89,12 @@ export function Provider({ children }: Props) {
     });
   }, []);
 
-  const enterWorld = useCallback((gameId: string) => {
-    if (gameApiService.current) {
+  const enterWorld = useCallback((WorldId: string) => {
+    if (worldJourneyApiService.current) {
       return;
     }
 
-    const newGameApiService = GameApiService.new(gameId, {
-      onGameJoined: () => {},
+    const newWorldJourneyApiService = WorldJourneyApiService.new(WorldId, {
       onWorldEntered: (_units, _myPlayerId, _players) => {
         setUnits(_units);
         setMyPlayerId(_myPlayerId);
@@ -123,47 +122,47 @@ export function Provider({ children }: Props) {
         setUnits(_units);
       },
       onOpen: () => {
-        setGameStatus('OPEN');
+        setConnectionStatus('OPEN');
       },
       onClose: () => {
-        setGameStatus('DISCONNECTED');
-        gameApiService.current = null;
+        setConnectionStatus('DISCONNECTED');
+        worldJourneyApiService.current = null;
         reset();
       },
     });
-    setGameStatus('CONNECTING');
-    gameApiService.current = newGameApiService;
+    setConnectionStatus('CONNECTING');
+    worldJourneyApiService.current = newWorldJourneyApiService;
   }, []);
 
   const move = useCallback((direction: DirectionModel) => {
-    gameApiService.current?.move(direction);
+    worldJourneyApiService.current?.move(direction);
   }, []);
 
   const leaveWorld = useCallback(() => {
-    if (!gameApiService.current) {
+    if (!worldJourneyApiService.current) {
       return;
     }
-    setGameStatus('DISCONNECTING');
-    gameApiService.current.disconnect();
+    setConnectionStatus('DISCONNECTING');
+    worldJourneyApiService.current.disconnect();
   }, []);
 
   const changeHeldItem = useCallback((itemId: string) => {
-    gameApiService.current?.changeHeldItem(itemId);
+    worldJourneyApiService.current?.changeHeldItem(itemId);
   }, []);
 
   const placeItem = useCallback(() => {
-    gameApiService.current?.placeItem();
+    worldJourneyApiService.current?.placeItem();
   }, []);
 
   const removeItem = useCallback(() => {
-    gameApiService.current?.removeItem();
+    worldJourneyApiService.current?.removeItem();
   }, []);
 
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
         () => ({
-          gameStatus,
+          connectionStatus,
           myPlayer,
           otherPlayers,
           units,
@@ -174,7 +173,7 @@ export function Provider({ children }: Props) {
           placeItem,
           removeItem,
         }),
-        [gameStatus, myPlayer, otherPlayers, units, enterWorld, move, changeHeldItem, placeItem, leaveWorld]
+        [connectionStatus, myPlayer, otherPlayers, units, enterWorld, move, changeHeldItem, placeItem, leaveWorld]
       )}
     >
       {children}
@@ -182,4 +181,4 @@ export function Provider({ children }: Props) {
   );
 }
 
-export { Provider as GameProvider, Context as GameContext };
+export { Provider as WorldJourneyProvider, Context as WorldJourneyContext };

@@ -37,13 +37,12 @@ function parsePlayerLeftEvent(event: PlayerLeftEvent): [string] {
   return [event.playerId];
 }
 
-export class GameApiService {
+export class WorldJourneyApiService {
   private socket: WebSocket;
 
   constructor(
-    gameId: string,
+    worldId: string,
     params: {
-      onGameJoined: () => void;
       onWorldEntered: (units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitDeleted: (position: PositionModel) => void;
@@ -54,7 +53,7 @@ export class GameApiService {
       onOpen: () => void;
     }
   ) {
-    const socketUrl = `${process.env.API_SOCKET_URL}/ws/game/?id=${gameId}`;
+    const socketUrl = `${process.env.API_SOCKET_URL}/api/world-journey/?id=${worldId}`;
     const socket = new WebSocket(socketUrl);
 
     let pingServerInterval: NodeJS.Timer | null = null;
@@ -103,9 +102,8 @@ export class GameApiService {
   }
 
   static new(
-    gameId: string,
+    worldId: string,
     params: {
-      onGameJoined: () => void;
       onWorldEntered: (units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitDeleted: (position: PositionModel) => void;
@@ -116,8 +114,8 @@ export class GameApiService {
       onClose: () => void;
       onOpen: () => void;
     }
-  ): GameApiService {
-    return new GameApiService(gameId, params);
+  ): WorldJourneyApiService {
+    return new WorldJourneyApiService(worldId, params);
   }
 
   public disconnect() {

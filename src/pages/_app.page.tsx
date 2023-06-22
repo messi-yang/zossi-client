@@ -2,7 +2,7 @@ import './tailwind.css';
 import type { AppProps } from 'next/app';
 import { UserProvider } from '@/contexts/user-context';
 import { AuthProvider } from '@/contexts/auth-context';
-import { GameProvider } from '@/contexts/game-context';
+import { WorldJourneyProvider } from '@/contexts/world-journey-context';
 import { ItemProvider } from '@/contexts/item-context';
 import { MyWorldsProvider } from '@/contexts/my-worlds-context';
 import { ThreeJsProvider } from '@/contexts/three-js-context';
@@ -12,13 +12,13 @@ function MyApp({ Component, pageProps }: AppProps) {
     <UserProvider>
       <AuthProvider>
         <ThreeJsProvider>
-          <GameProvider>
+          <WorldJourneyProvider>
             <ItemProvider>
               <MyWorldsProvider>
                 <Component {...pageProps} />
               </MyWorldsProvider>
             </ItemProvider>
-          </GameProvider>
+          </WorldJourneyProvider>
         </ThreeJsProvider>
       </AuthProvider>
     </UserProvider>

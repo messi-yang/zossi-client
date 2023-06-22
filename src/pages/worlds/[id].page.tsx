@@ -4,10 +4,10 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 
 import { useKeyPress } from '@/hooks/use-key-press';
-import { GameContext } from '@/contexts/game-context';
+import { WorldJourneyContext } from '@/contexts/world-journey-context';
 import { ItemContext } from '@/contexts/item-context';
 import { DirectionModel, ItemModel } from '@/models';
-import { GameCanvas } from '@/components/canvas/game-canvas';
+import { WorldCanvas } from '@/components/canvas/world-canvas';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
 import { Text } from '@/components/texts/text';
@@ -20,21 +20,21 @@ const Page: NextPage = function Page() {
     units,
     myPlayer,
     otherPlayers,
-    gameStatus,
+    connectionStatus,
     move,
     enterWorld,
     leaveWorld,
     changeHeldItem,
     placeItem,
     removeItem,
-  } = useContext(GameContext);
+  } = useContext(WorldJourneyContext);
   const { items, fetchItems } = useContext(ItemContext);
   useEffect(() => {
     fetchItems();
   }, []);
 
   const heldItemId = myPlayer?.getHeldItemid() || null;
-  const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
+  const isReconnectModalVisible = connectionStatus === 'DISCONNECTED';
 
   useEffect(
     function enterWorldOnInit() {
@@ -119,7 +119,7 @@ const Page: NextPage = function Page() {
     <main className="relative w-full h-screen">
       <ConfirmModal
         opened={isReconnectModalVisible}
-        message="You're disconnected to the game."
+        message="You're disconnected to the world."
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
       />
@@ -143,7 +143,7 @@ const Page: NextPage = function Page() {
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
         <section className="w-full h-full">
           {myPlayer && otherPlayers && units && items && (
-            <GameCanvas otherPlayers={otherPlayers} myPlayer={myPlayer} units={units} items={items} />
+            <WorldCanvas otherPlayers={otherPlayers} myPlayer={myPlayer} units={units} items={items} />
           )}
         </section>
       </section>
