@@ -2,7 +2,6 @@ import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
 import {
   EventTypeEnum,
   WorldEnteredEvent,
-  UnitsUpdatedEvent,
   UnitCreatedEvent,
   UnitDeletedEvent,
   PlayerJoinedEvent,
@@ -38,11 +37,6 @@ function parsePlayerLeftEvent(event: PlayerLeftEvent): [string] {
   return [event.playerId];
 }
 
-function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [UnitModel[]] {
-  const units = event.units.map(convertUnitDtoToUnit);
-  return [units];
-}
-
 export class GameApiService {
   private socket: WebSocket;
 
@@ -56,7 +50,6 @@ export class GameApiService {
       onPlayerJoined: (player: PlayerModel) => void;
       onPlayerMoved: (player: PlayerModel) => void;
       onPlayerLeft: (playerId: string) => void;
-      onUnitsUpdated: (units: UnitModel[]) => void;
       onClose: () => void;
       onOpen: () => void;
     }
@@ -89,9 +82,6 @@ export class GameApiService {
       } else if (newMsg.type === EventTypeEnum.PlayerLeft) {
         const [playerId] = parsePlayerLeftEvent(newMsg);
         params.onPlayerLeft(playerId);
-      } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
-        const [units] = parseUnitsUpdatedEvent(newMsg);
-        params.onUnitsUpdated(units);
       }
     };
 

@@ -42,19 +42,13 @@ type PlayerLeftEvent = {
   playerId: string;
 };
 
-type UnitsUpdatedEvent = {
-  type: EventTypeEnum.UnitsUpdated;
-  units: UnitDto[];
-};
-
 type Event =
   | WorldEnteredEvent
   | UnitCreatedEvent
   | UnitDeletedEvent
   | PlayerJoinedEvent
   | PlayerMovedEvent
-  | PlayerLeftEvent
-  | UnitsUpdatedEvent;
+  | PlayerLeftEvent;
 
 export { EventTypeEnum };
 export type {
@@ -65,5 +59,4 @@ export type {
   PlayerJoinedEvent,
   PlayerMovedEvent,
   PlayerLeftEvent,
-  UnitsUpdatedEvent,
 };
