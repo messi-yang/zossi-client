@@ -2,22 +2,20 @@ import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
 import {
   EventTypeEnum,
   WorldEnteredEvent,
-  PlayersUpdatedEvent,
   UnitsUpdatedEvent,
   UnitCreatedEvent,
   UnitDeletedEvent,
+  PlayerJoinedEvent,
+  PlayerMovedEvent,
+  PlayerLeftEvent,
 } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, RemoveItemCommand } from './commands';
 import { UnitModel, PlayerModel, DirectionModel, PositionModel } from '@/models';
 
-function parseWorldEnteredEvent(event: WorldEnteredEvent): [UnitModel[], PlayerModel, PlayerModel[]] {
-  return [
-    event.units.map(convertUnitDtoToUnit),
-    convertPlayerDtoPlayer(event.myPlayer),
-    event.otherPlayers.map(convertPlayerDtoPlayer),
-  ];
+function parseWorldEnteredEvent(event: WorldEnteredEvent): [UnitModel[], string, PlayerModel[]] {
+  return [event.units.map(convertUnitDtoToUnit), event.myPlayerId, event.players.map(convertPlayerDtoPlayer)];
 }
 
 function parseUnitCreatedEvent(event: UnitCreatedEvent): [UnitModel] {
@@ -28,8 +26,16 @@ function parseUnitDeletedEvent(event: UnitDeletedEvent): [PositionModel] {
   return [PositionModel.new(event.position.x, event.position.z)];
 }
 
-function parsePlayersUpdatedEvent(event: PlayersUpdatedEvent): [PlayerModel, PlayerModel[]] {
-  return [convertPlayerDtoPlayer(event.myPlayer), event.otherPlayers.map(convertPlayerDtoPlayer)];
+function parsePlayerJoinedEvent(event: PlayerJoinedEvent): [PlayerModel] {
+  return [convertPlayerDtoPlayer(event.player)];
+}
+
+function parsePlayerMovedEvent(event: PlayerMovedEvent): [PlayerModel] {
+  return [convertPlayerDtoPlayer(event.player)];
+}
+
+function parsePlayerLeftEvent(event: PlayerLeftEvent): [string] {
+  return [event.playerId];
 }
 
 function parseUnitsUpdatedEvent(event: UnitsUpdatedEvent): [UnitModel[]] {
@@ -44,10 +50,12 @@ export class GameApiService {
     gameId: string,
     params: {
       onGameJoined: () => void;
-      onWorldEntered: (units: UnitModel[], myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
+      onWorldEntered: (units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitDeleted: (position: PositionModel) => void;
-      onPlayersUpdated: (myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
+      onPlayerJoined: (player: PlayerModel) => void;
+      onPlayerMoved: (player: PlayerModel) => void;
+      onPlayerLeft: (playerId: string) => void;
       onUnitsUpdated: (units: UnitModel[]) => void;
       onClose: () => void;
       onOpen: () => void;
@@ -64,17 +72,23 @@ export class GameApiService {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.WorldEntered) {
-        const [units, myPlayer, otherPlayers] = parseWorldEnteredEvent(newMsg);
-        params.onWorldEntered(units, myPlayer, otherPlayers);
+        const [units, myPlayerId, players] = parseWorldEnteredEvent(newMsg);
+        params.onWorldEntered(units, myPlayerId, players);
       } else if (newMsg.type === EventTypeEnum.UnitCreated) {
         const [unit] = parseUnitCreatedEvent(newMsg);
         params.onUnitCreated(unit);
       } else if (newMsg.type === EventTypeEnum.UnitDeleted) {
         const [position] = parseUnitDeletedEvent(newMsg);
         params.onUnitDeleted(position);
-      } else if (newMsg.type === EventTypeEnum.PlayersUpdated) {
-        const [myPlayer, otherPlayers] = parsePlayersUpdatedEvent(newMsg);
-        params.onPlayersUpdated(myPlayer, otherPlayers);
+      } else if (newMsg.type === EventTypeEnum.PlayerJoined) {
+        const [player] = parsePlayerJoinedEvent(newMsg);
+        params.onPlayerJoined(player);
+      } else if (newMsg.type === EventTypeEnum.PlayerMoved) {
+        const [player] = parsePlayerMovedEvent(newMsg);
+        params.onPlayerMoved(player);
+      } else if (newMsg.type === EventTypeEnum.PlayerLeft) {
+        const [playerId] = parsePlayerLeftEvent(newMsg);
+        params.onPlayerLeft(playerId);
       } else if (newMsg.type === EventTypeEnum.UnitsUpdated) {
         const [units] = parseUnitsUpdatedEvent(newMsg);
         params.onUnitsUpdated(units);
@@ -102,10 +116,12 @@ export class GameApiService {
     gameId: string,
     params: {
       onGameJoined: () => void;
-      onWorldEntered: (units: UnitModel[], myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
+      onWorldEntered: (units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitDeleted: (position: PositionModel) => void;
-      onPlayersUpdated: (myPlayer: PlayerModel, otherPlayers: PlayerModel[]) => void;
+      onPlayerJoined: (player: PlayerModel) => void;
+      onPlayerMoved: (player: PlayerModel) => void;
+      onPlayerLeft: (playerId: string) => void;
       onUnitsUpdated: (units: UnitModel[]) => void;
       onClose: () => void;
       onOpen: () => void;

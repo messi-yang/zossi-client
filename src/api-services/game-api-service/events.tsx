@@ -4,15 +4,17 @@ enum EventTypeEnum {
   WorldEntered = 'WORLD_ENTERED',
   UnitCreated = 'UNIT_CREATED',
   UnitDeleted = 'UNIT_DELETED',
-  PlayersUpdated = 'PLAYERS_UPDATED',
+  PlayerJoined = 'PLAYER_JOINED',
+  PlayerMoved = 'PLAYER_MOVED',
+  PlayerLeft = 'PLAYER_LEFT',
   UnitsUpdated = 'UNITS_UPDATED',
 }
 
 type WorldEnteredEvent = {
   type: EventTypeEnum.WorldEntered;
   units: UnitDto[];
-  myPlayer: PlayerDto;
-  otherPlayers: PlayerDto[];
+  myPlayerId: string;
+  players: PlayerDto[];
 };
 
 type UnitCreatedEvent = {
@@ -25,10 +27,19 @@ type UnitDeletedEvent = {
   position: PositionDto;
 };
 
-type PlayersUpdatedEvent = {
-  type: EventTypeEnum.PlayersUpdated;
-  myPlayer: PlayerDto;
-  otherPlayers: PlayerDto[];
+type PlayerJoinedEvent = {
+  type: EventTypeEnum.PlayerJoined;
+  player: PlayerDto;
+};
+
+type PlayerMovedEvent = {
+  type: EventTypeEnum.PlayerMoved;
+  player: PlayerDto;
+};
+
+type PlayerLeftEvent = {
+  type: EventTypeEnum.PlayerLeft;
+  playerId: string;
 };
 
 type UnitsUpdatedEvent = {
@@ -36,7 +47,23 @@ type UnitsUpdatedEvent = {
   units: UnitDto[];
 };
 
-type Event = WorldEnteredEvent | UnitCreatedEvent | UnitDeletedEvent | PlayersUpdatedEvent | UnitsUpdatedEvent;
+type Event =
+  | WorldEnteredEvent
+  | UnitCreatedEvent
+  | UnitDeletedEvent
+  | PlayerJoinedEvent
+  | PlayerMovedEvent
+  | PlayerLeftEvent
+  | UnitsUpdatedEvent;
 
 export { EventTypeEnum };
-export type { Event, WorldEnteredEvent, UnitCreatedEvent, UnitDeletedEvent, PlayersUpdatedEvent, UnitsUpdatedEvent };
+export type {
+  Event,
+  WorldEnteredEvent,
+  UnitCreatedEvent,
+  UnitDeletedEvent,
+  PlayerJoinedEvent,
+  PlayerMovedEvent,
+  PlayerLeftEvent,
+  UnitsUpdatedEvent,
+};

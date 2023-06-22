@@ -9,12 +9,12 @@ type ContextValue = {
   myPlayer: PlayerModel | null;
   otherPlayers: PlayerModel[] | null;
   units: UnitModel[] | null;
-  joinGame: (gameId: string) => void;
+  enterWorld: (gameId: string) => void;
   move: (direction: DirectionModel) => void;
   changeHeldItem: (itemId: string) => void;
   placeItem: () => void;
   removeItem: () => void;
-  leaveGame: () => void;
+  leaveWorld: () => void;
 };
 
 function createInitialContextValue(): ContextValue {
@@ -23,12 +23,12 @@ function createInitialContextValue(): ContextValue {
     myPlayer: null,
     otherPlayers: null,
     units: null,
-    joinGame: () => {},
+    enterWorld: () => {},
     move: () => {},
     changeHeldItem: () => {},
     placeItem: () => {},
     removeItem: () => {},
-    leaveGame: () => {},
+    leaveWorld: () => {},
   };
 }
 
@@ -43,13 +43,21 @@ export function Provider({ children }: Props) {
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
-  const [myPlayer, setMyPlayer] = useState<PlayerModel | null>(null);
-  const [otherPlayers, setOtherPlayers] = useState<PlayerModel[] | null>([]);
+  const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
+  const [players, setPlayers] = useState<PlayerModel[] | null>([]);
   const [units, setUnits] = useState<UnitModel[] | null>(initialContextValue.units);
+  const myPlayer = useMemo(() => {
+    if (!players || !myPlayerId) return null;
+    return players.find((p) => p.getId() === myPlayerId) || null;
+  }, [players, myPlayerId]);
+  const otherPlayers = useMemo(() => {
+    if (!players || !myPlayerId) return null;
+    return players.filter((p) => p.getId() !== myPlayerId);
+  }, [players, myPlayerId]);
 
   const reset = useCallback(() => {
-    setMyPlayer(null);
-    setOtherPlayers([]);
+    setMyPlayerId(null);
+    setPlayers([]);
     setUnits(initialContextValue.units);
   }, []);
 
@@ -67,17 +75,31 @@ export function Provider({ children }: Props) {
     });
   }, []);
 
-  const joinGame = useCallback((gameId: string) => {
+  const removePlayerFromPlayers = useCallback((playerId: string) => {
+    setPlayers((_players) => {
+      if (!_players) return null;
+      return _players.filter((_player) => _player.getId() !== playerId);
+    });
+  }, []);
+
+  const addPlayerToPlayers = useCallback((player: PlayerModel) => {
+    setPlayers((_players) => {
+      if (!_players) return null;
+      return [..._players, player];
+    });
+  }, []);
+
+  const enterWorld = useCallback((gameId: string) => {
     if (gameApiService.current) {
       return;
     }
 
     const newGameApiService = GameApiService.new(gameId, {
       onGameJoined: () => {},
-      onWorldEntered: (_units, _myPlayer, _otherPlayers) => {
+      onWorldEntered: (_units, _myPlayerId, _players) => {
         setUnits(_units);
-        setMyPlayer(_myPlayer);
-        setOtherPlayers(_otherPlayers);
+        setMyPlayerId(_myPlayerId);
+        setPlayers(_players);
       },
       onUnitCreated: (_unit) => {
         removeUnitFromUnits(_unit.getPosition());
@@ -86,9 +108,16 @@ export function Provider({ children }: Props) {
       onUnitDeleted(_position) {
         removeUnitFromUnits(_position);
       },
-      onPlayersUpdated: (_myPlayer, _otherPlayers: PlayerModel[]) => {
-        setMyPlayer(_myPlayer);
-        setOtherPlayers(_otherPlayers);
+      onPlayerJoined: (_player) => {
+        removePlayerFromPlayers(_player.getId());
+        addPlayerToPlayers(_player);
+      },
+      onPlayerMoved: (_player) => {
+        removePlayerFromPlayers(_player.getId());
+        addPlayerToPlayers(_player);
+      },
+      onPlayerLeft: (_playerId) => {
+        removePlayerFromPlayers(_playerId);
       },
       onUnitsUpdated: (_units: UnitModel[]) => {
         setUnits(_units);
@@ -110,7 +139,7 @@ export function Provider({ children }: Props) {
     gameApiService.current?.move(direction);
   }, []);
 
-  const leaveGame = useCallback(() => {
+  const leaveWorld = useCallback(() => {
     if (!gameApiService.current) {
       return;
     }
@@ -138,14 +167,14 @@ export function Provider({ children }: Props) {
           myPlayer,
           otherPlayers,
           units,
-          joinGame,
+          enterWorld,
           move,
-          leaveGame,
+          leaveWorld,
           changeHeldItem,
           placeItem,
           removeItem,
         }),
-        [gameStatus, myPlayer, otherPlayers, units, joinGame, move, changeHeldItem, placeItem, leaveGame]
+        [gameStatus, myPlayer, otherPlayers, units, enterWorld, move, changeHeldItem, placeItem, leaveWorld]
       )}
     >
       {children}

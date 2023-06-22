@@ -22,8 +22,8 @@ const Page: NextPage = function Page() {
     otherPlayers,
     gameStatus,
     move,
-    joinGame,
-    leaveGame,
+    enterWorld,
+    leaveWorld,
     changeHeldItem,
     placeItem,
     removeItem,
@@ -37,13 +37,13 @@ const Page: NextPage = function Page() {
   const isReconnectModalVisible = gameStatus === 'DISCONNECTED';
 
   useEffect(
-    function joinGameOnInit() {
+    function enterWorldOnInit() {
       if (!worldId) {
         return () => {};
       }
-      joinGame(worldId);
+      enterWorld(worldId);
       return () => {
-        leaveGame();
+        leaveWorld();
       };
     },
     [worldId]
@@ -111,9 +111,9 @@ const Page: NextPage = function Page() {
 
   const handleRecconectModalConfirmClick = useCallback(() => {
     if (worldId) {
-      joinGame(worldId);
+      enterWorld(worldId);
     }
-  }, [joinGame, worldId]);
+  }, [enterWorld, worldId]);
 
   return (
     <main className="relative w-full h-screen">
