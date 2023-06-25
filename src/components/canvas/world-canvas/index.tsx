@@ -144,7 +144,7 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
     function updateCameraOnPositionChange() {
       const CAMERA_Y_OFFSET = cameraDistance * Math.sin((45 / 360) * 2 * Math.PI) + 0.5;
       const CAMERA_Z_OFFSET = cameraDistance * Math.cos((45 / 360) * 2 * Math.PI) + 0.5;
-      console.log(CAMERA_Y_OFFSET, CAMERA_Z_OFFSET);
+
       camera.position.set(myPlayerPositionX, CAMERA_Y_OFFSET, myPlayerPositionZ + CAMERA_Z_OFFSET);
       camera.lookAt(myPlayerPositionX, 0, myPlayerPositionZ);
     },
