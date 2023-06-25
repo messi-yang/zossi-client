@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { PositionModel } from './position-model';
 import { DirectionModel } from './direction-model';
-import { BoundModel } from './bound-model';
 
 export class PlayerModel {
   constructor(
@@ -9,7 +8,6 @@ export class PlayerModel {
     private name: string,
     private position: PositionModel,
     private direction: DirectionModel,
-    private visionBound: BoundModel,
     private heldItemId: string | null
   ) {}
 
@@ -18,21 +16,13 @@ export class PlayerModel {
     name: string,
     position: PositionModel,
     direction: DirectionModel,
-    visionBound: BoundModel,
     heldItemId: string | null
   ): PlayerModel {
-    return new PlayerModel(id, name, position, direction, visionBound, heldItemId);
+    return new PlayerModel(id, name, position, direction, heldItemId);
   }
 
   static newMockupPlayer(): PlayerModel {
-    return PlayerModel.new(
-      uuidv4(),
-      'Test Player',
-      PositionModel.new(0, 0),
-      DirectionModel.new(2),
-      BoundModel.new(PositionModel.new(-10, -10), PositionModel.new(10, 10)),
-      null
-    );
+    return PlayerModel.new(uuidv4(), 'Test Player', PositionModel.new(0, 0), DirectionModel.new(2), null);
   }
 
   public getId(): string {
@@ -53,10 +43,6 @@ export class PlayerModel {
 
   public getDirection(): DirectionModel {
     return this.direction;
-  }
-
-  public getVisionBound(): BoundModel {
-    return this.visionBound;
   }
 
   public getHeldItemid(): string | null {
