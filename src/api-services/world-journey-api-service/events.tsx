@@ -1,4 +1,4 @@
-import type { PlayerDto, PositionDto, UnitDto } from '@/dtos';
+import type { WorldDto, PlayerDto, PositionDto, UnitDto } from '@/dtos';
 
 enum EventTypeEnum {
   WorldEntered = 'WORLD_ENTERED',
@@ -12,6 +12,7 @@ enum EventTypeEnum {
 
 type WorldEnteredEvent = {
   type: EventTypeEnum.WorldEntered;
+  world: WorldDto;
   units: UnitDto[];
   myPlayerId: string;
   players: PlayerDto[];

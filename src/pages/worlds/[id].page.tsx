@@ -18,6 +18,7 @@ const Page: NextPage = function Page() {
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
     units,
+    world,
     myPlayer,
     otherPlayers,
     connectionStatus,
@@ -142,8 +143,8 @@ const Page: NextPage = function Page() {
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
         <section className="w-full h-full">
-          {myPlayer && otherPlayers && units && items && (
-            <WorldCanvas otherPlayers={otherPlayers} myPlayer={myPlayer} units={units} items={items} />
+          {world && myPlayer && otherPlayers && units && items && (
+            <WorldCanvas world={world} otherPlayers={otherPlayers} myPlayer={myPlayer} units={units} items={items} />
           )}
         </section>
       </section>

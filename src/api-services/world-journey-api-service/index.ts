@@ -1,4 +1,4 @@
-import { convertPlayerDtoPlayer, convertUnitDtoToUnit } from '@/dtos';
+import { convertPlayerDtoPlayer, convertUnitDtoToUnit, convertWorldDtoToWorld } from '@/dtos';
 import {
   EventTypeEnum,
   WorldEnteredEvent,
@@ -11,10 +11,15 @@ import {
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, RemoveItemCommand } from './commands';
-import { UnitModel, PlayerModel, DirectionModel, PositionModel } from '@/models';
+import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel } from '@/models';
 
-function parseWorldEnteredEvent(event: WorldEnteredEvent): [UnitModel[], string, PlayerModel[]] {
-  return [event.units.map(convertUnitDtoToUnit), event.myPlayerId, event.players.map(convertPlayerDtoPlayer)];
+function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
+  return [
+    convertWorldDtoToWorld(event.world),
+    event.units.map(convertUnitDtoToUnit),
+    event.myPlayerId,
+    event.players.map(convertPlayerDtoPlayer),
+  ];
 }
 
 function parseUnitCreatedEvent(event: UnitCreatedEvent): [UnitModel] {
@@ -43,7 +48,7 @@ export class WorldJourneyApiService {
   constructor(
     worldId: string,
     params: {
-      onWorldEntered: (units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
+      onWorldEntered: (world: WorldModel, units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitDeleted: (position: PositionModel) => void;
       onPlayerJoined: (player: PlayerModel) => void;
@@ -64,8 +69,8 @@ export class WorldJourneyApiService {
 
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.WorldEntered) {
-        const [units, myPlayerId, players] = parseWorldEnteredEvent(newMsg);
-        params.onWorldEntered(units, myPlayerId, players);
+        const [world, units, myPlayerId, players] = parseWorldEnteredEvent(newMsg);
+        params.onWorldEntered(world, units, myPlayerId, players);
       } else if (newMsg.type === EventTypeEnum.UnitCreated) {
         const [unit] = parseUnitCreatedEvent(newMsg);
         params.onUnitCreated(unit);
@@ -104,7 +109,7 @@ export class WorldJourneyApiService {
   static new(
     worldId: string,
     params: {
-      onWorldEntered: (units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
+      onWorldEntered: (world: WorldModel, units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitDeleted: (position: PositionModel) => void;
       onPlayerJoined: (player: PlayerModel) => void;

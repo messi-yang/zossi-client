@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useContext, useMemo } from 'react';
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
-import { ItemModel, UnitModel, PlayerModel } from '@/models';
+import { ItemModel, UnitModel, PlayerModel, WorldModel } from '@/models';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { ThreeJsContext } from '@/contexts/three-js-context';
@@ -18,6 +18,7 @@ type InstancedMeshInfo = {
 };
 
 type Props = {
+  world: WorldModel;
   otherPlayers: PlayerModel[];
   myPlayer: PlayerModel;
   units: UnitModel[];
@@ -34,16 +35,17 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
+export function WorldCanvas({ world, otherPlayers, units, myPlayer, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
 
   const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
-  const visionBound = useMemo(() => myPlayer.getVisionBound(), [myPlayer]);
+  const worldBound = useMemo(() => world.getBound(), [world]);
 
   const [scene] = useState<THREE.Scene>(() => {
     const newScene = new THREE.Scene();
-    newScene.background = new THREE.Color(0xffffff);
+    newScene.background = new THREE.Color(0x87ceeb);
+    // scene.background = new THREE.Color(0x87ceeb);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.5);
     hemiLight.position.set(0, HEMI_LIGHT_HEIGHT, 0);
@@ -51,12 +53,12 @@ export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
 
     return newScene;
   });
-  const [grid] = useState<THREE.Group>(() => {
+  useState<THREE.Group>(() => {
     const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
-    const offsetX = visionBound.getFrom().getX();
-    const offsetZ = visionBound.getFrom().getZ();
-    const boundWidth = visionBound.getWidth();
-    const boundheight = visionBound.getHeight();
+    const offsetX = worldBound.getFrom().getX();
+    const offsetZ = worldBound.getFrom().getZ();
+    const boundWidth = worldBound.getWidth();
+    const boundheight = worldBound.getHeight();
     const newGrid = new THREE.Group();
     for (let x = 0; x <= boundWidth; x += 1) {
       const points: THREE.Vector3[] = [
@@ -75,7 +77,7 @@ export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
       newGrid.add(new THREE.Line(geometry, material));
     }
     newGrid.position.set(0, 0, 0);
-    scene.add(newGrid);
+    // scene.add(newGrid);
     return newGrid;
   });
   const [dirLight] = useState<THREE.DirectionalLight>(() => {
@@ -156,14 +158,6 @@ export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
   );
 
   useEffect(
-    function updateGridOnPositionChange() {
-      const visionBoundCenter = visionBound.getCenter();
-      grid.position.set(visionBoundCenter.getX(), 0, visionBoundCenter.getZ());
-    },
-    [visionBound]
-  );
-
-  useEffect(
     function updateCameraAspectOnWrapperDomRectChange() {
       if (!wrapperDomRect) {
         return;
@@ -175,14 +169,14 @@ export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
   );
 
   useEffect(
-    function updateBaseOnVisionUpdate() {
+    function updateBaseOnWorldBoundUpdate() {
       const baseObject = createObject(BASE_MODEL_SRC);
       if (!baseObject) return () => {};
 
-      const boundOffsetX = visionBound.getFrom().getX();
-      const boundOffsetZ = visionBound.getFrom().getZ();
-      const visionBoundWidth = visionBound.getWidth();
-      const visionBoundHeight = visionBound.getHeight();
+      const boundOffsetX = worldBound.getFrom().getX();
+      const boundOffsetZ = worldBound.getFrom().getZ();
+      const worldBoundWidth = worldBound.getWidth();
+      const worldBoundHeight = worldBound.getHeight();
 
       const baseObjMeshes: THREE.Mesh[] = [];
       baseObject.traverse((node) => {
@@ -194,7 +188,7 @@ export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
         const mesh = new THREE.InstancedMesh(
           baseObjMesh.geometry,
           baseObjMesh.material,
-          visionBoundWidth * visionBoundHeight
+          worldBoundWidth * worldBoundHeight
         );
         mesh.receiveShadow = true;
         return {
@@ -206,7 +200,7 @@ export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
       });
 
       let index = 0;
-      rangeMatrix(visionBoundWidth, visionBoundHeight, (colIdx, rowIdx) => {
+      rangeMatrix(worldBoundWidth, worldBoundHeight, (colIdx, rowIdx) => {
         grassObjInstancedMeshInfos.forEach(({ mesh, meshScale, meshQuaternion, meshPosition }) => {
           const posX = boundOffsetX + colIdx + 0.5;
           const posZ = boundOffsetZ + rowIdx + 0.5;
@@ -227,7 +221,7 @@ export function WorldCanvas({ otherPlayers, units, myPlayer, items }: Props) {
         });
       };
     },
-    [scene, createObject, visionBound]
+    [scene, createObject, worldBound]
   );
 
   useEffect(
