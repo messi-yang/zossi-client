@@ -10,12 +10,15 @@ type ContextValue = {
   myPlayer: PlayerModel | null;
   otherPlayers: PlayerModel[] | null;
   units: UnitModel[] | null;
+  cameraDistance: number;
   enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
   changeHeldItem: (itemId: string) => void;
   placeItem: () => void;
   removeItem: () => void;
   leaveWorld: () => void;
+  addCameraDistance: () => void;
+  subtractCameraDistance: () => void;
 };
 
 function createInitialContextValue(): ContextValue {
@@ -25,12 +28,15 @@ function createInitialContextValue(): ContextValue {
     myPlayer: null,
     otherPlayers: null,
     units: null,
+    cameraDistance: 30,
     enterWorld: () => {},
     move: () => {},
     changeHeldItem: () => {},
     placeItem: () => {},
     removeItem: () => {},
     leaveWorld: () => {},
+    addCameraDistance: () => {},
+    subtractCameraDistance: () => {},
   };
 }
 
@@ -57,6 +63,8 @@ export function Provider({ children }: Props) {
     if (!players || !myPlayerId) return null;
     return players.filter((p) => p.getId() !== myPlayerId);
   }, [players, myPlayerId]);
+
+  const [cameraDistance, setCameraDistance] = useState<number>(initialContextValue.cameraDistance);
 
   const reset = useCallback(() => {
     setMyPlayerId(null);
@@ -162,6 +170,20 @@ export function Provider({ children }: Props) {
     worldJourneyApiService.current?.removeItem();
   }, []);
 
+  const addCameraDistance = useCallback(() => {
+    setCameraDistance((val) => {
+      if (val <= 15) return 15;
+      return val - 15;
+    });
+  }, []);
+
+  const subtractCameraDistance = useCallback(() => {
+    setCameraDistance((val) => {
+      if (val >= 90) return 90;
+      return val + 15;
+    });
+  }, []);
+
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
@@ -171,14 +193,30 @@ export function Provider({ children }: Props) {
           myPlayer,
           otherPlayers,
           units,
+          cameraDistance,
           enterWorld,
           move,
           leaveWorld,
           changeHeldItem,
           placeItem,
           removeItem,
+          addCameraDistance,
+          subtractCameraDistance,
         }),
-        [connectionStatus, myPlayer, otherPlayers, units, enterWorld, move, changeHeldItem, placeItem, leaveWorld]
+        [
+          connectionStatus,
+          myPlayer,
+          otherPlayers,
+          units,
+          cameraDistance,
+          enterWorld,
+          move,
+          changeHeldItem,
+          placeItem,
+          leaveWorld,
+          addCameraDistance,
+          subtractCameraDistance,
+        ]
       )}
     >
       {children}

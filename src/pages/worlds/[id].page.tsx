@@ -21,6 +21,7 @@ const Page: NextPage = function Page() {
     world,
     myPlayer,
     otherPlayers,
+    cameraDistance,
     connectionStatus,
     move,
     enterWorld,
@@ -28,6 +29,8 @@ const Page: NextPage = function Page() {
     changeHeldItem,
     placeItem,
     removeItem,
+    addCameraDistance,
+    subtractCameraDistance,
   } = useContext(WorldJourneyContext);
   const { items, fetchItems } = useContext(ItemContext);
   useEffect(() => {
@@ -61,6 +64,8 @@ const Page: NextPage = function Page() {
   useKeyPress('KeyP', { onKeyDown: placeItem });
   useKeyPress('KeyO', { onKeyDown: removeItem });
   useKeyPress('Space', { onKeyDown: switchToNextItem });
+  useKeyPress('Equal', { onKeyDown: addCameraDistance });
+  useKeyPress('Minus', { onKeyDown: subtractCameraDistance });
 
   const isUpPressed = useKeyPress('KeyW');
   const isRightPressed = useKeyPress('KeyD');
@@ -144,7 +149,14 @@ const Page: NextPage = function Page() {
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
         <section className="w-full h-full">
           {world && myPlayer && otherPlayers && units && items && (
-            <WorldCanvas world={world} otherPlayers={otherPlayers} myPlayer={myPlayer} units={units} items={items} />
+            <WorldCanvas
+              cameraDistance={cameraDistance}
+              world={world}
+              otherPlayers={otherPlayers}
+              myPlayer={myPlayer}
+              units={units}
+              items={items}
+            />
           )}
         </section>
       </section>

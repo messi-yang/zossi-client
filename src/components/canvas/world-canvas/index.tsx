@@ -18,6 +18,7 @@ type InstancedMeshInfo = {
 };
 
 type Props = {
+  cameraDistance: number;
   world: WorldModel;
   otherPlayers: PlayerModel[];
   myPlayer: PlayerModel;
@@ -26,16 +27,14 @@ type Props = {
 };
 
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
-const BASE_MODEL_SRC = '/bases/lawn.gltf';
+const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
 const FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
 const CAMERA_FOV = 50;
-const CAMERA_HEIGHT = 20;
-const CAMERA_Z_OFFSET = 20;
 const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-export function WorldCanvas({ world, otherPlayers, units, myPlayer, items }: Props) {
+export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlayer, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
 
@@ -143,10 +142,13 @@ export function WorldCanvas({ world, otherPlayers, units, myPlayer, items }: Pro
 
   useEffect(
     function updateCameraOnPositionChange() {
-      camera.position.set(myPlayerPositionX, CAMERA_HEIGHT, myPlayerPositionZ + CAMERA_Z_OFFSET);
+      const CAMERA_Y_OFFSET = cameraDistance * Math.sin((45 / 360) * 2 * Math.PI) + 0.5;
+      const CAMERA_Z_OFFSET = cameraDistance * Math.cos((45 / 360) * 2 * Math.PI) + 0.5;
+      console.log(CAMERA_Y_OFFSET, CAMERA_Z_OFFSET);
+      camera.position.set(myPlayerPositionX, CAMERA_Y_OFFSET, myPlayerPositionZ + CAMERA_Z_OFFSET);
       camera.lookAt(myPlayerPositionX, 0, myPlayerPositionZ);
     },
-    [myPlayerPositionX, myPlayerPositionZ]
+    [myPlayerPositionX, myPlayerPositionZ, cameraDistance]
   );
 
   useEffect(
