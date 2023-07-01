@@ -2,8 +2,8 @@ enum CommandTypeEnum {
   Ping = 'PING',
   Move = 'MOVE',
   ChangeHeldItem = 'CHANGE_HELD_ITEM',
-  PlaceItem = 'PLACE_ITEM',
-  RemoveItem = 'REMOVE_ITEM',
+  PlaceUnit = 'PLACE_UNIT',
+  RemoveUnit = 'REMOVE_UNIT',
 }
 
 type PingCommand = {
@@ -20,14 +20,14 @@ type ChangeHeldItemCommand = {
   itemId: string;
 };
 
-type PlaceItemCommand = {
-  type: CommandTypeEnum.PlaceItem;
+type PlaceUnitCommand = {
+  type: CommandTypeEnum.PlaceUnit;
 };
 
-type RemoveItemCommand = {
-  type: CommandTypeEnum.RemoveItem;
+type RemoveUnitCommand = {
+  type: CommandTypeEnum.RemoveUnit;
 };
 
 export { CommandTypeEnum };
 
-export type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, RemoveItemCommand };
+export type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceUnitCommand, RemoveUnitCommand };

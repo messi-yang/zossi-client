@@ -10,7 +10,7 @@ import {
 } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
-import type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceItemCommand, RemoveItemCommand } from './commands';
+import type { PingCommand, MoveCommand, ChangeHeldItemCommand, PlaceUnitCommand, RemoveUnitCommand } from './commands';
 import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel } from '@/models';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
@@ -162,16 +162,16 @@ export class WorldJourneyApiService {
     this.sendMessage(action);
   }
 
-  public placeItem() {
-    const action: PlaceItemCommand = {
-      type: CommandTypeEnum.PlaceItem,
+  public placeUnit() {
+    const action: PlaceUnitCommand = {
+      type: CommandTypeEnum.PlaceUnit,
     };
     this.sendMessage(action);
   }
 
-  public removeItem() {
-    const action: RemoveItemCommand = {
-      type: CommandTypeEnum.RemoveItem,
+  public removeUnit() {
+    const action: RemoveUnitCommand = {
+      type: CommandTypeEnum.RemoveUnit,
     };
     this.sendMessage(action);
   }
