@@ -1,9 +1,7 @@
-type Direction = 0 | 1 | 2 | 3;
-
 export class DirectionModel {
-  constructor(private direction: Direction) {}
+  constructor(private direction: number) {}
 
-  static new = (direction: Direction): DirectionModel => new DirectionModel(direction);
+  static new = (direction: number): DirectionModel => new DirectionModel(direction % 4);
 
   static newDown(): DirectionModel {
     return new DirectionModel(0);
@@ -39,5 +37,13 @@ export class DirectionModel {
 
   public isDown(): boolean {
     return this.direction === 0;
+  }
+
+  public rotate(): DirectionModel {
+    return DirectionModel.new(this.direction + 1);
+  }
+
+  public getOppositeDirection(): DirectionModel {
+    return this.rotate().rotate();
   }
 }

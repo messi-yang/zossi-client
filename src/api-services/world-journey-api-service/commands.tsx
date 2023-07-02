@@ -24,6 +24,9 @@ type ChangeHeldItemCommand = {
 
 type PlaceUnitCommand = {
   type: CommandTypeEnum.PlaceUnit;
+  itemId: string;
+  position: PositionDto;
+  direction: number;
 };
 
 type RemoveUnitCommand = {

@@ -2,6 +2,7 @@ import { convertUserDtoToUser } from './user-dto';
 import type { UserDto } from './user-dto';
 import { convertBoundDtoToBound } from './bound-dto';
 import type { BoundDto } from './bound-dto';
+import { newPositionDto } from './position-dto';
 import type { PositionDto } from './position-dto';
 import { convertSizeDtoToSize } from './size-dto';
 import type { SizeDto } from './size-dto';
@@ -19,6 +20,7 @@ export type { UserDto, BoundDto, PositionDto, SizeDto, UnitDto, ItemDto, PlayerD
 export {
   convertUserDtoToUser,
   convertBoundDtoToBound,
+  newPositionDto,
   convertSizeDtoToSize,
   convertUnitDtoToUnit,
   convertItemDtoToItem,

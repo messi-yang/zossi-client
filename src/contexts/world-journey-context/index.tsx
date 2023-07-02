@@ -163,8 +163,16 @@ export function Provider({ children }: Props) {
   }, []);
 
   const placeUnit = useCallback(() => {
-    worldJourneyApiService.current?.placeUnit();
-  }, []);
+    if (!myPlayer) return;
+
+    const heldItemId = myPlayer.getHeldItemid();
+    if (!heldItemId) return;
+
+    const itemPosition = myPlayer.getPositionOneStepFoward();
+    const itemDirection = myPlayer.getDirection().getOppositeDirection();
+
+    worldJourneyApiService.current?.placeUnit(heldItemId, itemPosition, itemDirection);
+  }, [myPlayer]);
 
   const removeUnit = useCallback(() => {
     if (!myPlayer) return;

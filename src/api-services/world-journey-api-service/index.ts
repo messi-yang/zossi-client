@@ -1,4 +1,4 @@
-import { convertPlayerDtoPlayer, convertUnitDtoToUnit, convertWorldDtoToWorld } from '@/dtos';
+import { convertPlayerDtoPlayer, convertUnitDtoToUnit, convertWorldDtoToWorld, newPositionDto } from '@/dtos';
 import {
   EventTypeEnum,
   WorldEnteredEvent,
@@ -162,9 +162,12 @@ export class WorldJourneyApiService {
     this.sendMessage(action);
   }
 
-  public placeUnit() {
+  public placeUnit(itemId: string, position: PositionModel, direction: DirectionModel) {
     const action: PlaceUnitCommand = {
       type: CommandTypeEnum.PlaceUnit,
+      itemId,
+      position: newPositionDto(position),
+      direction: direction.toNumber(),
     };
     this.sendMessage(action);
   }
@@ -172,10 +175,7 @@ export class WorldJourneyApiService {
   public removeUnit(position: PositionModel) {
     const action: RemoveUnitCommand = {
       type: CommandTypeEnum.RemoveUnit,
-      position: {
-        x: position.getX(),
-        z: position.getZ(),
-      },
+      position: newPositionDto(position),
     };
     this.sendMessage(action);
   }
