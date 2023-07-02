@@ -167,8 +167,9 @@ export function Provider({ children }: Props) {
   }, []);
 
   const removeUnit = useCallback(() => {
-    worldJourneyApiService.current?.removeUnit();
-  }, []);
+    if (!myPlayer) return;
+    worldJourneyApiService.current?.removeUnit(myPlayer.getPositionOneStepFoward());
+  }, [myPlayer]);
 
   const addCameraDistance = useCallback(() => {
     setCameraDistance((val) => {

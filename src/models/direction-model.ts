@@ -24,4 +24,20 @@ export class DirectionModel {
   public toNumber(): number {
     return this.direction;
   }
+
+  public isLeft(): boolean {
+    return this.direction === 3;
+  }
+
+  public isUp(): boolean {
+    return this.direction === 2;
+  }
+
+  public isRight(): boolean {
+    return this.direction === 1;
+  }
+
+  public isDown(): boolean {
+    return this.direction === 0;
+  }
 }

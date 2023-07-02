@@ -48,4 +48,18 @@ export class PlayerModel {
   public getHeldItemid(): string | null {
     return this.heldItemId;
   }
+
+  public getPositionOneStepFoward(): PositionModel {
+    if (this.direction.isUp()) {
+      return this.position.shift(0, -1);
+    } else if (this.direction.isRight()) {
+      return this.position.shift(1, 0);
+    } else if (this.direction.isDown()) {
+      return this.position.shift(0, 1);
+    } else if (this.direction.isLeft()) {
+      return this.position.shift(-1, 0);
+    } else {
+      return this.position.shift(0, 1);
+    }
+  }
 }

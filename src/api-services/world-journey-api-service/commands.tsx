@@ -1,3 +1,5 @@
+import { PositionDto } from '@/dtos';
+
 enum CommandTypeEnum {
   Ping = 'PING',
   Move = 'MOVE',
@@ -26,6 +28,7 @@ type PlaceUnitCommand = {
 
 type RemoveUnitCommand = {
   type: CommandTypeEnum.RemoveUnit;
+  position: PositionDto;
 };
 
 export { CommandTypeEnum };

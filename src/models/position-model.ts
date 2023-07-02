@@ -14,4 +14,8 @@ export class PositionModel {
   public getZ(): number {
     return this.z;
   }
+
+  public shift(x: number, z: number): PositionModel {
+    return PositionModel.new(this.x + x, this.z + z);
+  }
 }

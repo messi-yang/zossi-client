@@ -169,9 +169,13 @@ export class WorldJourneyApiService {
     this.sendMessage(action);
   }
 
-  public removeUnit() {
+  public removeUnit(position: PositionModel) {
     const action: RemoveUnitCommand = {
       type: CommandTypeEnum.RemoveUnit,
+      position: {
+        x: position.getX(),
+        z: position.getZ(),
+      },
     };
     this.sendMessage(action);
   }
