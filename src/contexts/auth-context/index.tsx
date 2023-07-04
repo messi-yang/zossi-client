@@ -67,6 +67,7 @@ function Provider({ children }: Props) {
 
   useEffect(() => {
     const unauthorizeHandler = () => {
+      setIsSignedIn(false);
       setClientRedirectPath(router.asPath);
       router.push('/auth/sign-in');
     };
