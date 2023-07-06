@@ -14,7 +14,7 @@ type ContextValue = {
   enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
   changeHeldItem: (itemId: string) => void;
-  placeUnit: () => void;
+  createUnit: () => void;
   removeUnit: () => void;
   leaveWorld: () => void;
   addCameraDistance: () => void;
@@ -32,7 +32,7 @@ function createInitialContextValue(): ContextValue {
     enterWorld: () => {},
     move: () => {},
     changeHeldItem: () => {},
-    placeUnit: () => {},
+    createUnit: () => {},
     removeUnit: () => {},
     leaveWorld: () => {},
     addCameraDistance: () => {},
@@ -162,7 +162,7 @@ export function Provider({ children }: Props) {
     worldJourneyApiService.current?.changeHeldItem(itemId);
   }, []);
 
-  const placeUnit = useCallback(() => {
+  const createUnit = useCallback(() => {
     if (!myPlayer) return;
 
     const heldItemId = myPlayer.getHeldItemid();
@@ -171,7 +171,7 @@ export function Provider({ children }: Props) {
     const itemPosition = myPlayer.getPositionOneStepFoward();
     const itemDirection = myPlayer.getDirection().getOppositeDirection();
 
-    worldJourneyApiService.current?.placeUnit(heldItemId, itemPosition, itemDirection);
+    worldJourneyApiService.current?.createUnit(heldItemId, itemPosition, itemDirection);
   }, [myPlayer]);
 
   const removeUnit = useCallback(() => {
@@ -207,7 +207,7 @@ export function Provider({ children }: Props) {
           move,
           leaveWorld,
           changeHeldItem,
-          placeUnit,
+          createUnit,
           removeUnit,
           addCameraDistance,
           subtractCameraDistance,
@@ -221,7 +221,7 @@ export function Provider({ children }: Props) {
           enterWorld,
           move,
           changeHeldItem,
-          placeUnit,
+          createUnit,
           leaveWorld,
           addCameraDistance,
           subtractCameraDistance,

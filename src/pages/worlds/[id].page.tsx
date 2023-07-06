@@ -27,7 +27,7 @@ const Page: NextPage = function Page() {
     enterWorld,
     leaveWorld,
     changeHeldItem,
-    placeUnit,
+    createUnit,
     removeUnit,
     addCameraDistance,
     subtractCameraDistance,
@@ -61,7 +61,7 @@ const Page: NextPage = function Page() {
     changeHeldItem(items[targetItemIdIndex % items.length].getId());
   }, [items, heldItemId]);
 
-  useKeyPress('KeyP', { onKeyDown: placeUnit });
+  useKeyPress('KeyP', { onKeyDown: createUnit });
   useKeyPress('KeyO', { onKeyDown: removeUnit });
   useKeyPress('Space', { onKeyDown: switchToNextItem });
   useKeyPress('Equal', { onKeyDown: addCameraDistance });
