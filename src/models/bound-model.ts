@@ -25,10 +25,12 @@ export class BoundModel {
     return this.to.getZ() - this.from.getZ() + 1;
   }
 
-  public getCenter(): PositionModel {
-    return PositionModel.new(
-      Math.floor((this.from.getX() + this.to.getX()) / 2),
-      Math.floor((this.from.getZ() + this.to.getZ()) / 2)
+  public doesContainPosition(position: PositionModel): boolean {
+    return (
+      position.getX() >= this.from.getX() &&
+      position.getX() <= this.to.getX() &&
+      position.getZ() >= this.from.getZ() &&
+      position.getZ() <= this.to.getZ()
     );
   }
 }

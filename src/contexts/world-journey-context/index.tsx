@@ -79,8 +79,13 @@ export function Provider({ children }: Props) {
 
   const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
+
   const [world, setWorld] = useState<WorldModel | null>(null);
-  const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
+  const currentWorld = useRef<WorldModel | null>(null);
+  useEffect(() => {
+    currentWorld.current = world;
+  }, [world]);
+
   const [players, setPlayers] = useState<PlayerModel[] | null>([]);
   const [units, setUnits] = useState<UnitModel[] | null>(initialContextValue.units);
 
@@ -98,6 +103,7 @@ export function Provider({ children }: Props) {
     positionUnitsMap.current = result;
   }, [units]);
 
+  const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const myPlayer = useMemo(() => {
     if (!players || !myPlayerId) return null;
     return players.find((p) => p.getId() === myPlayerId) || null;
@@ -196,7 +202,13 @@ export function Provider({ children }: Props) {
   }, []);
 
   const move = useCallback((direction: DirectionModel) => {
-    if (!worldJourneyApiService.current || !currentMyPlayer.current || !positionUnitsMap.current || !itemsMap.current) {
+    if (
+      !worldJourneyApiService.current ||
+      !currentWorld.current ||
+      !currentMyPlayer.current ||
+      !positionUnitsMap.current ||
+      !itemsMap.current
+    ) {
       return;
     }
     const playerIsMovingFoward = currentMyPlayer.current.getDirection().isEqual(direction);
@@ -206,6 +218,10 @@ export function Provider({ children }: Props) {
     }
 
     const nextPosition = currentMyPlayer.current.getPositionOneStepFoward();
+    if (!currentWorld.current.getBound().doesContainPosition(nextPosition)) {
+      return;
+    }
+
     const unitAtNextPosition = positionUnitsMap.current[nextPosition.toString()];
     if (unitAtNextPosition) {
       const item = itemsMap.current[unitAtNextPosition.getItemId()];
@@ -229,7 +245,7 @@ export function Provider({ children }: Props) {
   }, []);
 
   const createUnit = useCallback(() => {
-    if (!currentMyPlayer.current) return;
+    if (!worldJourneyApiService.current || !currentMyPlayer.current) return;
 
     const heldItemId = currentMyPlayer.current.getHeldItemid();
     if (!heldItemId) return;
@@ -237,7 +253,7 @@ export function Provider({ children }: Props) {
     const itemPosition = currentMyPlayer.current.getPositionOneStepFoward();
     const itemDirection = currentMyPlayer.current.getDirection().getOppositeDirection();
 
-    worldJourneyApiService.current?.createUnit(heldItemId, itemPosition, itemDirection);
+    worldJourneyApiService.current.createUnit(heldItemId, itemPosition, itemDirection);
   }, []);
 
   const removeUnit = useCallback(() => {
