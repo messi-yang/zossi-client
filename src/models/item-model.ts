@@ -24,6 +24,10 @@ export class ItemModel {
     return this.name;
   }
 
+  public getTraversable(): boolean {
+    return this.traversable;
+  }
+
   public getThumbnailSrc(): string {
     return this.thumbnailSrc;
   }

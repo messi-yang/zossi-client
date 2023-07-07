@@ -19,6 +19,10 @@ export class DirectionModel {
     return new DirectionModel(1);
   }
 
+  public isEqual(direction: DirectionModel): boolean {
+    return this.direction === direction.direction;
+  }
+
   public toNumber(): number {
     return this.direction;
   }

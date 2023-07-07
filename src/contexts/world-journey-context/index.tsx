@@ -1,6 +1,7 @@
-import { createContext, useCallback, useRef, useState, useMemo } from 'react';
+import { createContext, useCallback, useRef, useState, useMemo, useEffect } from 'react';
 import { WorldJourneyApiService } from '@/api-services/world-journey-api-service';
-import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel } from '@/models';
+import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel, ItemModel } from '@/models';
+import { ItemApiService } from '@/api-services/item-api-service';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -11,6 +12,7 @@ type ContextValue = {
   otherPlayers: PlayerModel[] | null;
   units: UnitModel[] | null;
   cameraDistance: number;
+  items: ItemModel[] | null;
   enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
   changeHeldItem: (itemId: string) => void;
@@ -29,6 +31,7 @@ function createInitialContextValue(): ContextValue {
     otherPlayers: null,
     units: null,
     cameraDistance: 30,
+    items: null,
     enterWorld: () => {},
     move: () => {},
     changeHeldItem: () => {},
@@ -47,18 +50,64 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
-
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
   const initialContextValue = createInitialContextValue();
+
+  const [itemApiService] = useState<ItemApiService>(() => ItemApiService.new());
+  const [items, setItems] = useState<ItemModel[] | null>(initialContextValue.items);
+
+  const itemsMap = useRef<Record<string, ItemModel | undefined> | null>({});
+  useEffect(() => {
+    if (!items) {
+      itemsMap.current = null;
+      return;
+    }
+
+    const result: Record<string, ItemModel | undefined> = {};
+    items.forEach((item) => {
+      result[item.getId()] = item;
+    });
+    itemsMap.current = result;
+  }, [items]);
+
+  const fetchItems = useCallback(async () => {
+    const newItems = await itemApiService.getItems();
+    setItems(newItems);
+  }, []);
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
   const [world, setWorld] = useState<WorldModel | null>(null);
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const [players, setPlayers] = useState<PlayerModel[] | null>([]);
   const [units, setUnits] = useState<UnitModel[] | null>(initialContextValue.units);
+
+  const positionUnitsMap = useRef<Record<string, UnitModel | undefined> | null>(null);
+  useEffect(() => {
+    if (!units) {
+      positionUnitsMap.current = null;
+      return;
+    }
+
+    const result: Record<string, UnitModel | undefined> = {};
+    units.forEach((unit) => {
+      result[unit.getPosition().toString()] = unit;
+    });
+    positionUnitsMap.current = result;
+  }, [units]);
+
   const myPlayer = useMemo(() => {
     if (!players || !myPlayerId) return null;
     return players.find((p) => p.getId() === myPlayerId) || null;
   }, [players, myPlayerId]);
+
+  const currentMyPlayer = useRef<PlayerModel | null>(null);
+  useEffect(() => {
+    currentMyPlayer.current = myPlayer;
+  }, [myPlayer]);
+
   const otherPlayers = useMemo(() => {
     if (!players || !myPlayerId) return null;
     return players.filter((p) => p.getId() !== myPlayerId);
@@ -147,7 +196,24 @@ export function Provider({ children }: Props) {
   }, []);
 
   const move = useCallback((direction: DirectionModel) => {
-    worldJourneyApiService.current?.move(direction);
+    if (!worldJourneyApiService.current || !currentMyPlayer.current || !positionUnitsMap.current || !itemsMap.current) {
+      return;
+    }
+    const playerIsMovingFoward = currentMyPlayer.current.getDirection().isEqual(direction);
+    if (!playerIsMovingFoward) {
+      worldJourneyApiService.current.move(direction);
+      return;
+    }
+
+    const nextPosition = currentMyPlayer.current.getPositionOneStepFoward();
+    const unitAtNextPosition = positionUnitsMap.current[nextPosition.toString()];
+    if (unitAtNextPosition) {
+      const item = itemsMap.current[unitAtNextPosition.getItemId()];
+      if (item && !item.getTraversable()) {
+        return;
+      }
+    }
+    worldJourneyApiService.current.move(direction);
   }, []);
 
   const leaveWorld = useCallback(() => {
@@ -163,21 +229,21 @@ export function Provider({ children }: Props) {
   }, []);
 
   const createUnit = useCallback(() => {
-    if (!myPlayer) return;
+    if (!currentMyPlayer.current) return;
 
-    const heldItemId = myPlayer.getHeldItemid();
+    const heldItemId = currentMyPlayer.current.getHeldItemid();
     if (!heldItemId) return;
 
-    const itemPosition = myPlayer.getPositionOneStepFoward();
-    const itemDirection = myPlayer.getDirection().getOppositeDirection();
+    const itemPosition = currentMyPlayer.current.getPositionOneStepFoward();
+    const itemDirection = currentMyPlayer.current.getDirection().getOppositeDirection();
 
     worldJourneyApiService.current?.createUnit(heldItemId, itemPosition, itemDirection);
-  }, [myPlayer]);
+  }, []);
 
   const removeUnit = useCallback(() => {
-    if (!myPlayer) return;
-    worldJourneyApiService.current?.removeUnit(myPlayer.getPositionOneStepFoward());
-  }, [myPlayer]);
+    if (!currentMyPlayer.current) return;
+    worldJourneyApiService.current?.removeUnit(currentMyPlayer.current.getPositionOneStepFoward());
+  }, []);
 
   const addCameraDistance = useCallback(() => {
     setCameraDistance((val) => {
@@ -203,6 +269,7 @@ export function Provider({ children }: Props) {
           otherPlayers,
           units,
           cameraDistance,
+          items,
           enterWorld,
           move,
           leaveWorld,
@@ -218,6 +285,7 @@ export function Provider({ children }: Props) {
           otherPlayers,
           units,
           cameraDistance,
+          items,
           enterWorld,
           move,
           changeHeldItem,

@@ -18,4 +18,8 @@ export class PositionModel {
   public shift(x: number, z: number): PositionModel {
     return PositionModel.new(this.x + x, this.z + z);
   }
+
+  public toString(): string {
+    return `${this.x},${this.z}`;
+  }
 }
