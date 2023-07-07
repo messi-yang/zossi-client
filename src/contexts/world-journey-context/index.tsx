@@ -55,10 +55,10 @@ export function Provider({ children }: Props) {
   const [itemApiService] = useState<ItemApiService>(() => ItemApiService.new());
   const [items, setItems] = useState<ItemModel[] | null>(initialContextValue.items);
 
-  const itemsMap = useRef<Record<string, ItemModel | undefined> | null>({});
+  const itemMap = useRef<Record<string, ItemModel | undefined> | null>({});
   useEffect(() => {
     if (!items) {
-      itemsMap.current = null;
+      itemMap.current = null;
       return;
     }
 
@@ -66,7 +66,7 @@ export function Provider({ children }: Props) {
     items.forEach((item) => {
       result[item.getId()] = item;
     });
-    itemsMap.current = result;
+    itemMap.current = result;
   }, [items]);
 
   const fetchItems = useCallback(async () => {
@@ -86,13 +86,12 @@ export function Provider({ children }: Props) {
     currentWorld.current = world;
   }, [world]);
 
-  const [players, setPlayers] = useState<PlayerModel[] | null>([]);
   const [units, setUnits] = useState<UnitModel[] | null>(initialContextValue.units);
 
-  const positionUnitsMap = useRef<Record<string, UnitModel | undefined> | null>(null);
+  const positionUnitMap = useRef<Record<string, UnitModel | undefined> | null>(null);
   useEffect(() => {
     if (!units) {
-      positionUnitsMap.current = null;
+      positionUnitMap.current = null;
       return;
     }
 
@@ -100,8 +99,28 @@ export function Provider({ children }: Props) {
     units.forEach((unit) => {
       result[unit.getPosition().toString()] = unit;
     });
-    positionUnitsMap.current = result;
+    positionUnitMap.current = result;
   }, [units]);
+
+  const [players, setPlayers] = useState<PlayerModel[] | null>([]);
+  const positionPlayersMap = useRef<Record<string, PlayerModel[] | undefined> | null>(null);
+  useEffect(() => {
+    if (!players) {
+      positionPlayersMap.current = null;
+      return;
+    }
+    const result: Record<string, PlayerModel[] | undefined> = {};
+    players.forEach((player) => {
+      const positionString = player.getPosition().toString();
+      const playersAtPosition = result[positionString];
+      if (!playersAtPosition) {
+        result[positionString] = [player];
+      } else {
+        playersAtPosition.push(player);
+      }
+    });
+    positionPlayersMap.current = result;
+  }, [players]);
 
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const myPlayer = useMemo(() => {
@@ -206,8 +225,8 @@ export function Provider({ children }: Props) {
       !worldJourneyApiService.current ||
       !currentWorld.current ||
       !currentMyPlayer.current ||
-      !positionUnitsMap.current ||
-      !itemsMap.current
+      !positionUnitMap.current ||
+      !itemMap.current
     ) {
       return;
     }
@@ -222,9 +241,9 @@ export function Provider({ children }: Props) {
       return;
     }
 
-    const unitAtNextPosition = positionUnitsMap.current[nextPosition.toString()];
+    const unitAtNextPosition = positionUnitMap.current[nextPosition.toString()];
     if (unitAtNextPosition) {
-      const item = itemsMap.current[unitAtNextPosition.getItemId()];
+      const item = itemMap.current[unitAtNextPosition.getItemId()];
       if (item && !item.getTraversable()) {
         return;
       }
@@ -245,12 +264,15 @@ export function Provider({ children }: Props) {
   }, []);
 
   const createUnit = useCallback(() => {
-    if (!worldJourneyApiService.current || !currentMyPlayer.current) return;
+    if (!worldJourneyApiService.current || !currentMyPlayer.current || !positionPlayersMap.current) return;
 
     const heldItemId = currentMyPlayer.current.getHeldItemid();
     if (!heldItemId) return;
 
     const itemPosition = currentMyPlayer.current.getPositionOneStepFoward();
+    const doesPositionHavePlayers = positionPlayersMap.current[itemPosition.toString()];
+    if (doesPositionHavePlayers) return;
+
     const itemDirection = currentMyPlayer.current.getDirection().getOppositeDirection();
 
     worldJourneyApiService.current.createUnit(heldItemId, itemPosition, itemDirection);
