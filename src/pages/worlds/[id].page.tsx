@@ -5,7 +5,6 @@ import Image from 'next/image';
 
 import { useKeyPress } from '@/hooks/use-key-press';
 import { WorldJourneyContext } from '@/contexts/world-journey-context';
-import { ItemContext } from '@/contexts/item-context';
 import { DirectionModel, ItemModel } from '@/models';
 import { WorldCanvas } from '@/components/canvas/world-canvas';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
@@ -23,6 +22,7 @@ const Page: NextPage = function Page() {
     otherPlayers,
     cameraDistance,
     connectionStatus,
+    items,
     move,
     enterWorld,
     leaveWorld,
@@ -32,10 +32,6 @@ const Page: NextPage = function Page() {
     addCameraDistance,
     subtractCameraDistance,
   } = useContext(WorldJourneyContext);
-  const { items, fetchItems } = useContext(ItemContext);
-  useEffect(() => {
-    fetchItems();
-  }, []);
 
   const heldItemId = myPlayer?.getHeldItemid() || null;
   const isReconnectModalVisible = connectionStatus === 'DISCONNECTED';
