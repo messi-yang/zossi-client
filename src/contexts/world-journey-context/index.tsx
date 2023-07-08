@@ -103,6 +103,25 @@ export function Provider({ children }: Props) {
   }, [units]);
 
   const [players, setPlayers] = useState<PlayerModel[] | null>([]);
+  const positionPlayersMap = useRef<Record<string, PlayerModel[] | undefined> | null>(null);
+  useEffect(() => {
+    if (!players) {
+      positionPlayersMap.current = null;
+      return;
+    }
+    const result: Record<string, PlayerModel[] | undefined> = {};
+    players.forEach((player) => {
+      const positionString = player.getPosition().toString();
+      const playersAtPosition = result[positionString];
+      if (!playersAtPosition) {
+        result[positionString] = [player];
+      } else {
+        playersAtPosition.push(player);
+      }
+    });
+    positionPlayersMap.current = result;
+  }, [players]);
+
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
   const myPlayer = useMemo(() => {
     if (!players || !myPlayerId) return null;
@@ -245,12 +264,14 @@ export function Provider({ children }: Props) {
   }, []);
 
   const createUnit = useCallback(() => {
-    if (!worldJourneyApiService.current || !currentMyPlayer.current) return;
+    if (!worldJourneyApiService.current || !currentMyPlayer.current || !positionPlayersMap.current) return;
 
     const heldItemId = currentMyPlayer.current.getHeldItemid();
     if (!heldItemId) return;
 
     const itemPosition = currentMyPlayer.current.getPositionOneStepFoward();
+    const doesPositionHavePlayers = positionPlayersMap.current[itemPosition.toString()];
+    if (doesPositionHavePlayers) return;
 
     const itemDirection = currentMyPlayer.current.getDirection().getOppositeDirection();
 
