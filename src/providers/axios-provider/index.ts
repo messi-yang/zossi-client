@@ -1,6 +1,6 @@
 import axios, { Axios } from 'axios';
 import { LocalStorage } from '@/storages/local-storage';
-import { AuthEvent } from '@/events/auth-event';
+import { EventMediator, eventFactory } from '@/events';
 
 export class AxiosProvider {
   static new(baseURL: string): Axios {
@@ -19,7 +19,9 @@ export class AxiosProvider {
         if (error.response && error.response.status === 401) {
           const localStorage = LocalStorage.get();
           localStorage.removeAccessToken();
-          window.dispatchEvent(new Event(AuthEvent.Unauthorized));
+
+          const eventMediator = EventMediator.new();
+          eventMediator.publish(eventFactory.newApiUnauthorizedEvent());
         }
         return Promise.reject(error);
       }

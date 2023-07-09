@@ -2,7 +2,7 @@ import { createContext, useCallback, useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/router';
 import { AuthApiService } from '@/api-services/auth-api-service';
 import { LocalStorage } from '@/storages/local-storage';
-import { AuthEvent } from '@/events/auth-event';
+import { EventMediator, EventType } from '@/events';
 
 type ContextValue = {
   isSingedIn: boolean;
@@ -29,6 +29,7 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
+  const [eventMediator] = useState(() => EventMediator.new());
   const [authApiService] = useState<AuthApiService>(() => AuthApiService.new());
   const [localStorage] = useState(() => LocalStorage.get());
   const router = useRouter();
@@ -71,10 +72,13 @@ function Provider({ children }: Props) {
       setClientRedirectPath(router.asPath);
       router.push('/auth/sign-in');
     };
-    window.addEventListener(AuthEvent.Unauthorized, unauthorizeHandler);
+
+    const unsubscribe = eventMediator.subscribe(EventType.ApiUnauthorized, () => {
+      unauthorizeHandler();
+    });
 
     return () => {
-      window.removeEventListener(AuthEvent.Unauthorized, unauthorizeHandler);
+      unsubscribe();
     };
   }, [router]);
 
