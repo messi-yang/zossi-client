@@ -5,12 +5,18 @@ import { WorldModel } from '@/models';
 type ContextValue = {
   myWorlds: WorldModel[] | null;
   getMyWorlds: () => Promise<void>;
+
+  isCreatingWorld: boolean;
+  createWorld: (name: string) => Promise<void>;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
     myWorlds: null,
     getMyWorlds: async () => {},
+
+    isCreatingWorld: false,
+    createWorld: async () => {},
   };
 }
 
@@ -30,14 +36,24 @@ function Provider({ children }: Props) {
     setMyWorlds(newMyWorlds);
   }, []);
 
+  const [isCreatingWorld, setIsCreatingWorld] = useState(false);
+  const createWorld = useCallback(async (name: string) => {
+    setIsCreatingWorld(true);
+    const newWorld = await worldApiService.createWorld(name);
+    setMyWorlds((_myWorlds) => [newWorld, ...(_myWorlds || [])]);
+    setIsCreatingWorld(false);
+  }, []);
+
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
         () => ({
           myWorlds,
           getMyWorlds,
+          isCreatingWorld,
+          createWorld,
         }),
-        [myWorlds, getMyWorlds]
+        [myWorlds, getMyWorlds, isCreatingWorld, createWorld]
       )}
     >
       {children}

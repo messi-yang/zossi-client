@@ -292,7 +292,7 @@ export function Provider({ children }: Props) {
 
   const subtractCameraDistance = useCallback(() => {
     setCameraDistance((val) => {
-      if (val >= 90) return 90;
+      if (val >= 150) return 150;
       return val + 15;
     });
   }, []);

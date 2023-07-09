@@ -28,4 +28,11 @@ export class WorldApiService {
     const { data } = await this.axios.get<WorldDto[]>('/mine');
     return data.map(convertWorldDtoToWorld);
   }
+
+  async createWorld(name: string): Promise<WorldModel> {
+    const { data } = await this.axios.post<WorldDto>('/', {
+      name,
+    });
+    return convertWorldDtoToWorld(data);
+  }
 }
