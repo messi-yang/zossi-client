@@ -75,8 +75,8 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       newGrid.add(new THREE.Line(geometry, material));
     }
-    newGrid.position.set(0, 0, 0);
-    // scene.add(newGrid);
+    newGrid.position.set(0, 0.1, 0);
+    scene.add(newGrid);
     return newGrid;
   });
   const [dirLight] = useState<THREE.DirectionalLight>(() => {
