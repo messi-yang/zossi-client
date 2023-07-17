@@ -5,9 +5,9 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { ItemModel, UnitModel, PlayerModel, WorldModel } from '@/models';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
-import { ThreeJsContext } from '@/contexts/three-js-context';
+import { TjsContext } from '@/contexts/tjs-context';
 import { rangeMatrix } from '@/libs/common';
-import use3dObjectPool from './use3dObjectPool';
+import { useTjsObjectPool } from './use-tjs-object-pool';
 import { dataTestids } from './data-test-ids';
 
 type InstancedMeshInfo = {
@@ -102,21 +102,8 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
     newRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
     return newRenderer;
   });
-  const { loadModel, createObject, loadFont, getFont } = useContext(ThreeJsContext);
-  const player3dObjectPool = use3dObjectPool(scene);
-
-  useEffect(
-    function loadModelsOnItemsChange() {
-      items.forEach((item) => loadModel(item.getModelSrc()));
-      loadModel(CHARACTER_MODEL_SRC);
-      loadModel(BASE_MODEL_SRC);
-    },
-    [items]
-  );
-
-  useEffect(function loadFontOnInit() {
-    loadFont(FONT_SRC);
-  }, []);
+  const { downloadTjsModel, downloadTjsFont } = useContext(TjsContext);
+  const player3dObjectPool = useTjsObjectPool(scene);
 
   useEffect(
     function putRendererOnWrapperRefReady() {
@@ -172,7 +159,7 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
 
   useEffect(
     function updateBaseOnWorldBoundUpdate() {
-      const baseObject = createObject(BASE_MODEL_SRC);
+      const baseObject = downloadTjsModel(BASE_MODEL_SRC);
       if (!baseObject) return () => {};
 
       const boundOffsetX = worldBound.getFrom().getX();
@@ -223,18 +210,18 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
         });
       };
     },
-    [scene, createObject, worldBound]
+    [scene, downloadTjsModel, worldBound]
   );
 
   useEffect(
     function updatePlayers() {
       const playerNameMeshes: THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial>[] = [];
-      const font = getFont(FONT_SRC);
+      const font = downloadTjsFont(FONT_SRC);
       const allPlayers = [...otherPlayers, myPlayer];
       allPlayers.forEach((player) => {
         let playerObject = player3dObjectPool.getObjectFromScene(player.getId());
         if (!playerObject) {
-          playerObject = createObject(CHARACTER_MODEL_SRC);
+          playerObject = downloadTjsModel(CHARACTER_MODEL_SRC);
           if (!playerObject) return;
 
           player3dObjectPool.addObjectToScene(player.getId(), playerObject);
@@ -268,7 +255,7 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
         });
       };
     },
-    [scene, createObject, getFont, myPlayer, otherPlayers]
+    [scene, downloadTjsModel, downloadTjsFont, myPlayer, otherPlayers]
   );
 
   useEffect(
@@ -287,7 +274,7 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
         const item = items.find((_item) => _item.getId() === itemId);
         if (!item) return;
 
-        const itemObj = createObject(item.getModelSrc());
+        const itemObj = downloadTjsModel(item.getModelSrc());
         if (!itemObj) return;
 
         const itemObjMeshes: THREE.Mesh[] = [];
@@ -343,7 +330,7 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
         });
       };
     },
-    [scene, createObject, items, units]
+    [scene, downloadTjsModel, items, units]
   );
 
   useEffect(

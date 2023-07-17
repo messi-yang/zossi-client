@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 type CachedObjectMap = Record<string, THREE.Group | undefined>;
 
-export default function use3dObjectPool(scene: THREE.Scene) {
+export function useTjsObjectPool(scene: THREE.Scene) {
   const cachedObjectMap = useRef<CachedObjectMap>({});
 
   const getObjectFromScene = useCallback((key: string): THREE.Group | null => cachedObjectMap.current[key] || null, []);
