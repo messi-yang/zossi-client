@@ -7,7 +7,7 @@ import { useKeyPress } from '@/hooks/use-key-press';
 import { WorldJourneyContext } from '@/contexts/world-journey-context';
 import { DirectionModel, ItemModel } from '@/models';
 import { WorldCanvas } from '@/components/canvas/world-canvas';
-import { ConfirmModal } from '@/components/modals/confirm-modal';
+import { MessageModal } from '@/components/modals/message-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
 import { Text } from '@/components/texts/text';
 
@@ -119,7 +119,7 @@ const Page: NextPage = function Page() {
 
   return (
     <main className="relative w-full h-screen">
-      <ConfirmModal
+      <MessageModal
         opened={isReconnectModalVisible}
         message="You're disconnected to the world."
         buttonCopy="Reconnect"

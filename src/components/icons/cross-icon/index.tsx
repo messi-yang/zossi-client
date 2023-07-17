@@ -1,15 +1,15 @@
 import { dataTestids } from './data-test-ids';
 
 type Props = {
+  width?: number;
   highlighted: boolean;
 };
 
-export function CrossIcon({ highlighted }: Props) {
+export function CrossIcon({ width = 32, highlighted }: Props) {
   return (
     <svg
       data-testid={dataTestids.root}
-      width="32"
-      height="32"
+      width={width}
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

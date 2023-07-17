@@ -2,12 +2,19 @@ import { createContext, useCallback, useState, useMemo } from 'react';
 import { WorldApiService } from '@/api-services/world-api-service';
 import { WorldModel } from '@/models';
 
+type StatusMap = {
+  [worldId: string]: boolean | undefined;
+};
+
 type ContextValue = {
   myWorlds: WorldModel[] | null;
   getMyWorlds: () => Promise<void>;
 
   isCreatingWorld: boolean;
   createWorld: (name: string) => Promise<void>;
+
+  deleteWorldStatusMap: StatusMap;
+  deleteWorld: (worldId: string) => Promise<void>;
 };
 
 function createInitialContextValue(): ContextValue {
@@ -17,6 +24,9 @@ function createInitialContextValue(): ContextValue {
 
     isCreatingWorld: false,
     createWorld: async () => {},
+
+    deleteWorldStatusMap: {},
+    deleteWorld: async () => {},
   };
 }
 
@@ -34,15 +44,48 @@ function Provider({ children }: Props) {
   const getMyWorlds = useCallback(async () => {
     const newMyWorlds = await worldApiService.getMyWorlds();
     setMyWorlds(newMyWorlds);
-  }, []);
+  }, [worldApiService]);
 
   const [isCreatingWorld, setIsCreatingWorld] = useState(false);
-  const createWorld = useCallback(async (name: string) => {
-    setIsCreatingWorld(true);
-    const newWorld = await worldApiService.createWorld(name);
-    setMyWorlds((_myWorlds) => [newWorld, ...(_myWorlds || [])]);
-    setIsCreatingWorld(false);
-  }, []);
+  const createWorld = useCallback(
+    async (name: string) => {
+      setIsCreatingWorld(true);
+      try {
+        const newWorld = await worldApiService.createWorld(name);
+        setMyWorlds((_myWorlds) => [newWorld, ...(_myWorlds || [])]);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsCreatingWorld(false);
+      }
+    },
+    [worldApiService]
+  );
+
+  const [deleteWorldStatusMap, setDeleteWorldStatusMap] = useState<StatusMap>({});
+  const deleteWorld = useCallback(
+    async (worldId: string) => {
+      setDeleteWorldStatusMap((prev) => {
+        prev[worldId] = true;
+        return prev;
+      });
+      try {
+        await worldApiService.deleteWorld(worldId);
+        setMyWorlds((prev) => {
+          if (!prev) return null;
+          return prev.filter((world) => world.getId() !== worldId);
+        });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setDeleteWorldStatusMap((prev) => {
+          delete prev[worldId];
+          return prev;
+        });
+      }
+    },
+    [worldApiService]
+  );
 
   return (
     <Context.Provider
@@ -52,8 +95,10 @@ function Provider({ children }: Props) {
           getMyWorlds,
           isCreatingWorld,
           createWorld,
+          deleteWorldStatusMap,
+          deleteWorld,
         }),
-        [myWorlds, getMyWorlds, isCreatingWorld, createWorld]
+        [myWorlds, getMyWorlds, isCreatingWorld, createWorld, deleteWorldStatusMap, deleteWorld]
       )}
     >
       {children}

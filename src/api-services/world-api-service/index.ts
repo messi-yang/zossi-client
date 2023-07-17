@@ -35,4 +35,8 @@ export class WorldApiService {
     });
     return convertWorldDtoToWorld(data);
   }
+
+  async deleteWorld(worldId: string): Promise<void> {
+    await this.axios.delete(`/${worldId}`);
+  }
 }

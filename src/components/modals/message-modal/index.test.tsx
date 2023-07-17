@@ -1,15 +1,15 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import { dataTestids } from './data-test-ids';
-import { ConfirmModal } from '.';
+import { MessageModal } from '.';
 
-function renderConfirmModal(): RenderResult {
-  return render(<ConfirmModal opened message="Hello~~" onComfirm={() => {}} onCancel={() => {}} />);
+function renderMessageModal(): RenderResult {
+  return render(<MessageModal opened message="Hello~~" buttonCopy="Confirm" onComfirm={() => {}} />);
 }
 
-describe('ConfirmModal', () => {
+describe('MessageModal', () => {
   it('Should render component successfully.', () => {
     try {
-      renderConfirmModal();
+      renderMessageModal();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

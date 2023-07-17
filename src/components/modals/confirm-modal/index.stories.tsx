@@ -17,5 +17,4 @@ export const Primary = Template.bind({});
 Primary.args = {
   opened: true,
   message: 'Hello~~',
-  buttonCopy: 'Confirm',
 };

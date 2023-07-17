@@ -6,11 +6,11 @@ import { dataTestids } from './data-test-ids';
 type Props = {
   opened: boolean;
   message: string;
+  buttonCopy: string;
   onComfirm?: () => void;
-  onCancel?: () => void;
 };
 
-export function ConfirmModal({ opened, message, onComfirm = () => {}, onCancel = () => {} }: Props) {
+export function MessageModal({ opened, message, buttonCopy, onComfirm = () => {} }: Props) {
   return (
     <BaseModal width={300} opened={opened}>
       <section
@@ -20,11 +20,8 @@ export function ConfirmModal({ opened, message, onComfirm = () => {}, onCancel =
         <Text color="text-white" size="text-lg">
           {message}
         </Text>
-        <section className="mt-9 flex flex-row justify-center items-center">
-          <Button text="Confirm" onClick={onComfirm} />
-          <div className="ml-4">
-            <Button text="Cancel" onClick={onCancel} />
-          </div>
+        <section className="mt-9 flex justify-center">
+          <Button text={buttonCopy} onClick={onComfirm} />
         </section>
       </section>
     </BaseModal>
