@@ -95,15 +95,15 @@ const Page: NextPage = function Page() {
     [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, move]
   );
 
-  const goToLandingPage = () => {
-    router.push('/');
+  const goToDashboardWorldsPage = () => {
+    router.push('/dashboard/worlds');
   };
   const handleLogoClick = () => {
-    goToLandingPage();
+    goToDashboardWorldsPage();
   };
   const handleLogoKeyDown: KeyboardEventHandler<HTMLElement> = (evt) => {
     if (evt.code === 'Enter') {
-      goToLandingPage();
+      goToDashboardWorldsPage();
     }
   };
 

@@ -8,9 +8,11 @@ import { Button } from '@/components/buttons/button';
 import { DashboardLayout } from '@/layouts/dashboard-layout';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { WorldModel } from '@/models';
+import { CreateWorldModal } from '@/components/modals/create-world-modal';
 
 const Page: NextPage = function Page() {
   const [isConfirmingWorldDeletion, setIsConfirmingWorldDeletion] = useState(false);
+  const [isCreateWorldModalOpened, setIsCreateWorldModalOpened] = useState(false);
   const [worldToDelete, setWorldToDelete] = useState<WorldModel | null>(null);
 
   const { myWorlds, getMyWorlds, isCreatingWorld, createWorld, deleteWorldStatusMap, deleteWorld } =
@@ -21,8 +23,20 @@ const Page: NextPage = function Page() {
   }, []);
 
   const handleCreateNewWorldClick = useCallback(() => {
-    createWorld('New world');
-  }, [createWorld]);
+    setIsCreateWorldModalOpened(true);
+  }, []);
+
+  const handleCreateWorldConfirm = useCallback(
+    (worldName: string) => {
+      createWorld(worldName);
+      setIsCreateWorldModalOpened(false);
+    },
+    [createWorld]
+  );
+
+  const handleCreateWorldCancel = useCallback(() => {
+    setIsCreateWorldModalOpened(false);
+  }, []);
 
   const handleDeleteWorldClick = useCallback((world: WorldModel) => {
     setIsConfirmingWorldDeletion(true);
@@ -48,6 +62,11 @@ const Page: NextPage = function Page() {
           message={`Are you sure you want to delete world "${worldToDelete?.getName()}?"`}
           onComfirm={handleDeleteWorldConfirm}
           onCancel={handleDeleteWorldCancel}
+        />
+        <CreateWorldModal
+          opened={isCreateWorldModalOpened}
+          onConfirm={handleCreateWorldConfirm}
+          onCancel={handleCreateWorldCancel}
         />
         <div className="flex justify-end">
           <Button text={isCreatingWorld ? 'Creating...' : 'Create New World'} onClick={handleCreateNewWorldClick} />
