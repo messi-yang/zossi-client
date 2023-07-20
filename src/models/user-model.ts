@@ -8,6 +8,10 @@ export class UserModel {
 
   static newMockupUser = (): UserModel => new UserModel(uuidv4(), 'example@gmail.com', 'my_username');
 
+  public clone(): UserModel {
+    return new UserModel(this.id, this.emailAddress, this.username);
+  }
+
   public getId(): string {
     return this.id;
   }
@@ -18,6 +22,10 @@ export class UserModel {
 
   public getUsername(): string {
     return this.username;
+  }
+
+  public setUsername(newUsername: string): void {
+    this.username = newUsername;
   }
 
   public getInitials(): string {

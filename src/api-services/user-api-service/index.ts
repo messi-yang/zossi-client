@@ -17,4 +17,9 @@ export class UserApiService {
     const { data } = await this.axios.get<UserDto>('/me');
     return convertUserDtoToUser(data);
   }
+
+  async updateMyUser(username: string) {
+    const { data } = await this.axios.patch<UserDto>('/me', { username });
+    return convertUserDtoToUser(data);
+  }
 }

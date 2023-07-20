@@ -6,12 +6,16 @@ import { LocalStorage } from '@/storages/local-storage';
 type ContextValue = {
   user: UserModel | null;
   getMyUser: () => void;
+  updateMyUser: (username: string) => void;
+  isUpdatingMyUser: boolean;
 };
 
 function createInitialContextValue(): ContextValue {
   return {
     user: null,
     getMyUser: () => {},
+    updateMyUser: () => {},
+    isUpdatingMyUser: false,
   };
 }
 
@@ -23,13 +27,30 @@ type Props = {
 
 function Provider({ children }: Props) {
   const [userApiService] = useState<UserApiService>(() => UserApiService.new());
-  const [user, setUer] = useState<UserModel | null>(null);
+  const [user, setUser] = useState<UserModel | null>(null);
+  const [isUpdatingMyUser, setIsUpdatingMyUser] = useState(false);
   const [localStorage] = useState(() => LocalStorage.get());
 
   const getMyUser = useCallback(async () => {
     const returnedUser = await userApiService.getMyUser();
-    setUer(returnedUser);
+    setUser(returnedUser);
   }, []);
+
+  const updateMyUser = useCallback(
+    async (username: string) => {
+      if (isUpdatingMyUser) return;
+
+      try {
+        setIsUpdatingMyUser(true);
+
+        const updatedUser = await userApiService.updateMyUser(username);
+        setUser(updatedUser);
+      } finally {
+        setIsUpdatingMyUser(false);
+      }
+    },
+    [isUpdatingMyUser]
+  );
 
   useEffect(() => {
     const accessToken = localStorage.getAccessToken();
@@ -45,8 +66,10 @@ function Provider({ children }: Props) {
         () => ({
           user,
           getMyUser,
+          updateMyUser,
+          isUpdatingMyUser,
         }),
-        [user, getMyUser]
+        [user, getMyUser, updateMyUser, isUpdatingMyUser]
       )}
     >
       {children}

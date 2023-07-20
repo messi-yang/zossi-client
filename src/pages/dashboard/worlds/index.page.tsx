@@ -69,7 +69,7 @@ const Page: NextPage = function Page() {
           onCancel={handleCreateWorldCancel}
         />
         <div className="flex justify-end">
-          <Button text={isCreatingWorld ? 'Creating...' : 'Create New World'} onClick={handleCreateNewWorldClick} />
+          <Button text="New World" loading={isCreatingWorld} onClick={handleCreateNewWorldClick} />
         </div>
         <div className="relative mt-8 w-full flex flex-col">
           {myWorlds?.map((world) => {

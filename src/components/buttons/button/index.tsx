@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import classnames from 'classnames';
 import { Text } from '@/components/texts/text';
 import { dataTestids } from './data-test-ids';
@@ -7,10 +7,11 @@ type Props = {
   text: string;
   fullWidth?: boolean;
   rightChild?: JSX.Element;
+  loading?: boolean;
   onClick?: () => any;
 };
 
-export function Button({ text, fullWidth = false, onClick = () => {}, rightChild }: Props) {
+export function Button({ text, fullWidth = false, rightChild, loading = false, onClick = () => {} }: Props) {
   const [highlighted, setHighlighted] = useState(false);
 
   const handleMouseEnter = () => {
@@ -29,6 +30,11 @@ export function Button({ text, fullWidth = false, onClick = () => {}, rightChild
     setHighlighted(false);
   };
 
+  const handleClick = useCallback(() => {
+    if (loading) return;
+    onClick();
+  }, [onClick]);
+
   return (
     <button
       data-testid={dataTestids.root}
@@ -42,7 +48,7 @@ export function Button({ text, fullWidth = false, onClick = () => {}, rightChild
         fullWidth ? 'w-full' : undefined,
         'px-5'
       )}
-      onClick={onClick}
+      onClick={handleClick}
       onFocus={handleFocus}
       onBlur={handleBlure}
       onMouseEnter={handleMouseEnter}
@@ -83,7 +89,7 @@ export function Button({ text, fullWidth = false, onClick = () => {}, rightChild
       />
       <div className={classnames('relative', 'z-10', 'w-full', 'h-full', 'flex', 'justify-center', 'items-center')}>
         <Text color="text-white" size="text-lg">
-          {text}
+          {loading ? 'Processing...' : text}
         </Text>
         {rightChild && <div className="ml-2">{rightChild}</div>}
       </div>

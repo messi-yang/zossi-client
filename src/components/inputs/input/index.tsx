@@ -5,10 +5,10 @@ import { dataTestids } from './data-test-ids';
 type Props = {
   value: string;
   placeholder?: string;
-  onInput: (newValue: string) => void;
+  onInput?: (newValue: string) => void;
 };
 
-export function Input({ value, placeholder = '', onInput }: Props) {
+export function Input({ value, placeholder = '', onInput = () => {} }: Props) {
   const handleInput: FormEventHandler<HTMLInputElement> = useCallback((e) => {
     // @ts-ignore
     const newValue = e.target.value as string;

@@ -4,6 +4,7 @@ import { BaseModal } from '@/components/modals/base-modal';
 import { Button } from '@/components/buttons/button';
 import { Input } from '@/components/inputs/input';
 import { dataTestids } from './data-test-ids';
+import { Field } from '@/components/fields/field';
 
 type Props = {
   opened: boolean;
@@ -26,7 +27,7 @@ export function CreateWorldModal({ opened, onConfirm = () => {}, onCancel = () =
   }, []);
 
   return (
-    <BaseModal width={300} opened={opened}>
+    <BaseModal width={400} opened={opened}>
       <section
         data-testid={dataTestids.root}
         className="relative p-6 w-full h-full flex flex-col items-center border-4 border-solid border-white bg-[#121212]"
@@ -34,10 +35,12 @@ export function CreateWorldModal({ opened, onConfirm = () => {}, onCancel = () =
         <Text color="text-white" size="text-lg">
           Create new world
         </Text>
-        <div className="mt-5">
-          <Input value={worldName} onInput={setWorldName} placeholder="Enter world name" />
+        <div className="mt-5 w-full">
+          <Field label="Name">
+            <Input value={worldName} onInput={setWorldName} placeholder="Enter world name" />
+          </Field>
         </div>
-        <section className="mt-9 flex flex-row justify-center items-center">
+        <section className="mt-9 w-full flex flex-row justify-end items-center">
           <Button text="Create" onClick={handleCreateClick} />
           <div className="ml-4">
             <Button text="Cancel" onClick={handleCancelClick} />
