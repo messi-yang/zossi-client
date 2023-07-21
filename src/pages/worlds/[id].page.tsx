@@ -1,4 +1,4 @@
-import { useContext, useEffect, useCallback, useRef, KeyboardEventHandler } from 'react';
+import { useEffect, useCallback, useRef, KeyboardEventHandler, useContext } from 'react';
 import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -10,10 +10,24 @@ import { WorldCanvas } from '@/components/canvas/world-canvas';
 import { MessageModal } from '@/components/modals/message-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
 import { Text } from '@/components/texts/text';
+import { AuthContext } from '@/contexts/auth-context';
+import { WorldMembersContext } from '@/contexts/world-members-context';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
   const worldId = router.query.id as string | null;
+
+  const { isSingedIn } = useContext(AuthContext);
+  const { worldMembers, getWorldMembers } = useContext(WorldMembersContext);
+  useEffect(() => {
+    if (!isSingedIn || !worldId) return;
+
+    getWorldMembers(worldId);
+  }, [isSingedIn, worldId, getWorldMembers]);
+  useEffect(() => {
+    console.log(worldMembers);
+  }, [worldMembers]);
+
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
     units,

@@ -14,8 +14,23 @@ import { convertPlayerDtoPlayer } from './player-dto';
 import type { PlayerDto } from './player-dto';
 import { convertWorldDtoToWorld } from './world-dto';
 import type { WorldDto } from './world-dto';
+import { convertWorldRoleDtoToWorldRole } from './world-role-dto';
+import type { WorldRoleDto } from './world-role-dto';
+import { convertWorldMemberDtoToWorldMember } from './world-member-dto';
+import type { WorldMemberDto } from './world-member-dto';
 
-export type { UserDto, BoundDto, PositionDto, SizeDto, UnitDto, ItemDto, PlayerDto, WorldDto };
+export type {
+  UserDto,
+  BoundDto,
+  PositionDto,
+  SizeDto,
+  UnitDto,
+  ItemDto,
+  PlayerDto,
+  WorldDto,
+  WorldRoleDto,
+  WorldMemberDto,
+};
 
 export {
   convertUserDtoToUser,
@@ -26,4 +41,6 @@ export {
   convertItemDtoToItem,
   convertPlayerDtoPlayer,
   convertWorldDtoToWorld,
+  convertWorldRoleDtoToWorldRole,
+  convertWorldMemberDtoToWorldMember,
 };

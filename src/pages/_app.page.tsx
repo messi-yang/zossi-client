@@ -5,6 +5,7 @@ import { AuthProvider } from '@/contexts/auth-context';
 import { WorldJourneyProvider } from '@/contexts/world-journey-context';
 import { MyWorldsProvider } from '@/contexts/my-worlds-context';
 import { TjsProvider } from '@/contexts/tjs-context';
+import { WorldMembersProvider } from '@/contexts/world-members-context';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -13,7 +14,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <TjsProvider>
           <WorldJourneyProvider>
             <MyWorldsProvider>
-              <Component {...pageProps} />
+              <WorldMembersProvider>
+                <Component {...pageProps} />
+              </WorldMembersProvider>
             </MyWorldsProvider>
           </WorldJourneyProvider>
         </TjsProvider>
