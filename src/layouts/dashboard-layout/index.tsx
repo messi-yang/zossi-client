@@ -37,7 +37,9 @@ export function DashboardLayout({ children }: Props) {
           <Button text="Logout" onClick={handleLogoutClick} />
         </div>
       </div>
-      <div className="grow h-full">{children}</div>
+      <div className="grow h-full bg-[#1E1E1E] px-6 py-10">
+        <div className="mx-auto max-w-5xl">{children}</div>
+      </div>
     </div>
   );
 }

@@ -50,7 +50,7 @@ const Page: NextPage = function Page() {
 
   return (
     <DashboardLayout>
-      <main className="relative w-full h-full p-10 flex justify-center bg-[#1E1E1E]">
+      <main className="relative flex">
         <div className="w-full max-w-4xl flex flex-col">
           <Text size="text-xl">Account Information</Text>
           <div className="mt-5">

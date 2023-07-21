@@ -56,7 +56,7 @@ const Page: NextPage = function Page() {
 
   return (
     <DashboardLayout>
-      <main className="min-h-screen bg-[#1E1E1E] p-10">
+      <main>
         <ConfirmModal
           opened={isConfirmingWorldDeletion}
           message={`Are you sure you want to delete world "${worldToDelete?.getName()}?"`}
