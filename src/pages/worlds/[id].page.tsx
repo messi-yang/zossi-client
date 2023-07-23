@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef, KeyboardEventHandler, useContext } from 'react';
+import { useEffect, useCallback, useRef, KeyboardEventHandler, useContext, useState } from 'react';
 import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -12,10 +12,20 @@ import { SelectItemsBar } from '@/components/bars/select-items-bar';
 import { Text } from '@/components/texts/text';
 import { AuthContext } from '@/contexts/auth-context';
 import { WorldMembersContext } from '@/contexts/world-members-context';
+import { Button } from '@/components/buttons/button';
+import { ShareWorldModal } from '@/components/modals/share-world-modal';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
   const worldId = router.query.id as string | null;
+
+  const [isShareWorldModalVisible, setIsShareWorldModalVisible] = useState(false);
+  const handleShareClick = useCallback(() => {
+    setIsShareWorldModalVisible(true);
+  }, []);
+  const handleShareWorldModalClose = useCallback(() => {
+    setIsShareWorldModalVisible(false);
+  }, []);
 
   const { isSingedIn } = useContext(AuthContext);
   const { worldMembers, getWorldMembers } = useContext(WorldMembersContext);
@@ -139,10 +149,21 @@ const Page: NextPage = function Page() {
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
       />
-      <div className="absolute top-2 right-3 z-10 flex">
-        <Text size="text-xl" color="text-white">
-          {myPlayer?.getPositionText() || null}
-        </Text>
+      {world && worldMembers && (
+        <ShareWorldModal
+          opened={isShareWorldModalVisible}
+          world={world}
+          worldMembes={worldMembers}
+          onClose={handleShareWorldModalClose}
+        />
+      )}
+      <div className="absolute top-2 right-3 z-10 flex items-center">
+        <Button text="Share" onClick={handleShareClick} />
+        <div className="ml-3 w-24 flex justify-center">
+          <Text size="text-xl" color="text-white">
+            {myPlayer?.getPositionText() || null}
+          </Text>
+        </div>
       </div>
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
         <SelectItemsBar items={items} selectedItemId={heldItemId} onSelect={handleItemSelect} />

@@ -8,13 +8,14 @@ type BaseModalProps = {
   opened: boolean;
   children: JSX.Element;
   onBackgroundClick?: () => void;
+  onCrossClick?: () => void;
 };
 
-export function BaseModal({ opened, width, height, children, onBackgroundClick }: BaseModalProps) {
+export function BaseModal({ opened, width, height, children, onBackgroundClick, onCrossClick }: BaseModalProps) {
   return (
     <Wrapper visible={opened}>
       <Background onClick={onBackgroundClick} />
-      <Modal width={width} height={height}>
+      <Modal width={width} height={height} onCrossClick={onCrossClick}>
         {children}
       </Modal>
     </Wrapper>

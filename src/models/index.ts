@@ -3,6 +3,8 @@ export { ItemModel } from './item-model';
 export { UnitModel } from './unit-model';
 export { PlayerModel } from './player-model';
 export { WorldModel } from './world-model';
+export { WorldRoleModel } from './world-role-model';
+export { WorldMemberModel } from './world-member-model';
 export { PositionModel } from './position-model';
 export { BoundModel } from './bound-model';
 export { SizeModel } from './size-model';
