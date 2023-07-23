@@ -1,18 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
 import { BoundModel } from './bound-model';
 import { PositionModel } from './position-model';
+import { UserModel } from './user-model';
 
 export class WorldModel {
-  constructor(private id: string, private name: string, private userId: string, private bound: BoundModel) {}
+  constructor(private id: string, private name: string, private user: UserModel, private bound: BoundModel) {}
 
-  static new = (id: string, name: string, userId: string, bound: BoundModel): WorldModel =>
-    new WorldModel(id, name, userId, bound);
+  static new = (id: string, name: string, user: UserModel, bound: BoundModel): WorldModel =>
+    new WorldModel(id, name, user, bound);
 
   static newMockupWorld = (): WorldModel =>
     new WorldModel(
       uuidv4(),
       'Hello World',
-      uuidv4(),
+      UserModel.newMockupUser(),
       BoundModel.new(PositionModel.new(-10, -10), PositionModel.new(10, 10))
     );
 
@@ -24,8 +25,8 @@ export class WorldModel {
     return this.name;
   }
 
-  public getUserId(): string {
-    return this.userId;
+  public getUser(): UserModel {
+    return this.user;
   }
 
   public getBound(): BoundModel {
