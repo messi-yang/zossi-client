@@ -4,11 +4,12 @@ import { dataTestids } from './data-test-ids';
 
 type Props = {
   value: string;
+  disabled?: boolean;
   placeholder?: string;
   onInput?: (newValue: string) => void;
 };
 
-export function Input({ value, placeholder = '', onInput = () => {} }: Props) {
+export function Input({ value, disabled = false, placeholder = '', onInput = () => {} }: Props) {
   const handleInput: FormEventHandler<HTMLInputElement> = useCallback((e) => {
     // @ts-ignore
     const newValue = e.target.value as string;
@@ -32,6 +33,7 @@ export function Input({ value, placeholder = '', onInput = () => {} }: Props) {
         'p-2.5'
       )}
       value={value}
+      disabled={disabled}
       placeholder={placeholder}
       onInput={handleInput}
     />

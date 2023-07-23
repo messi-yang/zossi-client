@@ -149,7 +149,7 @@ const Page: NextPage = function Page() {
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
       />
-      {world && worldMembers && (
+      {world && (
         <ShareWorldModal
           opened={isShareWorldModalVisible}
           world={world}
