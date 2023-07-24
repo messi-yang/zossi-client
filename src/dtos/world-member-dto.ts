@@ -1,5 +1,5 @@
-import { UserDto, convertUserDtoToUser } from './user-dto';
-import { WorldRoleDto, convertWorldRoleDtoToWorldRole } from './world-role-dto';
+import { UserDto, parseUserDto } from './user-dto';
+import { WorldRoleDto, parseWorldRoleDto } from './world-role-dto';
 import { WorldMemberModel } from '@/models/world-member-model';
 
 type WorldMemberDto = {
@@ -9,14 +9,9 @@ type WorldMemberDto = {
   role: WorldRoleDto;
 };
 
-function convertWorldMemberDtoToWorldMember(dto: WorldMemberDto): WorldMemberModel {
-  return WorldMemberModel.new(
-    dto.id,
-    dto.worldId,
-    convertUserDtoToUser(dto.user),
-    convertWorldRoleDtoToWorldRole(dto.role)
-  );
+function parseWorldMemberDto(dto: WorldMemberDto): WorldMemberModel {
+  return WorldMemberModel.new(dto.id, dto.worldId, parseUserDto(dto.user), parseWorldRoleDto(dto.role));
 }
 
 export type { WorldMemberDto };
-export { convertWorldMemberDtoToWorldMember };
+export { parseWorldMemberDto };

@@ -8,9 +8,9 @@ type ItemDto = {
   modelSrc: string;
 };
 
-function convertItemDtoToItem(itemDto: ItemDto): ItemModel {
+function parseItemDto(itemDto: ItemDto): ItemModel {
   return ItemModel.new(itemDto.id, itemDto.name, itemDto.traversable, itemDto.thumbnailSrc, itemDto.modelSrc);
 }
 
 export type { ItemDto };
-export { convertItemDtoToItem };
+export { parseItemDto };

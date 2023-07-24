@@ -4,7 +4,7 @@ import { dataTestids } from './data-test-ids';
 import { SelectItemsBar } from '.';
 
 function renderSelectItemsBar(): RenderResult {
-  return render(<SelectItemsBar selectedItemId={null} items={[ItemModel.newMockupItem()]} />);
+  return render(<SelectItemsBar selectedItemId={null} items={[ItemModel.mockup()]} />);
 }
 
 describe('SelectItemsBar', () => {

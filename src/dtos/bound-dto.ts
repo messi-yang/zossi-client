@@ -6,7 +6,7 @@ type BoundDto = {
   to: PositionDto;
 };
 
-export function convertBoundDtoToBound(boundDto: BoundDto): BoundModel {
+export function parseBoundDto(boundDto: BoundDto): BoundModel {
   return BoundModel.new(
     PositionModel.new(boundDto.from.x, boundDto.from.z),
     PositionModel.new(boundDto.to.x, boundDto.to.z)

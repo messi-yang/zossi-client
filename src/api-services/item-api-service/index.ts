@@ -1,5 +1,5 @@
 import { Axios } from 'axios';
-import { ItemDto, convertItemDtoToItem } from '@/dtos';
+import { ItemDto, parseItemDto } from '@/dtos';
 import { ItemModel } from '@/models';
 import { AxiosProvider } from '@/providers/axios-provider';
 
@@ -16,6 +16,6 @@ export class ItemApiService {
 
   async getItems(): Promise<ItemModel[]> {
     const { data } = await this.axios.get<ItemDto[]>('/');
-    return data.map(convertItemDtoToItem);
+    return data.map(parseItemDto);
   }
 }

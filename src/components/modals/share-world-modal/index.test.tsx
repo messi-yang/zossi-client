@@ -7,7 +7,7 @@ function renderShareWorldModal(): RenderResult {
   return render(
     <ShareWorldModal
       opened
-      world={WorldModel.newMockupWorld()}
+      world={WorldModel.mockup()}
       worldMembes={[WorldMemberModel.mockup(), WorldMemberModel.mockup(), WorldMemberModel.mockup()]}
     />
   );

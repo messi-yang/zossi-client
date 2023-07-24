@@ -6,7 +6,7 @@ export class UserModel {
   static new = (id: string, emailAddress: string, username: string): UserModel =>
     new UserModel(id, emailAddress, username);
 
-  static newMockupUser = (): UserModel => new UserModel(uuidv4(), 'example@gmail.com', 'my_username');
+  static mockup = (): UserModel => new UserModel(uuidv4(), 'example@gmail.com', 'my_username');
 
   public clone(): UserModel {
     return new UserModel(this.id, this.emailAddress, this.username);

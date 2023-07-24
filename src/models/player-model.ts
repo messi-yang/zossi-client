@@ -21,7 +21,7 @@ export class PlayerModel {
     return new PlayerModel(id, name, position, direction, heldItemId);
   }
 
-  static newMockupPlayer(): PlayerModel {
+  static mockup(): PlayerModel {
     return PlayerModel.new(uuidv4(), 'Test Player', PositionModel.new(0, 0), DirectionModel.new(2), null);
   }
 

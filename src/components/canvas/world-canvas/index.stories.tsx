@@ -19,15 +19,10 @@ const Template: StoryFn<typeof WorldCanvas> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-const item = ItemModel.newMockupItem();
+const item = ItemModel.mockup();
 Primary.args = {
-  myPlayer: PlayerModel.newMockupPlayer(),
-  otherPlayers: [
-    PlayerModel.newMockupPlayer(),
-    PlayerModel.newMockupPlayer(),
-    PlayerModel.newMockupPlayer(),
-    PlayerModel.newMockupPlayer(),
-  ],
-  units: [UnitModel.newMockupUnit(), UnitModel.newMockupUnit(), UnitModel.newMockupUnit()],
+  myPlayer: PlayerModel.mockup(),
+  otherPlayers: [PlayerModel.mockup(), PlayerModel.mockup(), PlayerModel.mockup(), PlayerModel.mockup()],
+  units: [UnitModel.mockup(), UnitModel.mockup(), UnitModel.mockup()],
   items: [item],
 };

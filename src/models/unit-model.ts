@@ -7,7 +7,7 @@ export class UnitModel {
   static new = (itemId: string, position: PositionModel, direction: DirectionModel): UnitModel =>
     new UnitModel(itemId, position, direction);
 
-  static newMockupUnit(): UnitModel {
+  static mockup(): UnitModel {
     return new UnitModel('414b5703-91d1-42fc-a007-36dd8f25e329', PositionModel.new(0, 0), DirectionModel.newDown());
   }
 

@@ -1,22 +1,22 @@
-import { convertUserDtoToUser } from './user-dto';
+import { parseUserDto } from './user-dto';
 import type { UserDto } from './user-dto';
-import { convertBoundDtoToBound } from './bound-dto';
+import { parseBoundDto } from './bound-dto';
 import type { BoundDto } from './bound-dto';
 import { newPositionDto } from './position-dto';
 import type { PositionDto } from './position-dto';
-import { convertSizeDtoToSize } from './size-dto';
+import { parseSizeDto } from './size-dto';
 import type { SizeDto } from './size-dto';
-import { convertUnitDtoToUnit } from './unit-dto';
+import { parseUnitDto } from './unit-dto';
 import type { UnitDto } from './unit-dto';
-import { convertItemDtoToItem } from './item-dto';
+import { parseItemDto } from './item-dto';
 import type { ItemDto } from './item-dto';
-import { convertPlayerDtoPlayer } from './player-dto';
+import { parsePlayerDto } from './player-dto';
 import type { PlayerDto } from './player-dto';
-import { convertWorldDtoToWorld } from './world-dto';
+import { parseWorldDto } from './world-dto';
 import type { WorldDto } from './world-dto';
-import { convertWorldRoleDtoToWorldRole } from './world-role-dto';
+import { parseWorldRoleDto } from './world-role-dto';
 import type { WorldRoleDto } from './world-role-dto';
-import { convertWorldMemberDtoToWorldMember } from './world-member-dto';
+import { parseWorldMemberDto } from './world-member-dto';
 import type { WorldMemberDto } from './world-member-dto';
 
 export type {
@@ -33,14 +33,14 @@ export type {
 };
 
 export {
-  convertUserDtoToUser,
-  convertBoundDtoToBound,
+  parseUserDto,
+  parseBoundDto,
   newPositionDto,
-  convertSizeDtoToSize,
-  convertUnitDtoToUnit,
-  convertItemDtoToItem,
-  convertPlayerDtoPlayer,
-  convertWorldDtoToWorld,
-  convertWorldRoleDtoToWorldRole,
-  convertWorldMemberDtoToWorldMember,
+  parseSizeDto,
+  parseUnitDto,
+  parseItemDto,
+  parsePlayerDto,
+  parseWorldDto,
+  parseWorldRoleDto,
+  parseWorldMemberDto,
 };

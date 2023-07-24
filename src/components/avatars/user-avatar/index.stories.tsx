@@ -16,5 +16,5 @@ const Template: StoryFn<typeof UserAvatar> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  user: UserModel.newMockupUser(),
+  user: UserModel.mockup(),
 };

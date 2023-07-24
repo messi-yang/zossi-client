@@ -4,7 +4,7 @@ import { dataTestids } from './data-test-ids';
 import { UserAvatar } from '.';
 
 function renderUserAvatar(): RenderResult {
-  return render(<UserAvatar user={UserModel.newMockupUser()} />);
+  return render(<UserAvatar user={UserModel.mockup()} />);
 }
 
 describe('UserAvatar', () => {

@@ -9,7 +9,7 @@ type PlayerDto = {
   heldItemId: string | null;
 };
 
-function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerModel {
+function parsePlayerDto(playerDto: PlayerDto): PlayerModel {
   return PlayerModel.new(
     playerDto.id,
     playerDto.name,
@@ -20,4 +20,4 @@ function convertPlayerDtoPlayer(playerDto: PlayerDto): PlayerModel {
 }
 
 export type { PlayerDto };
-export { convertPlayerDtoPlayer };
+export { parsePlayerDto };

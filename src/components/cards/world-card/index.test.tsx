@@ -4,7 +4,7 @@ import { dataTestids } from './data-test-ids';
 import { WorldCard } from '.';
 
 function renderWorldCard(): RenderResult {
-  return render(<WorldCard world={WorldModel.newMockupWorld()} />);
+  return render(<WorldCard world={WorldModel.mockup()} />);
 }
 
 describe('WorldCard', () => {

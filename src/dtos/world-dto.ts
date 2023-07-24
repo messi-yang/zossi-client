@@ -1,6 +1,6 @@
 import { WorldModel } from '@/models';
-import { BoundDto, convertBoundDtoToBound } from './bound-dto';
-import { UserDto, convertUserDtoToUser } from './user-dto';
+import { BoundDto, parseBoundDto } from './bound-dto';
+import { UserDto, parseUserDto } from './user-dto';
 
 type WorldDto = {
   id: string;
@@ -9,9 +9,9 @@ type WorldDto = {
   bound: BoundDto;
 };
 
-function convertWorldDtoToWorld(dto: WorldDto): WorldModel {
-  return WorldModel.new(dto.id, dto.name, convertUserDtoToUser(dto.user), convertBoundDtoToBound(dto.bound));
+function parseWorldDto(dto: WorldDto): WorldModel {
+  return WorldModel.new(dto.id, dto.name, parseUserDto(dto.user), parseBoundDto(dto.bound));
 }
 
 export type { WorldDto };
-export { convertWorldDtoToWorld };
+export { parseWorldDto };

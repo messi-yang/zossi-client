@@ -5,9 +5,9 @@ type SizeDto = {
   height: number;
 };
 
-function convertSizeDtoToSize(sizeDto: SizeDto): SizeModel {
+function parseSizeDto(sizeDto: SizeDto): SizeModel {
   return SizeModel.new(sizeDto.width, sizeDto.height);
 }
 
 export type { SizeDto };
-export { convertSizeDtoToSize };
+export { parseSizeDto };

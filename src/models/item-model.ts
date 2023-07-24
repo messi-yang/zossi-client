@@ -12,7 +12,7 @@ export class ItemModel {
   static new = (id: string, name: string, traversable: boolean, thumbnailSrc: string, modelSrc: string) =>
     new ItemModel(id, name, traversable, thumbnailSrc, modelSrc);
 
-  static newMockupItem(): ItemModel {
+  static mockup(): ItemModel {
     return ItemModel.new(uuidv4(), 'stone', true, '/placeholder-item.png', 'characters/car.gltf');
   }
 

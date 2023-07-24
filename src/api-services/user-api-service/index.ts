@@ -1,6 +1,6 @@
 import { Axios } from 'axios';
 import { AxiosProvider } from '@/providers/axios-provider';
-import { UserDto, convertUserDtoToUser } from '@/dtos/user-dto';
+import { UserDto, parseUserDto } from '@/dtos/user-dto';
 
 export class UserApiService {
   private axios: Axios;
@@ -15,11 +15,11 @@ export class UserApiService {
 
   async getMyUser() {
     const { data } = await this.axios.get<UserDto>('/me');
-    return convertUserDtoToUser(data);
+    return parseUserDto(data);
   }
 
   async updateMyUser(username: string) {
     const { data } = await this.axios.patch<UserDto>('/me', { username });
-    return convertUserDtoToUser(data);
+    return parseUserDto(data);
   }
 }

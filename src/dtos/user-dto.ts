@@ -6,9 +6,9 @@ type UserDto = {
   username: string;
 };
 
-function convertUserDtoToUser(dto: UserDto): UserModel {
+function parseUserDto(dto: UserDto): UserModel {
   return UserModel.new(dto.id, dto.emailAddress, dto.username);
 }
 
 export type { UserDto };
-export { convertUserDtoToUser };
+export { parseUserDto };

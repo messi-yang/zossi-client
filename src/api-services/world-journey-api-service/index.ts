@@ -1,4 +1,4 @@
-import { convertPlayerDtoPlayer, convertUnitDtoToUnit, convertWorldDtoToWorld, newPositionDto } from '@/dtos';
+import { parsePlayerDto, parseUnitDto, parseWorldDto, newPositionDto } from '@/dtos';
 import {
   EventTypeEnum,
   WorldEnteredEvent,
@@ -15,15 +15,15 @@ import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel } fro
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
-    convertWorldDtoToWorld(event.world),
-    event.units.map(convertUnitDtoToUnit),
+    parseWorldDto(event.world),
+    event.units.map(parseUnitDto),
     event.myPlayerId,
-    event.players.map(convertPlayerDtoPlayer),
+    event.players.map(parsePlayerDto),
   ];
 }
 
 function parseUnitCreatedEvent(event: UnitCreatedEvent): [UnitModel] {
-  return [convertUnitDtoToUnit(event.unit)];
+  return [parseUnitDto(event.unit)];
 }
 
 function parseUnitDeletedEvent(event: UnitDeletedEvent): [PositionModel] {
@@ -31,11 +31,11 @@ function parseUnitDeletedEvent(event: UnitDeletedEvent): [PositionModel] {
 }
 
 function parsePlayerJoinedEvent(event: PlayerJoinedEvent): [PlayerModel] {
-  return [convertPlayerDtoPlayer(event.player)];
+  return [parsePlayerDto(event.player)];
 }
 
 function parsePlayerMovedEvent(event: PlayerMovedEvent): [PlayerModel] {
-  return [convertPlayerDtoPlayer(event.player)];
+  return [parsePlayerDto(event.player)];
 }
 
 function parsePlayerLeftEvent(event: PlayerLeftEvent): [string] {

@@ -9,11 +9,11 @@ export class WorldModel {
   static new = (id: string, name: string, user: UserModel, bound: BoundModel): WorldModel =>
     new WorldModel(id, name, user, bound);
 
-  static newMockupWorld = (): WorldModel =>
+  static mockup = (): WorldModel =>
     new WorldModel(
       uuidv4(),
       'Hello World',
-      UserModel.newMockupUser(),
+      UserModel.mockup(),
       BoundModel.new(PositionModel.new(-10, -10), PositionModel.new(10, 10))
     );
 

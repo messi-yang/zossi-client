@@ -15,7 +15,7 @@ export class WorldMemberModel {
   }
 
   static mockup(): WorldMemberModel {
-    return new WorldMemberModel(uuidv4(), uuidv4(), UserModel.newMockupUser(), WorldRoleModel.new('admin'));
+    return new WorldMemberModel(uuidv4(), uuidv4(), UserModel.mockup(), WorldRoleModel.new('admin'));
   }
 
   public getId(): string {
