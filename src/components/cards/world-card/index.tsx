@@ -31,9 +31,12 @@ export function WorldCard({ world, deleting = false, onDeleteClick = () => {} }:
       <div className={classnames('flex', 'flex-col', 'p-5')}>
         <Text>{world.getName()}</Text>
         <div className={classnames('mt-2', 'flex', 'flex-row', 'items-center')}>
-          <UserAvatar user={world.getUser()} />
-          <div className="ml-2">
+          <UserAvatar size="small" user={world.getUser()} />
+          <div className="ml-2 grow">
             <Text>{world.getUser().getUsername()}</Text>
+          </div>
+          <div className="ml-2">
+            <Text>{world.getEditedAtCopy()}</Text>
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { dataTestids } from './data-test-ids';
 type Props = {
   children: string | JSX.Element | ReactFragment | null;
   color?: 'text-black' | 'text-white';
-  size?: 'text-base' | 'text-lg' | 'text-xl';
+  size?: 'text-base' | 'text-lg' | 'text-xl' | 'text-sm' | 'text-xs';
   weight?: 'font-normal' | 'font-bold';
 };
 

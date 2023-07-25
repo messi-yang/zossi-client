@@ -15,7 +15,7 @@ export function WorldMemberCard({ worldMember }: Props) {
       className={classnames('relative', 'w-full', 'p-2', 'flex', 'flex-row', 'items-center')}
     >
       <div className="grow flex flex-row items-center">
-        <UserAvatar user={worldMember.getUser()} />
+        <UserAvatar size="small" user={worldMember.getUser()} />
         <div className="ml-2">
           <Text>{worldMember.getUser().getUsername()}</Text>
         </div>
