@@ -191,34 +191,45 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
         [removeInstancesFromScene] = createInstancesInScene(scene, playerModel, playerInstanceStates);
       }
 
+      return () => {
+        removeInstancesFromScene?.();
+      };
+    },
+    [scene, downloadTjsModel, myPlayer, otherPlayers]
+  );
+
+  useEffect(
+    function updatePlayers() {
+      const players = [...otherPlayers, myPlayer];
+
       const font = downloadTjsFont(FONT_SRC);
       const playerNameMeshes: THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial>[] = [];
       if (font) {
         players.forEach((player) => {
           const textGeometry = new TextGeometry(myPlayer.getName(), {
             font,
-            size: 0.3,
-            height: 0.02,
+            size: 0.35,
+            height: 0.05,
           });
-          const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.3, transparent: true });
+          const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.7, transparent: true });
           const playerNameMesh = new THREE.Mesh(textGeometry, textMaterial);
 
           textGeometry.computeBoundingBox();
           textGeometry.center();
           playerNameMesh.position.set(player.getPosition().getX() + 0.5, 1.5, player.getPosition().getZ() + 0.5);
+          playerNameMesh.rotation.set(-Math.PI / 6, 0, 0);
           playerNameMeshes.push(playerNameMesh);
           scene.add(playerNameMesh);
         });
       }
 
       return () => {
-        removeInstancesFromScene?.();
         playerNameMeshes.forEach((playerNameMesh) => {
           scene.remove(playerNameMesh);
         });
       };
     },
-    [scene, downloadTjsModel, downloadTjsFont, myPlayer, otherPlayers]
+    [scene, downloadTjsFont, myPlayer, otherPlayers]
   );
 
   const itemUnitsMap = useMemo<Record<string, UnitModel[]>>(() => {
