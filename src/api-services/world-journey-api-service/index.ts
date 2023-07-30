@@ -12,6 +12,7 @@ import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type { PingCommand, MoveCommand, ChangeHeldItemCommand, CreateUnitCommand, RemoveUnitCommand } from './commands';
 import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel } from '@/models';
+import { LocalStorage } from '@/storages/local-storage';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
@@ -58,8 +59,11 @@ export class WorldJourneyApiService {
       onOpen: () => void;
     }
   ) {
-    const socketUrl = `${process.env.API_SOCKET_URL}/api/world-journey/?id=${worldId}`;
-    const socket = new WebSocket(socketUrl);
+    const localStorage = LocalStorage.get();
+    const accessToken = localStorage.getAccessToken();
+
+    const socketUrl = `${process.env.API_SOCKET_URL}/api/world-journey/?id=${worldId}&access-token=${accessToken}`;
+    const socket = new WebSocket(socketUrl, []);
 
     let pingServerInterval: NodeJS.Timer | null = null;
 
