@@ -10,7 +10,13 @@ import {
 } from './events';
 import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
-import type { PingCommand, MoveCommand, ChangeHeldItemCommand, CreateUnitCommand, RemoveUnitCommand } from './commands';
+import type {
+  PingCommand,
+  MoveCommand,
+  ChangeHeldItemCommand,
+  CreateStaticUnitCommand,
+  RemoveUnitCommand,
+} from './commands';
 import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel } from '@/models';
 import { LocalStorage } from '@/storages/local-storage';
 
@@ -166,9 +172,9 @@ export class WorldJourneyApiService {
     this.sendMessage(action);
   }
 
-  public createUnit(itemId: string, position: PositionModel, direction: DirectionModel) {
-    const action: CreateUnitCommand = {
-      type: CommandTypeEnum.CreateUnit,
+  public createStaticUnit(itemId: string, position: PositionModel, direction: DirectionModel) {
+    const action: CreateStaticUnitCommand = {
+      type: CommandTypeEnum.CreateStaticUnit,
       itemId,
       position: newPositionDto(position),
       direction: direction.toNumber(),
