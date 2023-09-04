@@ -6,14 +6,25 @@ export class ItemModel {
     private name: string,
     private traversable: boolean,
     private thumbnailSrc: string,
-    private modelSrc: string
+    private modelSrc: string,
+    private compatibleUnitType: 'static' | 'portal'
   ) {}
 
-  static new = (id: string, name: string, traversable: boolean, thumbnailSrc: string, modelSrc: string) =>
-    new ItemModel(id, name, traversable, thumbnailSrc, modelSrc);
+  static new = (
+    id: string,
+    name: string,
+    traversable: boolean,
+    thumbnailSrc: string,
+    modelSrc: string,
+    compatibleUnitType: 'static' | 'portal'
+  ) => new ItemModel(id, name, traversable, thumbnailSrc, modelSrc, compatibleUnitType);
 
   static mockup(): ItemModel {
-    return ItemModel.new(uuidv4(), 'stone', true, '/placeholder-item.png', 'characters/car.gltf');
+    return ItemModel.new(uuidv4(), 'stone', true, '/placeholder-item.png', 'characters/car.gltf', 'static');
+  }
+
+  public getCompatibleUnitType(): 'static' | 'portal' {
+    return this.compatibleUnitType;
   }
 
   public getId(): string {
