@@ -47,11 +47,13 @@ const Page: NextPage = function Page() {
     cameraDistance,
     connectionStatus,
     items,
+    playerHeldItem,
     move,
     enterWorld,
     leaveWorld,
     changeHeldItem,
     createStaticUnit,
+    createPortalUnit,
     removeUnit,
     addCameraDistance,
     subtractCameraDistance,
@@ -81,7 +83,18 @@ const Page: NextPage = function Page() {
     changeHeldItem(items[targetItemIdIndex % items.length].getId());
   }, [items, heldItemId]);
 
-  useKeyPress('KeyP', { onKeyDown: createStaticUnit });
+  const createUnit = useCallback(() => {
+    if (!playerHeldItem) return;
+    const compatibleUnitType = playerHeldItem.getCompatibleUnitType();
+    if (compatibleUnitType === 'static') {
+      createStaticUnit();
+    } else if (compatibleUnitType === 'portal') {
+      createPortalUnit();
+    }
+    createPortalUnit();
+  }, [playerHeldItem]);
+
+  useKeyPress('KeyP', { onKeyDown: createUnit });
   useKeyPress('KeyO', { onKeyDown: removeUnit });
   useKeyPress('Space', { onKeyDown: switchToNextItem });
   useKeyPress('Equal', { onKeyDown: addCameraDistance });

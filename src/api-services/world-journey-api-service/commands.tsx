@@ -5,6 +5,7 @@ enum CommandTypeEnum {
   Move = 'MOVE',
   ChangeHeldItem = 'CHANGE_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
+  CreatePortalUnit = 'CREATE_PORTAL_UNIT',
   RemoveUnit = 'REMOVE_UNIT',
 }
 
@@ -29,6 +30,13 @@ type CreateStaticUnitCommand = {
   direction: number;
 };
 
+type CreatePortalUnitCommand = {
+  type: CommandTypeEnum.CreatePortalUnit;
+  itemId: string;
+  position: PositionDto;
+  direction: number;
+};
+
 type RemoveUnitCommand = {
   type: CommandTypeEnum.RemoveUnit;
   position: PositionDto;
@@ -36,4 +44,11 @@ type RemoveUnitCommand = {
 
 export { CommandTypeEnum };
 
-export type { PingCommand, MoveCommand, ChangeHeldItemCommand, CreateStaticUnitCommand, RemoveUnitCommand };
+export type {
+  PingCommand,
+  MoveCommand,
+  ChangeHeldItemCommand,
+  CreateStaticUnitCommand,
+  CreatePortalUnitCommand,
+  RemoveUnitCommand,
+};
