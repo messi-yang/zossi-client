@@ -13,10 +13,12 @@ type ContextValue = {
   units: UnitModel[] | null;
   cameraDistance: number;
   items: ItemModel[] | null;
+  playerHeldItem: ItemModel | null;
   enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
   changeHeldItem: (itemId: string) => void;
   createStaticUnit: () => void;
+  createPortalUnit: () => void;
   removeUnit: () => void;
   leaveWorld: () => void;
   addCameraDistance: () => void;
@@ -32,10 +34,12 @@ function createInitialContextValue(): ContextValue {
     units: null,
     cameraDistance: 30,
     items: null,
+    playerHeldItem: null,
     enterWorld: () => {},
     move: () => {},
     changeHeldItem: () => {},
     createStaticUnit: () => {},
+    createPortalUnit: () => {},
     removeUnit: () => {},
     leaveWorld: () => {},
     addCameraDistance: () => {},
@@ -137,6 +141,15 @@ export function Provider({ children }: Props) {
     if (!players || !myPlayerId) return null;
     return players.filter((p) => p.getId() !== myPlayerId);
   }, [players, myPlayerId]);
+
+  const playerHeldItem = useMemo(() => {
+    if (!items || !myPlayer) return null;
+
+    const heldItemId = myPlayer.getHeldItemid();
+    if (!heldItemId) return null;
+
+    return items.find((item) => item.getId() === heldItemId) || null;
+  }, [items, myPlayer]);
 
   const [cameraDistance, setCameraDistance] = useState<number>(initialContextValue.cameraDistance);
 
@@ -278,6 +291,21 @@ export function Provider({ children }: Props) {
     worldJourneyApiService.current.createStaticUnit(heldItemId, itemPosition, itemDirection);
   }, []);
 
+  const createPortalUnit = useCallback(() => {
+    if (!worldJourneyApiService.current || !currentMyPlayer.current || !positionPlayersMap.current) return;
+
+    const heldItemId = currentMyPlayer.current.getHeldItemid();
+    if (!heldItemId) return;
+
+    const itemPosition = currentMyPlayer.current.getPositionOneStepFoward();
+
+    const doesPositionHavePlayers = positionPlayersMap.current[itemPosition.toString()];
+    if (doesPositionHavePlayers) return;
+    const itemDirection = currentMyPlayer.current.getDirection().getOppositeDirection();
+
+    worldJourneyApiService.current.createPortalUnit(heldItemId, itemPosition, itemDirection);
+  }, []);
+
   const removeUnit = useCallback(() => {
     if (!currentMyPlayer.current) return;
     worldJourneyApiService.current?.removeUnit(currentMyPlayer.current.getPositionOneStepFoward());
@@ -308,11 +336,13 @@ export function Provider({ children }: Props) {
           units,
           cameraDistance,
           items,
+          playerHeldItem,
           enterWorld,
           move,
           leaveWorld,
           changeHeldItem,
           createStaticUnit,
+          createPortalUnit,
           removeUnit,
           addCameraDistance,
           subtractCameraDistance,

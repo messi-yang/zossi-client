@@ -15,6 +15,7 @@ import type {
   MoveCommand,
   ChangeHeldItemCommand,
   CreateStaticUnitCommand,
+  CreatePortalUnitCommand,
   RemoveUnitCommand,
 } from './commands';
 import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel } from '@/models';
@@ -175,6 +176,16 @@ export class WorldJourneyApiService {
   public createStaticUnit(itemId: string, position: PositionModel, direction: DirectionModel) {
     const action: CreateStaticUnitCommand = {
       type: CommandTypeEnum.CreateStaticUnit,
+      itemId,
+      position: newPositionDto(position),
+      direction: direction.toNumber(),
+    };
+    this.sendMessage(action);
+  }
+
+  public createPortalUnit(itemId: string, position: PositionModel, direction: DirectionModel) {
+    const action: CreatePortalUnitCommand = {
+      type: CommandTypeEnum.CreatePortalUnit,
       itemId,
       position: newPositionDto(position),
       direction: direction.toNumber(),
