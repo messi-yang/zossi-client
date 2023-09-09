@@ -20,6 +20,7 @@ type ContextValue = {
   createStaticUnit: () => void;
   createPortalUnit: () => void;
   removeUnit: () => void;
+  rotateUnit: () => void;
   leaveWorld: () => void;
   addCameraDistance: () => void;
   subtractCameraDistance: () => void;
@@ -41,6 +42,7 @@ function createInitialContextValue(): ContextValue {
     createStaticUnit: () => {},
     createPortalUnit: () => {},
     removeUnit: () => {},
+    rotateUnit: () => {},
     leaveWorld: () => {},
     addCameraDistance: () => {},
     subtractCameraDistance: () => {},
@@ -203,6 +205,10 @@ export function Provider({ children }: Props) {
         removeUnitFromUnits(_unit.getPosition());
         addUnitToUnits(_unit);
       },
+      onUnitUpdated: (_unit) => {
+        removeUnitFromUnits(_unit.getPosition());
+        addUnitToUnits(_unit);
+      },
       onUnitDeleted(_position) {
         removeUnitFromUnits(_position);
       },
@@ -311,6 +317,11 @@ export function Provider({ children }: Props) {
     worldJourneyApiService.current?.removeUnit(currentMyPlayer.current.getPositionOneStepFoward());
   }, []);
 
+  const rotateUnit = useCallback(() => {
+    if (!currentMyPlayer.current) return;
+    worldJourneyApiService.current?.rotateUnit(currentMyPlayer.current.getPositionOneStepFoward());
+  }, []);
+
   const addCameraDistance = useCallback(() => {
     setCameraDistance((val) => {
       if (val <= 15) return 15;
@@ -344,6 +355,7 @@ export function Provider({ children }: Props) {
           createStaticUnit,
           createPortalUnit,
           removeUnit,
+          rotateUnit,
           addCameraDistance,
           subtractCameraDistance,
         }),
