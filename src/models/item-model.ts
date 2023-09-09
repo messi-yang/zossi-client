@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { UnitTypeModel } from './unit-type-model';
 
 export class ItemModel {
   constructor(
@@ -7,7 +8,7 @@ export class ItemModel {
     private traversable: boolean,
     private thumbnailSrc: string,
     private modelSrc: string,
-    private compatibleUnitType: 'static' | 'portal'
+    private compatibleUnitType: UnitTypeModel
   ) {}
 
   static new = (
@@ -16,14 +17,21 @@ export class ItemModel {
     traversable: boolean,
     thumbnailSrc: string,
     modelSrc: string,
-    compatibleUnitType: 'static' | 'portal'
+    compatibleUnitType: UnitTypeModel
   ) => new ItemModel(id, name, traversable, thumbnailSrc, modelSrc, compatibleUnitType);
 
   static mockup(): ItemModel {
-    return ItemModel.new(uuidv4(), 'stone', true, '/placeholder-item.png', 'characters/car.gltf', 'static');
+    return ItemModel.new(
+      uuidv4(),
+      'stone',
+      true,
+      '/placeholder-item.png',
+      'characters/car.gltf',
+      UnitTypeModel.new('static')
+    );
   }
 
-  public getCompatibleUnitType(): 'static' | 'portal' {
+  public getCompatibleUnitType(): UnitTypeModel {
     return this.compatibleUnitType;
   }
 

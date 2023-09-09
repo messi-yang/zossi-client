@@ -9,3 +9,4 @@ export { PositionModel } from './position-model';
 export { BoundModel } from './bound-model';
 export { SizeModel } from './size-model';
 export { DirectionModel } from './direction-model';
+export { UnitTypeModel } from './unit-type-model';
