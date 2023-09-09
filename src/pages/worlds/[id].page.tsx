@@ -86,9 +86,9 @@ const Page: NextPage = function Page() {
   const createUnit = useCallback(() => {
     if (!playerHeldItem) return;
     const compatibleUnitType = playerHeldItem.getCompatibleUnitType();
-    if (compatibleUnitType === 'static') {
+    if (compatibleUnitType.isStatic()) {
       createStaticUnit();
-    } else if (compatibleUnitType === 'portal') {
+    } else if (compatibleUnitType.isPortal()) {
       createPortalUnit();
     }
     createPortalUnit();

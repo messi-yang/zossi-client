@@ -1,4 +1,4 @@
-import { ItemModel } from '@/models';
+import { ItemModel, UnitTypeModel } from '@/models';
 
 type ItemDto = {
   id: string;
@@ -16,7 +16,7 @@ function parseItemDto(itemDto: ItemDto): ItemModel {
     itemDto.traversable,
     itemDto.thumbnailSrc,
     itemDto.modelSrc,
-    itemDto.compatibleUnitType
+    UnitTypeModel.new(itemDto.compatibleUnitType)
   );
 }
 
