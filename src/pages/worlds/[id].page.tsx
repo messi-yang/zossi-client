@@ -55,6 +55,7 @@ const Page: NextPage = function Page() {
     createStaticUnit,
     createPortalUnit,
     removeUnit,
+    rotateUnit,
     addCameraDistance,
     subtractCameraDistance,
   } = useContext(WorldJourneyContext);
@@ -96,6 +97,7 @@ const Page: NextPage = function Page() {
 
   useKeyPress('KeyP', { onKeyDown: createUnit });
   useKeyPress('KeyO', { onKeyDown: removeUnit });
+  useKeyPress('KeyR', { onKeyDown: rotateUnit });
   useKeyPress('Space', { onKeyDown: switchToNextItem });
   useKeyPress('Equal', { onKeyDown: addCameraDistance });
   useKeyPress('Minus', { onKeyDown: subtractCameraDistance });
