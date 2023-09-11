@@ -92,7 +92,6 @@ const Page: NextPage = function Page() {
     } else if (compatibleUnitType.isPortal()) {
       createPortalUnit();
     }
-    createPortalUnit();
   }, [playerHeldItem]);
 
   useKeyPress('KeyP', { onKeyDown: createUnit });
