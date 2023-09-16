@@ -1,4 +1,4 @@
-import { parsePlayerDto, parseUnitDto, parseWorldDto, newPositionDto } from '@/dtos';
+import { parsePlayerDto, parseUnitDto, parseWorldDto, newPositionDto } from '@/apis/dtos';
 import {
   EventTypeEnum,
   WorldEnteredEvent,

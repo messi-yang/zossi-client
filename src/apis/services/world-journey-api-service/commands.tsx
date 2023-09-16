@@ -1,4 +1,4 @@
-import { PositionDto } from '@/dtos';
+import { PositionDto } from '@/apis/dtos';
 
 enum CommandTypeEnum {
   Ping = 'PING',

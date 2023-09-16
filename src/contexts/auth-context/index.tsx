@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { AuthApiService } from '@/services/api-services/auth-api-service';
+import { AuthApiService } from '@/apis/services/auth-api-service';
 import { LocalStorage } from '@/storages/local-storage';
 import { EventMediator, EventType } from '@/events';
 

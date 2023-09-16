@@ -1,5 +1,5 @@
 import { Axios } from 'axios';
-import { WorldDto, parseWorldDto } from '@/dtos';
+import { WorldDto, parseWorldDto } from '@/apis/dtos';
 import { WorldModel } from '@/models/world/world-model';
 import { AxiosProvider } from '@/providers/axios-provider';
 

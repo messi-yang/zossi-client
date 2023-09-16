@@ -1,4 +1,4 @@
-import type { WorldDto, PlayerDto, PositionDto, UnitDto } from '@/dtos';
+import type { WorldDto, PlayerDto, PositionDto, UnitDto } from '@/apis/dtos';
 
 enum EventTypeEnum {
   WorldEntered = 'WORLD_ENTERED',

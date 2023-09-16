@@ -1,6 +1,6 @@
 import { Axios } from 'axios';
 import { AxiosProvider } from '@/providers/axios-provider';
-import { UserDto, parseUserDto } from '@/dtos/user-dto';
+import { UserDto, parseUserDto } from '@/apis/dtos/user-dto';
 
 export class UserApiService {
   private axios: Axios;

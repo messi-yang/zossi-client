@@ -1,5 +1,5 @@
 import { Axios } from 'axios';
-import { ItemDto, parseItemDto } from '@/dtos';
+import { ItemDto, parseItemDto } from '@/apis/dtos';
 import { ItemModel } from '@/models/world/item-model';
 import { AxiosProvider } from '@/providers/axios-provider';
 
