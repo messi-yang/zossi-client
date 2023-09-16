@@ -1,15 +1,20 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export class UserModel {
-  constructor(private id: string, private emailAddress: string, private username: string) {}
+  constructor(
+    private id: string,
+    private emailAddress: string,
+    private username: string,
+    private friendlyName: string
+  ) {}
 
-  static new = (id: string, emailAddress: string, username: string): UserModel =>
-    new UserModel(id, emailAddress, username);
+  static new = (id: string, emailAddress: string, username: string, friendlyName: string): UserModel =>
+    new UserModel(id, emailAddress, username, friendlyName);
 
-  static mockup = (): UserModel => new UserModel(uuidv4(), 'example@gmail.com', 'my_username');
+  static mockup = (): UserModel => new UserModel(uuidv4(), 'example@gmail.com', 'my_username', 'My Friendly Name');
 
   public clone(): UserModel {
-    return new UserModel(this.id, this.emailAddress, this.username);
+    return new UserModel(this.id, this.emailAddress, this.username, this.friendlyName);
   }
 
   public getId(): string {
@@ -26,6 +31,14 @@ export class UserModel {
 
   public setUsername(newUsername: string): void {
     this.username = newUsername;
+  }
+
+  public getFriendlyName(): string {
+    return this.friendlyName;
+  }
+
+  public setFriendlyName(newFriendlyName: string): void {
+    this.friendlyName = newFriendlyName;
   }
 
   public getInitials(): string {

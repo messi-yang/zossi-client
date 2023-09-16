@@ -29,7 +29,7 @@ const Page: NextPage = function Page() {
   const handleSaveUserClick = useCallback(async () => {
     if (!draftUser) return;
 
-    await updateMyUser(draftUser.getUsername());
+    await updateMyUser(draftUser.getUsername(), draftUser.getFriendlyName());
     setIsEditingUser(false);
   }, [draftUser]);
 
@@ -43,6 +43,16 @@ const Page: NextPage = function Page() {
       if (!draftUser) return;
       const clonedDraftUser = draftUser.clone();
       clonedDraftUser.setUsername(newUsername);
+      setDraftUser(clonedDraftUser);
+    },
+    [draftUser]
+  );
+
+  const handleFriendlyNameInput = useCallback(
+    (newFriendlyName: string) => {
+      if (!draftUser) return;
+      const clonedDraftUser = draftUser.clone();
+      clonedDraftUser.setFriendlyName(newFriendlyName);
       setDraftUser(clonedDraftUser);
     },
     [draftUser]
@@ -67,6 +77,18 @@ const Page: NextPage = function Page() {
                   </Text>
                 )}
                 {isEditingUser && <Input value={draftUser?.getUsername() || ''} onInput={handleUsernameInput} />}
+              </Field>
+            </div>
+            <div className="mt-5">
+              <Field label="Friendly Name">
+                {!isEditingUser && (
+                  <Text color="text-white" size="text-base">
+                    {user?.getFriendlyName() || ''}
+                  </Text>
+                )}
+                {isEditingUser && (
+                  <Input value={draftUser?.getFriendlyName() || ''} onInput={handleFriendlyNameInput} />
+                )}
               </Field>
             </div>
           </div>

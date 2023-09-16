@@ -206,7 +206,7 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
       const playerNameMeshes: THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial>[] = [];
       if (font) {
         players.forEach((player) => {
-          const textGeometry = new TextGeometry(myPlayer.getName(), {
+          const textGeometry = new TextGeometry(player.getName(), {
             font,
             size: 0.35,
             height: 0.05,

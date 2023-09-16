@@ -6,7 +6,7 @@ import { LocalStorage } from '@/storages/local-storage';
 type ContextValue = {
   user: UserModel | null;
   getMyUser: () => void;
-  updateMyUser: (username: string) => void;
+  updateMyUser: (username: string, friendlyName: string) => void;
   isUpdatingMyUser: boolean;
 };
 
@@ -37,13 +37,13 @@ function Provider({ children }: Props) {
   }, []);
 
   const updateMyUser = useCallback(
-    async (username: string) => {
+    async (username: string, friendlyName: string) => {
       if (isUpdatingMyUser) return;
 
       try {
         setIsUpdatingMyUser(true);
 
-        const updatedUser = await userApiService.updateMyUser(username);
+        const updatedUser = await userApiService.updateMyUser(username, friendlyName);
         setUser(updatedUser);
       } finally {
         setIsUpdatingMyUser(false);

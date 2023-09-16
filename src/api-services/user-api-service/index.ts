@@ -18,8 +18,8 @@ export class UserApiService {
     return parseUserDto(data);
   }
 
-  async updateMyUser(username: string) {
-    const { data } = await this.axios.patch<UserDto>('/me', { username });
+  async updateMyUser(username: string, friendlyName: string) {
+    const { data } = await this.axios.patch<UserDto>('/me', { username, friendlyName });
     return parseUserDto(data);
   }
 }
