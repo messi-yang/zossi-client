@@ -1,4 +1,4 @@
-import { generateDataTestid } from '@/libs/test';
+import { generateDataTestid } from '@/utils/test';
 
 export const dataTestids = {
   root: generateDataTestid(),

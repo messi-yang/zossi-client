@@ -6,7 +6,7 @@ import { ItemModel, UnitModel, PlayerModel, WorldModel } from '@/models';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { TjsContext } from '@/contexts/tjs-context';
-import { rangeMatrix } from '@/libs/common';
+import { rangeMatrix } from '@/utils/common';
 import { createInstancesInScene } from './tjs-utils';
 import { dataTestids } from './data-test-ids';
 

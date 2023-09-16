@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
-import { UserApiService } from '@/api-services/user-api-service';
+import { UserApiService } from '@/services/api-services/user-api-service';
 import { UserModel } from '@/models';
 import { LocalStorage } from '@/storages/local-storage';
 
