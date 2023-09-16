@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
 import { UserApiService } from '@/services/api-services/user-api-service';
-import { UserModel } from '@/models';
 import { LocalStorage } from '@/storages/local-storage';
+import { UserModel } from '@/models/iam/user-model';
 
 type ContextValue = {
   user: UserModel | null;

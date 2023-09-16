@@ -1,4 +1,4 @@
-import { PositionModel } from '@/models';
+import { PositionModel } from '@/models/world/position-model';
 
 type PositionDto = {
   x: number;

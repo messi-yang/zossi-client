@@ -7,7 +7,7 @@ import { WorldCard } from '@/components/cards/world-card';
 import { Button } from '@/components/buttons/button';
 import { DashboardLayout } from '@/layouts/dashboard-layout';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
-import { WorldModel } from '@/models';
+import { WorldModel } from '@/models/world/world-model';
 import { CreateWorldModal } from '@/components/modals/create-world-modal';
 
 const Page: NextPage = function Page() {

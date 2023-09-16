@@ -1,4 +1,6 @@
-import { UnitModel, DirectionModel, PositionModel } from '@/models';
+import { DirectionModel } from '@/models/world/direction-model';
+import { PositionModel } from '@/models/world/position-model';
+import { UnitModel } from '@/models/world/unit-model';
 import { PositionDto } from './position-dto';
 
 type UnitDto = {

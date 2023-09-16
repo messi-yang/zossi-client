@@ -1,8 +1,8 @@
 import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
-import { WorldMemberModel } from '@/models';
 
 import { WorldMemberCard } from '.';
+import { WorldMemberModel } from '@/models/iam/world-member-model';
 
 export default {
   title: 'Card/WorldMemberCard',

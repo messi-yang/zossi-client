@@ -1,7 +1,7 @@
-import { WorldModel } from '@/models';
+import { WorldModel } from '@/models/world/world-model';
 import { BoundDto, parseBoundDto } from './bound-dto';
 import { UserDto, parseUserDto } from './user-dto';
-import { DateModel } from '@/models/date-model';
+import { DateModel } from '@/models/general/date-model';
 
 type WorldDto = {
   id: string;

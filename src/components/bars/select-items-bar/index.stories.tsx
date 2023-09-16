@@ -1,7 +1,7 @@
 import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
-import { ItemModel } from '@/models';
+import { ItemModel } from '@/models/world/item-model';
 
 import { SelectItemsBar } from '.';
 

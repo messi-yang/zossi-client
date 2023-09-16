@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import { WorldMemberApiService } from '@/services/api-services/world-member-api-service';
-import { WorldMemberModel } from '@/models/world-member-model';
+import { WorldMemberModel } from '@/models/iam/world-member-model';
 
 type ContextValue = {
   getWorldMembers: (worldId: string) => Promise<void>;

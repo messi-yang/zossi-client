@@ -1,7 +1,12 @@
 import { createContext, useCallback, useRef, useState, useMemo, useEffect } from 'react';
 import { WorldJourneyApiService } from '@/services/api-services/world-journey-api-service';
-import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel, ItemModel } from '@/models';
+import { WorldModel } from '@/models/world/world-model';
+import { PlayerModel } from '@/models/world/player-model';
+import { UnitModel } from '@/models/world/unit-model';
 import { ItemApiService } from '@/services/api-services/item-api-service';
+import { ItemModel } from '@/models/world/item-model';
+import { PositionModel } from '@/models/world/position-model';
+import { DirectionModel } from '@/models/world/direction-model';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import { WorldApiService } from '@/services/api-services/world-api-service';
-import { WorldModel } from '@/models';
+import { WorldModel } from '@/models/world/world-model';
 
 type StatusMap = {
   [worldId: string]: boolean | undefined;

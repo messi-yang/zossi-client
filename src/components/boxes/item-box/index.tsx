@@ -1,7 +1,7 @@
 import { KeyboardEventHandler } from 'react';
 import Image from 'next/image';
 import classnames from 'classnames';
-import { ItemModel } from '@/models';
+import { ItemModel } from '@/models/world/item-model';
 import { dataTestids } from './data-test-ids';
 
 type Props = {

@@ -1,6 +1,6 @@
 import { UserDto, parseUserDto } from './user-dto';
 import { WorldRoleDto, parseWorldRoleDto } from './world-role-dto';
-import { WorldMemberModel } from '@/models/world-member-model';
+import { WorldMemberModel } from '@/models/iam/world-member-model';
 
 type WorldMemberDto = {
   id: string;

@@ -2,7 +2,10 @@ import { useEffect, useState, useRef, useContext, useMemo } from 'react';
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
-import { ItemModel, UnitModel, PlayerModel, WorldModel } from '@/models';
+import { PlayerModel } from '@/models/world/player-model';
+import { UnitModel } from '@/models/world/unit-model';
+import { ItemModel } from '@/models/world/item-model';
+import { WorldModel } from '@/models/world/world-model';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { TjsContext } from '@/contexts/tjs-context';

@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { UserModel } from '@/models';
+import { UserModel } from '@/models/iam/user-model';
 import { dataTestids } from './data-test-ids';
 import { UserAvatar } from '.';
 

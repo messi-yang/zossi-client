@@ -2,7 +2,8 @@ import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 
 import { ShareWorldModal } from '.';
-import { WorldMemberModel, WorldModel } from '@/models';
+import { WorldMemberModel } from '@/models/iam/world-member-model';
+import { WorldModel } from '@/models/world/world-model';
 
 export default {
   title: 'Modal/ShareWorldModal',

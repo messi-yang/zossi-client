@@ -6,7 +6,7 @@ import { Text } from '@/components/texts/text';
 import { Field } from '@/components/fields/field';
 import { Input } from '@/components/inputs/input';
 import { Button } from '@/components/buttons/button';
-import { UserModel } from '@/models';
+import { UserModel } from '@/models/iam/user-model';
 
 const Page: NextPage = function Page() {
   const { user, getMyUser, updateMyUser, isUpdatingMyUser } = useContext(UserContext);

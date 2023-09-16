@@ -1,7 +1,8 @@
 import { render, RenderResult, screen } from '@testing-library/react';
 import { dataTestids } from './data-test-ids';
 import { ShareWorldModal } from '.';
-import { WorldMemberModel, WorldModel } from '@/models';
+import { WorldMemberModel } from '@/models/iam/world-member-model';
+import { WorldModel } from '@/models/world/world-model';
 
 function renderShareWorldModal(): RenderResult {
   return render(

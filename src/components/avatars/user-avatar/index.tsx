@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { UserModel } from '@/models';
+import { UserModel } from '@/models/iam/user-model';
 import { dataTestids } from './data-test-ids';
 import { Text } from '@/components/texts/text';
 

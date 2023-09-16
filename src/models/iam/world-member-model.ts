@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { WorldRoleModel } from './world-role-model';
+import { WorldRoleModel } from '../global/world-role-model';
 import { UserModel } from './user-model';
 
 export class WorldMemberModel {

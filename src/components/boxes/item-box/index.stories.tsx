@@ -1,6 +1,6 @@
 import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
-import { ItemModel } from '@/models';
+import { ItemModel } from '@/models/world/item-model';
 
 import { ItemBox } from '.';
 

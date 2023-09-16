@@ -1,4 +1,6 @@
-import { PlayerModel, DirectionModel, PositionModel } from '@/models';
+import { DirectionModel } from '@/models/world/direction-model';
+import { PositionModel } from '@/models/world/position-model';
+import { PlayerModel } from '@/models/world/player-model';
 import type { PositionDto } from './position-dto';
 
 type PlayerDto = {

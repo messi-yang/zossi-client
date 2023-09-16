@@ -20,7 +20,11 @@ import type {
   RemoveUnitCommand,
   RotateUnitCommand,
 } from './commands';
-import { UnitModel, PlayerModel, DirectionModel, PositionModel, WorldModel } from '@/models';
+import { DirectionModel } from '@/models/world/direction-model';
+import { PositionModel } from '@/models/world/position-model';
+import { WorldModel } from '@/models/world/world-model';
+import { PlayerModel } from '@/models/world/player-model';
+import { UnitModel } from '@/models/world/unit-model';
 import { LocalStorage } from '@/storages/local-storage';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {

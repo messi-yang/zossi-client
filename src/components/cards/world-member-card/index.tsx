@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { WorldMemberModel } from '@/models';
+import { WorldMemberModel } from '@/models/iam/world-member-model';
 import { Text } from '@/components/texts/text';
 import { dataTestids } from './data-test-ids';
 import { UserAvatar } from '@/components/avatars/user-avatar';

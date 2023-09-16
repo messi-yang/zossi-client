@@ -1,4 +1,4 @@
-import { WorldRoleModel } from '@/models/world-role-model';
+import { WorldRoleModel } from '@/models/global/world-role-model';
 
 type WorldRoleDto = 'owner' | 'admin' | 'editor' | 'viewer';
 

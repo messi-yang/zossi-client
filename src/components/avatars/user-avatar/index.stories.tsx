@@ -1,6 +1,6 @@
 import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
-import { UserModel } from '@/models';
+import { UserModel } from '@/models/iam/user-model';
 
 import { UserAvatar } from '.';
 

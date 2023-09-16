@@ -1,4 +1,4 @@
-import { UserModel } from '@/models';
+import { UserModel } from '@/models/iam/user-model';
 
 type UserDto = {
   id: string;

@@ -2,7 +2,9 @@ import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 
 import { WorldCanvas } from '.';
-import { ItemModel, UnitModel, PlayerModel } from '@/models';
+import { ItemModel } from '@/models/world/item-model';
+import { UnitModel } from '@/models/world/unit-model';
+import { PlayerModel } from '@/models/world/player-model';
 
 export default {
   title: 'Canvas/WorldCanvas',

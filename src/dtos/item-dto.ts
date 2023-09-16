@@ -1,4 +1,5 @@
-import { ItemModel, UnitTypeModel } from '@/models';
+import { ItemModel } from '@/models/world/item-model';
+import { UnitTypeModel } from '@/models/world/unit-type-model';
 
 type ItemDto = {
   id: string;
