@@ -60,7 +60,6 @@ export class WorldModel {
       this.updatedAt.getMinutesAgo(),
       this.updatedAt.getSecondsAgo(),
     ];
-    console.log(daysAgo, hoursAgo, minutesAgo, secondsAgo);
     if (secondsAgo < 60) {
       return `Edited ${secondsAgo} seconds ago`;
     } else if (minutesAgo < 60) {
