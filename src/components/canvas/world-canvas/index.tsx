@@ -5,17 +5,16 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { PlayerModel } from '@/models/world/player-model';
 import { UnitModel } from '@/models/world/unit-model';
 import { ItemModel } from '@/models/world/item-model';
-import { WorldModel } from '@/models/world/world-model';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { TjsContext } from '@/contexts/tjs-context';
 import { rangeMatrix } from '@/utils/common';
 import { createInstancesInScene } from './tjs-utils';
 import { dataTestids } from './data-test-ids';
+import { WorldJourneyManager } from '@/managers/world-journey-manager';
 
 type Props = {
-  cameraDistance: number;
-  world: WorldModel;
+  worldJourneyManager: WorldJourneyManager;
   otherPlayers: PlayerModel[];
   myPlayer: PlayerModel;
   units: UnitModel[];
@@ -30,12 +29,12 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlayer, items }: Props) {
+export function WorldCanvas({ worldJourneyManager, otherPlayers, units, myPlayer, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
 
   const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
-  const worldBound = useMemo(() => world.getBound(), [world]);
+  const worldBound = useMemo(() => worldJourneyManager.getWorldBound(), [worldJourneyManager]);
 
   const [scene] = useState<THREE.Scene>(() => {
     const newScene = new THREE.Scene();
@@ -122,16 +121,17 @@ export function WorldCanvas({ cameraDistance, world, otherPlayers, units, myPlay
     [renderer, wrapperDomRect]
   );
 
-  useEffect(
-    function updateCameraOnPositionChange() {
+  useEffect(() => {
+    const updateCameraPosition = (cameraDistance: number) => {
       const CAMERA_Y_OFFSET = cameraDistance * Math.sin((45 / 360) * 2 * Math.PI) + 0.5;
       const CAMERA_Z_OFFSET = cameraDistance * Math.cos((45 / 360) * 2 * Math.PI) + 0.5;
 
       camera.position.set(myPlayerPositionX, CAMERA_Y_OFFSET, myPlayerPositionZ + CAMERA_Z_OFFSET);
       camera.lookAt(myPlayerPositionX, 0, myPlayerPositionZ);
-    },
-    [myPlayerPositionX, myPlayerPositionZ, cameraDistance]
-  );
+    };
+    updateCameraPosition(worldJourneyManager.getCameraDistance());
+    return worldJourneyManager.subscribeCameraDistanceChange(updateCameraPosition);
+  }, [myPlayerPositionX, myPlayerPositionZ, worldJourneyManager]);
 
   useEffect(
     function updateDirLightOnPositionChange() {

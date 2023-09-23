@@ -41,11 +41,10 @@ const Page: NextPage = function Page() {
 
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
+    worldJourneyManager,
     units,
-    world,
     myPlayer,
     otherPlayers,
-    cameraDistance,
     connectionStatus,
     items,
     playerHeldItem,
@@ -57,8 +56,6 @@ const Page: NextPage = function Page() {
     createPortalUnit,
     removeUnit,
     rotateUnit,
-    addCameraDistance,
-    subtractCameraDistance,
   } = useContext(WorldJourneyContext);
 
   const heldItemId = myPlayer?.getHeldItemid() || null;
@@ -95,12 +92,20 @@ const Page: NextPage = function Page() {
     }
   }, [playerHeldItem]);
 
+  const handleEqualClick = useCallback(() => {
+    worldJourneyManager?.addChangeCameraDistance();
+  }, [worldJourneyManager]);
+
+  const handleMinusClick = useCallback(() => {
+    worldJourneyManager?.subtractChangeCameraDistance();
+  }, [worldJourneyManager]);
+
   useKeyPress('KeyP', { onKeyDown: createUnit });
   useKeyPress('KeyO', { onKeyDown: removeUnit });
   useKeyPress('KeyR', { onKeyDown: rotateUnit });
   useKeyPress('Space', { onKeyDown: switchToNextItem });
-  useKeyPress('Equal', { onKeyDown: addCameraDistance });
-  useKeyPress('Minus', { onKeyDown: subtractCameraDistance });
+  useKeyPress('Equal', { onKeyDown: handleEqualClick });
+  useKeyPress('Minus', { onKeyDown: handleMinusClick });
 
   const isUpPressed = useKeyPress('KeyW');
   const isRightPressed = useKeyPress('KeyD');
@@ -164,10 +169,10 @@ const Page: NextPage = function Page() {
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
       />
-      {world && (
+      {worldJourneyManager && (
         <ShareWorldModal
           opened={isShareWorldModalVisible}
-          world={world}
+          world={worldJourneyManager.getWorld()}
           worldMembes={worldMembers}
           onClose={handleShareWorldModalClose}
         />
@@ -194,10 +199,9 @@ const Page: NextPage = function Page() {
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
         <section className="w-full h-full">
-          {world && myPlayer && otherPlayers && units && items && (
+          {worldJourneyManager && myPlayer && otherPlayers && units && items && (
             <WorldCanvas
-              cameraDistance={cameraDistance}
-              world={world}
+              worldJourneyManager={worldJourneyManager}
               otherPlayers={otherPlayers}
               myPlayer={myPlayer}
               units={units}
