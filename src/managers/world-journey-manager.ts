@@ -14,9 +14,9 @@ export class WorldJourneyManager {
 
   private world: WorldModel;
 
-  private otherPlayers: PlayerModel[];
+  private players: PlayerModel[];
 
-  private myPlayer: PlayerModel;
+  private myPlayerId: string;
 
   private playerMap: Record<string, PlayerModel> = {};
 
@@ -28,17 +28,16 @@ export class WorldJourneyManager {
 
   private appearingItemMap: Record<string, ItemModel | undefined> = {};
 
-  constructor(world: WorldModel, otherPlayers: PlayerModel[], myPlayer: PlayerModel, units: UnitModel[]) {
+  constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
     this.cameraDistance = 30;
     this.world = world;
     this.units = units;
     this.unitMapByItemId = {};
 
-    this.otherPlayers = otherPlayers;
-    this.myPlayer = myPlayer;
+    this.players = players;
+    this.myPlayerId = myPlayerId;
 
-    const players = [this.myPlayer, ...otherPlayers];
-    this.playerMap = players.reduce(
+    this.playerMap = this.players.reduce(
       (prev, p) => ({
         ...prev,
         [p.getId()]: p,
@@ -53,21 +52,17 @@ export class WorldJourneyManager {
       .forEach((itemId) => {
         this.appearingItemIds.push(itemId);
       });
-    const playerHeldItem = this.myPlayer.getHeldItemId();
-    if (playerHeldItem) {
-      this.appearingItemIds.push(playerHeldItem);
-    }
-    this.otherPlayers.forEach((otherPlayer) => {
-      const otherPlayerHeldItemId = otherPlayer.getHeldItemId();
-      if (otherPlayerHeldItemId) {
-        this.appearingItemIds.push(otherPlayerHeldItemId);
+    this.players.forEach((player) => {
+      const playerHeldItemId = player.getHeldItemId();
+      if (playerHeldItemId) {
+        this.appearingItemIds.push(playerHeldItemId);
       }
     });
     this.appearingItemIds = uniq(this.appearingItemIds);
   }
 
-  static new(world: WorldModel, otherPlayers: PlayerModel[], myPlayer: PlayerModel, units: UnitModel[]) {
-    return new WorldJourneyManager(world, otherPlayers, myPlayer, units);
+  static new(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
+    return new WorldJourneyManager(world, players, myPlayerId, units);
   }
 
   public getCameraDistance() {
@@ -107,26 +102,22 @@ export class WorldJourneyManager {
   }
 
   public getOtherPlayers() {
-    return this.otherPlayers;
+    return this.players;
   }
 
   public getMyPlayer() {
-    return this.myPlayer;
+    return this.playerMap[this.myPlayerId];
   }
 
   public updatePlayer(player: PlayerModel) {
-    if (player.getId() === this.myPlayer.getId()) {
-      this.myPlayer = player;
-    } else {
-      const otherPlayerIndex = this.otherPlayers.findIndex((p) => p.getId() === player.getId());
-      this.otherPlayers[otherPlayerIndex] = player;
-    }
+    const otherPlayerIndex = this.players.findIndex((p) => p.getId() === player.getId());
+    this.players[otherPlayerIndex] = player;
 
     this.playerMap[player.getId()] = player;
   }
 
   public getMyPlayerHeldItem(): ItemModel | null {
-    const heldItemId = this.myPlayer.getHeldItemId();
+    const heldItemId = this.getMyPlayer().getHeldItemId();
     if (!heldItemId) return null;
     return this.appearingItemMap[heldItemId] || null;
   }

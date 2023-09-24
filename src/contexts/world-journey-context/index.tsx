@@ -171,11 +171,7 @@ export function Provider({ children }: Props) {
         setMyPlayerId(_myPlayerId);
         setPlayers(_players);
 
-        const newMyPlayer = _players.find((p) => p.getId() === _myPlayerId);
-        const newOtherPlayers = _players.filter((p) => p.getId() !== _myPlayerId);
-        if (!newMyPlayer) return;
-
-        newWorldJourneyManager = WorldJourneyManager.new(_world, newOtherPlayers, newMyPlayer, _units);
+        newWorldJourneyManager = WorldJourneyManager.new(_world, _players, _myPlayerId, _units);
         setWorldJourneyManager(newWorldJourneyManager);
       },
       onUnitCreated: (_unit) => {
