@@ -45,7 +45,7 @@ export class PlayerModel {
     return this.direction;
   }
 
-  public getHeldItemid(): string | null {
+  public getHeldItemId(): string | null {
     return this.heldItemId;
   }
 

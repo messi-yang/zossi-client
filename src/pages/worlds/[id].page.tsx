@@ -47,18 +47,16 @@ const Page: NextPage = function Page() {
     otherPlayers,
     connectionStatus,
     items,
-    playerHeldItem,
     move,
     enterWorld,
     leaveWorld,
     changeHeldItem,
-    createStaticUnit,
-    createPortalUnit,
+    createUnit,
     removeUnit,
     rotateUnit,
   } = useContext(WorldJourneyContext);
 
-  const heldItemId = myPlayer?.getHeldItemid() || null;
+  const heldItemId = myPlayer?.getHeldItemId() || null;
   const isReconnectModalVisible = connectionStatus === 'DISCONNECTED';
 
   useEffect(
@@ -81,16 +79,6 @@ const Page: NextPage = function Page() {
     const targetItemIdIndex = items.findIndex((item) => item.getId() === heldItemId) + 1;
     changeHeldItem(items[targetItemIdIndex % items.length].getId());
   }, [items, heldItemId]);
-
-  const createUnit = useCallback(() => {
-    if (!playerHeldItem) return;
-    const compatibleUnitType = playerHeldItem.getCompatibleUnitType();
-    if (compatibleUnitType.isStatic()) {
-      createStaticUnit();
-    } else if (compatibleUnitType.isPortal()) {
-      createPortalUnit();
-    }
-  }, [playerHeldItem]);
 
   const handleEqualClick = useCallback(() => {
     worldJourneyManager?.addChangeCameraDistance();

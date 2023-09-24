@@ -18,4 +18,13 @@ export class ItemApiService {
     const { data } = await this.axios.get<ItemDto[]>('/');
     return data.map(parseItemDto);
   }
+
+  async getItemsOfIds(itemIds: string[]): Promise<ItemModel[]> {
+    const { data } = await this.axios.get<ItemDto[]>('/with-ids', {
+      params: {
+        ids: itemIds.join(','),
+      },
+    });
+    return data.map(parseItemDto);
+  }
 }

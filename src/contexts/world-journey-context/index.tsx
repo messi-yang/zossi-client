@@ -17,12 +17,10 @@ type ContextValue = {
   otherPlayers: PlayerModel[] | null;
   units: UnitModel[] | null;
   items: ItemModel[] | null;
-  playerHeldItem: ItemModel | null;
   enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
   changeHeldItem: (itemId: string) => void;
-  createStaticUnit: () => void;
-  createPortalUnit: () => void;
+  createUnit: () => void;
   removeUnit: () => void;
   rotateUnit: () => void;
   leaveWorld: () => void;
@@ -36,12 +34,10 @@ function createInitialContextValue(): ContextValue {
     otherPlayers: null,
     units: null,
     items: null,
-    playerHeldItem: null,
     enterWorld: () => {},
     move: () => {},
     changeHeldItem: () => {},
-    createStaticUnit: () => {},
-    createPortalUnit: () => {},
+    createUnit: () => {},
     removeUnit: () => {},
     rotateUnit: () => {},
     leaveWorld: () => {},
@@ -61,19 +57,15 @@ export function Provider({ children }: Props) {
   const [items, setItems] = useState<ItemModel[] | null>(initialContextValue.items);
   const [worldJourneyManager, setWorldJourneyManager] = useState<WorldJourneyManager | null>(null);
 
-  const itemMap = useRef<Record<string, ItemModel | undefined> | null>({});
   useEffect(() => {
-    if (!items) {
-      itemMap.current = null;
-      return;
-    }
+    if (!worldJourneyManager) return;
 
-    const result: Record<string, ItemModel | undefined> = {};
-    items.forEach((item) => {
-      result[item.getId()] = item;
+    itemApiService.getItemsOfIds(worldJourneyManager.getAppearingItemIds()).then((appearingItems) => {
+      appearingItems.forEach((item) => {
+        worldJourneyManager.addAppearingItem(item);
+      });
     });
-    itemMap.current = result;
-  }, [items]);
+  }, [worldJourneyManager]);
 
   const fetchItems = useCallback(async () => {
     const newItems = await itemApiService.getItems();
@@ -128,24 +120,10 @@ export function Provider({ children }: Props) {
     return players.find((p) => p.getId() === myPlayerId) || null;
   }, [players, myPlayerId]);
 
-  const currentMyPlayer = useRef<PlayerModel | null>(null);
-  useEffect(() => {
-    currentMyPlayer.current = myPlayer;
-  }, [myPlayer]);
-
   const otherPlayers = useMemo(() => {
     if (!players || !myPlayerId) return null;
     return players.filter((p) => p.getId() !== myPlayerId);
   }, [players, myPlayerId]);
-
-  const playerHeldItem = useMemo(() => {
-    if (!items || !myPlayer) return null;
-
-    const heldItemId = myPlayer.getHeldItemid();
-    if (!heldItemId) return null;
-
-    return items.find((item) => item.getId() === heldItemId) || null;
-  }, [items, myPlayer]);
 
   const reset = useCallback(() => {
     setMyPlayerId(null);
@@ -186,6 +164,7 @@ export function Provider({ children }: Props) {
       return;
     }
 
+    let newWorldJourneyManager: WorldJourneyManager | null = null;
     const newWorldJourneyApiService = WorldJourneyApiService.new(WorldId, {
       onWorldEntered: (_world, _units, _myPlayerId, _players) => {
         setUnits(_units);
@@ -196,7 +175,7 @@ export function Provider({ children }: Props) {
         const newOtherPlayers = _players.filter((p) => p.getId() !== _myPlayerId);
         if (!newMyPlayer) return;
 
-        const newWorldJourneyManager = WorldJourneyManager.new(_world, newOtherPlayers, newMyPlayer, _units);
+        newWorldJourneyManager = WorldJourneyManager.new(_world, newOtherPlayers, newMyPlayer, _units);
         setWorldJourneyManager(newWorldJourneyManager);
       },
       onUnitCreated: (_unit) => {
@@ -217,6 +196,9 @@ export function Provider({ children }: Props) {
       onPlayerMoved: (_player) => {
         removePlayerFromPlayers(_player.getId());
         addPlayerToPlayers(_player);
+
+        if (!newWorldJourneyManager) return;
+        newWorldJourneyManager.updatePlayer(_player);
       },
       onPlayerLeft: (_playerId) => {
         removePlayerFromPlayers(_playerId);
@@ -239,33 +221,26 @@ export function Provider({ children }: Props) {
 
   const move = useCallback(
     (direction: DirectionModel) => {
-      if (
-        !worldJourneyApiService.current ||
-        !worldJourneyManager ||
-        !currentMyPlayer.current ||
-        !positionUnitMap.current ||
-        !itemMap.current
-      ) {
+      if (!worldJourneyApiService.current || !worldJourneyManager || !positionUnitMap.current) {
         return;
       }
 
-      const playerIsMovingFoward = currentMyPlayer.current.getDirection().isEqual(direction);
+      const playerIsMovingFoward = worldJourneyManager.getMyPlayer().getDirection().isEqual(direction);
       if (!playerIsMovingFoward) {
         worldJourneyApiService.current.move(direction);
         return;
       }
 
-      const nextPosition = currentMyPlayer.current.getPositionOneStepFoward();
+      const nextPosition = worldJourneyManager.getMyPlayer().getPositionOneStepFoward();
       if (!worldJourneyManager.getWorldBound().doesContainPosition(nextPosition)) {
         return;
       }
 
       const unitAtNextPosition = positionUnitMap.current[nextPosition.toString()];
       if (unitAtNextPosition) {
-        const item = itemMap.current[unitAtNextPosition.getItemId()];
-        if (item && !item.getTraversable()) {
-          return;
-        }
+        const item = worldJourneyManager.getAppearingItem(unitAtNextPosition.getItemId());
+        if (!item) return;
+        if (!item.getTraversable()) return;
       }
       worldJourneyApiService.current.move(direction);
     },
@@ -285,44 +260,58 @@ export function Provider({ children }: Props) {
   }, []);
 
   const createStaticUnit = useCallback(() => {
-    if (!worldJourneyApiService.current || !currentMyPlayer.current || !positionPlayersMap.current) return;
+    if (!worldJourneyManager || !worldJourneyApiService.current || !positionPlayersMap.current) return;
 
-    const heldItemId = currentMyPlayer.current.getHeldItemid();
+    const heldItemId = worldJourneyManager.getMyPlayer().getHeldItemId();
     if (!heldItemId) return;
 
-    const itemPosition = currentMyPlayer.current.getPositionOneStepFoward();
+    const itemPosition = worldJourneyManager.getMyPlayer().getPositionOneStepFoward();
     const doesPositionHavePlayers = positionPlayersMap.current[itemPosition.toString()];
     if (doesPositionHavePlayers) return;
 
-    const itemDirection = currentMyPlayer.current.getDirection().getOppositeDirection();
+    const itemDirection = worldJourneyManager.getMyPlayer().getDirection().getOppositeDirection();
 
     worldJourneyApiService.current.createStaticUnit(heldItemId, itemPosition, itemDirection);
-  }, []);
+  }, [worldJourneyManager]);
 
   const createPortalUnit = useCallback(() => {
-    if (!worldJourneyApiService.current || !currentMyPlayer.current || !positionPlayersMap.current) return;
+    if (!worldJourneyManager || !worldJourneyApiService.current || !positionPlayersMap.current) return;
 
-    const heldItemId = currentMyPlayer.current.getHeldItemid();
+    const heldItemId = worldJourneyManager.getMyPlayer().getHeldItemId();
     if (!heldItemId) return;
 
-    const itemPosition = currentMyPlayer.current.getPositionOneStepFoward();
+    const itemPosition = worldJourneyManager.getMyPlayer().getPositionOneStepFoward();
 
     const doesPositionHavePlayers = positionPlayersMap.current[itemPosition.toString()];
     if (doesPositionHavePlayers) return;
-    const itemDirection = currentMyPlayer.current.getDirection().getOppositeDirection();
+    const itemDirection = worldJourneyManager.getMyPlayer().getDirection().getOppositeDirection();
 
     worldJourneyApiService.current.createPortalUnit(heldItemId, itemPosition, itemDirection);
-  }, []);
+  }, [worldJourneyManager]);
+
+  const createUnit = useCallback(() => {
+    if (!worldJourneyManager) return;
+
+    const myPlayerHeldItem = worldJourneyManager.getMyPlayerHeldItem() || null;
+    if (!myPlayerHeldItem) return;
+
+    const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
+    if (compatibleUnitType.isStatic()) {
+      createStaticUnit();
+    } else if (compatibleUnitType.isPortal()) {
+      createPortalUnit();
+    }
+  }, [worldJourneyManager]);
 
   const removeUnit = useCallback(() => {
-    if (!currentMyPlayer.current) return;
-    worldJourneyApiService.current?.removeUnit(currentMyPlayer.current.getPositionOneStepFoward());
-  }, []);
+    if (!worldJourneyManager) return;
+    worldJourneyApiService.current?.removeUnit(worldJourneyManager.getMyPlayer().getPositionOneStepFoward());
+  }, [worldJourneyManager]);
 
   const rotateUnit = useCallback(() => {
-    if (!currentMyPlayer.current) return;
-    worldJourneyApiService.current?.rotateUnit(currentMyPlayer.current.getPositionOneStepFoward());
-  }, []);
+    if (!worldJourneyManager) return;
+    worldJourneyApiService.current?.rotateUnit(worldJourneyManager.getMyPlayer().getPositionOneStepFoward());
+  }, [worldJourneyManager]);
 
   return (
     <Context.Provider
@@ -334,13 +323,11 @@ export function Provider({ children }: Props) {
           otherPlayers,
           units,
           items,
-          playerHeldItem,
           enterWorld,
           move,
           leaveWorld,
           changeHeldItem,
-          createStaticUnit,
-          createPortalUnit,
+          createUnit,
           removeUnit,
           rotateUnit,
         }),
@@ -353,9 +340,11 @@ export function Provider({ children }: Props) {
           items,
           enterWorld,
           move,
-          changeHeldItem,
-          createStaticUnit,
           leaveWorld,
+          changeHeldItem,
+          createUnit,
+          removeUnit,
+          rotateUnit,
         ]
       )}
     >
