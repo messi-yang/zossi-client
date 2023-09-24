@@ -4,7 +4,6 @@ import { StoryFn, Meta } from '@storybook/react';
 import { WorldCanvas } from '.';
 import { ItemModel } from '@/models/world/item-model';
 import { UnitModel } from '@/models/world/unit-model';
-import { PlayerModel } from '@/models/world/player-model';
 
 export default {
   title: 'Canvas/WorldCanvas',
@@ -23,8 +22,6 @@ const Template: StoryFn<typeof WorldCanvas> = function Template(args) {
 export const Primary = Template.bind({});
 const item = ItemModel.mockup();
 Primary.args = {
-  myPlayer: PlayerModel.mockup(),
-  otherPlayers: [PlayerModel.mockup(), PlayerModel.mockup(), PlayerModel.mockup(), PlayerModel.mockup()],
   units: [UnitModel.mockup(), UnitModel.mockup(), UnitModel.mockup()],
   items: [item],
 };

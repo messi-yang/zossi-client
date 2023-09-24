@@ -15,6 +15,7 @@ import { WorldMembersContext } from '@/contexts/world-members-context';
 import { Button } from '@/components/buttons/button';
 import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item-model';
+import { PlayerModel } from '@/models/world/player-model';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -43,8 +44,6 @@ const Page: NextPage = function Page() {
   const {
     worldJourneyManager,
     units,
-    myPlayer,
-    otherPlayers,
     connectionStatus,
     items,
     move,
@@ -55,6 +54,16 @@ const Page: NextPage = function Page() {
     removeUnit,
     rotateUnit,
   } = useContext(WorldJourneyContext);
+
+  const [myPlayer, setMyPlayer] = useState<PlayerModel | null>(null);
+  useEffect(() => {
+    if (!worldJourneyManager) return () => {};
+    const updateMyPlayer = () => {
+      setMyPlayer(worldJourneyManager.getMyPlayer());
+    };
+    updateMyPlayer();
+    return worldJourneyManager.subscribePlayersChanged(updateMyPlayer);
+  }, [worldJourneyManager]);
 
   const heldItemId = myPlayer?.getHeldItemId() || null;
   const isReconnectModalVisible = connectionStatus === 'DISCONNECTED';
@@ -187,14 +196,8 @@ const Page: NextPage = function Page() {
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
         <section className="w-full h-full">
-          {worldJourneyManager && myPlayer && otherPlayers && units && items && (
-            <WorldCanvas
-              worldJourneyManager={worldJourneyManager}
-              otherPlayers={otherPlayers}
-              myPlayer={myPlayer}
-              units={units}
-              items={items}
-            />
+          {worldJourneyManager && units && items && (
+            <WorldCanvas worldJourneyManager={worldJourneyManager} units={units} items={items} />
           )}
         </section>
       </section>

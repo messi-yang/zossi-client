@@ -13,8 +13,6 @@ type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'D
 type ContextValue = {
   worldJourneyManager: WorldJourneyManager | null;
   connectionStatus: ConnectionStatus;
-  myPlayer: PlayerModel | null;
-  otherPlayers: PlayerModel[] | null;
   units: UnitModel[] | null;
   items: ItemModel[] | null;
   enterWorld: (WorldId: string) => void;
@@ -30,8 +28,6 @@ function createInitialContextValue(): ContextValue {
   return {
     worldJourneyManager: null,
     connectionStatus: 'WAITING',
-    myPlayer: null,
-    otherPlayers: null,
     units: null,
     items: null,
     enterWorld: () => {},
@@ -114,19 +110,7 @@ export function Provider({ children }: Props) {
     positionPlayersMap.current = result;
   }, [players]);
 
-  const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
-  const myPlayer = useMemo(() => {
-    if (!players || !myPlayerId) return null;
-    return players.find((p) => p.getId() === myPlayerId) || null;
-  }, [players, myPlayerId]);
-
-  const otherPlayers = useMemo(() => {
-    if (!players || !myPlayerId) return null;
-    return players.filter((p) => p.getId() !== myPlayerId);
-  }, [players, myPlayerId]);
-
   const reset = useCallback(() => {
-    setMyPlayerId(null);
     setPlayers([]);
     setUnits(initialContextValue.units);
   }, []);
@@ -168,7 +152,6 @@ export function Provider({ children }: Props) {
     const newWorldJourneyApiService = WorldJourneyApiService.new(WorldId, {
       onWorldEntered: (_world, _units, _myPlayerId, _players) => {
         setUnits(_units);
-        setMyPlayerId(_myPlayerId);
         setPlayers(_players);
 
         newWorldJourneyManager = WorldJourneyManager.new(_world, _players, _myPlayerId, _units);
@@ -188,6 +171,9 @@ export function Provider({ children }: Props) {
       onPlayerJoined: (_player) => {
         removePlayerFromPlayers(_player.getId());
         addPlayerToPlayers(_player);
+
+        if (!newWorldJourneyManager) return;
+        newWorldJourneyManager.addPlayer(_player);
       },
       onPlayerMoved: (_player) => {
         removePlayerFromPlayers(_player.getId());
@@ -198,6 +184,9 @@ export function Provider({ children }: Props) {
       },
       onPlayerLeft: (_playerId) => {
         removePlayerFromPlayers(_playerId);
+
+        if (!newWorldJourneyManager) return;
+        newWorldJourneyManager.removePlayer(_playerId);
       },
       onUnitsUpdated: (_units: UnitModel[]) => {
         setUnits(_units);
@@ -315,8 +304,6 @@ export function Provider({ children }: Props) {
         () => ({
           worldJourneyManager,
           connectionStatus,
-          myPlayer,
-          otherPlayers,
           units,
           items,
           enterWorld,
@@ -330,8 +317,6 @@ export function Provider({ children }: Props) {
         [
           worldJourneyManager,
           connectionStatus,
-          myPlayer,
-          otherPlayers,
           units,
           items,
           enterWorld,

@@ -15,8 +15,6 @@ import { WorldJourneyManager } from '@/managers/world-journey-manager';
 
 type Props = {
   worldJourneyManager: WorldJourneyManager;
-  otherPlayers: PlayerModel[];
-  myPlayer: PlayerModel;
   units: UnitModel[];
   items: ItemModel[];
 };
@@ -29,11 +27,10 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-export function WorldCanvas({ worldJourneyManager, otherPlayers, units, myPlayer, items }: Props) {
+export function WorldCanvas({ worldJourneyManager, units, items }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
 
-  const [myPlayerPositionX, myPlayerPositionZ] = [myPlayer.getPosition().getX(), myPlayer.getPosition().getZ()];
   const worldBound = useMemo(() => worldJourneyManager.getWorldBound(), [worldJourneyManager]);
 
   const [scene] = useState<THREE.Scene>(() => {
@@ -122,24 +119,43 @@ export function WorldCanvas({ worldJourneyManager, otherPlayers, units, myPlayer
   );
 
   useEffect(() => {
-    const updateCameraPosition = (cameraDistance: number) => {
+    const updateCameraPosition = () => {
+      const cameraDistance = worldJourneyManager.getCameraDistance();
       const CAMERA_Y_OFFSET = cameraDistance * Math.sin((45 / 360) * 2 * Math.PI) + 0.5;
       const CAMERA_Z_OFFSET = cameraDistance * Math.cos((45 / 360) * 2 * Math.PI) + 0.5;
 
+      const myPlayer = worldJourneyManager.getMyPlayer();
+      const myPlayerPos = myPlayer.getPosition();
+      const [myPlayerPositionX, myPlayerPositionZ] = [myPlayerPos.getX(), myPlayerPos.getZ()];
       camera.position.set(myPlayerPositionX, CAMERA_Y_OFFSET, myPlayerPositionZ + CAMERA_Z_OFFSET);
       camera.lookAt(myPlayerPositionX, 0, myPlayerPositionZ);
     };
-    updateCameraPosition(worldJourneyManager.getCameraDistance());
-    return worldJourneyManager.subscribeCameraDistanceChange(updateCameraPosition);
-  }, [myPlayerPositionX, myPlayerPositionZ, worldJourneyManager]);
+    updateCameraPosition();
+    const unsubscribeCameraDistanceChange = worldJourneyManager.subscribeCameraDistanceChanged(updateCameraPosition);
+    const unsubscribePlayersChange = worldJourneyManager.subscribePlayersChanged(updateCameraPosition);
 
-  useEffect(
-    function updateDirLightOnPositionChange() {
+    return () => {
+      unsubscribeCameraDistanceChange();
+      unsubscribePlayersChange();
+    };
+  }, [worldJourneyManager]);
+
+  useEffect(() => {
+    const updateDirLightPos = () => {
+      const myPlayer = worldJourneyManager.getMyPlayer();
+      const myPlayerPos = myPlayer.getPosition();
+      const [myPlayerPositionX, myPlayerPositionZ] = [myPlayerPos.getX(), myPlayerPos.getZ()];
       dirLight.position.set(myPlayerPositionX, DIR_LIGHT_HEIGHT, myPlayerPositionZ + DIR_LIGHT_Z_OFFSET);
       dirLight.target.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
-    },
-    [myPlayerPositionX, myPlayerPositionZ]
-  );
+    };
+    updateDirLightPos();
+
+    const unsubscribePlayersChange = worldJourneyManager.subscribePlayersChanged(updateDirLightPos);
+
+    return () => {
+      unsubscribePlayersChange();
+    };
+  }, [worldJourneyManager]);
 
   useEffect(
     function updateCameraAspectOnWrapperDomRectChange() {
@@ -178,9 +194,10 @@ export function WorldCanvas({ worldJourneyManager, otherPlayers, units, myPlayer
     [scene, downloadTjsModel, worldBound]
   );
 
-  useEffect(
-    function updatePlayers() {
-      const players = [...otherPlayers, myPlayer];
+  useEffect(() => {
+    let removeInstancesFromScene: (() => void) | null = null;
+    const updatePlayers = (players: PlayerModel[]) => {
+      removeInstancesFromScene?.();
       const playerInstanceStates = players.map((player) => ({
         x: player.getPosition().getX() + 0.5,
         y: 0,
@@ -188,22 +205,26 @@ export function WorldCanvas({ worldJourneyManager, otherPlayers, units, myPlayer
         rotate: (player.getDirection().toNumber() * Math.PI) / 2,
       }));
 
-      let removeInstancesFromScene: (() => void) | null = null;
       const playerModel = downloadTjsModel(CHARACTER_MODEL_SRC);
       if (playerModel) {
         [removeInstancesFromScene] = createInstancesInScene(scene, playerModel, playerInstanceStates);
       }
+    };
+    updatePlayers(worldJourneyManager.getPlayers());
 
-      return () => {
-        removeInstancesFromScene?.();
-      };
-    },
-    [scene, downloadTjsModel, myPlayer, otherPlayers]
-  );
+    const unsubscribePlayersChange = worldJourneyManager.subscribePlayersChanged(updatePlayers);
 
-  useEffect(
-    function updatePlayers() {
-      const players = [...otherPlayers, myPlayer];
+    return () => {
+      removeInstancesFromScene?.();
+      unsubscribePlayersChange();
+    };
+  }, [scene, downloadTjsModel, worldJourneyManager]);
+
+  useEffect(() => {
+    let removePlayerNamesFromScene: (() => void) | null = null;
+
+    const updatePlayerNames = (players: PlayerModel[]) => {
+      removePlayerNamesFromScene?.();
 
       const font = downloadTjsFont(FONT_SRC);
       const playerNameMeshes: THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial>[] = [];
@@ -226,14 +247,21 @@ export function WorldCanvas({ worldJourneyManager, otherPlayers, units, myPlayer
         });
       }
 
-      return () => {
+      removePlayerNamesFromScene = () => {
         playerNameMeshes.forEach((playerNameMesh) => {
           scene.remove(playerNameMesh);
         });
       };
-    },
-    [scene, downloadTjsFont, myPlayer, otherPlayers]
-  );
+    };
+    updatePlayerNames(worldJourneyManager.getPlayers());
+
+    const unsubscribePlayersChange = worldJourneyManager.subscribePlayersChanged(updatePlayerNames);
+
+    return () => {
+      removePlayerNamesFromScene?.();
+      unsubscribePlayersChange();
+    };
+  }, [scene, downloadTjsFont, worldJourneyManager]);
 
   const itemUnitsMap = useMemo<Record<string, UnitModel[]>>(() => {
     const result: Record<string, UnitModel[]> = {};
