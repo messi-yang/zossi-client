@@ -37,10 +37,6 @@ export class PlayerModel {
     return this.position;
   }
 
-  public getPositionText(): string {
-    return `(${this.position.getX()}, ${this.position.getZ()})`;
-  }
-
   public getDirection(): DirectionModel {
     return this.direction;
   }

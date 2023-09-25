@@ -15,7 +15,6 @@ import { WorldMembersContext } from '@/contexts/world-members-context';
 import { Button } from '@/components/buttons/button';
 import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item-model';
-import { PlayerModel } from '@/models/world/player-model';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -36,9 +35,6 @@ const Page: NextPage = function Page() {
 
     getWorldMembers(worldId);
   }, [isSingedIn, worldId, getWorldMembers]);
-  useEffect(() => {
-    console.log(worldMembers);
-  }, [worldMembers]);
 
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
@@ -55,17 +51,17 @@ const Page: NextPage = function Page() {
     rotateUnit,
   } = useContext(WorldJourneyContext);
 
-  const [myPlayer, setMyPlayer] = useState<PlayerModel | null>(null);
+  const [myPlayerHeldItemId, setMyPlayerHeldItemId] = useState<string | null>(null);
+  const [myPlayerPosText, setMyPlayerPosText] = useState<string | null>(null);
   useEffect(() => {
     if (!worldJourneyManager) return () => {};
-    const updateMyPlayer = () => {
-      setMyPlayer(worldJourneyManager.getMyPlayer());
-    };
-    updateMyPlayer();
-    return worldJourneyManager.subscribePlayersChanged(updateMyPlayer);
+
+    return worldJourneyManager.subscribeMyPlayerChanged((myPlayer) => {
+      setMyPlayerHeldItemId(myPlayer.getHeldItemId());
+      setMyPlayerPosText(myPlayer.getPosition().getPositionText());
+    });
   }, [worldJourneyManager]);
 
-  const heldItemId = myPlayer?.getHeldItemId() || null;
   const isReconnectModalVisible = connectionStatus === 'DISCONNECTED';
 
   useEffect(
@@ -85,16 +81,16 @@ const Page: NextPage = function Page() {
     if (!items) {
       return;
     }
-    const targetItemIdIndex = items.findIndex((item) => item.getId() === heldItemId) + 1;
+    const targetItemIdIndex = items.findIndex((item) => item.getId() === myPlayerHeldItemId) + 1;
     changeHeldItem(items[targetItemIdIndex % items.length].getId());
-  }, [items, heldItemId]);
+  }, [items, myPlayerHeldItemId]);
 
   const handleEqualClick = useCallback(() => {
-    worldJourneyManager?.addChangeCameraDistance();
+    worldJourneyManager?.addPerspectiveDepth();
   }, [worldJourneyManager]);
 
   const handleMinusClick = useCallback(() => {
-    worldJourneyManager?.subtractChangeCameraDistance();
+    worldJourneyManager?.subtractPerspectiveDepth();
   }, [worldJourneyManager]);
 
   useKeyPress('KeyP', { onKeyDown: createUnit });
@@ -178,12 +174,12 @@ const Page: NextPage = function Page() {
         <Button text="Share" onClick={handleShareClick} />
         <div className="ml-3 w-24 flex justify-center">
           <Text size="text-xl" color="text-white">
-            {myPlayer?.getPositionText() || null}
+            {myPlayerPosText}
           </Text>
         </div>
       </div>
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
-        <SelectItemsBar items={items} selectedItemId={heldItemId} onSelect={handleItemSelect} />
+        <SelectItemsBar items={items} selectedItemId={myPlayerHeldItemId} onSelect={handleItemSelect} />
       </section>
       <section
         className="absolute top-2 left-2 z-10 bg-black p-2 rounded-lg"

@@ -1,6 +1,5 @@
 import { createContext, useCallback, useRef, useState, useMemo, useEffect } from 'react';
 import { WorldJourneyApiService } from '@/apis/services/world-journey-api-service';
-import { PlayerModel } from '@/models/world/player-model';
 import { UnitModel } from '@/models/world/unit-model';
 import { ItemApiService } from '@/apis/services/item-api-service';
 import { ItemModel } from '@/models/world/item-model';
@@ -90,28 +89,7 @@ export function Provider({ children }: Props) {
     positionUnitMap.current = result;
   }, [units]);
 
-  const [players, setPlayers] = useState<PlayerModel[] | null>([]);
-  const positionPlayersMap = useRef<Record<string, PlayerModel[] | undefined> | null>(null);
-  useEffect(() => {
-    if (!players) {
-      positionPlayersMap.current = null;
-      return;
-    }
-    const result: Record<string, PlayerModel[] | undefined> = {};
-    players.forEach((player) => {
-      const positionString = player.getPosition().toString();
-      const playersAtPosition = result[positionString];
-      if (!playersAtPosition) {
-        result[positionString] = [player];
-      } else {
-        playersAtPosition.push(player);
-      }
-    });
-    positionPlayersMap.current = result;
-  }, [players]);
-
   const reset = useCallback(() => {
-    setPlayers([]);
     setUnits(initialContextValue.units);
   }, []);
 
@@ -129,20 +107,6 @@ export function Provider({ children }: Props) {
     });
   }, []);
 
-  const removePlayerFromPlayers = useCallback((playerId: string) => {
-    setPlayers((_players) => {
-      if (!_players) return null;
-      return _players.filter((_player) => _player.getId() !== playerId);
-    });
-  }, []);
-
-  const addPlayerToPlayers = useCallback((player: PlayerModel) => {
-    setPlayers((_players) => {
-      if (!_players) return null;
-      return [..._players, player];
-    });
-  }, []);
-
   const enterWorld = useCallback((WorldId: string) => {
     if (worldJourneyApiService.current) {
       return;
@@ -152,7 +116,6 @@ export function Provider({ children }: Props) {
     const newWorldJourneyApiService = WorldJourneyApiService.new(WorldId, {
       onWorldEntered: (_world, _units, _myPlayerId, _players) => {
         setUnits(_units);
-        setPlayers(_players);
 
         newWorldJourneyManager = WorldJourneyManager.new(_world, _players, _myPlayerId, _units);
         setWorldJourneyManager(newWorldJourneyManager);
@@ -169,22 +132,14 @@ export function Provider({ children }: Props) {
         removeUnitFromUnits(_position);
       },
       onPlayerJoined: (_player) => {
-        removePlayerFromPlayers(_player.getId());
-        addPlayerToPlayers(_player);
-
         if (!newWorldJourneyManager) return;
         newWorldJourneyManager.addPlayer(_player);
       },
       onPlayerMoved: (_player) => {
-        removePlayerFromPlayers(_player.getId());
-        addPlayerToPlayers(_player);
-
         if (!newWorldJourneyManager) return;
         newWorldJourneyManager.updatePlayer(_player);
       },
       onPlayerLeft: (_playerId) => {
-        removePlayerFromPlayers(_playerId);
-
         if (!newWorldJourneyManager) return;
         newWorldJourneyManager.removePlayer(_playerId);
       },
@@ -245,13 +200,13 @@ export function Provider({ children }: Props) {
   }, []);
 
   const createStaticUnit = useCallback(() => {
-    if (!worldJourneyManager || !worldJourneyApiService.current || !positionPlayersMap.current) return;
+    if (!worldJourneyManager || !worldJourneyApiService.current) return;
 
     const heldItemId = worldJourneyManager.getMyPlayer().getHeldItemId();
     if (!heldItemId) return;
 
     const itemPosition = worldJourneyManager.getMyPlayer().getPositionOneStepFoward();
-    const doesPositionHavePlayers = positionPlayersMap.current[itemPosition.toString()];
+    const doesPositionHavePlayers = worldJourneyManager.doesPosHavePlayers(itemPosition);
     if (doesPositionHavePlayers) return;
 
     const itemDirection = worldJourneyManager.getMyPlayer().getDirection().getOppositeDirection();
@@ -260,14 +215,14 @@ export function Provider({ children }: Props) {
   }, [worldJourneyManager]);
 
   const createPortalUnit = useCallback(() => {
-    if (!worldJourneyManager || !worldJourneyApiService.current || !positionPlayersMap.current) return;
+    if (!worldJourneyManager || !worldJourneyApiService.current) return;
 
     const heldItemId = worldJourneyManager.getMyPlayer().getHeldItemId();
     if (!heldItemId) return;
 
     const itemPosition = worldJourneyManager.getMyPlayer().getPositionOneStepFoward();
 
-    const doesPositionHavePlayers = positionPlayersMap.current[itemPosition.toString()];
+    const doesPositionHavePlayers = worldJourneyManager.doesPosHavePlayers(itemPosition);
     if (doesPositionHavePlayers) return;
     const itemDirection = worldJourneyManager.getMyPlayer().getDirection().getOppositeDirection();
 

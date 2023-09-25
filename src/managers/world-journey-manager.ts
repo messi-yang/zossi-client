@@ -4,14 +4,14 @@ import { ItemModel } from '@/models/world/item-model';
 import { PlayerModel } from '../models/world/player-model';
 import { UnitModel } from '../models/world/unit-model';
 import { WorldModel } from '../models/world/world-model';
+import { PositionModel } from '@/models/world/position-model';
 
-type CameraDistanceChangeSubsriber = (newCameraDistance: number) => void;
-type PlayersChangeSubsriber = (players: PlayerModel[]) => void;
+type PerspectiveChangedHandler = (perspectiveDepth: number, targetPos: PositionModel) => void;
+type PlayersChangedHandler = (players: PlayerModel[]) => void;
+type MyPlayerChangedHandler = (player: PlayerModel) => void;
 
 export class WorldJourneyManager {
-  private cameraDistance: number;
-
-  private cameraDistanceChangeSubsribers: CameraDistanceChangeSubsriber[] = [];
+  private perspectiveDepth: number;
 
   private world: WorldModel;
 
@@ -21,21 +21,42 @@ export class WorldJourneyManager {
 
   private playerMap: Record<string, PlayerModel> = {};
 
-  private playersChangeSubsribers: PlayersChangeSubsriber[] = [];
+  private playerMapByPos: Record<string, PlayerModel[] | undefined> = {};
 
   private units: UnitModel[];
 
-  private unitMapByItemId: Record<string, UnitModel[]>;
+  private unitMapByPos: Record<string, UnitModel | undefined>;
+
+  private unitMapByItemId: Record<string, UnitModel[] | undefined>;
 
   private appearingItemIds: string[];
 
   private appearingItemMap: Record<string, ItemModel | undefined> = {};
 
+  private perspectiveChangedHandlers: PerspectiveChangedHandler[] = [];
+
+  private playersChangedHandlers: PlayersChangedHandler[] = [];
+
+  private myPlayerChangedHandlers: MyPlayerChangedHandler[] = [];
+
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
-    this.cameraDistance = 30;
+    this.perspectiveDepth = 30;
     this.world = world;
     this.units = units;
+    this.unitMapByPos = {};
     this.unitMapByItemId = {};
+    this.units.forEach((unit) => {
+      const positionKey = unit.getPosition().toString();
+      this.unitMapByPos[positionKey] = unit;
+
+      const itemId = unit.getItemId();
+      const unitsWithItemId = this.unitMapByItemId[itemId];
+      if (unitsWithItemId) {
+        unitsWithItemId.push(unit);
+      } else {
+        this.unitMapByItemId[itemId] = [unit];
+      }
+    });
 
     this.players = players;
     this.myPlayerId = myPlayerId;
@@ -47,6 +68,10 @@ export class WorldJourneyManager {
       }),
       {}
     );
+    this.playerMapByPos = {};
+    this.players.forEach((player) => {
+      this.addPlayerToPlayerMapByPos(player);
+    });
 
     // Collect all appearing item ids
     this.appearingItemIds = [];
@@ -68,34 +93,16 @@ export class WorldJourneyManager {
     return new WorldJourneyManager(world, players, myPlayerId, units);
   }
 
-  public getCameraDistance() {
-    return this.cameraDistance;
+  public addPerspectiveDepth() {
+    if (this.perspectiveDepth <= 10) return;
+    this.perspectiveDepth -= 10;
+    this.publishPerspectiveChanged(this.perspectiveDepth, this.getMyPlayer().getPosition());
   }
 
-  public addChangeCameraDistance() {
-    if (this.cameraDistance <= 10) return;
-    this.cameraDistance -= 10;
-    this.publishCameraDistanceChanged();
-  }
-
-  public subtractChangeCameraDistance() {
-    if (this.cameraDistance >= 200) return;
-    this.cameraDistance += 10;
-    this.publishCameraDistanceChanged();
-  }
-
-  public subscribeCameraDistanceChanged(subscriber: CameraDistanceChangeSubsriber): () => void {
-    this.cameraDistanceChangeSubsribers.push(subscriber);
-
-    return () => {
-      this.cameraDistanceChangeSubsribers = this.cameraDistanceChangeSubsribers.filter((sub) => sub !== subscriber);
-    };
-  }
-
-  private publishCameraDistanceChanged() {
-    this.cameraDistanceChangeSubsribers.forEach((sub) => {
-      sub(this.cameraDistance);
-    });
+  public subtractPerspectiveDepth() {
+    if (this.perspectiveDepth >= 200) return;
+    this.perspectiveDepth += 10;
+    this.publishPerspectiveChanged(this.perspectiveDepth, this.getMyPlayer().getPosition());
   }
 
   public getWorld(): WorldModel {
@@ -106,20 +113,50 @@ export class WorldJourneyManager {
     return this.world.getBound();
   }
 
-  public getPlayers() {
+  public getPlayers(): PlayerModel[] {
     return this.players;
   }
 
-  public getMyPlayer() {
+  public getMyPlayer(): PlayerModel {
     return this.playerMap[this.myPlayerId];
   }
 
-  public addPlayer(player: PlayerModel) {
-    console.log(player);
-    this.players.push(player);
-    this.playerMap[player.getId()] = player;
+  private isMyPlayer(playerId: string): boolean {
+    return playerId === this.myPlayerId;
+  }
 
-    this.publishPlayersChanged();
+  private addPlayerToPlayerMapByPos(player: PlayerModel) {
+    const posKey = player.getPosition().toString();
+    const playersInOldPos = this.playerMapByPos[posKey];
+    if (playersInOldPos) {
+      playersInOldPos.push(player);
+    } else {
+      this.playerMapByPos[posKey] = [player];
+    }
+  }
+
+  private removePlayerFromPlayerMapByPos(player: PlayerModel) {
+    const playerId = player.getId();
+    const posKey = player.getPosition().toString();
+    const playersInOldPos = this.playerMapByPos[posKey];
+    if (playersInOldPos) {
+      const newPlayersInOldPos = playersInOldPos.filter((p) => p.getId() !== playerId);
+      if (newPlayersInOldPos.length === 0) {
+        delete this.playerMapByPos[posKey];
+      } else {
+        this.playerMapByPos[posKey] = newPlayersInOldPos;
+      }
+    }
+  }
+
+  public addPlayer(player: PlayerModel) {
+    const playerId = player.getId();
+
+    this.players.push(player);
+    this.playerMap[playerId] = player;
+
+    this.addPlayerToPlayerMapByPos(player);
+    this.publishPlayersChanged(this.players);
   }
 
   public updatePlayer(player: PlayerModel) {
@@ -127,36 +164,41 @@ export class WorldJourneyManager {
     if (playerIndex === -1) return;
 
     this.players[playerIndex] = player;
-    this.playerMap[player.getId()] = player;
 
-    this.publishPlayersChanged();
+    const playerId = player.getId();
+    const oldPlayer = this.playerMap[playerId];
+
+    this.removePlayerFromPlayerMapByPos(oldPlayer);
+    this.addPlayerToPlayerMapByPos(player);
+
+    this.playerMap[playerId] = player;
+
+    this.publishPlayersChanged(this.players);
+
+    if (this.isMyPlayer(playerId)) {
+      this.publishPerspectiveChanged(this.perspectiveDepth, this.getMyPlayer().getPosition());
+      this.publishMyPlayerChanged(this.getMyPlayer());
+    }
   }
 
   public removePlayer(playerId: string) {
+    const player = this.playerMap[playerId];
+
     this.players = this.players.filter((p) => p.getId() !== playerId);
+    this.removePlayerFromPlayerMapByPos(player);
     delete this.playerMap[playerId];
 
-    this.publishPlayersChanged();
-  }
-
-  public subscribePlayersChanged(subscriber: PlayersChangeSubsriber): () => void {
-    this.playersChangeSubsribers.push(subscriber);
-
-    return () => {
-      this.playersChangeSubsribers = this.playersChangeSubsribers.filter((sub) => sub !== subscriber);
-    };
-  }
-
-  private publishPlayersChanged() {
-    this.playersChangeSubsribers.forEach((sub) => {
-      sub(this.players);
-    });
+    this.publishPlayersChanged(this.players);
   }
 
   public getMyPlayerHeldItem(): ItemModel | null {
     const heldItemId = this.getMyPlayer().getHeldItemId();
     if (!heldItemId) return null;
     return this.appearingItemMap[heldItemId] || null;
+  }
+
+  public doesPosHavePlayers(pos: PositionModel): boolean {
+    return !!this.playerMapByPos[pos.toString()];
   }
 
   public getUnits() {
@@ -173,5 +215,50 @@ export class WorldJourneyManager {
 
   public addAppearingItem(item: ItemModel) {
     this.appearingItemMap[item.getId()] = item;
+  }
+
+  public subscribePerspectiveChanged(handler: PerspectiveChangedHandler): () => void {
+    this.perspectiveChangedHandlers.push(handler);
+    handler(this.perspectiveDepth, this.getMyPlayer().getPosition());
+
+    return () => {
+      this.perspectiveChangedHandlers = this.perspectiveChangedHandlers.filter((hdl) => hdl !== handler);
+    };
+  }
+
+  private publishPerspectiveChanged(perspectiveDepth: number, targetPos: PositionModel) {
+    this.perspectiveChangedHandlers.forEach((hdl) => {
+      hdl(perspectiveDepth, targetPos);
+    });
+  }
+
+  public subscribePlayersChanged(handler: PlayersChangedHandler): () => void {
+    this.playersChangedHandlers.push(handler);
+    handler(this.players);
+
+    return () => {
+      this.playersChangedHandlers = this.playersChangedHandlers.filter((hdl) => hdl !== handler);
+    };
+  }
+
+  private publishPlayersChanged(players: PlayerModel[]) {
+    this.playersChangedHandlers.forEach((hdl) => {
+      hdl(players);
+    });
+  }
+
+  public subscribeMyPlayerChanged(handler: MyPlayerChangedHandler): () => void {
+    this.myPlayerChangedHandlers.push(handler);
+    handler(this.getMyPlayer());
+
+    return () => {
+      this.myPlayerChangedHandlers = this.myPlayerChangedHandlers.filter((hdl) => hdl !== handler);
+    };
+  }
+
+  private publishMyPlayerChanged(myPlayer: PlayerModel) {
+    this.myPlayerChangedHandlers.forEach((hdl) => {
+      hdl(myPlayer);
+    });
   }
 }

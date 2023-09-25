@@ -22,4 +22,8 @@ export class PositionModel {
   public toString(): string {
     return `${this.x},${this.z}`;
   }
+
+  public getPositionText(): string {
+    return `(${this.x}, ${this.z})`;
+  }
 }
