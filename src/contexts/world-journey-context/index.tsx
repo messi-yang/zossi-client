@@ -75,20 +75,6 @@ export function Provider({ children }: Props) {
 
   const [units, setUnits] = useState<UnitModel[] | null>(initialContextValue.units);
 
-  const positionUnitMap = useRef<Record<string, UnitModel | undefined> | null>(null);
-  useEffect(() => {
-    if (!units) {
-      positionUnitMap.current = null;
-      return;
-    }
-
-    const result: Record<string, UnitModel | undefined> = {};
-    units.forEach((unit) => {
-      result[unit.getPosition().toString()] = unit;
-    });
-    positionUnitMap.current = result;
-  }, [units]);
-
   const reset = useCallback(() => {
     setUnits(initialContextValue.units);
   }, []);
@@ -123,13 +109,22 @@ export function Provider({ children }: Props) {
       onUnitCreated: (_unit) => {
         removeUnitFromUnits(_unit.getPosition());
         addUnitToUnits(_unit);
+
+        if (!newWorldJourneyManager) return;
+        newWorldJourneyManager.addUnit(_unit);
       },
       onUnitUpdated: (_unit) => {
         removeUnitFromUnits(_unit.getPosition());
         addUnitToUnits(_unit);
+
+        if (!newWorldJourneyManager) return;
+        newWorldJourneyManager.updateUnit(_unit);
       },
       onUnitDeleted(_position) {
         removeUnitFromUnits(_position);
+
+        if (!newWorldJourneyManager) return;
+        newWorldJourneyManager.removeUnit(_position);
       },
       onPlayerJoined: (_player) => {
         if (!newWorldJourneyManager) return;
@@ -161,7 +156,7 @@ export function Provider({ children }: Props) {
 
   const move = useCallback(
     (direction: DirectionModel) => {
-      if (!worldJourneyApiService.current || !worldJourneyManager || !positionUnitMap.current) {
+      if (!worldJourneyApiService.current || !worldJourneyManager) {
         return;
       }
 
@@ -176,7 +171,7 @@ export function Provider({ children }: Props) {
         return;
       }
 
-      const unitAtNextPosition = positionUnitMap.current[nextPosition.toString()];
+      const unitAtNextPosition = worldJourneyManager.getUnitAtPos(nextPosition);
       if (unitAtNextPosition) {
         const item = worldJourneyManager.getAppearingItem(unitAtNextPosition.getItemId());
         if (!item) return;

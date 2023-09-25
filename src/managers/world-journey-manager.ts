@@ -205,6 +205,34 @@ export class WorldJourneyManager {
     return this.units;
   }
 
+  public getUnitAtPos(pos: PositionModel): UnitModel | null {
+    console.log(pos, pos.toString(), this.unitMapByPos, this.unitMapByPos[pos.toString()]);
+
+    return this.unitMapByPos[pos.toString()] || null;
+  }
+
+  public addUnit(unit: UnitModel) {
+    const posKey = unit.getPosition().toString();
+    this.units.push(unit);
+    this.unitMapByPos[posKey] = unit;
+  }
+
+  public updateUnit(unit: UnitModel) {
+    const unitIndex = this.units.findIndex((u) => u.getPosition().isEqual(unit.getPosition()));
+    if (unitIndex === -1) return;
+
+    this.units[unitIndex] = unit;
+
+    const posKey = unit.getPosition().toString();
+    this.unitMapByPos[posKey] = unit;
+  }
+
+  public removeUnit(position: PositionModel) {
+    this.units = this.units.filter((u) => !u.getPosition().isEqual(position));
+    const posKey = position.toString();
+    delete this.unitMapByPos[posKey];
+  }
+
   public getAppearingItemIds(): string[] {
     return this.appearingItemIds;
   }
