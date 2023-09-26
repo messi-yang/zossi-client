@@ -39,7 +39,6 @@ const Page: NextPage = function Page() {
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
     worldJourneyManager,
-    units,
     connectionStatus,
     items,
     move,
@@ -192,9 +191,7 @@ const Page: NextPage = function Page() {
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
         <section className="w-full h-full">
-          {worldJourneyManager && units && items && (
-            <WorldCanvas worldJourneyManager={worldJourneyManager} units={units} items={items} />
-          )}
+          {worldJourneyManager && <WorldCanvas worldJourneyManager={worldJourneyManager} />}
         </section>
       </section>
     </main>

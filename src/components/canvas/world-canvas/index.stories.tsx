@@ -2,8 +2,6 @@ import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 
 import { WorldCanvas } from '.';
-import { ItemModel } from '@/models/world/item-model';
-import { UnitModel } from '@/models/world/unit-model';
 
 export default {
   title: 'Canvas/WorldCanvas',
@@ -20,8 +18,4 @@ const Template: StoryFn<typeof WorldCanvas> = function Template(args) {
 };
 
 export const Primary = Template.bind({});
-const item = ItemModel.mockup();
-Primary.args = {
-  units: [UnitModel.mockup(), UnitModel.mockup(), UnitModel.mockup()],
-  items: [item],
-};
+Primary.args = {};

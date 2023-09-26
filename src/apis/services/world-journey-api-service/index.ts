@@ -141,7 +141,6 @@ export class WorldJourneyApiService {
       onPlayerJoined: (player: PlayerModel) => void;
       onPlayerMoved: (player: PlayerModel) => void;
       onPlayerLeft: (playerId: string) => void;
-      onUnitsUpdated: (units: UnitModel[]) => void;
       onClose: () => void;
       onOpen: () => void;
     }

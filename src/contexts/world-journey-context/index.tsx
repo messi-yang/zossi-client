@@ -1,9 +1,7 @@
 import { createContext, useCallback, useRef, useState, useMemo, useEffect } from 'react';
 import { WorldJourneyApiService } from '@/apis/services/world-journey-api-service';
-import { UnitModel } from '@/models/world/unit-model';
 import { ItemApiService } from '@/apis/services/item-api-service';
 import { ItemModel } from '@/models/world/item-model';
-import { PositionModel } from '@/models/world/position-model';
 import { DirectionModel } from '@/models/world/direction-model';
 import { WorldJourneyManager } from '@/managers/world-journey-manager';
 
@@ -12,7 +10,6 @@ type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'D
 type ContextValue = {
   worldJourneyManager: WorldJourneyManager | null;
   connectionStatus: ConnectionStatus;
-  units: UnitModel[] | null;
   items: ItemModel[] | null;
   enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
@@ -23,33 +20,26 @@ type ContextValue = {
   leaveWorld: () => void;
 };
 
-function createInitialContextValue(): ContextValue {
-  return {
-    worldJourneyManager: null,
-    connectionStatus: 'WAITING',
-    units: null,
-    items: null,
-    enterWorld: () => {},
-    move: () => {},
-    changeHeldItem: () => {},
-    createUnit: () => {},
-    removeUnit: () => {},
-    rotateUnit: () => {},
-    leaveWorld: () => {},
-  };
-}
-
-const Context = createContext<ContextValue>(createInitialContextValue());
+const Context = createContext<ContextValue>({
+  worldJourneyManager: null,
+  connectionStatus: 'WAITING',
+  items: null,
+  enterWorld: () => {},
+  move: () => {},
+  changeHeldItem: () => {},
+  createUnit: () => {},
+  removeUnit: () => {},
+  rotateUnit: () => {},
+  leaveWorld: () => {},
+});
 
 type Props = {
   children: JSX.Element;
 };
 
 export function Provider({ children }: Props) {
-  const initialContextValue = createInitialContextValue();
-
   const [itemApiService] = useState<ItemApiService>(() => ItemApiService.new());
-  const [items, setItems] = useState<ItemModel[] | null>(initialContextValue.items);
+  const [items, setItems] = useState<ItemModel[] | null>([]);
   const [worldJourneyManager, setWorldJourneyManager] = useState<WorldJourneyManager | null>(null);
 
   useEffect(() => {
@@ -73,26 +63,6 @@ export function Provider({ children }: Props) {
   const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
 
-  const [units, setUnits] = useState<UnitModel[] | null>(initialContextValue.units);
-
-  const reset = useCallback(() => {
-    setUnits(initialContextValue.units);
-  }, []);
-
-  const removeUnitFromUnits = useCallback((position: PositionModel) => {
-    setUnits((_units) => {
-      if (!_units) return null;
-      return _units.filter((_unit) => !_unit.getPosition().isEqual(position));
-    });
-  }, []);
-
-  const addUnitToUnits = useCallback((unit: UnitModel) => {
-    setUnits((_units) => {
-      if (!_units) return null;
-      return [..._units, unit];
-    });
-  }, []);
-
   const enterWorld = useCallback((WorldId: string) => {
     if (worldJourneyApiService.current) {
       return;
@@ -101,28 +71,18 @@ export function Provider({ children }: Props) {
     let newWorldJourneyManager: WorldJourneyManager | null = null;
     const newWorldJourneyApiService = WorldJourneyApiService.new(WorldId, {
       onWorldEntered: (_world, _units, _myPlayerId, _players) => {
-        setUnits(_units);
-
         newWorldJourneyManager = WorldJourneyManager.new(_world, _players, _myPlayerId, _units);
         setWorldJourneyManager(newWorldJourneyManager);
       },
       onUnitCreated: (_unit) => {
-        removeUnitFromUnits(_unit.getPosition());
-        addUnitToUnits(_unit);
-
         if (!newWorldJourneyManager) return;
         newWorldJourneyManager.addUnit(_unit);
       },
       onUnitUpdated: (_unit) => {
-        removeUnitFromUnits(_unit.getPosition());
-        addUnitToUnits(_unit);
-
         if (!newWorldJourneyManager) return;
         newWorldJourneyManager.updateUnit(_unit);
       },
       onUnitDeleted(_position) {
-        removeUnitFromUnits(_position);
-
         if (!newWorldJourneyManager) return;
         newWorldJourneyManager.removeUnit(_position);
       },
@@ -138,16 +98,12 @@ export function Provider({ children }: Props) {
         if (!newWorldJourneyManager) return;
         newWorldJourneyManager.removePlayer(_playerId);
       },
-      onUnitsUpdated: (_units: UnitModel[]) => {
-        setUnits(_units);
-      },
       onOpen: () => {
         setConnectionStatus('OPEN');
       },
       onClose: () => {
         setConnectionStatus('DISCONNECTED');
         worldJourneyApiService.current = null;
-        reset();
       },
     });
     setConnectionStatus('CONNECTING');
@@ -254,7 +210,6 @@ export function Provider({ children }: Props) {
         () => ({
           worldJourneyManager,
           connectionStatus,
-          units,
           items,
           enterWorld,
           move,
@@ -267,7 +222,6 @@ export function Provider({ children }: Props) {
         [
           worldJourneyManager,
           connectionStatus,
-          units,
           items,
           enterWorld,
           move,

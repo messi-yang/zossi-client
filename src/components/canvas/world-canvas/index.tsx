@@ -3,8 +3,6 @@ import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
 import { PlayerModel } from '@/models/world/player-model';
-import { UnitModel } from '@/models/world/unit-model';
-import { ItemModel } from '@/models/world/item-model';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { TjsContext } from '@/contexts/tjs-context';
@@ -16,8 +14,6 @@ import { PositionModel } from '@/models/world/position-model';
 
 type Props = {
   worldJourneyManager: WorldJourneyManager;
-  units: UnitModel[];
-  items: ItemModel[];
 };
 
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
@@ -28,7 +24,7 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-export function WorldCanvas({ worldJourneyManager, units, items }: Props) {
+export function WorldCanvas({ worldJourneyManager }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
 
@@ -37,7 +33,6 @@ export function WorldCanvas({ worldJourneyManager, units, items }: Props) {
   const [scene] = useState<THREE.Scene>(() => {
     const newScene = new THREE.Scene();
     newScene.background = new THREE.Color(0x87ceeb);
-    // scene.background = new THREE.Color(0x87ceeb);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.5);
     hemiLight.position.set(0, HEMI_LIGHT_HEIGHT, 0);
@@ -240,46 +235,35 @@ export function WorldCanvas({ worldJourneyManager, units, items }: Props) {
     };
   }, [scene, downloadTjsFont, worldJourneyManager]);
 
-  const itemUnitsMap = useMemo<Record<string, UnitModel[]>>(() => {
-    const result: Record<string, UnitModel[]> = {};
-    units.forEach((unit) => {
-      if (!result[unit.getItemId()]) {
-        result[unit.getItemId()] = [];
-      }
-      result[unit.getItemId()].push(unit);
+  useEffect(() => {
+    const instanceCycler: Record<string, (() => void) | undefined> = {};
+
+    const unsubscriber = worldJourneyManager.subscribeUnitsChanged((item, units) => {
+      if (!units) return;
+      const itemModel = downloadTjsModel(item.getModelSrc());
+      if (!itemModel) return;
+
+      const itemId = item.getId();
+      instanceCycler[itemId]?.();
+
+      const itemUnitInstanceStates = units.map((unit) => ({
+        x: unit.getPosition().getX() + 0.5,
+        y: 0,
+        z: unit.getPosition().getZ() + 0.5,
+        rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
+      }));
+      const [removeInstancesFromScene] = createInstancesInScene(scene, itemModel, itemUnitInstanceStates);
+
+      instanceCycler[itemId] = removeInstancesFromScene;
     });
-    return result;
-  }, [units]);
 
-  useEffect(
-    function updateUnits() {
-      const removeInstancesFromSceneExecutors: (() => void)[] = [];
-      Object.keys(itemUnitsMap).forEach((itemId) => {
-        const itemUnits = itemUnitsMap[itemId];
-        const item = items.find((_item) => _item.getId() === itemId);
-        if (!item) return;
-
-        const itemModel = downloadTjsModel(item.getModelSrc());
-        if (!itemModel) return;
-
-        const itemUnitInstanceStates = itemUnits.map((unit) => ({
-          x: unit.getPosition().getX() + 0.5,
-          y: 0,
-          z: unit.getPosition().getZ() + 0.5,
-          rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
-        }));
-        const [removeInstancesFromScene] = createInstancesInScene(scene, itemModel, itemUnitInstanceStates);
-        removeInstancesFromSceneExecutors.push(removeInstancesFromScene);
+    return () => {
+      unsubscriber();
+      Object.values(instanceCycler).forEach((cycler) => {
+        cycler?.();
       });
-
-      return () => {
-        removeInstancesFromSceneExecutors.forEach((executor) => {
-          executor();
-        });
-      };
-    },
-    [scene, downloadTjsModel, items, itemUnitsMap]
-  );
+    };
+  }, [scene, downloadTjsModel, worldJourneyManager]);
 
   useEffect(
     function animateEffect() {
