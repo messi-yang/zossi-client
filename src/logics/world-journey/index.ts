@@ -15,7 +15,7 @@ type PerspectiveChangedHandler = (depth: number, targetPos: PositionModel) => vo
 type PlayersChangedHandler = (players: PlayerModel[]) => void;
 type MyPlayerChangedHandler = (player: PlayerModel) => void;
 type UnitsChangedHandler = (item: ItemModel, units: UnitModel[] | null) => void;
-type ItemIdsAddedHandler = (itemIds: string[]) => void;
+type PlaceholderItemIdsAddedHandler = (itemIds: string[]) => void;
 
 export class WorldJourney {
   private world: WorldModel;
@@ -70,16 +70,8 @@ export class WorldJourney {
     return this.getItem(myPlayerHeldItemId) || null;
   }
 
-  public getPlayers(): PlayerModel[] {
-    return this.playerStorage.getPlayers();
-  }
-
   public getMyPlayer(): PlayerModel {
     return this.playerStorage.getMyPlayer();
-  }
-
-  public getPlayer(playerId: string): PlayerModel {
-    return this.playerStorage.getPlayer(playerId);
   }
 
   public addPlayer(player: PlayerModel) {
@@ -158,8 +150,8 @@ export class WorldJourney {
     };
   }
 
-  public subscribeItemIdsAdded(handler: ItemIdsAddedHandler): () => void {
-    return this.itemStorage.subscribeItemIdsAdded((itemIds: string[]) => {
+  public subscribePlaceholderItemIdsAdded(handler: PlaceholderItemIdsAddedHandler): () => void {
+    return this.itemStorage.subscribePlaceholderItemIdsAdded((itemIds: string[]) => {
       handler(itemIds);
     });
   }

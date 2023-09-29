@@ -81,7 +81,7 @@ const Page: NextPage = function Page() {
       return;
     }
     const targetItemIdIndex = items.findIndex((item) => item.getId() === myPlayerHeldItemId) + 1;
-    changeHeldItem(items[targetItemIdIndex % items.length].getId());
+    changeHeldItem(items[targetItemIdIndex % items.length]);
   }, [items, myPlayerHeldItemId]);
 
   const handleEqualClick = useCallback(() => {
@@ -144,7 +144,7 @@ const Page: NextPage = function Page() {
   };
 
   const handleItemSelect = (item: ItemModel) => {
-    changeHeldItem(item.getId());
+    changeHeldItem(item);
   };
 
   const handleRecconectModalConfirmClick = useCallback(() => {

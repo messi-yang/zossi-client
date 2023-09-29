@@ -13,7 +13,7 @@ type ContextValue = {
   items: ItemModel[] | null;
   enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
-  changeHeldItem: (itemId: string) => void;
+  changeHeldItem: (item: ItemModel) => void;
   createUnit: () => void;
   removeUnit: () => void;
   rotateUnit: () => void;
@@ -45,8 +45,8 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourney) return;
 
-    worldJourney.subscribeItemIdsAdded((itemIds) => {
-      itemApiService.getItemsOfIds(itemIds).then((_items) => {
+    worldJourney.subscribePlaceholderItemIdsAdded((placeholderItemIds) => {
+      itemApiService.getItemsOfIds(placeholderItemIds).then((_items) => {
         _items.forEach((item) => {
           worldJourney.addItem(item);
         });
@@ -148,9 +148,13 @@ export function Provider({ children }: Props) {
     worldJourneyApiService.current.disconnect();
   }, []);
 
-  const changeHeldItem = useCallback((itemId: string) => {
-    worldJourneyApiService.current?.changeHeldItem(itemId);
-  }, []);
+  const changeHeldItem = useCallback(
+    (item: ItemModel) => {
+      worldJourney?.addItem(item);
+      worldJourneyApiService.current?.changeHeldItem(item.getId());
+    },
+    [worldJourney]
+  );
 
   const createStaticUnit = useCallback(() => {
     if (!worldJourney || !worldJourneyApiService.current) return;

@@ -1,37 +1,45 @@
 import { ItemModel } from '@/models/world/item-model';
 
-type ItemIdsAddedHandler = (itemIds: string[]) => void;
+type PlaceholderItemIdsAddedHandler = (placeholderItemIds: string[]) => void;
 type ItemAddedHandler = (item: ItemModel) => void;
 
 export class ItemStorage {
-  private itemIds: string[];
+  /**
+   * Placeholder item ids that stores the references to the coming items.
+   * Once the items are added to the storage, the corresponding placeholder item ids will be erased.
+   */
+  private placeholderItemIds: string[];
 
   private itemMap: Record<string, ItemModel | undefined>;
 
-  private itemIdsAddedHandlers: ItemIdsAddedHandler[] = [];
+  private placeholderItemIdsAddedHandlers: PlaceholderItemIdsAddedHandler[] = [];
 
   private itemAddedHandlers: ItemAddedHandler[] = [];
 
-  constructor(itemIds: string[]) {
-    this.itemIds = itemIds;
+  constructor(placeholderItemIds: string[]) {
+    this.placeholderItemIds = placeholderItemIds;
     this.itemMap = {};
   }
 
-  static new(itemIds: string[]) {
-    return new ItemStorage(itemIds);
+  static new(placeholderItemIds: string[]) {
+    return new ItemStorage(placeholderItemIds);
   }
 
-  public getItemIds(): string[] {
-    return this.itemIds;
+  private getPlaceholderItemIds(): string[] {
+    return this.placeholderItemIds;
   }
 
-  public addItemId(itemId: string) {
-    if (this.itemIds.indexOf(itemId) > -1) {
+  public addPlaceholderItemId(itemId: string) {
+    if (this.placeholderItemIds.indexOf(itemId) > -1) {
       return;
     }
 
-    this.itemIds.push(itemId);
-    this.publishItemIdsAdded([itemId]);
+    this.placeholderItemIds.push(itemId);
+    this.publishPlaceholderItemIdsAdded([itemId]);
+  }
+
+  public removePlaceholderItemId(itemId: string) {
+    this.placeholderItemIds = this.placeholderItemIds.filter((id) => id !== itemId);
   }
 
   public getItem(itemId: string): ItemModel | null {
@@ -39,26 +47,30 @@ export class ItemStorage {
   }
 
   public addItem(item: ItemModel) {
-    const existingItem = this.itemMap[item.getId()];
+    const itemId = item.getId();
+
+    const existingItem = this.itemMap[itemId];
     if (existingItem) return;
 
-    this.itemMap[item.getId()] = item;
+    this.removePlaceholderItemId(itemId);
+
+    this.itemMap[itemId] = item;
     this.publishItemAdded(item);
   }
 
-  public subscribeItemIdsAdded(handler: ItemIdsAddedHandler): () => void {
-    handler(this.getItemIds());
+  public subscribePlaceholderItemIdsAdded(handler: PlaceholderItemIdsAddedHandler): () => void {
+    handler(this.getPlaceholderItemIds());
 
-    this.itemIdsAddedHandlers.push(handler);
+    this.placeholderItemIdsAddedHandlers.push(handler);
 
     return () => {
-      this.itemIdsAddedHandlers = this.itemIdsAddedHandlers.filter((hdl) => hdl !== handler);
+      this.placeholderItemIdsAddedHandlers = this.placeholderItemIdsAddedHandlers.filter((hdl) => hdl !== handler);
     };
   }
 
-  private publishItemIdsAdded(itemIds: string[]) {
-    this.itemIdsAddedHandlers.forEach((hdl) => {
-      hdl(itemIds);
+  private publishPlaceholderItemIdsAdded(placeholderItemIds: string[]) {
+    this.placeholderItemIdsAddedHandlers.forEach((hdl) => {
+      hdl(placeholderItemIds);
     });
   }
 
