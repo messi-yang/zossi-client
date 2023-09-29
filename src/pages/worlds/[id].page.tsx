@@ -38,7 +38,7 @@ const Page: NextPage = function Page() {
 
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
-    worldJourneyManager,
+    worldJourney,
     connectionStatus,
     items,
     move,
@@ -53,13 +53,13 @@ const Page: NextPage = function Page() {
   const [myPlayerHeldItemId, setMyPlayerHeldItemId] = useState<string | null>(null);
   const [myPlayerPosText, setMyPlayerPosText] = useState<string | null>(null);
   useEffect(() => {
-    if (!worldJourneyManager) return () => {};
+    if (!worldJourney) return () => {};
 
-    return worldJourneyManager.subscribeMyPlayerChanged((myPlayer) => {
+    return worldJourney.subscribeMyPlayerChanged((myPlayer) => {
       setMyPlayerHeldItemId(myPlayer.getHeldItemId());
       setMyPlayerPosText(myPlayer.getPosition().getPositionText());
     });
-  }, [worldJourneyManager]);
+  }, [worldJourney]);
 
   const isReconnectModalVisible = connectionStatus === 'DISCONNECTED';
 
@@ -85,12 +85,12 @@ const Page: NextPage = function Page() {
   }, [items, myPlayerHeldItemId]);
 
   const handleEqualClick = useCallback(() => {
-    worldJourneyManager?.addPerspectiveDepth();
-  }, [worldJourneyManager]);
+    worldJourney?.addPerspectiveDepth();
+  }, [worldJourney]);
 
   const handleMinusClick = useCallback(() => {
-    worldJourneyManager?.subtractPerspectiveDepth();
-  }, [worldJourneyManager]);
+    worldJourney?.subtractPerspectiveDepth();
+  }, [worldJourney]);
 
   useKeyPress('KeyP', { onKeyDown: createUnit });
   useKeyPress('KeyO', { onKeyDown: removeUnit });
@@ -161,10 +161,10 @@ const Page: NextPage = function Page() {
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
       />
-      {worldJourneyManager && (
+      {worldJourney && (
         <ShareWorldModal
           opened={isShareWorldModalVisible}
-          world={worldJourneyManager.getWorld()}
+          world={worldJourney.getWorld()}
           worldMembes={worldMembers}
           onClose={handleShareWorldModalClose}
         />
@@ -190,9 +190,7 @@ const Page: NextPage = function Page() {
         <Image src="/assets/images/logos/small-logo.png" alt="small logo" width={28} height={28} />
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
-        <section className="w-full h-full">
-          {worldJourneyManager && <WorldCanvas worldJourneyManager={worldJourneyManager} />}
-        </section>
+        <section className="w-full h-full">{worldJourney && <WorldCanvas worldJourney={worldJourney} />}</section>
       </section>
     </main>
   );

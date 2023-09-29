@@ -3,12 +3,12 @@ import { WorldJourneyApiService } from '@/apis/services/world-journey-api-servic
 import { ItemApiService } from '@/apis/services/item-api-service';
 import { ItemModel } from '@/models/world/item-model';
 import { DirectionModel } from '@/models/world/direction-model';
-import { WorldJourneyManager } from '@/managers/world-journey-manager';
+import { WorldJourney } from '@/logics/world-journey';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
 type ContextValue = {
-  worldJourneyManager: WorldJourneyManager | null;
+  worldJourney: WorldJourney | null;
   connectionStatus: ConnectionStatus;
   items: ItemModel[] | null;
   enterWorld: (WorldId: string) => void;
@@ -21,7 +21,7 @@ type ContextValue = {
 };
 
 const Context = createContext<ContextValue>({
-  worldJourneyManager: null,
+  worldJourney: null,
   connectionStatus: 'WAITING',
   items: null,
   enterWorld: () => {},
@@ -40,17 +40,19 @@ type Props = {
 export function Provider({ children }: Props) {
   const [itemApiService] = useState<ItemApiService>(() => ItemApiService.new());
   const [items, setItems] = useState<ItemModel[] | null>([]);
-  const [worldJourneyManager, setWorldJourneyManager] = useState<WorldJourneyManager | null>(null);
+  const [worldJourney, setWorldJourney] = useState<WorldJourney | null>(null);
 
   useEffect(() => {
-    if (!worldJourneyManager) return;
+    if (!worldJourney) return;
 
-    itemApiService.getItemsOfIds(worldJourneyManager.getAppearingItemIds()).then((appearingItems) => {
-      appearingItems.forEach((item) => {
-        worldJourneyManager.addAppearingItem(item);
+    worldJourney.subscribeItemIdsAdded((itemIds) => {
+      itemApiService.getItemsOfIds(itemIds).then((_items) => {
+        _items.forEach((item) => {
+          worldJourney.addItem(item);
+        });
       });
     });
-  }, [worldJourneyManager]);
+  }, [worldJourney]);
 
   const fetchItems = useCallback(async () => {
     const newItems = await itemApiService.getItems();
@@ -68,35 +70,35 @@ export function Provider({ children }: Props) {
       return;
     }
 
-    let newWorldJourneyManager: WorldJourneyManager | null = null;
+    let newWorldJourney: WorldJourney | null = null;
     const newWorldJourneyApiService = WorldJourneyApiService.new(WorldId, {
       onWorldEntered: (_world, _units, _myPlayerId, _players) => {
-        newWorldJourneyManager = WorldJourneyManager.new(_world, _players, _myPlayerId, _units);
-        setWorldJourneyManager(newWorldJourneyManager);
+        newWorldJourney = WorldJourney.new(_world, _players, _myPlayerId, _units);
+        setWorldJourney(newWorldJourney);
       },
       onUnitCreated: (_unit) => {
-        if (!newWorldJourneyManager) return;
-        newWorldJourneyManager.addUnit(_unit);
+        if (!newWorldJourney) return;
+        newWorldJourney.addUnit(_unit);
       },
       onUnitUpdated: (_unit) => {
-        if (!newWorldJourneyManager) return;
-        newWorldJourneyManager.updateUnit(_unit);
+        if (!newWorldJourney) return;
+        newWorldJourney.updateUnit(_unit);
       },
       onUnitDeleted(_position) {
-        if (!newWorldJourneyManager) return;
-        newWorldJourneyManager.removeUnit(_position);
+        if (!newWorldJourney) return;
+        newWorldJourney.removeUnit(_position);
       },
       onPlayerJoined: (_player) => {
-        if (!newWorldJourneyManager) return;
-        newWorldJourneyManager.addPlayer(_player);
+        if (!newWorldJourney) return;
+        newWorldJourney.addPlayer(_player);
       },
       onPlayerMoved: (_player) => {
-        if (!newWorldJourneyManager) return;
-        newWorldJourneyManager.updatePlayer(_player);
+        if (!newWorldJourney) return;
+        newWorldJourney.updatePlayer(_player);
       },
       onPlayerLeft: (_playerId) => {
-        if (!newWorldJourneyManager) return;
-        newWorldJourneyManager.removePlayer(_playerId);
+        if (!newWorldJourney) return;
+        newWorldJourney.removePlayer(_playerId);
       },
       onOpen: () => {
         setConnectionStatus('OPEN');
@@ -112,30 +114,30 @@ export function Provider({ children }: Props) {
 
   const move = useCallback(
     (direction: DirectionModel) => {
-      if (!worldJourneyApiService.current || !worldJourneyManager) {
+      if (!worldJourneyApiService.current || !worldJourney) {
         return;
       }
 
-      const playerIsMovingFoward = worldJourneyManager.getMyPlayer().getDirection().isEqual(direction);
+      const playerIsMovingFoward = worldJourney.getMyPlayer().getDirection().isEqual(direction);
       if (!playerIsMovingFoward) {
         worldJourneyApiService.current.move(direction);
         return;
       }
 
-      const nextPosition = worldJourneyManager.getMyPlayer().getPositionOneStepFoward();
-      if (!worldJourneyManager.getWorldBound().doesContainPosition(nextPosition)) {
+      const nextPosition = worldJourney.getMyPlayer().getPositionOneStepFoward();
+      if (!worldJourney.getWorldBound().doesContainPosition(nextPosition)) {
         return;
       }
 
-      const unitAtNextPosition = worldJourneyManager.getUnitAtPos(nextPosition);
+      const unitAtNextPosition = worldJourney.getUnit(nextPosition);
       if (unitAtNextPosition) {
-        const item = worldJourneyManager.getAppearingItem(unitAtNextPosition.getItemId());
+        const item = worldJourney.getItem(unitAtNextPosition.getItemId());
         if (!item) return;
         if (!item.getTraversable()) return;
       }
       worldJourneyApiService.current.move(direction);
     },
-    [worldJourneyManager]
+    [worldJourney]
   );
 
   const leaveWorld = useCallback(() => {
@@ -151,39 +153,39 @@ export function Provider({ children }: Props) {
   }, []);
 
   const createStaticUnit = useCallback(() => {
-    if (!worldJourneyManager || !worldJourneyApiService.current) return;
+    if (!worldJourney || !worldJourneyApiService.current) return;
 
-    const heldItemId = worldJourneyManager.getMyPlayer().getHeldItemId();
+    const heldItemId = worldJourney.getMyPlayer().getHeldItemId();
     if (!heldItemId) return;
 
-    const itemPosition = worldJourneyManager.getMyPlayer().getPositionOneStepFoward();
-    const doesPositionHavePlayers = worldJourneyManager.doesPosHavePlayers(itemPosition);
+    const itemPosition = worldJourney.getMyPlayer().getPositionOneStepFoward();
+    const doesPositionHavePlayers = worldJourney.doesPosHavePlayers(itemPosition);
     if (doesPositionHavePlayers) return;
 
-    const itemDirection = worldJourneyManager.getMyPlayer().getDirection().getOppositeDirection();
+    const itemDirection = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
 
     worldJourneyApiService.current.createStaticUnit(heldItemId, itemPosition, itemDirection);
-  }, [worldJourneyManager]);
+  }, [worldJourney]);
 
   const createPortalUnit = useCallback(() => {
-    if (!worldJourneyManager || !worldJourneyApiService.current) return;
+    if (!worldJourney || !worldJourneyApiService.current) return;
 
-    const heldItemId = worldJourneyManager.getMyPlayer().getHeldItemId();
+    const heldItemId = worldJourney.getMyPlayer().getHeldItemId();
     if (!heldItemId) return;
 
-    const itemPosition = worldJourneyManager.getMyPlayer().getPositionOneStepFoward();
+    const itemPosition = worldJourney.getMyPlayer().getPositionOneStepFoward();
 
-    const doesPositionHavePlayers = worldJourneyManager.doesPosHavePlayers(itemPosition);
+    const doesPositionHavePlayers = worldJourney.doesPosHavePlayers(itemPosition);
     if (doesPositionHavePlayers) return;
-    const itemDirection = worldJourneyManager.getMyPlayer().getDirection().getOppositeDirection();
+    const itemDirection = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
 
     worldJourneyApiService.current.createPortalUnit(heldItemId, itemPosition, itemDirection);
-  }, [worldJourneyManager]);
+  }, [worldJourney]);
 
   const createUnit = useCallback(() => {
-    if (!worldJourneyManager) return;
+    if (!worldJourney) return;
 
-    const myPlayerHeldItem = worldJourneyManager.getMyPlayerHeldItem() || null;
+    const myPlayerHeldItem = worldJourney.getMyPlayerHeldItem();
     if (!myPlayerHeldItem) return;
 
     const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
@@ -192,23 +194,23 @@ export function Provider({ children }: Props) {
     } else if (compatibleUnitType.isPortal()) {
       createPortalUnit();
     }
-  }, [worldJourneyManager]);
+  }, [worldJourney]);
 
   const removeUnit = useCallback(() => {
-    if (!worldJourneyManager) return;
-    worldJourneyApiService.current?.removeUnit(worldJourneyManager.getMyPlayer().getPositionOneStepFoward());
-  }, [worldJourneyManager]);
+    if (!worldJourney) return;
+    worldJourneyApiService.current?.removeUnit(worldJourney.getMyPlayer().getPositionOneStepFoward());
+  }, [worldJourney]);
 
   const rotateUnit = useCallback(() => {
-    if (!worldJourneyManager) return;
-    worldJourneyApiService.current?.rotateUnit(worldJourneyManager.getMyPlayer().getPositionOneStepFoward());
-  }, [worldJourneyManager]);
+    if (!worldJourney) return;
+    worldJourneyApiService.current?.rotateUnit(worldJourney.getMyPlayer().getPositionOneStepFoward());
+  }, [worldJourney]);
 
   return (
     <Context.Provider
       value={useMemo<ContextValue>(
         () => ({
-          worldJourneyManager,
+          worldJourney,
           connectionStatus,
           items,
           enterWorld,
@@ -220,7 +222,7 @@ export function Provider({ children }: Props) {
           rotateUnit,
         }),
         [
-          worldJourneyManager,
+          worldJourney,
           connectionStatus,
           items,
           enterWorld,

@@ -9,11 +9,11 @@ import { TjsContext } from '@/contexts/tjs-context';
 import { rangeMatrix } from '@/utils/common';
 import { createInstancesInScene } from './tjs-utils';
 import { dataTestids } from './data-test-ids';
-import { WorldJourneyManager } from '@/managers/world-journey-manager';
+import { WorldJourney } from '@/logics/world-journey';
 import { PositionModel } from '@/models/world/position-model';
 
 type Props = {
-  worldJourneyManager: WorldJourneyManager;
+  worldJourney: WorldJourney;
 };
 
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
@@ -24,11 +24,11 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const HEMI_LIGHT_HEIGHT = 20;
 
-export function WorldCanvas({ worldJourneyManager }: Props) {
+export function WorldCanvas({ worldJourney }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
 
-  const worldBound = useMemo(() => worldJourneyManager.getWorldBound(), [worldJourneyManager]);
+  const worldBound = useMemo(() => worldJourney.getWorldBound(), [worldJourney]);
 
   const [scene] = useState<THREE.Scene>(() => {
     const newScene = new THREE.Scene();
@@ -115,7 +115,7 @@ export function WorldCanvas({ worldJourneyManager }: Props) {
   );
 
   useEffect(() => {
-    return worldJourneyManager.subscribePerspectiveChanged((perspectiveDepth: number, targetPos: PositionModel) => {
+    return worldJourney.subscribePerspectiveChanged((perspectiveDepth: number, targetPos: PositionModel) => {
       const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((45 / 360) * 2 * Math.PI) + 0.5;
       const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((45 / 360) * 2 * Math.PI) + 0.5;
 
@@ -123,16 +123,16 @@ export function WorldCanvas({ worldJourneyManager }: Props) {
       camera.position.set(targetPosX, CAMERA_Y_OFFSET, targetPosZ + CAMERA_Z_OFFSET);
       camera.lookAt(targetPosX, 0, targetPosZ);
     });
-  }, [worldJourneyManager]);
+  }, [worldJourney]);
 
   useEffect(() => {
-    return worldJourneyManager.subscribeMyPlayerChanged((myPlayer) => {
+    return worldJourney.subscribeMyPlayerChanged((myPlayer) => {
       const myPlayerPos = myPlayer.getPosition();
       const [myPlayerPositionX, myPlayerPositionZ] = [myPlayerPos.getX(), myPlayerPos.getZ()];
       dirLight.position.set(myPlayerPositionX, DIR_LIGHT_HEIGHT, myPlayerPositionZ + DIR_LIGHT_Z_OFFSET);
       dirLight.target.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
     });
-  }, [worldJourneyManager]);
+  }, [worldJourney]);
 
   useEffect(
     function updateCameraAspectOnWrapperDomRectChange() {
@@ -174,7 +174,7 @@ export function WorldCanvas({ worldJourneyManager }: Props) {
   useEffect(() => {
     let removeInstancesFromScene: (() => void) | null = null;
 
-    const unsubscribePlayersChange = worldJourneyManager.subscribePlayersChanged((players: PlayerModel[]) => {
+    const unsubscribePlayersChange = worldJourney.subscribePlayersChanged((players: PlayerModel[]) => {
       removeInstancesFromScene?.();
       const playerInstanceStates = players.map((player) => ({
         x: player.getPosition().getX() + 0.5,
@@ -193,12 +193,12 @@ export function WorldCanvas({ worldJourneyManager }: Props) {
       removeInstancesFromScene?.();
       unsubscribePlayersChange();
     };
-  }, [scene, downloadTjsModel, worldJourneyManager]);
+  }, [scene, downloadTjsModel, worldJourney]);
 
   useEffect(() => {
     let removePlayerNamesFromScene: (() => void) | null = null;
 
-    const unsubscribePlayersChange = worldJourneyManager.subscribePlayersChanged((players: PlayerModel[]) => {
+    const unsubscribePlayersChange = worldJourney.subscribePlayersChanged((players: PlayerModel[]) => {
       removePlayerNamesFromScene?.();
 
       const font = downloadTjsFont(FONT_SRC);
@@ -233,18 +233,18 @@ export function WorldCanvas({ worldJourneyManager }: Props) {
       removePlayerNamesFromScene?.();
       unsubscribePlayersChange();
     };
-  }, [scene, downloadTjsFont, worldJourneyManager]);
+  }, [scene, downloadTjsFont, worldJourney]);
 
   useEffect(() => {
     const instanceCycler: Record<string, (() => void) | undefined> = {};
 
-    const unsubscriber = worldJourneyManager.subscribeUnitsChanged((item, units) => {
+    const unsubscriber = worldJourney.subscribeUnitsChanged((item, units) => {
+      const itemId = item.getId();
+      instanceCycler[itemId]?.();
+
       if (!units) return;
       const itemModel = downloadTjsModel(item.getModelSrc());
       if (!itemModel) return;
-
-      const itemId = item.getId();
-      instanceCycler[itemId]?.();
 
       const itemUnitInstanceStates = units.map((unit) => ({
         x: unit.getPosition().getX() + 0.5,
@@ -263,7 +263,7 @@ export function WorldCanvas({ worldJourneyManager }: Props) {
         cycler?.();
       });
     };
-  }, [scene, downloadTjsModel, worldJourneyManager]);
+  }, [scene, downloadTjsModel, worldJourney]);
 
   useEffect(
     function animateEffect() {
