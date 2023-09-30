@@ -173,7 +173,6 @@ export class WorldJourneyApiService {
   public move(direction: DirectionModel) {
     const action: MoveCommand = {
       type: CommandTypeEnum.Move,
-
       direction: direction.toNumber(),
     };
     this.sendMessage(action);

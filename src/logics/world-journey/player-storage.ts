@@ -104,18 +104,20 @@ export class PlayerStorage {
     }
   }
 
-  public addPlayer(player: PlayerModel) {
-    if (this.getPlayer(player.getId())) return;
+  public addPlayer(player: PlayerModel): boolean {
+    if (this.getPlayer(player.getId())) return false;
 
     this.addPlayerInPlayerMap(player);
     this.addPlayerToPlayerMapByPos(player);
 
     this.publishPlayersChanged(this.getPlayers());
+
+    return true;
   }
 
-  public updatePlayer(player: PlayerModel) {
+  public updatePlayer(player: PlayerModel): boolean {
     const oldPlayer = this.getPlayer(player.getId());
-    if (!oldPlayer) return;
+    if (!oldPlayer) return false;
 
     this.updatePlayerInPlayerMap(player);
     this.updatePlayerInPlayerMapByPos(oldPlayer, player);
@@ -125,16 +127,20 @@ export class PlayerStorage {
     if (this.isMyPlayer(player.getId())) {
       this.publishMyPlayerChanged(this.getMyPlayer());
     }
+
+    return true;
   }
 
-  public removePlayer(playerId: string) {
+  public removePlayer(playerId: string): boolean {
     const currentPlayer = this.getPlayer(playerId);
-    if (!currentPlayer) return;
+    if (!currentPlayer) return false;
 
     this.removePlayerFromPlayerMapByPos(currentPlayer);
     this.removePlayerFromPlayerMap(playerId);
 
     this.publishPlayersChanged(this.getPlayers());
+
+    return true;
   }
 
   public getPlayersAtPos(pos: PositionModel): PlayerModel[] | null {

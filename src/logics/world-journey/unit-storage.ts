@@ -79,19 +79,20 @@ export class UnitStorage {
     this.addUnitToUnitMapByItemId(unit);
   }
 
-  public addUnit(unit: UnitModel) {
+  public addUnit(unit: UnitModel): boolean {
     const currentUnit = this.getUnit(unit.getPosition());
-    if (currentUnit) return;
+    if (currentUnit) return false;
 
     this.addUnitToUnitMapByPos(unit);
     this.addUnitToUnitMapByItemId(unit);
 
     this.publishUnitsChanged(unit.getItemId());
+    return true;
   }
 
-  public updateUnit(unit: UnitModel) {
+  public updateUnit(unit: UnitModel): boolean {
     const currentUnit = this.getUnit(unit.getPosition());
-    if (!currentUnit) return;
+    if (!currentUnit) return false;
 
     this.updateUnitInUnitMapByPos(unit);
     this.updateUnitFromUnitMapByItemId(currentUnit, unit);
@@ -100,16 +101,18 @@ export class UnitStorage {
     uniq(itemIds).forEach((itemId) => {
       this.publishUnitsChanged(itemId);
     });
+    return true;
   }
 
-  public removeUnit(position: PositionModel) {
+  public removeUnit(position: PositionModel): boolean {
     const currentUnit = this.getUnit(position);
-    if (!currentUnit) return;
+    if (!currentUnit) return false;
 
     this.removeUnitFromUnitMapByPos(currentUnit.getPosition());
     this.removeUnitFromUnitMapByItemId(currentUnit);
 
     this.publishUnitsChanged(currentUnit.getItemId());
+    return true;
   }
 
   public subscribeUnitsChanged(handler: UnitsChangedHandler): () => void {

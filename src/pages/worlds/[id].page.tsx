@@ -15,6 +15,7 @@ import { WorldMembersContext } from '@/contexts/world-members-context';
 import { Button } from '@/components/buttons/button';
 import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item-model';
+import { AddPerspectiveDepthCommand, SubtractPerspectiveDepthCommand } from '@/logics/world-journey';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -85,11 +86,11 @@ const Page: NextPage = function Page() {
   }, [items, myPlayerHeldItemId]);
 
   const handleEqualClick = useCallback(() => {
-    worldJourney?.addPerspectiveDepth();
+    worldJourney?.execute(AddPerspectiveDepthCommand.new());
   }, [worldJourney]);
 
   const handleMinusClick = useCallback(() => {
-    worldJourney?.subtractPerspectiveDepth();
+    worldJourney?.execute(SubtractPerspectiveDepthCommand.new());
   }, [worldJourney]);
 
   useKeyPress('KeyP', { onKeyDown: createUnit });

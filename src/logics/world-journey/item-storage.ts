@@ -30,7 +30,7 @@ export class ItemStorage {
   }
 
   public addPlaceholderItemId(itemId: string) {
-    if (this.placeholderItemIds.indexOf(itemId) > -1) {
+    if (this.itemMap[itemId]) {
       return;
     }
 
@@ -46,16 +46,18 @@ export class ItemStorage {
     return this.itemMap[itemId] || null;
   }
 
-  public addItem(item: ItemModel) {
+  public addItem(item: ItemModel): boolean {
     const itemId = item.getId();
 
     const existingItem = this.itemMap[itemId];
-    if (existingItem) return;
+    if (existingItem) return false;
 
     this.removePlaceholderItemId(itemId);
 
     this.itemMap[itemId] = item;
     this.publishItemAdded(item);
+
+    return true;
   }
 
   public subscribePlaceholderItemIdsAdded(handler: PlaceholderItemIdsAddedHandler): () => void {

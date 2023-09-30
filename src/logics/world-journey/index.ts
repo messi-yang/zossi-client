@@ -10,6 +10,9 @@ import { UnitStorage } from './unit-storage';
 import { PlayerStorage } from './player-storage';
 import { Perspective } from './perspective';
 import { ItemStorage } from './item-storage';
+import { Command } from './commands/command';
+
+export * from './commands';
 
 type PerspectiveChangedHandler = (depth: number, targetPos: PositionModel) => void;
 type PlayersChangedHandler = (players: PlayerModel[]) => void;
@@ -47,12 +50,14 @@ export class WorldJourney {
     return new WorldJourney(world, players, myPlayerId, units);
   }
 
-  public addPerspectiveDepth() {
-    this.perspective.addPerspectiveDepth();
-  }
-
-  public subtractPerspectiveDepth() {
-    this.perspective.subtractPerspectiveDepth();
+  public execute(command: Command): boolean {
+    const executed = command.execute({
+      playerStorage: this.playerStorage,
+      unitStorage: this.unitStorage,
+      itemStorage: this.itemStorage,
+      perspective: this.perspective,
+    });
+    return executed;
   }
 
   public getWorld(): WorldModel {
@@ -74,18 +79,6 @@ export class WorldJourney {
     return this.playerStorage.getMyPlayer();
   }
 
-  public addPlayer(player: PlayerModel) {
-    this.playerStorage.addPlayer(player);
-  }
-
-  public updatePlayer(player: PlayerModel) {
-    this.playerStorage.updatePlayer(player);
-  }
-
-  public removePlayer(playerId: string) {
-    this.playerStorage.removePlayer(playerId);
-  }
-
   public doesPosHavePlayers(pos: PositionModel): boolean {
     return !!this.playerStorage.getPlayersAtPos(pos);
   }
@@ -94,24 +87,8 @@ export class WorldJourney {
     return this.unitStorage.getUnit(position);
   }
 
-  public addUnit(unit: UnitModel) {
-    this.unitStorage.addUnit(unit);
-  }
-
-  public updateUnit(unit: UnitModel) {
-    this.unitStorage.updateUnit(unit);
-  }
-
-  public removeUnit(position: PositionModel) {
-    this.unitStorage.removeUnit(position);
-  }
-
   public getItem(itemId: string): ItemModel | null {
     return this.itemStorage.getItem(itemId);
-  }
-
-  public addItem(item: ItemModel) {
-    this.itemStorage.addItem(item);
   }
 
   public subscribePerspectiveChanged(handler: PerspectiveChangedHandler): () => void {

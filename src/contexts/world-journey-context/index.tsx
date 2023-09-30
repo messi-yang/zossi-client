@@ -3,7 +3,16 @@ import { WorldJourneyApiService } from '@/apis/services/world-journey-api-servic
 import { ItemApiService } from '@/apis/services/item-api-service';
 import { ItemModel } from '@/models/world/item-model';
 import { DirectionModel } from '@/models/world/direction-model';
-import { WorldJourney } from '@/logics/world-journey';
+import {
+  AddItemCommand,
+  AddPlayerCommand,
+  AddUnitCommand,
+  RemovePlayerCommand,
+  RemoveUnitCommand,
+  UpdatePlayerCommand,
+  UpdateUnitCommand,
+  WorldJourney,
+} from '@/logics/world-journey';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -48,7 +57,7 @@ export function Provider({ children }: Props) {
     worldJourney.subscribePlaceholderItemIdsAdded((placeholderItemIds) => {
       itemApiService.getItemsOfIds(placeholderItemIds).then((_items) => {
         _items.forEach((item) => {
-          worldJourney.addItem(item);
+          worldJourney.execute(AddItemCommand.new(item));
         });
       });
     });
@@ -61,6 +70,13 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     fetchItems();
   }, []);
+
+  useEffect(() => {
+    if (!worldJourney || !items) return;
+    items.forEach((item) => {
+      worldJourney.execute(AddItemCommand.new(item));
+    });
+  }, [worldJourney, items]);
 
   const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
@@ -78,27 +94,27 @@ export function Provider({ children }: Props) {
       },
       onUnitCreated: (_unit) => {
         if (!newWorldJourney) return;
-        newWorldJourney.addUnit(_unit);
+        newWorldJourney.execute(AddUnitCommand.new(_unit));
       },
       onUnitUpdated: (_unit) => {
         if (!newWorldJourney) return;
-        newWorldJourney.updateUnit(_unit);
+        newWorldJourney.execute(UpdateUnitCommand.new(_unit));
       },
       onUnitRemoved(_position) {
         if (!newWorldJourney) return;
-        newWorldJourney.removeUnit(_position);
+        newWorldJourney.execute(RemoveUnitCommand.new(_position));
       },
       onPlayerJoined: (_player) => {
         if (!newWorldJourney) return;
-        newWorldJourney.addPlayer(_player);
+        newWorldJourney.execute(AddPlayerCommand.new(_player));
       },
       onPlayerMoved: (_player) => {
         if (!newWorldJourney) return;
-        newWorldJourney.updatePlayer(_player);
+        newWorldJourney.execute(UpdatePlayerCommand.new(_player));
       },
       onPlayerLeft: (_playerId) => {
         if (!newWorldJourney) return;
-        newWorldJourney.removePlayer(_playerId);
+        newWorldJourney.execute(RemovePlayerCommand.new(_playerId));
       },
       onOpen: () => {
         setConnectionStatus('OPEN');
@@ -150,7 +166,6 @@ export function Provider({ children }: Props) {
 
   const changeHeldItem = useCallback(
     (item: ItemModel) => {
-      worldJourney?.addItem(item);
       worldJourneyApiService.current?.changeHeldItem(item.getId());
     },
     [worldJourney]
@@ -202,7 +217,12 @@ export function Provider({ children }: Props) {
 
   const removeUnit = useCallback(() => {
     if (!worldJourney) return;
-    worldJourneyApiService.current?.removeUnit(worldJourney.getMyPlayer().getPositionOneStepFoward());
+
+    const command = RemoveUnitCommand.new(worldJourney.getMyPlayer().getPositionOneStepFoward());
+    const executed = worldJourney.execute(command);
+    if (executed) {
+      worldJourneyApiService.current?.removeUnit(command.getPosition());
+    }
   }, [worldJourney]);
 
   const rotateUnit = useCallback(() => {
