@@ -4,7 +4,7 @@ import {
   WorldEnteredEvent,
   UnitCreatedEvent,
   UnitUpdatedEvent,
-  UnitDeletedEvent,
+  UnitRemovedEvent,
   PlayerJoinedEvent,
   PlayerMovedEvent,
   PlayerLeftEvent,
@@ -44,7 +44,7 @@ function parseUnitUpdatedEvent(event: UnitUpdatedEvent): [UnitModel] {
   return [parseUnitDto(event.unit)];
 }
 
-function parseUnitDeletedEvent(event: UnitDeletedEvent): [PositionModel] {
+function parseUnitRemovedEvent(event: UnitRemovedEvent): [PositionModel] {
   return [PositionModel.new(event.position.x, event.position.z)];
 }
 
@@ -69,7 +69,7 @@ export class WorldJourneyApiService {
       onWorldEntered: (world: WorldModel, units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitUpdated: (unit: UnitModel) => void;
-      onUnitDeleted: (position: PositionModel) => void;
+      onUnitRemoved: (position: PositionModel) => void;
       onPlayerJoined: (player: PlayerModel) => void;
       onPlayerMoved: (player: PlayerModel) => void;
       onPlayerLeft: (playerId: string) => void;
@@ -99,9 +99,9 @@ export class WorldJourneyApiService {
       } else if (newMsg.type === EventTypeEnum.UnitUpdated) {
         const [unit] = parseUnitUpdatedEvent(newMsg);
         params.onUnitUpdated(unit);
-      } else if (newMsg.type === EventTypeEnum.UnitDeleted) {
-        const [position] = parseUnitDeletedEvent(newMsg);
-        params.onUnitDeleted(position);
+      } else if (newMsg.type === EventTypeEnum.UnitRemoved) {
+        const [position] = parseUnitRemovedEvent(newMsg);
+        params.onUnitRemoved(position);
       } else if (newMsg.type === EventTypeEnum.PlayerJoined) {
         const [player] = parsePlayerJoinedEvent(newMsg);
         params.onPlayerJoined(player);
@@ -137,7 +137,7 @@ export class WorldJourneyApiService {
       onWorldEntered: (world: WorldModel, units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitUpdated: (unit: UnitModel) => void;
-      onUnitDeleted: (position: PositionModel) => void;
+      onUnitRemoved: (position: PositionModel) => void;
       onPlayerJoined: (player: PlayerModel) => void;
       onPlayerMoved: (player: PlayerModel) => void;
       onPlayerLeft: (playerId: string) => void;

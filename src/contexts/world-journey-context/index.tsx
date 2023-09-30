@@ -84,7 +84,7 @@ export function Provider({ children }: Props) {
         if (!newWorldJourney) return;
         newWorldJourney.updateUnit(_unit);
       },
-      onUnitDeleted(_position) {
+      onUnitRemoved(_position) {
         if (!newWorldJourney) return;
         newWorldJourney.removeUnit(_position);
       },

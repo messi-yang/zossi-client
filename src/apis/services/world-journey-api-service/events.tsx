@@ -4,7 +4,7 @@ enum EventTypeEnum {
   WorldEntered = 'WORLD_ENTERED',
   UnitCreated = 'UNIT_CREATED',
   UnitUpdated = 'UNIT_UPDATED',
-  UnitDeleted = 'UNIT_DELETED',
+  UnitRemoved = 'UNIT_REMOVED',
   PlayerJoined = 'PLAYER_JOINED',
   PlayerMoved = 'PLAYER_MOVED',
   PlayerLeft = 'PLAYER_LEFT',
@@ -28,8 +28,8 @@ type UnitUpdatedEvent = {
   unit: UnitDto;
 };
 
-type UnitDeletedEvent = {
-  type: EventTypeEnum.UnitDeleted;
+type UnitRemovedEvent = {
+  type: EventTypeEnum.UnitRemoved;
   position: PositionDto;
 };
 
@@ -52,7 +52,7 @@ type Event =
   | WorldEnteredEvent
   | UnitCreatedEvent
   | UnitUpdatedEvent
-  | UnitDeletedEvent
+  | UnitRemovedEvent
   | PlayerJoinedEvent
   | PlayerMovedEvent
   | PlayerLeftEvent;
@@ -63,7 +63,7 @@ export type {
   WorldEnteredEvent,
   UnitCreatedEvent,
   UnitUpdatedEvent,
-  UnitDeletedEvent,
+  UnitRemovedEvent,
   PlayerJoinedEvent,
   PlayerMovedEvent,
   PlayerLeftEvent,
