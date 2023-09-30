@@ -1,5 +1,5 @@
 import { PositionModel } from '@/models/world/position-model';
-import { Command, Options } from './command';
+import { Command, Options } from '../command';
 
 export class RemoveUnitCommand implements Command {
   constructor(private position: PositionModel) {}

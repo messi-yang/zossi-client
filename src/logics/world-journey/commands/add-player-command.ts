@@ -1,4 +1,4 @@
-import { Command, Options } from './command';
+import { Command, Options } from '../command';
 import { PlayerModel } from '@/models/world/player-model';
 
 export class AddPlayerCommand implements Command {

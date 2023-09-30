@@ -1,5 +1,5 @@
 import { PlayerModel } from '@/models/world/player-model';
-import { Command, Options } from './command';
+import { Command, Options } from '../command';
 
 export class UpdatePlayerCommand implements Command {
   constructor(private player: PlayerModel) {}

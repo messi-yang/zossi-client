@@ -10,9 +10,7 @@ import { UnitStorage } from './unit-storage';
 import { PlayerStorage } from './player-storage';
 import { Perspective } from './perspective';
 import { ItemStorage } from './item-storage';
-import { Command } from './commands/command';
-
-export * from './commands';
+import { Command } from './command';
 
 type PerspectiveChangedHandler = (depth: number, targetPos: PositionModel) => void;
 type PlayersChangedHandler = (players: PlayerModel[]) => void;

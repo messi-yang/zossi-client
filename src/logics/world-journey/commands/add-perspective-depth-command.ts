@@ -1,4 +1,4 @@
-import { Command, Options } from './command';
+import { Command, Options } from '../command';
 
 export class AddPerspectiveDepthCommand implements Command {
   static new() {

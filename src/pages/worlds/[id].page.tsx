@@ -15,7 +15,7 @@ import { WorldMembersContext } from '@/contexts/world-members-context';
 import { Button } from '@/components/buttons/button';
 import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item-model';
-import { AddPerspectiveDepthCommand, SubtractPerspectiveDepthCommand } from '@/logics/world-journey';
+import { AddPerspectiveDepthCommand, SubtractPerspectiveDepthCommand } from '@/logics/world-journey/commands';
 
 const Page: NextPage = function Page() {
   const router = useRouter();

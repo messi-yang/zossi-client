@@ -1,5 +1,5 @@
 import { UnitModel } from '@/models/world/unit-model';
-import { Command, Options } from './command';
+import { Command, Options } from '../command';
 
 export class UpdateUnitCommand implements Command {
   constructor(private unit: UnitModel) {}

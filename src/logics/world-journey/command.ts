@@ -1,7 +1,7 @@
-import { ItemStorage } from '../item-storage';
-import { PlayerStorage } from '../player-storage';
-import { UnitStorage } from '../unit-storage';
-import { Perspective } from '../perspective';
+import { ItemStorage } from './item-storage';
+import { PlayerStorage } from './player-storage';
+import { UnitStorage } from './unit-storage';
+import { Perspective } from './perspective';
 
 export type Options = {
   playerStorage: PlayerStorage;

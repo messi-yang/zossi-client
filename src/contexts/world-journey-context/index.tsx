@@ -11,8 +11,8 @@ import {
   RemoveUnitCommand,
   UpdatePlayerCommand,
   UpdateUnitCommand,
-  WorldJourney,
-} from '@/logics/world-journey';
+} from '@/logics/world-journey/commands';
+import { WorldJourney } from '@/logics/world-journey';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
