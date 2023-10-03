@@ -10,9 +10,9 @@ import {
   RemovePlayerCommand,
   RemoveUnitCommand,
   UpdatePlayerCommand,
-  UpdateUnitCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
+import { RotateUnitCommand } from '@/logics/world-journey/commands/rotate-unit-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -96,13 +96,13 @@ export function Provider({ children }: Props) {
         if (!newWorldJourney) return;
         newWorldJourney.execute(AddUnitCommand.new(_unit));
       },
-      onUnitUpdated: (_unit) => {
+      onUnitRotated: (command) => {
         if (!newWorldJourney) return;
-        newWorldJourney.execute(UpdateUnitCommand.new(_unit));
+        newWorldJourney.execute(command);
       },
-      onUnitRemoved(_position) {
+      onUnitRemoved(command) {
         if (!newWorldJourney) return;
-        newWorldJourney.execute(RemoveUnitCommand.new(_position));
+        newWorldJourney.execute(command);
       },
       onPlayerJoined: (_player) => {
         if (!newWorldJourney) return;
@@ -216,18 +216,25 @@ export function Provider({ children }: Props) {
   }, [worldJourney]);
 
   const removeUnit = useCallback(() => {
-    if (!worldJourney) return;
+    if (!worldJourney || !worldJourneyApiService.current) return;
 
-    const command = RemoveUnitCommand.new(worldJourney.getMyPlayer().getPositionOneStepFoward());
-    const executed = worldJourney.execute(command);
-    if (executed) {
-      worldJourneyApiService.current?.removeUnit(command.getPosition());
+    const unitPos = worldJourney.getMyPlayer().getPositionOneStepFoward();
+    const command = RemoveUnitCommand.new(unitPos);
+    const succeeded = worldJourney.execute(command);
+    if (succeeded) {
+      worldJourneyApiService.current.removeUnit(command);
     }
   }, [worldJourney]);
 
   const rotateUnit = useCallback(() => {
-    if (!worldJourney) return;
-    worldJourneyApiService.current?.rotateUnit(worldJourney.getMyPlayer().getPositionOneStepFoward());
+    if (!worldJourney || !worldJourneyApiService.current) return;
+
+    const unitPos = worldJourney.getMyPlayer().getPositionOneStepFoward();
+    const command = RotateUnitCommand.new(unitPos);
+    const succeeded = worldJourney.execute(command);
+    if (succeeded) {
+      worldJourneyApiService.current.rotateUnit(command);
+    }
   }, [worldJourney]);
 
   return (

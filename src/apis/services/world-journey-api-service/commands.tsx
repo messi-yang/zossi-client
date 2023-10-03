@@ -38,12 +38,12 @@ type CreatePortalUnitCommand = {
   direction: number;
 };
 
-type RemoveUnitCommand = {
+type RemoveUnitCommandDto = {
   type: CommandTypeEnum.RemoveUnit;
   position: PositionDto;
 };
 
-type RotateUnitCommand = {
+type RotateUnitCommandDto = {
   type: CommandTypeEnum.RotateUnit;
   position: PositionDto;
 };
@@ -56,6 +56,6 @@ export type {
   ChangeHeldItemCommand,
   CreateStaticUnitCommand,
   CreatePortalUnitCommand,
-  RemoveUnitCommand,
-  RotateUnitCommand,
+  RemoveUnitCommandDto,
+  RotateUnitCommandDto,
 };

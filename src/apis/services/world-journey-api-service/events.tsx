@@ -3,7 +3,7 @@ import type { WorldDto, PlayerDto, PositionDto, UnitDto } from '@/apis/dtos';
 enum EventTypeEnum {
   WorldEntered = 'WORLD_ENTERED',
   UnitCreated = 'UNIT_CREATED',
-  UnitUpdated = 'UNIT_UPDATED',
+  UnitRotated = 'UNIT_ROTATED',
   UnitRemoved = 'UNIT_REMOVED',
   PlayerJoined = 'PLAYER_JOINED',
   PlayerMoved = 'PLAYER_MOVED',
@@ -23,9 +23,9 @@ type UnitCreatedEvent = {
   unit: UnitDto;
 };
 
-type UnitUpdatedEvent = {
-  type: EventTypeEnum.UnitUpdated;
-  unit: UnitDto;
+type UnitRotatedEvent = {
+  type: EventTypeEnum.UnitRotated;
+  position: PositionDto;
 };
 
 type UnitRemovedEvent = {
@@ -51,7 +51,7 @@ type PlayerLeftEvent = {
 type Event =
   | WorldEnteredEvent
   | UnitCreatedEvent
-  | UnitUpdatedEvent
+  | UnitRotatedEvent
   | UnitRemovedEvent
   | PlayerJoinedEvent
   | PlayerMovedEvent
@@ -62,7 +62,7 @@ export type {
   Event,
   WorldEnteredEvent,
   UnitCreatedEvent,
-  UnitUpdatedEvent,
+  UnitRotatedEvent,
   UnitRemovedEvent,
   PlayerJoinedEvent,
   PlayerMovedEvent,

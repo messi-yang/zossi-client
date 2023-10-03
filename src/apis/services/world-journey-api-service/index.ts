@@ -3,7 +3,7 @@ import {
   EventTypeEnum,
   WorldEnteredEvent,
   UnitCreatedEvent,
-  UnitUpdatedEvent,
+  UnitRotatedEvent,
   UnitRemovedEvent,
   PlayerJoinedEvent,
   PlayerMovedEvent,
@@ -17,8 +17,8 @@ import type {
   ChangeHeldItemCommand,
   CreateStaticUnitCommand,
   CreatePortalUnitCommand,
-  RemoveUnitCommand,
-  RotateUnitCommand,
+  RemoveUnitCommandDto,
+  RotateUnitCommandDto,
 } from './commands';
 import { DirectionModel } from '@/models/world/direction-model';
 import { PositionModel } from '@/models/world/position-model';
@@ -26,6 +26,8 @@ import { WorldModel } from '@/models/world/world-model';
 import { PlayerModel } from '@/models/world/player-model';
 import { UnitModel } from '@/models/world/unit-model';
 import { LocalStorage } from '@/storages/local-storage';
+import { RotateUnitCommand } from '@/logics/world-journey/commands/rotate-unit-command';
+import { RemoveUnitCommand } from '@/logics/world-journey/commands';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
@@ -40,12 +42,18 @@ function parseUnitCreatedEvent(event: UnitCreatedEvent): [UnitModel] {
   return [parseUnitDto(event.unit)];
 }
 
-function parseUnitUpdatedEvent(event: UnitUpdatedEvent): [UnitModel] {
-  return [parseUnitDto(event.unit)];
+function parseUnitRotatedEvent(event: UnitRotatedEvent): RotateUnitCommand {
+  const pos = PositionModel.new(event.position.x, event.position.z);
+  const commnad = RotateUnitCommand.new(pos);
+
+  return commnad;
 }
 
-function parseUnitRemovedEvent(event: UnitRemovedEvent): [PositionModel] {
-  return [PositionModel.new(event.position.x, event.position.z)];
+function parseUnitRemovedEvent(event: UnitRemovedEvent): RemoveUnitCommand {
+  const pos = PositionModel.new(event.position.x, event.position.z);
+  const commnad = RemoveUnitCommand.new(pos);
+
+  return commnad;
 }
 
 function parsePlayerJoinedEvent(event: PlayerJoinedEvent): [PlayerModel] {
@@ -68,8 +76,8 @@ export class WorldJourneyApiService {
     params: {
       onWorldEntered: (world: WorldModel, units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
-      onUnitUpdated: (unit: UnitModel) => void;
-      onUnitRemoved: (position: PositionModel) => void;
+      onUnitRotated: (command: RotateUnitCommand) => void;
+      onUnitRemoved: (command: RemoveUnitCommand) => void;
       onPlayerJoined: (player: PlayerModel) => void;
       onPlayerMoved: (player: PlayerModel) => void;
       onPlayerLeft: (playerId: string) => void;
@@ -96,12 +104,12 @@ export class WorldJourneyApiService {
       } else if (newMsg.type === EventTypeEnum.UnitCreated) {
         const [unit] = parseUnitCreatedEvent(newMsg);
         params.onUnitCreated(unit);
-      } else if (newMsg.type === EventTypeEnum.UnitUpdated) {
-        const [unit] = parseUnitUpdatedEvent(newMsg);
-        params.onUnitUpdated(unit);
+      } else if (newMsg.type === EventTypeEnum.UnitRotated) {
+        const command = parseUnitRotatedEvent(newMsg);
+        params.onUnitRotated(command);
       } else if (newMsg.type === EventTypeEnum.UnitRemoved) {
-        const [position] = parseUnitRemovedEvent(newMsg);
-        params.onUnitRemoved(position);
+        const command = parseUnitRemovedEvent(newMsg);
+        params.onUnitRemoved(command);
       } else if (newMsg.type === EventTypeEnum.PlayerJoined) {
         const [player] = parsePlayerJoinedEvent(newMsg);
         params.onPlayerJoined(player);
@@ -136,8 +144,8 @@ export class WorldJourneyApiService {
     params: {
       onWorldEntered: (world: WorldModel, units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
       onUnitCreated: (unit: UnitModel) => void;
-      onUnitUpdated: (unit: UnitModel) => void;
-      onUnitRemoved: (position: PositionModel) => void;
+      onUnitRotated: (command: RotateUnitCommand) => void;
+      onUnitRemoved: (command: RemoveUnitCommand) => void;
       onPlayerJoined: (player: PlayerModel) => void;
       onPlayerMoved: (player: PlayerModel) => void;
       onPlayerLeft: (playerId: string) => void;
@@ -206,18 +214,18 @@ export class WorldJourneyApiService {
     this.sendMessage(action);
   }
 
-  public removeUnit(position: PositionModel) {
-    const action: RemoveUnitCommand = {
+  public removeUnit(command: RemoveUnitCommand) {
+    const action: RemoveUnitCommandDto = {
       type: CommandTypeEnum.RemoveUnit,
-      position: newPositionDto(position),
+      position: newPositionDto(command.getPosition()),
     };
     this.sendMessage(action);
   }
 
-  public rotateUnit(position: PositionModel) {
-    const action: RotateUnitCommand = {
+  public rotateUnit(command: RotateUnitCommand) {
+    const action: RotateUnitCommandDto = {
       type: CommandTypeEnum.RotateUnit,
-      position: newPositionDto(position),
+      position: newPositionDto(command.getPosition()),
     };
     this.sendMessage(action);
   }

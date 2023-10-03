@@ -49,13 +49,13 @@ export class WorldJourney {
   }
 
   public execute(command: Command): boolean {
-    const executed = command.execute({
+    const succeeded = command.execute({
       playerStorage: this.playerStorage,
       unitStorage: this.unitStorage,
       itemStorage: this.itemStorage,
       perspective: this.perspective,
     });
-    return executed;
+    return succeeded;
   }
 
   public getWorld(): WorldModel {

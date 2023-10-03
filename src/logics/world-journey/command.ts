@@ -11,6 +11,11 @@ export type Options = {
 };
 
 export interface Command {
-  // The return value indicates if the command is executed or nothing happened
+  /**
+   * Execute the command
+   * @param options
+   *
+   * @returns {boolean} Indicating the success of the command, if false is returned, it means no states were changed.
+   */
   execute(options: Options): boolean;
 }

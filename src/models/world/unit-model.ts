@@ -11,6 +11,10 @@ export class UnitModel {
     return new UnitModel('414b5703-91d1-42fc-a007-36dd8f25e329', PositionModel.new(0, 0), DirectionModel.newDown());
   }
 
+  public clone(): UnitModel {
+    return new UnitModel(this.itemId, this.position, this.direction);
+  }
+
   public getIdentifier(): string {
     return `${this.itemId},${this.position.getX()},${this.position.getZ()}`;
   }
@@ -25,5 +29,9 @@ export class UnitModel {
 
   public getDirection(): DirectionModel {
     return this.direction;
+  }
+
+  public updateDirection(direction: DirectionModel) {
+    this.direction = direction;
   }
 }
