@@ -27,7 +27,8 @@ import { PlayerModel } from '@/models/world/player-model';
 import { UnitModel } from '@/models/world/unit-model';
 import { LocalStorage } from '@/storages/local-storage';
 import { RotateUnitCommand } from '@/logics/world-journey/commands/rotate-unit-command';
-import { RemoveUnitCommand } from '@/logics/world-journey/commands';
+import { AddPlayerCommand, RemovePlayerCommand, RemoveUnitCommand } from '@/logics/world-journey/commands';
+import { WorldJourney } from '@/logics/world-journey';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
@@ -56,16 +57,19 @@ function parseUnitRemovedEvent(event: UnitRemovedEvent): RemoveUnitCommand {
   return commnad;
 }
 
-function parsePlayerJoinedEvent(event: PlayerJoinedEvent): [PlayerModel] {
-  return [parsePlayerDto(event.player)];
+function parsePlayerJoinedEvent(event: PlayerJoinedEvent): AddPlayerCommand {
+  const player = parsePlayerDto(event.player);
+  const command = AddPlayerCommand.new(player);
+  return command;
 }
 
 function parsePlayerMovedEvent(event: PlayerMovedEvent): [PlayerModel] {
   return [parsePlayerDto(event.player)];
 }
 
-function parsePlayerLeftEvent(event: PlayerLeftEvent): [string] {
-  return [event.playerId];
+function parsePlayerLeftEvent(event: PlayerLeftEvent): RemovePlayerCommand {
+  const command = RemovePlayerCommand.new(event.playerId);
+  return command;
 }
 
 export class WorldJourneyApiService {
@@ -74,13 +78,13 @@ export class WorldJourneyApiService {
   constructor(
     worldId: string,
     params: {
-      onWorldEntered: (world: WorldModel, units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
+      onWorldEntered: (worldJourney: WorldJourney) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitRotated: (command: RotateUnitCommand) => void;
       onUnitRemoved: (command: RemoveUnitCommand) => void;
-      onPlayerJoined: (player: PlayerModel) => void;
+      onPlayerJoined: (command: AddPlayerCommand) => void;
       onPlayerMoved: (player: PlayerModel) => void;
-      onPlayerLeft: (playerId: string) => void;
+      onPlayerLeft: (command: RemovePlayerCommand) => void;
       onClose: () => void;
       onOpen: () => void;
     }
@@ -100,7 +104,8 @@ export class WorldJourneyApiService {
       console.log(newMsg);
       if (newMsg.type === EventTypeEnum.WorldEntered) {
         const [world, units, myPlayerId, players] = parseWorldEnteredEvent(newMsg);
-        params.onWorldEntered(world, units, myPlayerId, players);
+        const worldJourney = WorldJourney.new(world, players, myPlayerId, units);
+        params.onWorldEntered(worldJourney);
       } else if (newMsg.type === EventTypeEnum.UnitCreated) {
         const [unit] = parseUnitCreatedEvent(newMsg);
         params.onUnitCreated(unit);
@@ -111,14 +116,14 @@ export class WorldJourneyApiService {
         const command = parseUnitRemovedEvent(newMsg);
         params.onUnitRemoved(command);
       } else if (newMsg.type === EventTypeEnum.PlayerJoined) {
-        const [player] = parsePlayerJoinedEvent(newMsg);
-        params.onPlayerJoined(player);
+        const command = parsePlayerJoinedEvent(newMsg);
+        params.onPlayerJoined(command);
       } else if (newMsg.type === EventTypeEnum.PlayerMoved) {
         const [player] = parsePlayerMovedEvent(newMsg);
         params.onPlayerMoved(player);
       } else if (newMsg.type === EventTypeEnum.PlayerLeft) {
-        const [playerId] = parsePlayerLeftEvent(newMsg);
-        params.onPlayerLeft(playerId);
+        const command = parsePlayerLeftEvent(newMsg);
+        params.onPlayerLeft(command);
       }
     };
 
@@ -142,13 +147,13 @@ export class WorldJourneyApiService {
   static new(
     worldId: string,
     params: {
-      onWorldEntered: (world: WorldModel, units: UnitModel[], myPlayerId: string, players: PlayerModel[]) => void;
+      onWorldEntered: (worldJourney: WorldJourney) => void;
       onUnitCreated: (unit: UnitModel) => void;
       onUnitRotated: (command: RotateUnitCommand) => void;
       onUnitRemoved: (command: RemoveUnitCommand) => void;
-      onPlayerJoined: (player: PlayerModel) => void;
+      onPlayerJoined: (command: AddPlayerCommand) => void;
       onPlayerMoved: (player: PlayerModel) => void;
-      onPlayerLeft: (playerId: string) => void;
+      onPlayerLeft: (command: RemovePlayerCommand) => void;
       onClose: () => void;
       onOpen: () => void;
     }

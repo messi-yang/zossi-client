@@ -5,9 +5,7 @@ import { ItemModel } from '@/models/world/item-model';
 import { DirectionModel } from '@/models/world/direction-model';
 import {
   AddItemCommand,
-  AddPlayerCommand,
   AddUnitCommand,
-  RemovePlayerCommand,
   RemoveUnitCommand,
   UpdatePlayerCommand,
 } from '@/logics/world-journey/commands';
@@ -88,9 +86,9 @@ export function Provider({ children }: Props) {
 
     let newWorldJourney: WorldJourney | null = null;
     const newWorldJourneyApiService = WorldJourneyApiService.new(WorldId, {
-      onWorldEntered: (_world, _units, _myPlayerId, _players) => {
-        newWorldJourney = WorldJourney.new(_world, _players, _myPlayerId, _units);
-        setWorldJourney(newWorldJourney);
+      onWorldEntered: (_worldJourney) => {
+        newWorldJourney = _worldJourney;
+        setWorldJourney(_worldJourney);
       },
       onUnitCreated: (_unit) => {
         if (!newWorldJourney) return;
@@ -104,17 +102,17 @@ export function Provider({ children }: Props) {
         if (!newWorldJourney) return;
         newWorldJourney.execute(command);
       },
-      onPlayerJoined: (_player) => {
+      onPlayerJoined: (command) => {
         if (!newWorldJourney) return;
-        newWorldJourney.execute(AddPlayerCommand.new(_player));
+        newWorldJourney.execute(command);
       },
       onPlayerMoved: (_player) => {
         if (!newWorldJourney) return;
         newWorldJourney.execute(UpdatePlayerCommand.new(_player));
       },
-      onPlayerLeft: (_playerId) => {
+      onPlayerLeft: (command) => {
         if (!newWorldJourney) return;
-        newWorldJourney.execute(RemovePlayerCommand.new(_playerId));
+        newWorldJourney.execute(command);
       },
       onOpen: () => {
         setConnectionStatus('OPEN');
