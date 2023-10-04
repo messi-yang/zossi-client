@@ -7,6 +7,7 @@ enum EventTypeEnum {
   UnitRemoved = 'UNIT_REMOVED',
   PlayerJoined = 'PLAYER_JOINED',
   PlayerMoved = 'PLAYER_MOVED',
+  PlayerHeldItemChanged = 'PLAYER_HELD_ITEM_CHANGED',
   PlayerLeft = 'PLAYER_LEFT',
 }
 
@@ -43,6 +44,12 @@ type PlayerMovedEvent = {
   player: PlayerDto;
 };
 
+type PlayerHeldItemChangedEvent = {
+  type: EventTypeEnum.PlayerHeldItemChanged;
+  playerId: string;
+  itemId: string;
+};
+
 type PlayerLeftEvent = {
   type: EventTypeEnum.PlayerLeft;
   playerId: string;
@@ -55,6 +62,7 @@ type Event =
   | UnitRemovedEvent
   | PlayerJoinedEvent
   | PlayerMovedEvent
+  | PlayerHeldItemChangedEvent
   | PlayerLeftEvent;
 
 export { EventTypeEnum };
@@ -66,5 +74,6 @@ export type {
   UnitRemovedEvent,
   PlayerJoinedEvent,
   PlayerMovedEvent,
+  PlayerHeldItemChangedEvent,
   PlayerLeftEvent,
 };

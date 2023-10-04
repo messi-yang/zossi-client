@@ -13,7 +13,7 @@ export class RotateUnitCommand implements Command {
     if (!unit) return false;
 
     const clonedUnit = unit.clone();
-    clonedUnit.updateDirection(clonedUnit.getDirection().rotate());
+    clonedUnit.changeDirection(clonedUnit.getDirection().rotate());
 
     return unitStorage.updateUnit(clonedUnit);
   }

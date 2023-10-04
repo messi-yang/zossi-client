@@ -25,6 +25,10 @@ export class PlayerModel {
     return PlayerModel.new(uuidv4(), 'Test Player', PositionModel.new(0, 0), DirectionModel.new(2), null);
   }
 
+  public clone(): PlayerModel {
+    return new PlayerModel(this.id, this.name, this.position, this.direction, this.heldItemId);
+  }
+
   public getId(): string {
     return this.id;
   }
@@ -43,6 +47,10 @@ export class PlayerModel {
 
   public getHeldItemId(): string | null {
     return this.heldItemId;
+  }
+
+  public changeHeldItemId(itemId: string): void {
+    this.heldItemId = itemId;
   }
 
   public getPositionOneStepFoward(): PositionModel {

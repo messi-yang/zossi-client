@@ -45,7 +45,7 @@ const Page: NextPage = function Page() {
     move,
     enterWorld,
     leaveWorld,
-    changeHeldItem,
+    changePlayerHeldItem,
     createUnit,
     removeUnit,
     rotateUnit,
@@ -82,7 +82,7 @@ const Page: NextPage = function Page() {
       return;
     }
     const targetItemIdIndex = items.findIndex((item) => item.getId() === myPlayerHeldItemId) + 1;
-    changeHeldItem(items[targetItemIdIndex % items.length]);
+    changePlayerHeldItem(items[targetItemIdIndex % items.length]);
   }, [items, myPlayerHeldItemId]);
 
   const handleEqualClick = useCallback(() => {
@@ -145,7 +145,7 @@ const Page: NextPage = function Page() {
   };
 
   const handleItemSelect = (item: ItemModel) => {
-    changeHeldItem(item);
+    changePlayerHeldItem(item);
   };
 
   const handleRecconectModalConfirmClick = useCallback(() => {

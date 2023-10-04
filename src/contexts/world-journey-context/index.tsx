@@ -11,6 +11,7 @@ import {
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { RotateUnitCommand } from '@/logics/world-journey/commands/rotate-unit-command';
+import { ChangePlayerHeldItemCommand } from '@/logics/world-journey/commands/change-player-held-item-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -20,7 +21,7 @@ type ContextValue = {
   items: ItemModel[] | null;
   enterWorld: (WorldId: string) => void;
   move: (direction: DirectionModel) => void;
-  changeHeldItem: (item: ItemModel) => void;
+  changePlayerHeldItem: (item: ItemModel) => void;
   createUnit: () => void;
   removeUnit: () => void;
   rotateUnit: () => void;
@@ -33,7 +34,7 @@ const Context = createContext<ContextValue>({
   items: null,
   enterWorld: () => {},
   move: () => {},
-  changeHeldItem: () => {},
+  changePlayerHeldItem: () => {},
   createUnit: () => {},
   removeUnit: () => {},
   rotateUnit: () => {},
@@ -110,6 +111,10 @@ export function Provider({ children }: Props) {
         if (!newWorldJourney) return;
         newWorldJourney.execute(UpdatePlayerCommand.new(_player));
       },
+      onPlayerHeldItemChanged: (command) => {
+        if (!newWorldJourney) return;
+        newWorldJourney.execute(command);
+      },
       onPlayerLeft: (command) => {
         if (!newWorldJourney) return;
         newWorldJourney.execute(command);
@@ -162,9 +167,13 @@ export function Provider({ children }: Props) {
     worldJourneyApiService.current.disconnect();
   }, []);
 
-  const changeHeldItem = useCallback(
+  const changePlayerHeldItem = useCallback(
     (item: ItemModel) => {
-      worldJourneyApiService.current?.changeHeldItem(item.getId());
+      if (!worldJourney || !worldJourneyApiService.current) return;
+
+      const command = ChangePlayerHeldItemCommand.new(worldJourney.getMyPlayer().getId(), item.getId());
+      worldJourney.execute(command);
+      worldJourneyApiService.current.changePlayerHeldItem(command);
     },
     [worldJourney]
   );
@@ -245,7 +254,7 @@ export function Provider({ children }: Props) {
           enterWorld,
           move,
           leaveWorld,
-          changeHeldItem,
+          changePlayerHeldItem,
           createUnit,
           removeUnit,
           rotateUnit,
@@ -257,7 +266,7 @@ export function Provider({ children }: Props) {
           enterWorld,
           move,
           leaveWorld,
-          changeHeldItem,
+          changePlayerHeldItem,
           createUnit,
           removeUnit,
           rotateUnit,

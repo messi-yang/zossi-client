@@ -31,7 +31,7 @@ export class UnitModel {
     return this.direction;
   }
 
-  public updateDirection(direction: DirectionModel) {
+  public changeDirection(direction: DirectionModel) {
     this.direction = direction;
   }
 }
