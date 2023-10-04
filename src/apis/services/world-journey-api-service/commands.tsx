@@ -2,7 +2,7 @@ import { PositionDto } from '@/apis/dtos';
 
 enum CommandTypeEnum {
   Ping = 'PING',
-  Move = 'MOVE',
+  MovePlayer = 'MOVE_PLAYER',
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
   CreatePortalUnit = 'CREATE_PORTAL_UNIT',
@@ -14,8 +14,10 @@ type PingCommand = {
   type: CommandTypeEnum.Ping;
 };
 
-type MoveCommand = {
-  type: CommandTypeEnum.Move;
+type MovePlayerCommandDto = {
+  type: CommandTypeEnum.MovePlayer;
+  playerId: string;
+  position: PositionDto;
   direction: number;
 };
 
@@ -53,7 +55,7 @@ export { CommandTypeEnum };
 
 export type {
   PingCommand,
-  MoveCommand,
+  MovePlayerCommandDto,
   ChangePlayerHeldItemCommandDto,
   CreateStaticUnitCommand,
   CreatePortalUnitCommand,

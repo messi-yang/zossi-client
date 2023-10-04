@@ -6,12 +6,12 @@ import { DirectionModel } from '@/models/world/direction-model';
 import {
   AddItemCommand,
   AddUnitCommand,
+  RotateUnitCommand,
   RemoveUnitCommand,
-  UpdatePlayerCommand,
+  ChangePlayerHeldItemCommand,
+  MovePlayerCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
-import { RotateUnitCommand } from '@/logics/world-journey/commands/rotate-unit-command';
-import { ChangePlayerHeldItemCommand } from '@/logics/world-journey/commands/change-player-held-item-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -20,7 +20,7 @@ type ContextValue = {
   connectionStatus: ConnectionStatus;
   items: ItemModel[] | null;
   enterWorld: (WorldId: string) => void;
-  move: (direction: DirectionModel) => void;
+  movePlayer: (direction: DirectionModel) => void;
   changePlayerHeldItem: (item: ItemModel) => void;
   createUnit: () => void;
   removeUnit: () => void;
@@ -33,7 +33,7 @@ const Context = createContext<ContextValue>({
   connectionStatus: 'WAITING',
   items: null,
   enterWorld: () => {},
-  move: () => {},
+  movePlayer: () => {},
   changePlayerHeldItem: () => {},
   createUnit: () => {},
   removeUnit: () => {},
@@ -107,9 +107,9 @@ export function Provider({ children }: Props) {
         if (!newWorldJourney) return;
         newWorldJourney.execute(command);
       },
-      onPlayerMoved: (_player) => {
+      onPlayerMoved: (command) => {
         if (!newWorldJourney) return;
-        newWorldJourney.execute(UpdatePlayerCommand.new(_player));
+        newWorldJourney.execute(command);
       },
       onPlayerHeldItemChanged: (command) => {
         if (!newWorldJourney) return;
@@ -131,30 +131,19 @@ export function Provider({ children }: Props) {
     worldJourneyApiService.current = newWorldJourneyApiService;
   }, []);
 
-  const move = useCallback(
+  const movePlayer = useCallback(
     (direction: DirectionModel) => {
       if (!worldJourneyApiService.current || !worldJourney) {
         return;
       }
 
-      const playerIsMovingFoward = worldJourney.getMyPlayer().getDirection().isEqual(direction);
-      if (!playerIsMovingFoward) {
-        worldJourneyApiService.current.move(direction);
-        return;
+      const playerId = worldJourney.getMyPlayer().getId();
+      const playerPosition = worldJourney.getMyPlayer().getPosition();
+      const command = MovePlayerCommand.new(playerId, playerPosition, direction);
+      const succeeded = worldJourney.execute(command);
+      if (succeeded) {
+        worldJourneyApiService.current.movePlayer(command);
       }
-
-      const nextPosition = worldJourney.getMyPlayer().getPositionOneStepFoward();
-      if (!worldJourney.getWorldBound().doesContainPosition(nextPosition)) {
-        return;
-      }
-
-      const unitAtNextPosition = worldJourney.getUnit(nextPosition);
-      if (unitAtNextPosition) {
-        const item = worldJourney.getItem(unitAtNextPosition.getItemId());
-        if (!item) return;
-        if (!item.getTraversable()) return;
-      }
-      worldJourneyApiService.current.move(direction);
     },
     [worldJourney]
   );
@@ -252,7 +241,7 @@ export function Provider({ children }: Props) {
           connectionStatus,
           items,
           enterWorld,
-          move,
+          movePlayer,
           leaveWorld,
           changePlayerHeldItem,
           createUnit,
@@ -264,7 +253,7 @@ export function Provider({ children }: Props) {
           connectionStatus,
           items,
           enterWorld,
-          move,
+          movePlayer,
           leaveWorld,
           changePlayerHeldItem,
           createUnit,

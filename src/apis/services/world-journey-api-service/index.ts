@@ -14,7 +14,7 @@ import type { Event } from './events';
 import { CommandTypeEnum } from './commands';
 import type {
   PingCommand,
-  MoveCommand,
+  MovePlayerCommandDto,
   ChangePlayerHeldItemCommandDto,
   CreateStaticUnitCommand,
   CreatePortalUnitCommand,
@@ -28,7 +28,12 @@ import { PlayerModel } from '@/models/world/player-model';
 import { UnitModel } from '@/models/world/unit-model';
 import { LocalStorage } from '@/storages/local-storage';
 import { RotateUnitCommand } from '@/logics/world-journey/commands/rotate-unit-command';
-import { AddPlayerCommand, RemovePlayerCommand, RemoveUnitCommand } from '@/logics/world-journey/commands';
+import {
+  AddPlayerCommand,
+  MovePlayerCommand,
+  RemovePlayerCommand,
+  RemoveUnitCommand,
+} from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { ChangePlayerHeldItemCommand } from '@/logics/world-journey/commands/change-player-held-item-command';
 
@@ -65,8 +70,13 @@ function parsePlayerJoinedEvent(event: PlayerJoinedEvent): AddPlayerCommand {
   return command;
 }
 
-function parsePlayerMovedEvent(event: PlayerMovedEvent): [PlayerModel] {
-  return [parsePlayerDto(event.player)];
+function parsePlayerMovedEvent(event: PlayerMovedEvent): MovePlayerCommand {
+  const command = MovePlayerCommand.new(
+    event.playerId,
+    PositionModel.new(event.position.x, event.position.z),
+    DirectionModel.new(event.direction)
+  );
+  return command;
 }
 
 function parsePlayerHeldItemChangedEvent(event: PlayerHeldItemChangedEvent): ChangePlayerHeldItemCommand {
@@ -90,7 +100,7 @@ export class WorldJourneyApiService {
       onUnitRotated: (command: RotateUnitCommand) => void;
       onUnitRemoved: (command: RemoveUnitCommand) => void;
       onPlayerJoined: (command: AddPlayerCommand) => void;
-      onPlayerMoved: (player: PlayerModel) => void;
+      onPlayerMoved: (command: MovePlayerCommand) => void;
       onPlayerHeldItemChanged: (command: ChangePlayerHeldItemCommand) => void;
       onPlayerLeft: (command: RemovePlayerCommand) => void;
       onClose: () => void;
@@ -127,8 +137,8 @@ export class WorldJourneyApiService {
         const command = parsePlayerJoinedEvent(newMsg);
         params.onPlayerJoined(command);
       } else if (newMsg.type === EventTypeEnum.PlayerMoved) {
-        const [player] = parsePlayerMovedEvent(newMsg);
-        params.onPlayerMoved(player);
+        const command = parsePlayerMovedEvent(newMsg);
+        params.onPlayerMoved(command);
       } else if (newMsg.type === EventTypeEnum.PlayerHeldItemChanged) {
         const command = parsePlayerHeldItemChangedEvent(newMsg);
         params.onPlayerHeldItemChanged(command);
@@ -163,7 +173,7 @@ export class WorldJourneyApiService {
       onUnitRotated: (command: RotateUnitCommand) => void;
       onUnitRemoved: (command: RemoveUnitCommand) => void;
       onPlayerJoined: (command: AddPlayerCommand) => void;
-      onPlayerMoved: (player: PlayerModel) => void;
+      onPlayerMoved: (command: MovePlayerCommand) => void;
       onPlayerHeldItemChanged: (command: ChangePlayerHeldItemCommand) => void;
       onPlayerLeft: (command: RemovePlayerCommand) => void;
       onClose: () => void;
@@ -195,10 +205,12 @@ export class WorldJourneyApiService {
     this.sendMessage(action);
   }
 
-  public move(direction: DirectionModel) {
-    const action: MoveCommand = {
-      type: CommandTypeEnum.Move,
-      direction: direction.toNumber(),
+  public movePlayer(command: MovePlayerCommand) {
+    const action: MovePlayerCommandDto = {
+      type: CommandTypeEnum.MovePlayer,
+      playerId: command.getPlayerId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
     };
     this.sendMessage(action);
   }

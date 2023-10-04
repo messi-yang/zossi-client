@@ -41,8 +41,16 @@ export class PlayerModel {
     return this.position;
   }
 
+  public changePosition(position: PositionModel): void {
+    this.position = position;
+  }
+
   public getDirection(): DirectionModel {
     return this.direction;
+  }
+
+  public changeDirection(direction: DirectionModel): void {
+    this.direction = direction;
   }
 
   public getHeldItemId(): string | null {

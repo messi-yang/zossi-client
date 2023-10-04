@@ -2,8 +2,10 @@ import { ItemStorage } from './item-storage';
 import { PlayerStorage } from './player-storage';
 import { UnitStorage } from './unit-storage';
 import { Perspective } from './perspective';
+import { WorldModel } from '@/models/world/world-model';
 
 export type Options = {
+  world: WorldModel;
   playerStorage: PlayerStorage;
   unitStorage: UnitStorage;
   itemStorage: ItemStorage;

@@ -41,7 +41,9 @@ type PlayerJoinedEvent = {
 
 type PlayerMovedEvent = {
   type: EventTypeEnum.PlayerMoved;
-  player: PlayerDto;
+  playerId: string;
+  position: PositionDto;
+  direction: number;
 };
 
 type PlayerHeldItemChangedEvent = {

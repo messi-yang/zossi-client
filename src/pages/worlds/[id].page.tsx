@@ -42,7 +42,7 @@ const Page: NextPage = function Page() {
     worldJourney,
     connectionStatus,
     items,
-    move,
+    movePlayer,
     enterWorld,
     leaveWorld,
     changePlayerHeldItem,
@@ -116,10 +116,10 @@ const Page: NextPage = function Page() {
       }
 
       const doMove = () => {
-        if (isUpPressed) move(DirectionModel.newUp());
-        if (isRightPressed) move(DirectionModel.newRight());
-        if (isDownPressed) move(DirectionModel.newDown());
-        if (isLeftPressed) move(DirectionModel.newLeft());
+        if (isUpPressed) movePlayer(DirectionModel.newUp());
+        if (isRightPressed) movePlayer(DirectionModel.newRight());
+        if (isDownPressed) movePlayer(DirectionModel.newDown());
+        if (isLeftPressed) movePlayer(DirectionModel.newLeft());
       };
 
       doMove();
@@ -129,7 +129,7 @@ const Page: NextPage = function Page() {
         clearInterval(goUpInterval);
       };
     },
-    [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, move]
+    [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, movePlayer]
   );
 
   const goToDashboardWorldsPage = () => {

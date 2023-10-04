@@ -50,6 +50,7 @@ export class WorldJourney {
 
   public execute(command: Command): boolean {
     const succeeded = command.execute({
+      world: this.world,
       playerStorage: this.playerStorage,
       unitStorage: this.unitStorage,
       itemStorage: this.itemStorage,
