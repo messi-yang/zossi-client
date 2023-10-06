@@ -1,7 +1,11 @@
-import { PositionDto } from '@/apis/dtos';
+import { PlayerDto, PositionDto, UnitDto, WorldDto } from '@/apis/dtos';
 
-enum CommandTypeEnum {
+enum CommandNameEnum {
   Ping = 'PING',
+  DisplayError = 'DISPLAY_ERROR',
+  EnterWorld = 'ENTER_WORLD',
+  AddPlayer = 'ADD_PLAYER',
+  RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
@@ -10,52 +14,105 @@ enum CommandTypeEnum {
   RotateUnit = 'ROTATE_UNIT',
 }
 
-type PingCommand = {
-  type: CommandTypeEnum.Ping;
+type PingCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.Ping;
+};
+
+type EnterWorldCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.EnterWorld;
+  world: WorldDto;
+  units: UnitDto[];
+  myPlayerId: string;
+  players: PlayerDto[];
+};
+
+type AddPlayerCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.AddPlayer;
+  player: PlayerDto;
 };
 
 type MovePlayerCommandDto = {
-  type: CommandTypeEnum.MovePlayer;
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.MovePlayer;
   playerId: string;
   position: PositionDto;
   direction: number;
 };
 
+type RemovePlayerCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RemovePlayer;
+  playerId: string;
+};
+
 type ChangePlayerHeldItemCommandDto = {
-  type: CommandTypeEnum.ChangePlayerHeldItem;
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.ChangePlayerHeldItem;
   playerId: string;
   itemId: string;
 };
 
 type CreateStaticUnitCommandDto = {
-  type: CommandTypeEnum.CreateStaticUnit;
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.CreateStaticUnit;
   itemId: string;
   position: PositionDto;
   direction: number;
 };
 
 type CreatePortalUnitCommandDto = {
-  type: CommandTypeEnum.CreatePortalUnit;
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.CreatePortalUnit;
   itemId: string;
   position: PositionDto;
   direction: number;
 };
 
 type RemoveUnitCommandDto = {
-  type: CommandTypeEnum.RemoveUnit;
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RemoveUnit;
   position: PositionDto;
 };
 
 type RotateUnitCommandDto = {
-  type: CommandTypeEnum.RotateUnit;
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RotateUnit;
   position: PositionDto;
 };
 
-export { CommandTypeEnum };
+export { CommandNameEnum };
+
+export type Command =
+  | PingCommandDto
+  | EnterWorldCommandDto
+  | AddPlayerCommandDto
+  | MovePlayerCommandDto
+  | RemovePlayerCommandDto
+  | ChangePlayerHeldItemCommandDto
+  | CreateStaticUnitCommandDto
+  | CreatePortalUnitCommandDto
+  | RemoveUnitCommandDto
+  | RotateUnitCommandDto;
 
 export type {
-  PingCommand,
+  PingCommandDto,
+  EnterWorldCommandDto,
+  AddPlayerCommandDto,
   MovePlayerCommandDto,
+  RemovePlayerCommandDto,
   ChangePlayerHeldItemCommandDto,
   CreateStaticUnitCommandDto,
   CreatePortalUnitCommandDto,

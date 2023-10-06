@@ -1,24 +1,18 @@
+import { v4 as uuidv4 } from 'uuid';
 import { parsePlayerDto, parseUnitDto, parseWorldDto, newPositionDto } from '@/apis/dtos';
-import {
-  EventTypeEnum,
-  WorldEnteredEvent,
-  UnitRotatedEvent,
-  UnitRemovedEvent,
-  PlayerJoinedEvent,
-  PlayerMovedEvent,
-  PlayerHeldItemChangedEvent,
-  PlayerLeftEvent,
-} from './events';
-import type { Event, PortalUnitCreatedEvent, StaticUnitCreatedEvent } from './events';
-import { CommandTypeEnum } from './commands';
+import { CommandNameEnum } from './commands';
 import type {
-  PingCommand,
+  PingCommandDto,
+  EnterWorldCommandDto,
+  AddPlayerCommandDto,
   MovePlayerCommandDto,
   ChangePlayerHeldItemCommandDto,
-  RemoveUnitCommandDto,
-  RotateUnitCommandDto,
+  RemovePlayerCommandDto,
   CreateStaticUnitCommandDto,
   CreatePortalUnitCommandDto,
+  RotateUnitCommandDto,
+  RemoveUnitCommandDto,
+  Command,
 } from './commands';
 import { DirectionModel } from '@/models/world/direction-model';
 import { PositionModel } from '@/models/world/position-model';
@@ -37,69 +31,73 @@ import {
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { ChangePlayerHeldItemCommand } from '@/logics/world-journey/commands/change-player-held-item-command';
+import { DateModel } from '@/models/general/date-model';
 
-function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
+function parseEnterWorldCommand(command: EnterWorldCommandDto): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
-    parseWorldDto(event.world),
-    event.units.map(parseUnitDto),
-    event.myPlayerId,
-    event.players.map(parsePlayerDto),
+    parseWorldDto(command.world),
+    command.units.map(parseUnitDto),
+    command.myPlayerId,
+    command.players.map(parsePlayerDto),
   ];
 }
 
-function parseStaticUnitCreatedEvent(event: StaticUnitCreatedEvent): CreateStaticUnitCommand {
-  return CreateStaticUnitCommand.new(
-    event.itemId,
-    PositionModel.new(event.position.x, event.position.z),
-    DirectionModel.new(event.direction)
+function parseCreateStaticCreateStaticUnitCommandDto(command: CreateStaticUnitCommandDto): CreateStaticUnitCommand {
+  return CreateStaticUnitCommand.load(
+    command.id,
+    command.timestamp,
+    command.itemId,
+    PositionModel.new(command.position.x, command.position.z),
+    DirectionModel.new(command.direction)
   );
 }
 
-function parsePortalUnitCreatedEvent(event: PortalUnitCreatedEvent): CreateStaticUnitCommand {
-  return CreateStaticUnitCommand.new(
-    event.itemId,
-    PositionModel.new(event.position.x, event.position.z),
-    DirectionModel.new(event.direction)
+function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): CreateStaticUnitCommand {
+  return CreateStaticUnitCommand.load(
+    command.id,
+    command.timestamp,
+    command.itemId,
+    PositionModel.new(command.position.x, command.position.z),
+    DirectionModel.new(command.direction)
   );
 }
 
-function parseUnitRotatedEvent(event: UnitRotatedEvent): RotateUnitCommand {
-  const pos = PositionModel.new(event.position.x, event.position.z);
-  const commnad = RotateUnitCommand.new(pos);
-
-  return commnad;
-}
-
-function parseUnitRemovedEvent(event: UnitRemovedEvent): RemoveUnitCommand {
-  const pos = PositionModel.new(event.position.x, event.position.z);
-  const commnad = RemoveUnitCommand.new(pos);
-
-  return commnad;
-}
-
-function parsePlayerJoinedEvent(event: PlayerJoinedEvent): AddPlayerCommand {
-  const player = parsePlayerDto(event.player);
-  const command = AddPlayerCommand.new(player);
-  return command;
-}
-
-function parsePlayerMovedEvent(event: PlayerMovedEvent): MovePlayerCommand {
-  const command = MovePlayerCommand.new(
-    event.playerId,
-    PositionModel.new(event.position.x, event.position.z),
-    DirectionModel.new(event.direction)
+function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
+  return RotateUnitCommand.load(
+    command.id,
+    command.timestamp,
+    PositionModel.new(command.position.x, command.position.z)
   );
-  return command;
 }
 
-function parsePlayerHeldItemChangedEvent(event: PlayerHeldItemChangedEvent): ChangePlayerHeldItemCommand {
-  const command = ChangePlayerHeldItemCommand.new(event.playerId, event.itemId);
-  return command;
+function parseRemoveUnitCommand(command: RemoveUnitCommandDto): RemoveUnitCommand {
+  return RemoveUnitCommand.load(
+    command.id,
+    command.timestamp,
+    PositionModel.new(command.position.x, command.position.z)
+  );
 }
 
-function parsePlayerLeftEvent(event: PlayerLeftEvent): RemovePlayerCommand {
-  const command = RemovePlayerCommand.new(event.playerId);
-  return command;
+function parseAddPlayerAddPlayerCommand(command: AddPlayerCommandDto): AddPlayerCommand {
+  return AddPlayerCommand.load(command.id, command.timestamp, parsePlayerDto(command.player));
+}
+
+function parseMovePlayerCommand(command: MovePlayerCommandDto): MovePlayerCommand {
+  return MovePlayerCommand.load(
+    command.id,
+    command.timestamp,
+    command.playerId,
+    PositionModel.new(command.position.x, command.position.z),
+    DirectionModel.new(command.direction)
+  );
+}
+
+function parseChangeChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
+  return ChangePlayerHeldItemCommand.load(command.id, command.timestamp, command.playerId, command.itemId);
+}
+
+function parseRemoveRemovePlayerCommand(command: RemovePlayerCommandDto): RemovePlayerCommand {
+  return RemovePlayerCommand.load(command.id, command.timestamp, command.playerId);
 }
 
 export class WorldJourneyApiService {
@@ -131,36 +129,36 @@ export class WorldJourneyApiService {
 
     socket.onmessage = async ({ data }: any) => {
       const eventJsonString: string = await data.text();
-      const newMsg: Event = JSON.parse(eventJsonString);
+      const newMsg: Command = JSON.parse(eventJsonString);
 
       console.log(newMsg);
-      if (newMsg.type === EventTypeEnum.WorldEntered) {
-        const [world, units, myPlayerId, players] = parseWorldEnteredEvent(newMsg);
+      if (newMsg.name === CommandNameEnum.EnterWorld) {
+        const [world, units, myPlayerId, players] = parseEnterWorldCommand(newMsg);
         const worldJourney = WorldJourney.new(world, players, myPlayerId, units);
         params.onWorldEntered(worldJourney);
-      } else if (newMsg.type === EventTypeEnum.StaticUnitCreated) {
-        const command = parseStaticUnitCreatedEvent(newMsg);
+      } else if (newMsg.name === CommandNameEnum.CreateStaticUnit) {
+        const command = parseCreateStaticCreateStaticUnitCommandDto(newMsg);
         params.onStaticUnitCreated(command);
-      } else if (newMsg.type === EventTypeEnum.PortalUnitCreated) {
-        const command = parsePortalUnitCreatedEvent(newMsg);
+      } else if (newMsg.name === CommandNameEnum.CreatePortalUnit) {
+        const command = parseCreatePortalUnitCommand(newMsg);
         params.onPortalUnitCreated(command);
-      } else if (newMsg.type === EventTypeEnum.UnitRotated) {
-        const command = parseUnitRotatedEvent(newMsg);
+      } else if (newMsg.name === CommandNameEnum.RotateUnit) {
+        const command = parseRotateUnitCommand(newMsg);
         params.onUnitRotated(command);
-      } else if (newMsg.type === EventTypeEnum.UnitRemoved) {
-        const command = parseUnitRemovedEvent(newMsg);
+      } else if (newMsg.name === CommandNameEnum.RemoveUnit) {
+        const command = parseRemoveUnitCommand(newMsg);
         params.onUnitRemoved(command);
-      } else if (newMsg.type === EventTypeEnum.PlayerJoined) {
-        const command = parsePlayerJoinedEvent(newMsg);
+      } else if (newMsg.name === CommandNameEnum.AddPlayer) {
+        const command = parseAddPlayerAddPlayerCommand(newMsg);
         params.onPlayerJoined(command);
-      } else if (newMsg.type === EventTypeEnum.PlayerMoved) {
-        const command = parsePlayerMovedEvent(newMsg);
+      } else if (newMsg.name === CommandNameEnum.MovePlayer) {
+        const command = parseMovePlayerCommand(newMsg);
         params.onPlayerMoved(command);
-      } else if (newMsg.type === EventTypeEnum.PlayerHeldItemChanged) {
-        const command = parsePlayerHeldItemChangedEvent(newMsg);
+      } else if (newMsg.name === CommandNameEnum.ChangePlayerHeldItem) {
+        const command = parseChangeChangePlayerHeldItemCommand(newMsg);
         params.onPlayerHeldItemChanged(command);
-      } else if (newMsg.type === EventTypeEnum.PlayerLeft) {
-        const command = parsePlayerLeftEvent(newMsg);
+      } else if (newMsg.name === CommandNameEnum.RemovePlayer) {
+        const command = parseRemoveRemovePlayerCommand(newMsg);
         params.onPlayerLeft(command);
       }
     };
@@ -217,64 +215,78 @@ export class WorldJourneyApiService {
   }
 
   public ping() {
-    const action: PingCommand = {
-      type: CommandTypeEnum.Ping,
+    const commandDto: PingCommandDto = {
+      id: uuidv4(),
+      timestamp: DateModel.now().getTimestampe(),
+      name: CommandNameEnum.Ping,
     };
-    this.sendMessage(action);
+    this.sendMessage(commandDto);
   }
 
   public movePlayer(command: MovePlayerCommand) {
-    const action: MovePlayerCommandDto = {
-      type: CommandTypeEnum.MovePlayer,
+    const commandDto: MovePlayerCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.MovePlayer,
       playerId: command.getPlayerId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
     };
-    this.sendMessage(action);
+    this.sendMessage(commandDto);
   }
 
   public changePlayerHeldItem(command: ChangePlayerHeldItemCommand) {
-    const action: ChangePlayerHeldItemCommandDto = {
-      type: CommandTypeEnum.ChangePlayerHeldItem,
+    const commandDto: ChangePlayerHeldItemCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.ChangePlayerHeldItem,
       playerId: command.getPlayerId(),
       itemId: command.getItemId(),
     };
-    this.sendMessage(action);
+    this.sendMessage(commandDto);
   }
 
   public createStaticUnit(command: CreateStaticUnitCommand) {
-    const action: CreateStaticUnitCommandDto = {
-      type: CommandTypeEnum.CreateStaticUnit,
+    const commandDto: CreateStaticUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.CreateStaticUnit,
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
     };
-    this.sendMessage(action);
+    this.sendMessage(commandDto);
   }
 
   public createPortalUnit(command: CreatePortalUnitCommand) {
-    const action: CreatePortalUnitCommandDto = {
-      type: CommandTypeEnum.CreatePortalUnit,
+    const commandDto: CreatePortalUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.CreatePortalUnit,
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
     };
-    this.sendMessage(action);
+    this.sendMessage(commandDto);
   }
 
   public removeUnit(command: RemoveUnitCommand) {
-    const action: RemoveUnitCommandDto = {
-      type: CommandTypeEnum.RemoveUnit,
+    const commandDto: RemoveUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.RemoveUnit,
       position: newPositionDto(command.getPosition()),
     };
-    this.sendMessage(action);
+    this.sendMessage(commandDto);
   }
 
   public rotateUnit(command: RotateUnitCommand) {
-    const action: RotateUnitCommandDto = {
-      type: CommandTypeEnum.RotateUnit,
+    const commandDto: RotateUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.RotateUnit,
       position: newPositionDto(command.getPosition()),
     };
-    this.sendMessage(action);
+    this.sendMessage(commandDto);
   }
 }

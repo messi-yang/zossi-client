@@ -13,6 +13,10 @@ export class DateModel {
     return this.date.toString();
   }
 
+  public getTimestampe() {
+    return this.date.getTime();
+  }
+
   public getSecondsAgo() {
     const timeDiffInMilliseconds = new Date().getTime() - this.date.getTime();
 

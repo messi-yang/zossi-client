@@ -13,7 +13,7 @@ enum EventTypeEnum {
 }
 
 type WorldEnteredEvent = {
-  type: EventTypeEnum.WorldEntered;
+  name: EventTypeEnum.WorldEntered;
   world: WorldDto;
   units: UnitDto[];
   myPlayerId: string;
@@ -21,49 +21,49 @@ type WorldEnteredEvent = {
 };
 
 type StaticUnitCreatedEvent = {
-  type: EventTypeEnum.StaticUnitCreated;
+  name: EventTypeEnum.StaticUnitCreated;
   itemId: string;
   position: PositionDto;
   direction: number;
 };
 
 type PortalUnitCreatedEvent = {
-  type: EventTypeEnum.PortalUnitCreated;
+  name: EventTypeEnum.PortalUnitCreated;
   itemId: string;
   position: PositionDto;
   direction: number;
 };
 
 type UnitRotatedEvent = {
-  type: EventTypeEnum.UnitRotated;
+  name: EventTypeEnum.UnitRotated;
   position: PositionDto;
 };
 
 type UnitRemovedEvent = {
-  type: EventTypeEnum.UnitRemoved;
+  name: EventTypeEnum.UnitRemoved;
   position: PositionDto;
 };
 
 type PlayerJoinedEvent = {
-  type: EventTypeEnum.PlayerJoined;
+  name: EventTypeEnum.PlayerJoined;
   player: PlayerDto;
 };
 
 type PlayerMovedEvent = {
-  type: EventTypeEnum.PlayerMoved;
+  name: EventTypeEnum.PlayerMoved;
   playerId: string;
   position: PositionDto;
   direction: number;
 };
 
 type PlayerHeldItemChangedEvent = {
-  type: EventTypeEnum.PlayerHeldItemChanged;
+  name: EventTypeEnum.PlayerHeldItemChanged;
   playerId: string;
   itemId: string;
 };
 
 type PlayerLeftEvent = {
-  type: EventTypeEnum.PlayerLeft;
+  name: EventTypeEnum.PlayerLeft;
   playerId: string;
 };
 

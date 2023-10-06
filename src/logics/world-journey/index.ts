@@ -29,6 +29,8 @@ export class WorldJourney {
 
   private perspective: Perspective;
 
+  private commandMap: Record<string, Command>;
+
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
     this.world = world;
 
@@ -42,6 +44,8 @@ export class WorldJourney {
     const appearingItemIdsInPlayerStorage = this.playerStorage.getAppearingItemIds();
     const appearingItemIds = uniq([...appearingItemIdsInUnitStorage, ...appearingItemIdsInPlayerStorage]);
     this.itemStorage = ItemStorage.new(appearingItemIds);
+
+    this.commandMap = {};
   }
 
   static new(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
@@ -49,6 +53,11 @@ export class WorldJourney {
   }
 
   public execute(command: Command): boolean {
+    const commandId = command.getId();
+    const duplicatedCommand = this.commandMap[commandId];
+    if (duplicatedCommand) return false;
+
+    this.commandMap[commandId] = command;
     const succeeded = command.execute({
       world: this.world,
       playerStorage: this.playerStorage,

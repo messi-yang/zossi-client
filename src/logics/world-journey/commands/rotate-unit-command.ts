@@ -1,11 +1,27 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Command, Options } from '../command';
 import { PositionModel } from '@/models/world/position-model';
+import { DateModel } from '@/models/general/date-model';
 
 export class RotateUnitCommand implements Command {
-  constructor(private position: PositionModel) {}
+  private id: string;
+
+  private timestamp: number;
+
+  private position: PositionModel;
+
+  constructor(id: string, timestamp: number, position: PositionModel) {
+    this.id = id;
+    this.timestamp = timestamp;
+    this.position = position;
+  }
 
   static new(position: PositionModel) {
-    return new RotateUnitCommand(position);
+    return new RotateUnitCommand(uuidv4(), DateModel.now().getTimestampe(), position);
+  }
+
+  static load(id: string, timestamp: number, position: PositionModel) {
+    return new RotateUnitCommand(id, timestamp, position);
   }
 
   public execute({ unitStorage }: Options) {
@@ -16,6 +32,14 @@ export class RotateUnitCommand implements Command {
     clonedUnit.changeDirection(clonedUnit.getDirection().rotate());
 
     return unitStorage.updateUnit(clonedUnit);
+  }
+
+  public getId() {
+    return this.id;
+  }
+
+  public getTimestampe() {
+    return this.timestamp;
   }
 
   public getPosition() {

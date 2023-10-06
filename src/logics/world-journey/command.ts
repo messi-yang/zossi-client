@@ -13,6 +13,8 @@ export type Options = {
 };
 
 export interface Command {
+  getId(): string;
+  getTimestampe(): number;
   /**
    * Execute the command
    * @param options
