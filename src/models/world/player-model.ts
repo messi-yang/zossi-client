@@ -61,7 +61,7 @@ export class PlayerModel {
     this.heldItemId = itemId;
   }
 
-  public getPositionOneStepFoward(): PositionModel {
+  public getFowardPos(): PositionModel {
     if (this.direction.isUp()) {
       return this.position.shift(0, -1);
     } else if (this.direction.isRight()) {

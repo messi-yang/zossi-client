@@ -45,7 +45,7 @@ export class MovePlayerCommand implements Command {
       return true;
     }
 
-    const nextPosition = clonedPlayer.getPositionOneStepFoward();
+    const nextPosition = clonedPlayer.getFowardPos();
     if (!world.getBound().doesContainPosition(nextPosition)) {
       return false;
     }
