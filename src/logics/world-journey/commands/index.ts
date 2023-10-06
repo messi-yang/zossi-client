@@ -5,6 +5,7 @@ export { AddPlayerCommand } from './add-player-command';
 export { MovePlayerCommand } from './move-player-command';
 export { ChangePlayerHeldItemCommand } from './change-player-held-item-command';
 export { RemovePlayerCommand } from './remove-player-command';
-export { AddUnitCommand } from './add-unit-command';
+export { CreateStaticUnitCommand } from './create-static-unit-command';
+export { CreatePortalUnitCommand } from './create-portal-unit-command';
 export { RotateUnitCommand } from './rotate-unit-command';
 export { RemoveUnitCommand } from './remove-unit-command';

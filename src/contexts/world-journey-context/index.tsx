@@ -5,11 +5,12 @@ import { ItemModel } from '@/models/world/item-model';
 import { DirectionModel } from '@/models/world/direction-model';
 import {
   AddItemCommand,
-  AddUnitCommand,
   RotateUnitCommand,
   RemoveUnitCommand,
   ChangePlayerHeldItemCommand,
   MovePlayerCommand,
+  CreateStaticUnitCommand,
+  CreatePortalUnitCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 
@@ -91,9 +92,13 @@ export function Provider({ children }: Props) {
         newWorldJourney = _worldJourney;
         setWorldJourney(_worldJourney);
       },
-      onUnitCreated: (_unit) => {
+      onStaticUnitCreated: (command) => {
         if (!newWorldJourney) return;
-        newWorldJourney.execute(AddUnitCommand.new(_unit));
+        newWorldJourney.execute(command);
+      },
+      onPortalUnitCreated: (command) => {
+        if (!newWorldJourney) return;
+        newWorldJourney.execute(command);
       },
       onUnitRotated: (command) => {
         if (!newWorldJourney) return;
@@ -170,31 +175,39 @@ export function Provider({ children }: Props) {
   const createStaticUnit = useCallback(() => {
     if (!worldJourney || !worldJourneyApiService.current) return;
 
-    const heldItemId = worldJourney.getMyPlayer().getHeldItemId();
-    if (!heldItemId) return;
+    const itemId = worldJourney.getMyPlayer().getHeldItemId();
+    if (!itemId) return;
 
-    const itemPosition = worldJourney.getMyPlayer().getPositionOneStepFoward();
-    const doesPositionHavePlayers = worldJourney.doesPosHavePlayers(itemPosition);
+    const position = worldJourney.getMyPlayer().getPositionOneStepFoward();
+    const doesPositionHavePlayers = worldJourney.doesPosHavePlayers(position);
     if (doesPositionHavePlayers) return;
 
-    const itemDirection = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
+    const direction = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
 
-    worldJourneyApiService.current.createStaticUnit(heldItemId, itemPosition, itemDirection);
+    const command = CreateStaticUnitCommand.new(itemId, position, direction);
+    const succeeded = worldJourney.execute(command);
+    if (succeeded) {
+      worldJourneyApiService.current.createStaticUnit(command);
+    }
   }, [worldJourney]);
 
   const createPortalUnit = useCallback(() => {
     if (!worldJourney || !worldJourneyApiService.current) return;
 
-    const heldItemId = worldJourney.getMyPlayer().getHeldItemId();
-    if (!heldItemId) return;
+    const itemId = worldJourney.getMyPlayer().getHeldItemId();
+    if (!itemId) return;
 
-    const itemPosition = worldJourney.getMyPlayer().getPositionOneStepFoward();
-
-    const doesPositionHavePlayers = worldJourney.doesPosHavePlayers(itemPosition);
+    const position = worldJourney.getMyPlayer().getPositionOneStepFoward();
+    const doesPositionHavePlayers = worldJourney.doesPosHavePlayers(position);
     if (doesPositionHavePlayers) return;
-    const itemDirection = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
 
-    worldJourneyApiService.current.createPortalUnit(heldItemId, itemPosition, itemDirection);
+    const direction = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
+
+    const command = CreatePortalUnitCommand.new(itemId, position, direction);
+    const succeeded = worldJourney.execute(command);
+    if (succeeded) {
+      worldJourneyApiService.current.createPortalUnit(command);
+    }
   }, [worldJourney]);
 
   const createUnit = useCallback(() => {

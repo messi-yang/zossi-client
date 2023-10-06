@@ -83,7 +83,7 @@ const Page: NextPage = function Page() {
     }
     const targetItemIdIndex = items.findIndex((item) => item.getId() === myPlayerHeldItemId) + 1;
     changePlayerHeldItem(items[targetItemIdIndex % items.length]);
-  }, [items, myPlayerHeldItemId]);
+  }, [items, myPlayerHeldItemId, changePlayerHeldItem]);
 
   const handleEqualClick = useCallback(() => {
     worldJourney?.execute(AddPerspectiveDepthCommand.new());

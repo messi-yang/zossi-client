@@ -2,7 +2,6 @@ import { parsePlayerDto, parseUnitDto, parseWorldDto, newPositionDto } from '@/a
 import {
   EventTypeEnum,
   WorldEnteredEvent,
-  UnitCreatedEvent,
   UnitRotatedEvent,
   UnitRemovedEvent,
   PlayerJoinedEvent,
@@ -10,16 +9,16 @@ import {
   PlayerHeldItemChangedEvent,
   PlayerLeftEvent,
 } from './events';
-import type { Event } from './events';
+import type { Event, PortalUnitCreatedEvent, StaticUnitCreatedEvent } from './events';
 import { CommandTypeEnum } from './commands';
 import type {
   PingCommand,
   MovePlayerCommandDto,
   ChangePlayerHeldItemCommandDto,
-  CreateStaticUnitCommand,
-  CreatePortalUnitCommand,
   RemoveUnitCommandDto,
   RotateUnitCommandDto,
+  CreateStaticUnitCommandDto,
+  CreatePortalUnitCommandDto,
 } from './commands';
 import { DirectionModel } from '@/models/world/direction-model';
 import { PositionModel } from '@/models/world/position-model';
@@ -30,6 +29,8 @@ import { LocalStorage } from '@/storages/local-storage';
 import { RotateUnitCommand } from '@/logics/world-journey/commands/rotate-unit-command';
 import {
   AddPlayerCommand,
+  CreatePortalUnitCommand,
+  CreateStaticUnitCommand,
   MovePlayerCommand,
   RemovePlayerCommand,
   RemoveUnitCommand,
@@ -46,8 +47,20 @@ function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitMode
   ];
 }
 
-function parseUnitCreatedEvent(event: UnitCreatedEvent): [UnitModel] {
-  return [parseUnitDto(event.unit)];
+function parseStaticUnitCreatedEvent(event: StaticUnitCreatedEvent): CreateStaticUnitCommand {
+  return CreateStaticUnitCommand.new(
+    event.itemId,
+    PositionModel.new(event.position.x, event.position.z),
+    DirectionModel.new(event.direction)
+  );
+}
+
+function parsePortalUnitCreatedEvent(event: PortalUnitCreatedEvent): CreateStaticUnitCommand {
+  return CreateStaticUnitCommand.new(
+    event.itemId,
+    PositionModel.new(event.position.x, event.position.z),
+    DirectionModel.new(event.direction)
+  );
 }
 
 function parseUnitRotatedEvent(event: UnitRotatedEvent): RotateUnitCommand {
@@ -96,7 +109,8 @@ export class WorldJourneyApiService {
     worldId: string,
     params: {
       onWorldEntered: (worldJourney: WorldJourney) => void;
-      onUnitCreated: (unit: UnitModel) => void;
+      onStaticUnitCreated: (command: CreateStaticUnitCommand) => void;
+      onPortalUnitCreated: (command: CreateStaticUnitCommand) => void;
       onUnitRotated: (command: RotateUnitCommand) => void;
       onUnitRemoved: (command: RemoveUnitCommand) => void;
       onPlayerJoined: (command: AddPlayerCommand) => void;
@@ -124,9 +138,12 @@ export class WorldJourneyApiService {
         const [world, units, myPlayerId, players] = parseWorldEnteredEvent(newMsg);
         const worldJourney = WorldJourney.new(world, players, myPlayerId, units);
         params.onWorldEntered(worldJourney);
-      } else if (newMsg.type === EventTypeEnum.UnitCreated) {
-        const [unit] = parseUnitCreatedEvent(newMsg);
-        params.onUnitCreated(unit);
+      } else if (newMsg.type === EventTypeEnum.StaticUnitCreated) {
+        const command = parseStaticUnitCreatedEvent(newMsg);
+        params.onStaticUnitCreated(command);
+      } else if (newMsg.type === EventTypeEnum.PortalUnitCreated) {
+        const command = parsePortalUnitCreatedEvent(newMsg);
+        params.onPortalUnitCreated(command);
       } else if (newMsg.type === EventTypeEnum.UnitRotated) {
         const command = parseUnitRotatedEvent(newMsg);
         params.onUnitRotated(command);
@@ -169,7 +186,8 @@ export class WorldJourneyApiService {
     worldId: string,
     params: {
       onWorldEntered: (worldJourney: WorldJourney) => void;
-      onUnitCreated: (unit: UnitModel) => void;
+      onStaticUnitCreated: (command: CreateStaticUnitCommand) => void;
+      onPortalUnitCreated: (command: CreateStaticUnitCommand) => void;
       onUnitRotated: (command: RotateUnitCommand) => void;
       onUnitRemoved: (command: RemoveUnitCommand) => void;
       onPlayerJoined: (command: AddPlayerCommand) => void;
@@ -224,22 +242,22 @@ export class WorldJourneyApiService {
     this.sendMessage(action);
   }
 
-  public createStaticUnit(itemId: string, position: PositionModel, direction: DirectionModel) {
-    const action: CreateStaticUnitCommand = {
+  public createStaticUnit(command: CreateStaticUnitCommand) {
+    const action: CreateStaticUnitCommandDto = {
       type: CommandTypeEnum.CreateStaticUnit,
-      itemId,
-      position: newPositionDto(position),
-      direction: direction.toNumber(),
+      itemId: command.getItemId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
     };
     this.sendMessage(action);
   }
 
-  public createPortalUnit(itemId: string, position: PositionModel, direction: DirectionModel) {
-    const action: CreatePortalUnitCommand = {
+  public createPortalUnit(command: CreatePortalUnitCommand) {
+    const action: CreatePortalUnitCommandDto = {
       type: CommandTypeEnum.CreatePortalUnit,
-      itemId,
-      position: newPositionDto(position),
-      direction: direction.toNumber(),
+      itemId: command.getItemId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
     };
     this.sendMessage(action);
   }

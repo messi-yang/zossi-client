@@ -27,14 +27,14 @@ type ChangePlayerHeldItemCommandDto = {
   itemId: string;
 };
 
-type CreateStaticUnitCommand = {
+type CreateStaticUnitCommandDto = {
   type: CommandTypeEnum.CreateStaticUnit;
   itemId: string;
   position: PositionDto;
   direction: number;
 };
 
-type CreatePortalUnitCommand = {
+type CreatePortalUnitCommandDto = {
   type: CommandTypeEnum.CreatePortalUnit;
   itemId: string;
   position: PositionDto;
@@ -57,8 +57,8 @@ export type {
   PingCommand,
   MovePlayerCommandDto,
   ChangePlayerHeldItemCommandDto,
-  CreateStaticUnitCommand,
-  CreatePortalUnitCommand,
+  CreateStaticUnitCommandDto,
+  CreatePortalUnitCommandDto,
   RemoveUnitCommandDto,
   RotateUnitCommandDto,
 };
