@@ -25,7 +25,7 @@ export class WorldJourneyApiService {
 
   constructor(
     worldId: string,
-    params: {
+    events: {
       onWorldEntered: (worldJourney: WorldJourney) => void;
       onCommandSucceeded: (command: Command) => void;
       onErrored: (message: string) => void;
@@ -49,13 +49,13 @@ export class WorldJourneyApiService {
       if (event.name === EventNameEnum.WorldEntered) {
         const [world, units, myPlayerId, players] = parseWorldEnteredEvent(event);
         const worldJourney = WorldJourney.new(world, players, myPlayerId, units);
-        params.onWorldEntered(worldJourney);
+        events.onWorldEntered(worldJourney);
       } else if (event.name === EventNameEnum.CommandSucceeded) {
         const command = parseCommandDto(event.command);
         if (!command) return;
-        params.onCommandSucceeded(command);
+        events.onCommandSucceeded(command);
       } else if (event.name === EventNameEnum.Errored) {
-        params.onErrored(event.message);
+        events.onErrored(event.message);
       }
     };
 
@@ -63,14 +63,14 @@ export class WorldJourneyApiService {
       if (pingServerInterval) {
         clearInterval(pingServerInterval);
       }
-      params.onClose();
+      events.onClose();
     };
 
     socket.onopen = () => {
       pingServerInterval = setInterval(() => {
         this.ping();
       }, 10000);
-      params.onOpen();
+      events.onOpen();
     };
 
     this.socket = socket;
@@ -78,7 +78,7 @@ export class WorldJourneyApiService {
 
   static new(
     worldId: string,
-    params: {
+    events: {
       onWorldEntered: (worldJourney: WorldJourney) => void;
       onCommandSucceeded: (command: Command) => void;
       onErrored: (message: string) => void;
@@ -86,7 +86,7 @@ export class WorldJourneyApiService {
       onOpen: () => void;
     }
   ): WorldJourneyApiService {
-    return new WorldJourneyApiService(worldId, params);
+    return new WorldJourneyApiService(worldId, events);
   }
 
   public disconnect() {

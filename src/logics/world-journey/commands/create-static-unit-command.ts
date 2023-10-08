@@ -42,7 +42,7 @@ export class CreateStaticUnitCommand implements Command {
     const playersAtPos = playerStorage.getPlayersAtPos(this.position);
     if (playersAtPos) return false;
 
-    return unitStorage.addUnit(UnitModel.new(this.itemId, this.position, this.direction));
+    return unitStorage.addUnit(UnitModel.new(item.getCompatibleUnitType(), this.itemId, this.position, this.direction));
   }
 
   public getId() {

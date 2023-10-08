@@ -14,6 +14,7 @@ import {
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { PositionModel } from '@/models/world/position-model';
+import { SendPlayerIntoPortalCommand } from '@/logics/world-journey/commands/send-player-into-portal-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -124,6 +125,14 @@ export function Provider({ children }: Props) {
       const succeeded = worldJourney.execute(command);
       if (succeeded) {
         worldJourneyApiService.current.sendCommand(command);
+
+        const newPosition = worldJourney.getMyPlayer().getPosition();
+        const unit = worldJourney.getUnit(newPosition);
+        if (unit && unit.getType().isPortal()) {
+          const secondCommand = SendPlayerIntoPortalCommand.new(playerId, newPosition);
+          worldJourney.execute(secondCommand);
+          worldJourneyApiService.current.sendCommand(secondCommand);
+        }
       }
     },
     [worldJourney]

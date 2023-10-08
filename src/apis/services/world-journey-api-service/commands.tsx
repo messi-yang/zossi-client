@@ -10,6 +10,8 @@ import {
   RotateUnitCommand,
   ChangePlayerHeldItemCommand,
 } from '@/logics/world-journey/commands';
+import { SendPlayerIntoPortalCommand } from '@/logics/world-journey/commands/send-player-into-portal-command';
+import { TeleportPlayerCommand } from '@/logics/world-journey/commands/teleport-player-command';
 import { DirectionModel } from '@/models/world/direction-model';
 import { PositionModel } from '@/models/world/position-model';
 
@@ -19,6 +21,8 @@ enum CommandNameEnum {
   AddPlayer = 'ADD_PLAYER',
   RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',
+  SendPlayerIntoPortal = 'SEND_PLAYER_INTO_PORTAL',
+  TeleportPlayer = 'TELEPORT_PLAYER',
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
   CreatePortalUnit = 'CREATE_PORTAL_UNIT',
@@ -43,6 +47,23 @@ type MovePlayerCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.MovePlayer;
+  playerId: string;
+  position: PositionDto;
+  direction: number;
+};
+
+type SendPlayerIntoPortalCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.SendPlayerIntoPortal;
+  playerId: string;
+  position: PositionDto;
+};
+
+type TeleportPlayerCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.TeleportPlayer;
   playerId: string;
   position: PositionDto;
   direction: number;
@@ -144,6 +165,24 @@ function parseMovePlayerCommand(command: MovePlayerCommandDto): MovePlayerComman
     DirectionModel.new(command.direction)
   );
 }
+function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDto): SendPlayerIntoPortalCommand {
+  return SendPlayerIntoPortalCommand.load(
+    command.id,
+    command.timestamp,
+    command.playerId,
+    PositionModel.new(command.position.x, command.position.z)
+  );
+}
+
+function parseTeleportPlayerCommand(command: TeleportPlayerCommandDto): TeleportPlayerCommand {
+  return TeleportPlayerCommand.load(
+    command.id,
+    command.timestamp,
+    command.playerId,
+    PositionModel.new(command.position.x, command.position.z),
+    DirectionModel.new(command.direction)
+  );
+}
 
 function parseChangeChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
   return ChangePlayerHeldItemCommand.load(command.id, command.timestamp, command.playerId, command.itemId);
@@ -166,6 +205,10 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseAddPlayerAddPlayerCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.MovePlayer) {
     return parseMovePlayerCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
+    return parseSendPlayerIntoPortalCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.TeleportPlayer) {
+    return parseTeleportPlayerCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerHeldItem) {
     return parseChangeChangePlayerHeldItemCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemovePlayer) {
@@ -221,6 +264,25 @@ export const toCommandDto = (command: Command) => {
       direction: command.getDirection().toNumber(),
     };
     return commandDto;
+  } else if (command instanceof SendPlayerIntoPortalCommand) {
+    const commandDto: SendPlayerIntoPortalCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.SendPlayerIntoPortal,
+      playerId: command.getPlayerId(),
+      position: newPositionDto(command.getPosition()),
+    };
+    return commandDto;
+  } else if (command instanceof TeleportPlayerCommand) {
+    const commandDto: TeleportPlayerCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.TeleportPlayer,
+      playerId: command.getPlayerId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
+    };
+    return commandDto;
   } else if (command instanceof ChangePlayerHeldItemCommand) {
     const commandDto: ChangePlayerHeldItemCommandDto = {
       id: command.getId(),
@@ -240,6 +302,8 @@ export type CommandDto =
   | PingCommandDto
   | AddPlayerCommandDto
   | MovePlayerCommandDto
+  | SendPlayerIntoPortalCommandDto
+  | TeleportPlayerCommandDto
   | RemovePlayerCommandDto
   | ChangePlayerHeldItemCommandDto
   | CreateStaticUnitCommandDto
@@ -251,6 +315,8 @@ export type {
   PingCommandDto,
   AddPlayerCommandDto,
   MovePlayerCommandDto,
+  SendPlayerIntoPortalCommandDto,
+  TeleportPlayerCommandDto,
   RemovePlayerCommandDto,
   ChangePlayerHeldItemCommandDto,
   CreateStaticUnitCommandDto,
