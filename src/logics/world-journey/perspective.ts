@@ -1,6 +1,6 @@
 import { PositionModel } from '@/models/world/position-model';
 
-type PerspectiveChangedHandler = (perspectiveDepth: number, targetPos: PositionModel) => void;
+export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPos: PositionModel) => void;
 
 export class Perspective {
   private depth: number;

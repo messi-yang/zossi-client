@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command, Options } from '../command';
+import { Command } from './command';
+import { CommandParams } from './command-params';
 import { ItemModel } from '@/models/world/item-model';
 import { DateModel } from '@/models/general/date-model';
 
@@ -17,14 +18,14 @@ export class AddItemCommand implements Command {
   }
 
   static new(item: ItemModel) {
-    return new AddItemCommand(uuidv4(), DateModel.now().getTimestampe(), item);
+    return new AddItemCommand(uuidv4(), DateModel.now().getTimestamp(), item);
   }
 
   static load(id: string, timestamp: number, item: ItemModel) {
     return new AddItemCommand(id, timestamp, item);
   }
 
-  public execute({ itemStorage }: Options) {
+  public execute({ itemStorage }: CommandParams) {
     return itemStorage.addItem(this.item);
   }
 
@@ -32,7 +33,7 @@ export class AddItemCommand implements Command {
     return this.id;
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.timestamp;
   }
 

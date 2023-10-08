@@ -13,7 +13,7 @@ export class DateModel {
     return this.date.toString();
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.date.getTime();
   }
 

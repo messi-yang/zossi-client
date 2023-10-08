@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command, Options } from '../command';
+import { Command } from './command';
+import { CommandParams } from './command-params';
 import { DateModel } from '@/models/general/date-model';
 
 export class AddPerspectiveDepthCommand implements Command {
@@ -13,7 +14,7 @@ export class AddPerspectiveDepthCommand implements Command {
   }
 
   static new() {
-    return new AddPerspectiveDepthCommand(uuidv4(), DateModel.now().getTimestampe());
+    return new AddPerspectiveDepthCommand(uuidv4(), DateModel.now().getTimestamp());
   }
 
   static load(id: string, timestamp: number) {
@@ -24,11 +25,11 @@ export class AddPerspectiveDepthCommand implements Command {
     return this.id;
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.timestamp;
   }
 
-  public execute({ perspective }: Options) {
+  public execute({ perspective }: CommandParams) {
     perspective.addPerspectiveDepth();
     return true;
   }

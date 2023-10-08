@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command, Options } from '../command';
+import { Command } from './command';
+import { CommandParams } from './command-params';
 import { PositionModel } from '@/models/world/position-model';
 import { DateModel } from '@/models/general/date-model';
 
@@ -17,14 +18,14 @@ export class RotateUnitCommand implements Command {
   }
 
   static new(position: PositionModel) {
-    return new RotateUnitCommand(uuidv4(), DateModel.now().getTimestampe(), position);
+    return new RotateUnitCommand(uuidv4(), DateModel.now().getTimestamp(), position);
   }
 
   static load(id: string, timestamp: number, position: PositionModel) {
     return new RotateUnitCommand(id, timestamp, position);
   }
 
-  public execute({ unitStorage }: Options) {
+  public execute({ unitStorage }: CommandParams) {
     const unit = unitStorage.getUnit(this.position);
     if (!unit) return false;
 
@@ -38,7 +39,7 @@ export class RotateUnitCommand implements Command {
     return this.id;
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.timestamp;
   }
 

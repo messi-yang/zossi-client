@@ -1,17 +1,17 @@
 import { PlayerDto, PositionDto, newPositionDto, parsePlayerDto } from '@/apis/dtos';
-import { Command } from '@/logics/world-journey/command';
 import {
+  Command,
   AddPlayerCommand,
   CreatePortalUnitCommand,
   CreateStaticUnitCommand,
   MovePlayerCommand,
+  SendPlayerIntoPortalCommand,
+  TeleportPlayerCommand,
   RemovePlayerCommand,
   RemoveUnitCommand,
   RotateUnitCommand,
   ChangePlayerHeldItemCommand,
 } from '@/logics/world-journey/commands';
-import { SendPlayerIntoPortalCommand } from '@/logics/world-journey/commands/send-player-into-portal-command';
-import { TeleportPlayerCommand } from '@/logics/world-journey/commands/teleport-player-command';
 import { DirectionModel } from '@/models/world/direction-model';
 import { PositionModel } from '@/models/world/position-model';
 
@@ -221,7 +221,7 @@ export const toCommandDto = (command: Command) => {
   if (command instanceof CreateStaticUnitCommand) {
     const commandDto: CreateStaticUnitCommandDto = {
       id: command.getId(),
-      timestamp: command.getTimestampe(),
+      timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreateStaticUnit,
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
@@ -231,7 +231,7 @@ export const toCommandDto = (command: Command) => {
   } else if (command instanceof CreatePortalUnitCommand) {
     const commandDto: CreatePortalUnitCommandDto = {
       id: command.getId(),
-      timestamp: command.getTimestampe(),
+      timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreatePortalUnit,
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
@@ -241,7 +241,7 @@ export const toCommandDto = (command: Command) => {
   } else if (command instanceof RotateUnitCommand) {
     const commandDto: RotateUnitCommandDto = {
       id: command.getId(),
-      timestamp: command.getTimestampe(),
+      timestamp: command.getTimestamp(),
       name: CommandNameEnum.RotateUnit,
       position: newPositionDto(command.getPosition()),
     };
@@ -249,7 +249,7 @@ export const toCommandDto = (command: Command) => {
   } else if (command instanceof RemoveUnitCommand) {
     const commandDto: RemoveUnitCommandDto = {
       id: command.getId(),
-      timestamp: command.getTimestampe(),
+      timestamp: command.getTimestamp(),
       name: CommandNameEnum.RemoveUnit,
       position: newPositionDto(command.getPosition()),
     };
@@ -257,7 +257,7 @@ export const toCommandDto = (command: Command) => {
   } else if (command instanceof MovePlayerCommand) {
     const commandDto: MovePlayerCommandDto = {
       id: command.getId(),
-      timestamp: command.getTimestampe(),
+      timestamp: command.getTimestamp(),
       name: CommandNameEnum.MovePlayer,
       playerId: command.getPlayerId(),
       position: newPositionDto(command.getPosition()),
@@ -267,7 +267,7 @@ export const toCommandDto = (command: Command) => {
   } else if (command instanceof SendPlayerIntoPortalCommand) {
     const commandDto: SendPlayerIntoPortalCommandDto = {
       id: command.getId(),
-      timestamp: command.getTimestampe(),
+      timestamp: command.getTimestamp(),
       name: CommandNameEnum.SendPlayerIntoPortal,
       playerId: command.getPlayerId(),
       position: newPositionDto(command.getPosition()),
@@ -276,7 +276,7 @@ export const toCommandDto = (command: Command) => {
   } else if (command instanceof TeleportPlayerCommand) {
     const commandDto: TeleportPlayerCommandDto = {
       id: command.getId(),
-      timestamp: command.getTimestampe(),
+      timestamp: command.getTimestamp(),
       name: CommandNameEnum.TeleportPlayer,
       playerId: command.getPlayerId(),
       position: newPositionDto(command.getPosition()),
@@ -286,7 +286,7 @@ export const toCommandDto = (command: Command) => {
   } else if (command instanceof ChangePlayerHeldItemCommand) {
     const commandDto: ChangePlayerHeldItemCommandDto = {
       id: command.getId(),
-      timestamp: command.getTimestampe(),
+      timestamp: command.getTimestamp(),
       name: CommandNameEnum.ChangePlayerHeldItem,
       playerId: command.getPlayerId(),
       itemId: command.getItemId(),

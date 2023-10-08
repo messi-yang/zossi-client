@@ -7,16 +7,13 @@ import { WorldModel } from '@/models/world/world-model';
 import { PositionModel } from '@/models/world/position-model';
 
 import { UnitStorage } from './unit-storage';
-import { PlayerStorage } from './player-storage';
-import { Perspective } from './perspective';
-import { ItemStorage } from './item-storage';
-import { Command } from './command';
+import { MyPlayerChangedHandler, PlayerStorage, PlayersChangedHandler } from './player-storage';
+import { Perspective, PerspectiveChangedHandler } from './perspective';
+import { ItemStorage, PlaceholderItemIdsAddedHandler } from './item-storage';
+import { Command } from './commands/command';
+import { CommandExecutedHandler, CommandManager } from './command-manager';
 
-type PerspectiveChangedHandler = (depth: number, targetPos: PositionModel) => void;
-type PlayersChangedHandler = (players: PlayerModel[]) => void;
-type MyPlayerChangedHandler = (player: PlayerModel) => void;
 type UnitsChangedHandler = (item: ItemModel, units: UnitModel[] | null) => void;
-type PlaceholderItemIdsAddedHandler = (itemIds: string[]) => void;
 
 export class WorldJourney {
   private world: WorldModel;
@@ -27,9 +24,9 @@ export class WorldJourney {
 
   private itemStorage: ItemStorage;
 
-  private perspective: Perspective;
+  private commandManager: CommandManager;
 
-  private commandMap: Record<string, Command>;
+  private perspective: Perspective;
 
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
     this.world = world;
@@ -45,27 +42,21 @@ export class WorldJourney {
     const appearingItemIds = uniq([...appearingItemIdsInUnitStorage, ...appearingItemIdsInPlayerStorage]);
     this.itemStorage = ItemStorage.new(appearingItemIds);
 
-    this.commandMap = {};
+    this.commandManager = CommandManager.new();
   }
 
   static new(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
     return new WorldJourney(world, players, myPlayerId, units);
   }
 
-  public execute(command: Command): boolean {
-    const commandId = command.getId();
-    const duplicatedCommand = this.commandMap[commandId];
-    if (duplicatedCommand) return false;
-
-    this.commandMap[commandId] = command;
-    const succeeded = command.execute({
+  public executeCommand(command: Command): boolean {
+    return this.commandManager.executeCommand(command, {
       world: this.world,
       playerStorage: this.playerStorage,
       unitStorage: this.unitStorage,
       itemStorage: this.itemStorage,
       perspective: this.perspective,
     });
-    return succeeded;
   }
 
   public getWorld(): WorldModel {
@@ -138,6 +129,12 @@ export class WorldJourney {
   public subscribePlaceholderItemIdsAdded(handler: PlaceholderItemIdsAddedHandler): () => void {
     return this.itemStorage.subscribePlaceholderItemIdsAdded((itemIds: string[]) => {
       handler(itemIds);
+    });
+  }
+
+  public subscribeCommandExecuted(handler: CommandExecutedHandler): () => void {
+    return this.commandManager.subscribeCommandExecuted((command: Command) => {
+      handler(command);
     });
   }
 }

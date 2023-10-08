@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command, Options } from '../command';
+import { Command } from './command';
+import { CommandParams } from './command-params';
 import { DateModel } from '@/models/general/date-model';
 
 export class ChangePlayerHeldItemCommand implements Command {
@@ -19,14 +20,14 @@ export class ChangePlayerHeldItemCommand implements Command {
   }
 
   static new(playerId: string, itemId: string) {
-    return new ChangePlayerHeldItemCommand(uuidv4(), DateModel.now().getTimestampe(), playerId, itemId);
+    return new ChangePlayerHeldItemCommand(uuidv4(), DateModel.now().getTimestamp(), playerId, itemId);
   }
 
   static load(id: string, timestamp: number, playerId: string, itemId: string) {
     return new ChangePlayerHeldItemCommand(id, timestamp, playerId, itemId);
   }
 
-  public execute({ playerStorage, itemStorage }: Options) {
+  public execute({ playerStorage, itemStorage }: CommandParams) {
     const player = playerStorage.getPlayer(this.playerId);
     if (!player) return false;
 
@@ -45,7 +46,7 @@ export class ChangePlayerHeldItemCommand implements Command {
     return this.id;
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.timestamp;
   }
 

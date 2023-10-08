@@ -9,7 +9,7 @@ import { LocalStorage } from '@/storages/local-storage';
 import { WorldJourney } from '@/logics/world-journey';
 import { DateModel } from '@/models/general/date-model';
 import { Event, EventNameEnum, WorldEnteredEvent } from './events';
-import { Command } from '@/logics/world-journey/command';
+import { Command } from '@/logics/world-journey/commands';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
@@ -107,7 +107,7 @@ export class WorldJourneyApiService {
   public ping() {
     const commandDto: PingCommandDto = {
       id: uuidv4(),
-      timestamp: DateModel.now().getTimestampe(),
+      timestamp: DateModel.now().getTimestamp(),
       name: CommandNameEnum.Ping,
     };
     this.sendMessage(commandDto);

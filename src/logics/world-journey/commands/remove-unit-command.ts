@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { PositionModel } from '@/models/world/position-model';
-import { Command, Options } from '../command';
+import { Command } from './command';
+import { CommandParams } from './command-params';
 import { DateModel } from '@/models/general/date-model';
 
 export class RemoveUnitCommand implements Command {
@@ -17,14 +18,14 @@ export class RemoveUnitCommand implements Command {
   }
 
   static new(position: PositionModel) {
-    return new RemoveUnitCommand(uuidv4(), DateModel.now().getTimestampe(), position);
+    return new RemoveUnitCommand(uuidv4(), DateModel.now().getTimestamp(), position);
   }
 
   static load(id: string, timestamp: number, position: PositionModel) {
     return new RemoveUnitCommand(id, timestamp, position);
   }
 
-  public execute({ unitStorage }: Options) {
+  public execute({ unitStorage }: CommandParams) {
     return unitStorage.removeUnit(this.position);
   }
 
@@ -32,7 +33,7 @@ export class RemoveUnitCommand implements Command {
     return this.id;
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.timestamp;
   }
 

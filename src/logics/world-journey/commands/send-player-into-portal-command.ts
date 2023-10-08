@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { PositionModel } from '@/models/world/position-model';
-import { Command } from '../command';
+import { Command } from './command';
 import { DateModel } from '@/models/general/date-model';
 
 export class SendPlayerIntoPortalCommand implements Command {
@@ -20,7 +20,7 @@ export class SendPlayerIntoPortalCommand implements Command {
   }
 
   static new(playerId: string, position: PositionModel) {
-    return new SendPlayerIntoPortalCommand(uuidv4(), DateModel.now().getTimestampe(), playerId, position);
+    return new SendPlayerIntoPortalCommand(uuidv4(), DateModel.now().getTimestamp(), playerId, position);
   }
 
   static load(id: string, timestamp: number, playerId: string, position: PositionModel) {
@@ -35,7 +35,7 @@ export class SendPlayerIntoPortalCommand implements Command {
     return this.id;
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.timestamp;
   }
 

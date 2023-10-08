@@ -2,8 +2,8 @@ import { uniq } from 'lodash';
 import { PlayerModel } from '@/models/world/player-model';
 import { PositionModel } from '@/models/world/position-model';
 
-type PlayersChangedHandler = (players: PlayerModel[]) => void;
-type MyPlayerChangedHandler = (player: PlayerModel) => void;
+export type PlayersChangedHandler = (players: PlayerModel[]) => void;
+export type MyPlayerChangedHandler = (player: PlayerModel) => void;
 
 export class PlayerStorage {
   private myPlayerId: string;

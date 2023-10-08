@@ -1,7 +1,7 @@
 import { ItemModel } from '@/models/world/item-model';
 
-type PlaceholderItemIdsAddedHandler = (placeholderItemIds: string[]) => void;
-type ItemAddedHandler = (item: ItemModel) => void;
+export type PlaceholderItemIdsAddedHandler = (placeholderItemIds: string[]) => void;
+export type ItemAddedHandler = (item: ItemModel) => void;
 
 export class ItemStorage {
   /**

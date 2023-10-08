@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command, Options } from '../command';
+import { Command } from './command';
+import { CommandParams } from './command-params';
 import { DateModel } from '@/models/general/date-model';
 
 export class RemovePlayerCommand implements Command {
@@ -16,14 +17,14 @@ export class RemovePlayerCommand implements Command {
   }
 
   static new(playerId: string) {
-    return new RemovePlayerCommand(uuidv4(), DateModel.now().getTimestampe(), playerId);
+    return new RemovePlayerCommand(uuidv4(), DateModel.now().getTimestamp(), playerId);
   }
 
   static load(id: string, timestamp: number, playerId: string) {
     return new RemovePlayerCommand(id, timestamp, playerId);
   }
 
-  public execute({ playerStorage }: Options) {
+  public execute({ playerStorage }: CommandParams) {
     return playerStorage.removePlayer(this.playerId);
   }
 
@@ -31,7 +32,7 @@ export class RemovePlayerCommand implements Command {
     return this.id;
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.timestamp;
   }
 

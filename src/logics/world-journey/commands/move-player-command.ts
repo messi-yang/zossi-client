@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { PositionModel } from '@/models/world/position-model';
-import { Command, Options } from '../command';
+import { Command } from './command';
+import { CommandParams } from './command-params';
 import { DirectionModel } from '@/models/world/direction-model';
 import { DateModel } from '@/models/general/date-model';
 
@@ -24,14 +25,14 @@ export class MovePlayerCommand implements Command {
   }
 
   static new(playerId: string, position: PositionModel, direction: DirectionModel) {
-    return new MovePlayerCommand(uuidv4(), DateModel.now().getTimestampe(), playerId, position, direction);
+    return new MovePlayerCommand(uuidv4(), DateModel.now().getTimestamp(), playerId, position, direction);
   }
 
   static load(id: string, timestamp: number, playerId: string, position: PositionModel, direction: DirectionModel) {
     return new MovePlayerCommand(id, timestamp, playerId, position, direction);
   }
 
-  public execute({ world, playerStorage, unitStorage, itemStorage }: Options) {
+  public execute({ world, playerStorage, unitStorage, itemStorage }: CommandParams) {
     const player = playerStorage.getPlayer(this.playerId);
     if (!player) return false;
 
@@ -68,7 +69,7 @@ export class MovePlayerCommand implements Command {
     return this.id;
   }
 
-  public getTimestampe() {
+  public getTimestamp() {
     return this.timestamp;
   }
 

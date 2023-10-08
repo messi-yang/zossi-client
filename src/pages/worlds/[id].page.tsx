@@ -86,11 +86,11 @@ const Page: NextPage = function Page() {
   }, [items, myPlayerHeldItemId, changePlayerHeldItem]);
 
   const handleEqualClick = useCallback(() => {
-    worldJourney?.execute(AddPerspectiveDepthCommand.new());
+    worldJourney?.executeCommand(AddPerspectiveDepthCommand.new());
   }, [worldJourney]);
 
   const handleMinusClick = useCallback(() => {
-    worldJourney?.execute(SubtractPerspectiveDepthCommand.new());
+    worldJourney?.executeCommand(SubtractPerspectiveDepthCommand.new());
   }, [worldJourney]);
 
   useKeyPress('KeyP', { onKeyDown: createUnit });
