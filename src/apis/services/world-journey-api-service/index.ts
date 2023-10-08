@@ -1,32 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
-import { parsePlayerDto, parseUnitDto, parseWorldDto, newPositionDto } from '@/apis/dtos';
-import { CommandNameEnum, parseCommandDto } from './commands';
-import type {
-  PingCommandDto,
-  MovePlayerCommandDto,
-  ChangePlayerHeldItemCommandDto,
-  CreateStaticUnitCommandDto,
-  CreatePortalUnitCommandDto,
-  RotateUnitCommandDto,
-  RemoveUnitCommandDto,
-} from './commands';
+import { parsePlayerDto, parseUnitDto, parseWorldDto } from '@/apis/dtos';
+import { CommandNameEnum, parseCommandDto, toCommandDto } from './commands';
+import type { PingCommandDto } from './commands';
 import { WorldModel } from '@/models/world/world-model';
 import { PlayerModel } from '@/models/world/player-model';
 import { UnitModel } from '@/models/world/unit-model';
 import { LocalStorage } from '@/storages/local-storage';
-import { RotateUnitCommand } from '@/logics/world-journey/commands/rotate-unit-command';
-import {
-  AddPlayerCommand,
-  CreatePortalUnitCommand,
-  CreateStaticUnitCommand,
-  MovePlayerCommand,
-  RemovePlayerCommand,
-  RemoveUnitCommand,
-} from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
-import { ChangePlayerHeldItemCommand } from '@/logics/world-journey/commands/change-player-held-item-command';
 import { DateModel } from '@/models/general/date-model';
 import { Event, EventNameEnum, WorldEnteredEvent } from './events';
+import { Command } from '@/logics/world-journey/command';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
@@ -44,14 +27,7 @@ export class WorldJourneyApiService {
     worldId: string,
     params: {
       onWorldEntered: (worldJourney: WorldJourney) => void;
-      onStaticUnitCreated: (command: CreateStaticUnitCommand) => void;
-      onPortalUnitCreated: (command: CreatePortalUnitCommand) => void;
-      onUnitRotated: (command: RotateUnitCommand) => void;
-      onUnitRemoved: (command: RemoveUnitCommand) => void;
-      onPlayerJoined: (command: AddPlayerCommand) => void;
-      onPlayerMoved: (command: MovePlayerCommand) => void;
-      onPlayerHeldItemChanged: (command: ChangePlayerHeldItemCommand) => void;
-      onPlayerLeft: (command: RemovePlayerCommand) => void;
+      onCommandSucceeded: (command: Command) => void;
       onErrored: (message: string) => void;
       onClose: () => void;
       onOpen: () => void;
@@ -76,23 +52,8 @@ export class WorldJourneyApiService {
         params.onWorldEntered(worldJourney);
       } else if (event.name === EventNameEnum.CommandSucceeded) {
         const command = parseCommandDto(event.command);
-        if (command instanceof CreateStaticUnitCommand) {
-          params.onStaticUnitCreated(command);
-        } else if (command instanceof CreatePortalUnitCommand) {
-          params.onPortalUnitCreated(command);
-        } else if (command instanceof RotateUnitCommand) {
-          params.onUnitRotated(command);
-        } else if (command instanceof RemoveUnitCommand) {
-          params.onUnitRemoved(command);
-        } else if (command instanceof AddPlayerCommand) {
-          params.onPlayerJoined(command);
-        } else if (command instanceof MovePlayerCommand) {
-          params.onPlayerMoved(command);
-        } else if (command instanceof ChangePlayerHeldItemCommand) {
-          params.onPlayerHeldItemChanged(command);
-        } else if (command instanceof RemovePlayerCommand) {
-          params.onPlayerLeft(command);
-        }
+        if (!command) return;
+        params.onCommandSucceeded(command);
       } else if (event.name === EventNameEnum.Errored) {
         params.onErrored(event.message);
       }
@@ -119,14 +80,7 @@ export class WorldJourneyApiService {
     worldId: string,
     params: {
       onWorldEntered: (worldJourney: WorldJourney) => void;
-      onStaticUnitCreated: (command: CreateStaticUnitCommand) => void;
-      onPortalUnitCreated: (command: CreatePortalUnitCommand) => void;
-      onUnitRotated: (command: RotateUnitCommand) => void;
-      onUnitRemoved: (command: RemoveUnitCommand) => void;
-      onPlayerJoined: (command: AddPlayerCommand) => void;
-      onPlayerMoved: (command: MovePlayerCommand) => void;
-      onPlayerHeldItemChanged: (command: ChangePlayerHeldItemCommand) => void;
-      onPlayerLeft: (command: RemovePlayerCommand) => void;
+      onCommandSucceeded: (command: Command) => void;
       onErrored: (message: string) => void;
       onClose: () => void;
       onOpen: () => void;
@@ -159,70 +113,9 @@ export class WorldJourneyApiService {
     this.sendMessage(commandDto);
   }
 
-  public movePlayer(command: MovePlayerCommand) {
-    const commandDto: MovePlayerCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestampe(),
-      name: CommandNameEnum.MovePlayer,
-      playerId: command.getPlayerId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
-    };
-    this.sendMessage(commandDto);
-  }
-
-  public changePlayerHeldItem(command: ChangePlayerHeldItemCommand) {
-    const commandDto: ChangePlayerHeldItemCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestampe(),
-      name: CommandNameEnum.ChangePlayerHeldItem,
-      playerId: command.getPlayerId(),
-      itemId: command.getItemId(),
-    };
-    this.sendMessage(commandDto);
-  }
-
-  public createStaticUnit(command: CreateStaticUnitCommand) {
-    const commandDto: CreateStaticUnitCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestampe(),
-      name: CommandNameEnum.CreateStaticUnit,
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
-    };
-    this.sendMessage(commandDto);
-  }
-
-  public createPortalUnit(command: CreatePortalUnitCommand) {
-    const commandDto: CreatePortalUnitCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestampe(),
-      name: CommandNameEnum.CreatePortalUnit,
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
-    };
-    this.sendMessage(commandDto);
-  }
-
-  public removeUnit(command: RemoveUnitCommand) {
-    const commandDto: RemoveUnitCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestampe(),
-      name: CommandNameEnum.RemoveUnit,
-      position: newPositionDto(command.getPosition()),
-    };
-    this.sendMessage(commandDto);
-  }
-
-  public rotateUnit(command: RotateUnitCommand) {
-    const commandDto: RotateUnitCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestampe(),
-      name: CommandNameEnum.RotateUnit,
-      position: newPositionDto(command.getPosition()),
-    };
+  public sendCommand(command: Command) {
+    const commandDto = toCommandDto(command);
+    if (!commandDto) return;
     this.sendMessage(commandDto);
   }
 }

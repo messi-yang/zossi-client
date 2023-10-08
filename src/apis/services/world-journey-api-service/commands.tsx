@@ -1,4 +1,5 @@
-import { PlayerDto, PositionDto, parsePlayerDto } from '@/apis/dtos';
+import { PlayerDto, PositionDto, newPositionDto, parsePlayerDto } from '@/apis/dtos';
+import { Command } from '@/logics/world-journey/command';
 import {
   AddPlayerCommand,
   CreatePortalUnitCommand,
@@ -169,6 +170,66 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseChangeChangePlayerHeldItemCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemovePlayer) {
     return parseRemoveRemovePlayerCommand(commandDto);
+  }
+  return null;
+};
+
+export const toCommandDto = (command: Command) => {
+  if (command instanceof CreateStaticUnitCommand) {
+    const commandDto: CreateStaticUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.CreateStaticUnit,
+      itemId: command.getItemId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
+    };
+    return commandDto;
+  } else if (command instanceof CreatePortalUnitCommand) {
+    const commandDto: CreatePortalUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.CreatePortalUnit,
+      itemId: command.getItemId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
+    };
+    return commandDto;
+  } else if (command instanceof RotateUnitCommand) {
+    const commandDto: RotateUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.RotateUnit,
+      position: newPositionDto(command.getPosition()),
+    };
+    return commandDto;
+  } else if (command instanceof RemoveUnitCommand) {
+    const commandDto: RemoveUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.RemoveUnit,
+      position: newPositionDto(command.getPosition()),
+    };
+    return commandDto;
+  } else if (command instanceof MovePlayerCommand) {
+    const commandDto: MovePlayerCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.MovePlayer,
+      playerId: command.getPlayerId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
+    };
+    return commandDto;
+  } else if (command instanceof ChangePlayerHeldItemCommand) {
+    const commandDto: ChangePlayerHeldItemCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestampe(),
+      name: CommandNameEnum.ChangePlayerHeldItem,
+      playerId: command.getPlayerId(),
+      itemId: command.getItemId(),
+    };
+    return commandDto;
   }
   return null;
 };
