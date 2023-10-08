@@ -1,9 +1,20 @@
-import { PlayerDto, PositionDto, UnitDto, WorldDto } from '@/apis/dtos';
+import { PlayerDto, PositionDto, parsePlayerDto } from '@/apis/dtos';
+import {
+  AddPlayerCommand,
+  CreatePortalUnitCommand,
+  CreateStaticUnitCommand,
+  MovePlayerCommand,
+  RemovePlayerCommand,
+  RemoveUnitCommand,
+  RotateUnitCommand,
+  ChangePlayerHeldItemCommand,
+} from '@/logics/world-journey/commands';
+import { DirectionModel } from '@/models/world/direction-model';
+import { PositionModel } from '@/models/world/position-model';
 
 enum CommandNameEnum {
   Ping = 'PING',
   DisplayError = 'DISPLAY_ERROR',
-  EnterWorld = 'ENTER_WORLD',
   AddPlayer = 'ADD_PLAYER',
   RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',
@@ -18,16 +29,6 @@ type PingCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.Ping;
-};
-
-type EnterWorldCommandDto = {
-  id: string;
-  timestamp: number;
-  name: CommandNameEnum.EnterWorld;
-  world: WorldDto;
-  units: UnitDto[];
-  myPlayerId: string;
-  players: PlayerDto[];
 };
 
 type AddPlayerCommandDto = {
@@ -93,11 +94,89 @@ type RotateUnitCommandDto = {
   position: PositionDto;
 };
 
+function parseCreateStaticCommandDto(command: CreateStaticUnitCommandDto): CreateStaticUnitCommand {
+  return CreateStaticUnitCommand.load(
+    command.id,
+    command.timestamp,
+    command.itemId,
+    PositionModel.new(command.position.x, command.position.z),
+    DirectionModel.new(command.direction)
+  );
+}
+
+function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): CreatePortalUnitCommand {
+  return CreatePortalUnitCommand.load(
+    command.id,
+    command.timestamp,
+    command.itemId,
+    PositionModel.new(command.position.x, command.position.z),
+    DirectionModel.new(command.direction)
+  );
+}
+
+function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
+  return RotateUnitCommand.load(
+    command.id,
+    command.timestamp,
+    PositionModel.new(command.position.x, command.position.z)
+  );
+}
+
+function parseRemoveUnitCommand(command: RemoveUnitCommandDto): RemoveUnitCommand {
+  return RemoveUnitCommand.load(
+    command.id,
+    command.timestamp,
+    PositionModel.new(command.position.x, command.position.z)
+  );
+}
+
+function parseAddPlayerAddPlayerCommand(command: AddPlayerCommandDto): AddPlayerCommand {
+  return AddPlayerCommand.load(command.id, command.timestamp, parsePlayerDto(command.player));
+}
+
+function parseMovePlayerCommand(command: MovePlayerCommandDto): MovePlayerCommand {
+  return MovePlayerCommand.load(
+    command.id,
+    command.timestamp,
+    command.playerId,
+    PositionModel.new(command.position.x, command.position.z),
+    DirectionModel.new(command.direction)
+  );
+}
+
+function parseChangeChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
+  return ChangePlayerHeldItemCommand.load(command.id, command.timestamp, command.playerId, command.itemId);
+}
+
+function parseRemoveRemovePlayerCommand(command: RemovePlayerCommandDto): RemovePlayerCommand {
+  return RemovePlayerCommand.load(command.id, command.timestamp, command.playerId);
+}
+
+export const parseCommandDto = (commandDto: CommandDto) => {
+  if (commandDto.name === CommandNameEnum.CreateStaticUnit) {
+    return parseCreateStaticCommandDto(commandDto);
+  } else if (commandDto.name === CommandNameEnum.CreatePortalUnit) {
+    return parseCreatePortalUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RotateUnit) {
+    return parseRotateUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemoveUnit) {
+    return parseRemoveUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.AddPlayer) {
+    return parseAddPlayerAddPlayerCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.MovePlayer) {
+    return parseMovePlayerCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.ChangePlayerHeldItem) {
+    return parseChangeChangePlayerHeldItemCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemovePlayer) {
+    return parseRemoveRemovePlayerCommand(commandDto);
+  }
+  return null;
+};
+
 export { CommandNameEnum };
 
-export type Command =
+export type CommandDto =
   | PingCommandDto
-  | EnterWorldCommandDto
   | AddPlayerCommandDto
   | MovePlayerCommandDto
   | RemovePlayerCommandDto
@@ -109,7 +188,6 @@ export type Command =
 
 export type {
   PingCommandDto,
-  EnterWorldCommandDto,
   AddPlayerCommandDto,
   MovePlayerCommandDto,
   RemovePlayerCommandDto,

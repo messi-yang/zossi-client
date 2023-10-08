@@ -125,6 +125,9 @@ export function Provider({ children }: Props) {
         if (!newWorldJourney) return;
         newWorldJourney.execute(command);
       },
+      onErrored: () => {
+        // TODO - do something
+      },
       onOpen: () => {
         setConnectionStatus('OPEN');
       },

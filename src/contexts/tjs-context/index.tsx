@@ -41,8 +41,7 @@ function Provider({ children }: Props) {
 
         gltfLoader.load(modelSrc, function (gltf) {
           gltf.scene.traverse((node) => {
-            // TODO - if THREE improves their TS supports, remove the hack below
-            if ((node as THREE.Mesh).isMesh) {
+            if (node instanceof THREE.Mesh) {
               const nextNode = node as THREE.Mesh;
               nextNode.castShadow = true;
               nextNode.receiveShadow = true;
