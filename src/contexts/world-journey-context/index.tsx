@@ -123,16 +123,17 @@ export function Provider({ children }: Props) {
       const playerPosition = worldJourney.getMyPlayer().getPosition();
       const command = MovePlayerCommand.new(playerId, playerPosition, direction);
       const succeeded = worldJourney.execute(command);
-      if (succeeded) {
-        worldJourneyApiService.current.sendCommand(command);
+      if (!succeeded) return;
+      worldJourneyApiService.current.sendCommand(command);
 
-        const newPosition = worldJourney.getMyPlayer().getPosition();
-        const unit = worldJourney.getUnit(newPosition);
-        if (unit && unit.getType().isPortal()) {
-          const secondCommand = SendPlayerIntoPortalCommand.new(playerId, newPosition);
-          worldJourney.execute(secondCommand);
-          worldJourneyApiService.current.sendCommand(secondCommand);
-        }
+      const newPlayerPosition = worldJourney.getMyPlayer().getPosition();
+      if (playerPosition.isEqual(newPlayerPosition)) return;
+
+      const unit = worldJourney.getUnit(newPlayerPosition);
+      if (unit && unit.getType().isPortal()) {
+        const secondCommand = SendPlayerIntoPortalCommand.new(playerId, newPlayerPosition);
+        worldJourney.execute(secondCommand);
+        worldJourneyApiService.current.sendCommand(secondCommand);
       }
     },
     [worldJourney]
