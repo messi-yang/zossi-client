@@ -33,17 +33,17 @@ export class CreatePortalUnitCommand implements Command {
     return new CreatePortalUnitCommand(id, timestamp, itemId, position, direction);
   }
 
-  public execute({ unitStorage, playerStorage, itemStorage }: CommandParams): boolean {
+  public execute({ unitStorage, playerStorage, itemStorage }: CommandParams): void {
     const item = itemStorage.getItem(this.itemId);
-    if (!item) return false;
+    if (!item) return;
 
     const unitAtPos = unitStorage.getUnit(this.position);
-    if (unitAtPos) return false;
+    if (unitAtPos) return;
 
     const playersAtPos = playerStorage.getPlayersAtPos(this.position);
-    if (playersAtPos) return false;
+    if (playersAtPos) return;
 
-    return unitStorage.addUnit(UnitModel.new(item.getCompatibleUnitType(), this.itemId, this.position, this.direction));
+    unitStorage.addUnit(UnitModel.new(item.getCompatibleUnitType(), this.itemId, this.position, this.direction));
   }
 
   public getId() {

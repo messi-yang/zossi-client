@@ -27,9 +27,9 @@ export class ChangePlayerHeldItemCommand implements Command {
     return new ChangePlayerHeldItemCommand(id, timestamp, playerId, itemId);
   }
 
-  public execute({ playerStorage, itemStorage }: CommandParams) {
+  public execute({ playerStorage, itemStorage }: CommandParams): void {
     const player = playerStorage.getPlayer(this.playerId);
-    if (!player) return false;
+    if (!player) return;
 
     const clonedPlayer = player.clone();
 
@@ -39,7 +39,6 @@ export class ChangePlayerHeldItemCommand implements Command {
     }
 
     playerStorage.updatePlayer(clonedPlayer);
-    return true;
   }
 
   public getId() {

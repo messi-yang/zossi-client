@@ -21,9 +21,8 @@ export class SubtractPerspectiveDepthCommand implements Command {
     return new SubtractPerspectiveDepthCommand(id, timestamp);
   }
 
-  public execute({ perspective }: CommandParams) {
+  public execute({ perspective }: CommandParams): void {
     perspective.subtractPerspectiveDepth();
-    return true;
   }
 
   public getId() {

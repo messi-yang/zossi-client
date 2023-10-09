@@ -29,8 +29,7 @@ export class AddPerspectiveDepthCommand implements Command {
     return this.timestamp;
   }
 
-  public execute({ perspective }: CommandParams) {
+  public execute({ perspective }: CommandParams): void {
     perspective.addPerspectiveDepth();
-    return true;
   }
 }

@@ -25,15 +25,13 @@ export class AddPlayerCommand implements Command {
     return new AddPlayerCommand(id, timestamp, player);
   }
 
-  public execute({ playerStorage, itemStorage }: CommandParams) {
-    const added = playerStorage.addPlayer(this.player);
-    if (!added) return false;
+  public execute({ playerStorage, itemStorage }: CommandParams): void {
+    playerStorage.addPlayer(this.player);
 
     const playerHeldItemId = this.player.getHeldItemId();
     if (playerHeldItemId) {
       itemStorage.addPlaceholderItemId(playerHeldItemId);
     }
-    return true;
   }
 
   public getId() {

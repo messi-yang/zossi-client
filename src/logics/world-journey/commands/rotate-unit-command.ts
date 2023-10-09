@@ -25,14 +25,14 @@ export class RotateUnitCommand implements Command {
     return new RotateUnitCommand(id, timestamp, position);
   }
 
-  public execute({ unitStorage }: CommandParams) {
+  public execute({ unitStorage }: CommandParams): void {
     const unit = unitStorage.getUnit(this.position);
-    if (!unit) return false;
+    if (!unit) return;
 
     const clonedUnit = unit.clone();
     clonedUnit.changeDirection(clonedUnit.getDirection().rotate());
 
-    return unitStorage.updateUnit(clonedUnit);
+    unitStorage.updateUnit(clonedUnit);
   }
 
   public getId() {

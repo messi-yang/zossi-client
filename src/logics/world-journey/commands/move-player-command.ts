@@ -32,9 +32,9 @@ export class MovePlayerCommand implements Command {
     return new MovePlayerCommand(id, timestamp, playerId, position, direction);
   }
 
-  public execute({ world, playerStorage, unitStorage, itemStorage }: CommandParams) {
+  public execute({ world, playerStorage, unitStorage, itemStorage }: CommandParams): void {
     const player = playerStorage.getPlayer(this.playerId);
-    if (!player) return false;
+    if (!player) return;
 
     const clonedPlayer = player.clone();
     clonedPlayer.changePosition(this.position);
@@ -43,26 +43,24 @@ export class MovePlayerCommand implements Command {
     if (!playerIsMovingFoward) {
       clonedPlayer.changeDirection(this.direction);
       playerStorage.updatePlayer(clonedPlayer);
-      return true;
+      return;
     }
 
     const nextPosition = clonedPlayer.getFowardPos();
     if (!world.getBound().doesContainPosition(nextPosition)) {
-      return false;
+      return;
     }
 
     const unitAtNextPosition = unitStorage.getUnit(nextPosition);
     if (unitAtNextPosition) {
       const item = itemStorage.getItem(unitAtNextPosition.getItemId());
-      if (!item) return false;
-      if (!item.getTraversable()) return false;
+      if (!item) return;
+      if (!item.getTraversable()) return;
     }
 
     clonedPlayer.changePosition(nextPosition);
     clonedPlayer.changeDirection(this.direction);
     playerStorage.updatePlayer(clonedPlayer);
-
-    return true;
   }
 
   public getId() {

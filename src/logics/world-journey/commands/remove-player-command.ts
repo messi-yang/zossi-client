@@ -24,8 +24,8 @@ export class RemovePlayerCommand implements Command {
     return new RemovePlayerCommand(id, timestamp, playerId);
   }
 
-  public execute({ playerStorage }: CommandParams) {
-    return playerStorage.removePlayer(this.playerId);
+  public execute({ playerStorage }: CommandParams): void {
+    playerStorage.removePlayer(this.playerId);
   }
 
   public getId() {

@@ -27,9 +27,7 @@ export class SendPlayerIntoPortalCommand implements Command {
     return new SendPlayerIntoPortalCommand(id, timestamp, playerId, position);
   }
 
-  public execute() {
-    return true;
-  }
+  public execute(): void {}
 
   public getId() {
     return this.id;

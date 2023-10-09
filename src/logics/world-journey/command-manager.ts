@@ -26,17 +26,17 @@ export class CommandManager {
     this.commandMap[command.getId()] = command;
   }
 
-  public executeCommand(command: Command, params: CommandParams): boolean {
+  public executeCommand(command: Command, params: CommandParams) {
     const commandId = command.getId();
     const duplicatedCommand = this.getCommand(commandId);
-    if (duplicatedCommand) return false;
+    if (duplicatedCommand) return;
 
-    const succeeded = command.execute(params);
+    command.execute(params);
     this.addCommand(command);
 
-    this.publishCommandExecuted(command);
-
-    return succeeded;
+    setTimeout(() => {
+      this.publishCommandExecuted(command);
+    }, 10);
   }
 
   public publishCommandExecuted(command: Command) {

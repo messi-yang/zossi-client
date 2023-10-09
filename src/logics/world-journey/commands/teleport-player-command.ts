@@ -32,17 +32,15 @@ export class TeleportPlayerCommand implements Command {
     return new TeleportPlayerCommand(id, timestamp, playerId, position, direction);
   }
 
-  public execute({ playerStorage }: CommandParams) {
+  public execute({ playerStorage }: CommandParams): void {
     const player = playerStorage.getPlayer(this.playerId);
-    if (!player) return false;
+    if (!player) return;
 
     const clonedPlayer = player.clone();
     clonedPlayer.changePosition(this.position);
     clonedPlayer.changeDirection(this.direction);
 
     playerStorage.updatePlayer(clonedPlayer);
-
-    return true;
   }
 
   public getId() {

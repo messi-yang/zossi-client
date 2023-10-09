@@ -25,8 +25,8 @@ export class RemoveUnitCommand implements Command {
     return new RemoveUnitCommand(id, timestamp, position);
   }
 
-  public execute({ unitStorage }: CommandParams) {
-    return unitStorage.removeUnit(this.position);
+  public execute({ unitStorage }: CommandParams): void {
+    unitStorage.removeUnit(this.position);
   }
 
   public getId() {

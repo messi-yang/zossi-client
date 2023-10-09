@@ -49,8 +49,8 @@ export class WorldJourney {
     return new WorldJourney(world, players, myPlayerId, units);
   }
 
-  public executeCommand(command: Command): boolean {
-    return this.commandManager.executeCommand(command, {
+  public executeCommand(command: Command) {
+    this.commandManager.executeCommand(command, {
       world: this.world,
       playerStorage: this.playerStorage,
       unitStorage: this.unitStorage,

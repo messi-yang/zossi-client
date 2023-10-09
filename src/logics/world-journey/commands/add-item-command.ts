@@ -25,8 +25,8 @@ export class AddItemCommand implements Command {
     return new AddItemCommand(id, timestamp, item);
   }
 
-  public execute({ itemStorage }: CommandParams) {
-    return itemStorage.addItem(this.item);
+  public execute({ itemStorage }: CommandParams): void {
+    itemStorage.addItem(this.item);
   }
 
   public getId() {
