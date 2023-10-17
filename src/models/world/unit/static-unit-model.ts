@@ -2,9 +2,10 @@ import { DirectionModel } from '../common/direction-model';
 import { PositionModel } from '../common/position-model';
 import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
+import { UnitTypeModel } from './unit-type-model';
 
 export class StaticUnitModel implements UnitModel {
-  private type: UnitTypeEnum.Static = UnitTypeEnum.Static;
+  private type: UnitTypeModel = UnitTypeModel.new(UnitTypeEnum.Static);
 
   constructor(private itemId: string, private position: PositionModel, private direction: DirectionModel) {}
 
@@ -23,7 +24,7 @@ export class StaticUnitModel implements UnitModel {
     return new StaticUnitModel(this.itemId, this.position, this.direction);
   }
 
-  public getType(): UnitTypeEnum.Static {
+  public getType(): UnitTypeModel {
     return this.type;
   }
 

@@ -16,7 +16,6 @@ import {
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { PositionModel } from '@/models/world/common/position-model';
-import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -133,7 +132,7 @@ export function Provider({ children }: Props) {
         const unitAtMyPlayerPos = worldJourney.getUnit(newPos);
         if (!unitAtMyPlayerPos) return;
 
-        if (unitAtMyPlayerPos.getType() !== UnitTypeEnum.Portal) return;
+        if (!unitAtMyPlayerPos.getType().isPortal()) return;
 
         const sendPlayerIntoPortalCommand = SendPlayerIntoPortalCommand.new(playerId, newPos);
         worldJourney.executeCommand(sendPlayerIntoPortalCommand);
@@ -208,9 +207,9 @@ export function Provider({ children }: Props) {
     const direction = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
 
     const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
-    if (compatibleUnitType === UnitTypeEnum.Static) {
+    if (compatibleUnitType.isStatic()) {
       createStaticUnit(myPlayerHeldItem.getId(), position, direction);
-    } else if (compatibleUnitType === UnitTypeEnum.Portal) {
+    } else if (compatibleUnitType.isPortal()) {
       createPortalUnit(myPlayerHeldItem.getId(), position, direction);
     }
   }, [worldJourney]);
@@ -222,11 +221,11 @@ export function Provider({ children }: Props) {
     const unitAtPos = worldJourney.getUnit(unitPos);
     if (!unitAtPos) return;
 
-    if (unitAtPos.getType() === UnitTypeEnum.Static) {
+    if (unitAtPos.getType().isStatic()) {
       const command = RemoveStaticUnitCommand.new(unitPos);
       worldJourney.executeCommand(command);
       worldJourneyApiService.current.sendCommand(command);
-    } else if (unitAtPos.getType() === UnitTypeEnum.Portal) {
+    } else if (unitAtPos.getType().isPortal()) {
       const command = RemovePortalUnitCommand.new(unitPos);
       worldJourney.executeCommand(command);
       worldJourneyApiService.current.sendCommand(command);

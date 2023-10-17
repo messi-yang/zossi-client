@@ -1,10 +1,10 @@
 import { DirectionModel } from '../common/direction-model';
 import { PositionModel } from '../common/position-model';
-import { UnitTypeEnum } from './unit-type-enum';
+import { UnitTypeModel } from './unit-type-model';
 
 export interface UnitModel {
   clone(): UnitModel;
-  getType(): UnitTypeEnum;
+  getType(): UnitTypeModel;
   getItemId(): string;
   getPosition(): PositionModel;
   getDirection(): DirectionModel;

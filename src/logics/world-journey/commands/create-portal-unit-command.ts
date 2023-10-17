@@ -5,7 +5,6 @@ import { PositionModel } from '@/models/world/common/position-model';
 import { DirectionModel } from '@/models/world/common/direction-model';
 import { DateModel } from '@/models/general/date-model';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
-import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 export class CreatePortalUnitCommand implements Command {
   private id: string;
@@ -38,7 +37,7 @@ export class CreatePortalUnitCommand implements Command {
     const item = itemStorage.getItem(this.itemId);
     if (!item) return;
 
-    if (item.getCompatibleUnitType() !== UnitTypeEnum.Portal) return;
+    if (!item.getCompatibleUnitType().isPortal()) return;
 
     const unitAtPos = unitStorage.getUnit(this.position);
     if (unitAtPos) return;

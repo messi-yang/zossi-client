@@ -2,9 +2,10 @@ import { DirectionModel } from '../common/direction-model';
 import { PositionModel } from '../common/position-model';
 import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
+import { UnitTypeModel } from './unit-type-model';
 
 export class PortalUnitModel implements UnitModel {
-  private type: UnitTypeEnum.Portal = UnitTypeEnum.Portal;
+  private type: UnitTypeModel = UnitTypeModel.new(UnitTypeEnum.Portal);
 
   constructor(
     private itemId: string,
@@ -33,7 +34,7 @@ export class PortalUnitModel implements UnitModel {
     return new PortalUnitModel(this.itemId, this.position, this.direction, this.targetPosition);
   }
 
-  public getType(): UnitTypeEnum.Portal {
+  public getType() {
     return this.type;
   }
 

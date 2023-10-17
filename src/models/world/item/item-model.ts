@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { UnitTypeEnum } from '../unit/unit-type-enum';
+import { UnitTypeModel } from '../unit/unit-type-model';
 
 export class ItemModel {
   constructor(
@@ -8,7 +9,7 @@ export class ItemModel {
     private traversable: boolean,
     private thumbnailSrc: string,
     private modelSrc: string,
-    private compatibleUnitType: UnitTypeEnum
+    private compatibleUnitType: UnitTypeModel
   ) {}
 
   static new = (
@@ -17,14 +18,21 @@ export class ItemModel {
     traversable: boolean,
     thumbnailSrc: string,
     modelSrc: string,
-    compatibleUnitType: UnitTypeEnum
+    compatibleUnitType: UnitTypeModel
   ) => new ItemModel(id, name, traversable, thumbnailSrc, modelSrc, compatibleUnitType);
 
   static mockup(): ItemModel {
-    return ItemModel.new(uuidv4(), 'stone', true, '/placeholder-item.png', 'characters/car.gltf', UnitTypeEnum.Static);
+    return ItemModel.new(
+      uuidv4(),
+      'stone',
+      true,
+      '/placeholder-item.png',
+      'characters/car.gltf',
+      UnitTypeModel.new(UnitTypeEnum.Static)
+    );
   }
 
-  public getCompatibleUnitType(): UnitTypeEnum {
+  public getCompatibleUnitType(): UnitTypeModel {
     return this.compatibleUnitType;
   }
 
