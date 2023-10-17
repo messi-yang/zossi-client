@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useContext, useMemo } from 'react';
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
-import { PlayerModel } from '@/models/world/player-model';
+import { PlayerModel } from '@/models/world/player/player-model';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { TjsContext } from '@/contexts/tjs-context';
@@ -10,7 +10,7 @@ import { rangeMatrix } from '@/utils/common';
 import { createInstancesInScene } from './tjs-utils';
 import { dataTestids } from './data-test-ids';
 import { WorldJourney } from '@/logics/world-journey';
-import { PositionModel } from '@/models/world/position-model';
+import { PositionModel } from '@/models/world/common/position-model';
 
 type Props = {
   worldJourney: WorldJourney;

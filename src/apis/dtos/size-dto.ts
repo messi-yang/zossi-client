@@ -1,4 +1,4 @@
-import { SizeModel } from '@/models/world/size-model';
+import { SizeModel } from '@/models/world/common/size-model';
 
 type SizeDto = {
   width: number;

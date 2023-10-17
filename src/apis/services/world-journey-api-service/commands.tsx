@@ -6,14 +6,13 @@ import {
   CreateStaticUnitCommand,
   MovePlayerCommand,
   SendPlayerIntoPortalCommand,
-  TeleportPlayerCommand,
   RemovePlayerCommand,
   RemoveUnitCommand,
   RotateUnitCommand,
   ChangePlayerHeldItemCommand,
 } from '@/logics/world-journey/commands';
-import { DirectionModel } from '@/models/world/direction-model';
-import { PositionModel } from '@/models/world/position-model';
+import { DirectionModel } from '@/models/world/common/direction-model';
+import { PositionModel } from '@/models/world/common/position-model';
 
 enum CommandNameEnum {
   Ping = 'PING',
@@ -22,7 +21,6 @@ enum CommandNameEnum {
   RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',
   SendPlayerIntoPortal = 'SEND_PLAYER_INTO_PORTAL',
-  TeleportPlayer = 'TELEPORT_PLAYER',
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
   CreatePortalUnit = 'CREATE_PORTAL_UNIT',
@@ -30,7 +28,7 @@ enum CommandNameEnum {
   RotateUnit = 'ROTATE_UNIT',
 }
 
-type PingCommandDto = {
+export type PingCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.Ping;
@@ -58,15 +56,6 @@ type SendPlayerIntoPortalCommandDto = {
   name: CommandNameEnum.SendPlayerIntoPortal;
   playerId: string;
   position: PositionDto;
-};
-
-type TeleportPlayerCommandDto = {
-  id: string;
-  timestamp: number;
-  name: CommandNameEnum.TeleportPlayer;
-  playerId: string;
-  position: PositionDto;
-  direction: number;
 };
 
 type RemovePlayerCommandDto = {
@@ -174,16 +163,6 @@ function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDt
   );
 }
 
-function parseTeleportPlayerCommand(command: TeleportPlayerCommandDto): TeleportPlayerCommand {
-  return TeleportPlayerCommand.load(
-    command.id,
-    command.timestamp,
-    command.playerId,
-    PositionModel.new(command.position.x, command.position.z),
-    DirectionModel.new(command.direction)
-  );
-}
-
 function parseChangeChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
   return ChangePlayerHeldItemCommand.load(command.id, command.timestamp, command.playerId, command.itemId);
 }
@@ -207,8 +186,6 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseMovePlayerCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
     return parseSendPlayerIntoPortalCommand(commandDto);
-  } else if (commandDto.name === CommandNameEnum.TeleportPlayer) {
-    return parseTeleportPlayerCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerHeldItem) {
     return parseChangeChangePlayerHeldItemCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemovePlayer) {
@@ -273,16 +250,6 @@ export const toCommandDto = (command: Command) => {
       position: newPositionDto(command.getPosition()),
     };
     return commandDto;
-  } else if (command instanceof TeleportPlayerCommand) {
-    const commandDto: TeleportPlayerCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestamp(),
-      name: CommandNameEnum.TeleportPlayer,
-      playerId: command.getPlayerId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
-    };
-    return commandDto;
   } else if (command instanceof ChangePlayerHeldItemCommand) {
     const commandDto: ChangePlayerHeldItemCommandDto = {
       id: command.getId(),
@@ -303,24 +270,9 @@ export type CommandDto =
   | AddPlayerCommandDto
   | MovePlayerCommandDto
   | SendPlayerIntoPortalCommandDto
-  | TeleportPlayerCommandDto
   | RemovePlayerCommandDto
   | ChangePlayerHeldItemCommandDto
   | CreateStaticUnitCommandDto
   | CreatePortalUnitCommandDto
   | RemoveUnitCommandDto
   | RotateUnitCommandDto;
-
-export type {
-  PingCommandDto,
-  AddPlayerCommandDto,
-  MovePlayerCommandDto,
-  SendPlayerIntoPortalCommandDto,
-  TeleportPlayerCommandDto,
-  RemovePlayerCommandDto,
-  ChangePlayerHeldItemCommandDto,
-  CreateStaticUnitCommandDto,
-  CreatePortalUnitCommandDto,
-  RemoveUnitCommandDto,
-  RotateUnitCommandDto,
-};

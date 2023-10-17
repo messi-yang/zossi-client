@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { BoundModel } from './bound-model';
-import { PositionModel } from './position-model';
-import { UserModel } from '../iam/user-model';
-import { DateModel } from '../general/date-model';
+import { BoundModel } from '../common/bound-model';
+import { PositionModel } from '../common/position-model';
+import { UserModel } from '../../iam/user-model';
+import { DateModel } from '../../general/date-model';
 
 export class WorldModel {
   constructor(

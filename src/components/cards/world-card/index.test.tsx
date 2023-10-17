@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { WorldModel } from '@/models/world/world-model';
+import { WorldModel } from '@/models/world/world/world-model';
 import { dataTestids } from './data-test-ids';
 import { WorldCard } from '.';
 

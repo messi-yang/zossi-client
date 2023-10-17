@@ -3,7 +3,7 @@ import { StoryFn, Meta } from '@storybook/react';
 
 import { ShareWorldModal } from '.';
 import { WorldMemberModel } from '@/models/iam/world-member-model';
-import { WorldModel } from '@/models/world/world-model';
+import { WorldModel } from '@/models/world/world/world-model';
 
 export default {
   title: 'Modal/ShareWorldModal',

@@ -1,8 +1,8 @@
 import { createContext, useCallback, useRef, useState, useMemo, useEffect } from 'react';
 import { WorldJourneyApiService } from '@/apis/services/world-journey-api-service';
 import { ItemApiService } from '@/apis/services/item-api-service';
-import { ItemModel } from '@/models/world/item-model';
-import { DirectionModel } from '@/models/world/direction-model';
+import { ItemModel } from '@/models/world/item/item-model';
+import { DirectionModel } from '@/models/world/common/direction-model';
 import {
   AddItemCommand,
   RotateUnitCommand,
@@ -14,7 +14,8 @@ import {
   SendPlayerIntoPortalCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
-import { PositionModel } from '@/models/world/position-model';
+import { PositionModel } from '@/models/world/common/position-model';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -131,7 +132,7 @@ export function Provider({ children }: Props) {
         const unitAtMyPlayerPos = worldJourney.getUnit(newPos);
         if (!unitAtMyPlayerPos) return;
 
-        if (!unitAtMyPlayerPos.getType().isPortal()) return;
+        if (unitAtMyPlayerPos.getType() !== UnitTypeEnum.Portal) return;
 
         const sendPlayerIntoPortalCommand = SendPlayerIntoPortalCommand.new(playerId, newPos);
         worldJourney.executeCommand(sendPlayerIntoPortalCommand);
@@ -206,9 +207,9 @@ export function Provider({ children }: Props) {
     const direction = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
 
     const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
-    if (compatibleUnitType.isStatic()) {
+    if (compatibleUnitType === UnitTypeEnum.Static) {
       createStaticUnit(myPlayerHeldItem.getId(), position, direction);
-    } else if (compatibleUnitType.isPortal()) {
+    } else if (compatibleUnitType === UnitTypeEnum.Portal) {
       createPortalUnit(myPlayerHeldItem.getId(), position, direction);
     }
   }, [worldJourney]);

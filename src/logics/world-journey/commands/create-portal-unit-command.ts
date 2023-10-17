@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import { UnitModel } from '@/models/world/unit-model';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { PositionModel } from '@/models/world/position-model';
-import { DirectionModel } from '@/models/world/direction-model';
+import { PositionModel } from '@/models/world/common/position-model';
+import { DirectionModel } from '@/models/world/common/direction-model';
 import { DateModel } from '@/models/general/date-model';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 export class CreatePortalUnitCommand implements Command {
   private id: string;
@@ -37,13 +38,37 @@ export class CreatePortalUnitCommand implements Command {
     const item = itemStorage.getItem(this.itemId);
     if (!item) return;
 
+    if (item.getCompatibleUnitType() !== UnitTypeEnum.Portal) return;
+
     const unitAtPos = unitStorage.getUnit(this.position);
     if (unitAtPos) return;
 
     const playersAtPos = playerStorage.getPlayersAtPos(this.position);
     if (playersAtPos) return;
 
-    unitStorage.addUnit(UnitModel.new(item.getCompatibleUnitType(), this.itemId, this.position, this.direction));
+    const newPortalUnit = PortalUnitModel.new(this.itemId, this.position, this.direction, null);
+
+    const portalsWithoutTarget = unitStorage.getPortalUnits().filter((unit) => !unit.getTargetPosition());
+    if (portalsWithoutTarget.length === 0) {
+      unitStorage.addUnit(newPortalUnit);
+    } else {
+      const topLeftMostPortalWithoutTarget = portalsWithoutTarget.sort((unitA, unitB) => {
+        const unitPosA = unitA.getPosition();
+        const unitPosB = unitB.getPosition();
+
+        if (unitPosA.getZ() === unitPosB.getZ()) {
+          return unitPosA.getX() - unitPosB.getX();
+        } else {
+          return unitPosA.getZ() - unitPosB.getZ();
+        }
+      })[0];
+
+      topLeftMostPortalWithoutTarget.updateTargetPosition(newPortalUnit.getPosition());
+      unitStorage.updateUnit(topLeftMostPortalWithoutTarget);
+
+      newPortalUnit.updateTargetPosition(topLeftMostPortalWithoutTarget.getPosition());
+      unitStorage.addUnit(newPortalUnit);
+    }
   }
 
   public getId() {

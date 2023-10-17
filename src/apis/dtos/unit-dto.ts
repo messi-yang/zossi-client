@@ -1,20 +1,50 @@
-import { DirectionModel } from '@/models/world/direction-model';
-import { PositionModel } from '@/models/world/position-model';
-import { UnitModel } from '@/models/world/unit-model';
+import { DirectionModel } from '@/models/world/common/direction-model';
+import { PositionModel } from '@/models/world/common/position-model';
+import { UnitModel } from '@/models/world/unit/unit-model';
 import { PositionDto } from './position-dto';
-import { UnitTypeModel } from '@/models/world/unit-type-model';
+import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
+import { DirectionEnum } from '@/models/world/common/direction-enum';
 
-type UnitDto = {
-  type: 'static' | 'portal';
+type UnitDtoBase = {
+  type: UnitTypeEnum;
   itemId: string;
   position: PositionDto;
-  direction: 0 | 1 | 2 | 3;
+  direction: DirectionEnum;
 };
+
+interface StaticUnitDto extends UnitDtoBase {
+  type: UnitTypeEnum.Static;
+  itemId: string;
+  position: PositionDto;
+  direction: DirectionEnum;
+  info: null;
+}
+
+interface PortalUnitDto extends UnitDtoBase {
+  type: UnitTypeEnum.Portal;
+  itemId: string;
+  position: PositionDto;
+  direction: DirectionEnum;
+  info: {
+    targetPosition: PositionDto | null;
+  };
+}
+
+type UnitDto = StaticUnitDto | PortalUnitDto;
 
 function parseUnitDto(unitDto: UnitDto): UnitModel {
   const position = PositionModel.new(unitDto.position.x, unitDto.position.z);
   const direction = DirectionModel.new(unitDto.direction);
-  return UnitModel.new(UnitTypeModel.new(unitDto.type), unitDto.itemId, position, direction);
+  if (unitDto.type === UnitTypeEnum.Portal) {
+    const tartgetPosition = unitDto.info.targetPosition
+      ? PositionModel.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
+      : null;
+    return PortalUnitModel.new(unitDto.itemId, position, direction, tartgetPosition);
+  } else {
+    return StaticUnitModel.new(unitDto.itemId, position, direction);
+  }
 }
 
 export type { UnitDto };

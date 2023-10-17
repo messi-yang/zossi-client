@@ -1,4 +1,4 @@
-import { WorldModel } from '@/models/world/world-model';
+import { WorldModel } from '@/models/world/world/world-model';
 import { PlayerStorage } from '../player-storage';
 import { UnitStorage } from '../unit-storage';
 import { ItemStorage } from '../item-storage';

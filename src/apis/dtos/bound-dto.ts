@@ -1,6 +1,6 @@
-import { BoundModel } from '@/models/world/bound-model';
+import { BoundModel } from '@/models/world/common/bound-model';
 import type { PositionDto } from './position-dto';
-import { PositionModel } from '@/models/world/position-model';
+import { PositionModel } from '@/models/world/common/position-model';
 
 type BoundDto = {
   from: PositionDto;

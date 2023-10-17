@@ -1,4 +1,4 @@
-import { PositionModel } from '@/models/world/position-model';
+import { PositionModel } from '@/models/world/common/position-model';
 
 export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPos: PositionModel) => void;
 

@@ -4,7 +4,6 @@ export { SubtractPerspectiveDepthCommand } from './subtract-perspective-depth-co
 export { AddPlayerCommand } from './add-player-command';
 export { MovePlayerCommand } from './move-player-command';
 export { SendPlayerIntoPortalCommand } from './send-player-into-portal-command';
-export { TeleportPlayerCommand } from './teleport-player-command';
 export { ChangePlayerHeldItemCommand } from './change-player-held-item-command';
 export { RemovePlayerCommand } from './remove-player-command';
 export { CreateStaticUnitCommand } from './create-static-unit-command';

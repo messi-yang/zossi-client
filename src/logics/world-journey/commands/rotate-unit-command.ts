@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { PositionModel } from '@/models/world/position-model';
+import { PositionModel } from '@/models/world/common/position-model';
 import { DateModel } from '@/models/general/date-model';
 
 export class RotateUnitCommand implements Command {

@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionModel } from '@/models/world/position-model';
+import { PositionModel } from '@/models/world/common/position-model';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { DirectionModel } from '@/models/world/direction-model';
+import { DirectionModel } from '@/models/world/common/direction-model';
 import { DateModel } from '@/models/general/date-model';
 
 export class MovePlayerCommand implements Command {

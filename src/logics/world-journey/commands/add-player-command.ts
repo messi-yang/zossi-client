@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { PlayerModel } from '@/models/world/player-model';
+import { PlayerModel } from '@/models/world/player/player-model';
 import { DateModel } from '@/models/general/date-model';
 
 export class AddPlayerCommand implements Command {

@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { ItemBox } from '@/components/boxes/item-box';
-import { ItemModel } from '@/models/world/item-model';
+import { ItemModel } from '@/models/world/item/item-model';
 import { dataTestids } from './data-test-ids';
 
 type Props = {

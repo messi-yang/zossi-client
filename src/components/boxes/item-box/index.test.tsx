@@ -1,5 +1,5 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { ItemModel } from '@/models/world/item-model';
+import { ItemModel } from '@/models/world/item/item-model';
 import { dataTestids } from './data-test-ids';
 import { ItemBox } from '.';
 

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionModel } from './position-model';
-import { DirectionModel } from './direction-model';
+import { PositionModel } from '../common/position-model';
+import { DirectionModel } from '../common/direction-model';
 
 export class PlayerModel {
   constructor(

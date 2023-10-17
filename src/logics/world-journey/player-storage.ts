@@ -1,6 +1,6 @@
 import { uniq } from 'lodash';
-import { PlayerModel } from '@/models/world/player-model';
-import { PositionModel } from '@/models/world/position-model';
+import { PlayerModel } from '@/models/world/player/player-model';
+import { PositionModel } from '@/models/world/common/position-model';
 
 export type PlayersChangedHandler = (players: PlayerModel[]) => void;
 export type MyPlayerChangedHandler = (player: PlayerModel) => void;

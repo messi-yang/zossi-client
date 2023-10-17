@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 import { useKeyPress } from '@/hooks/use-key-press';
 import { WorldJourneyContext } from '@/contexts/world-journey-context';
-import { DirectionModel } from '@/models/world/direction-model';
+import { DirectionModel } from '@/models/world/common/direction-model';
 import { WorldCanvas } from '@/components/canvas/world-canvas';
 import { MessageModal } from '@/components/modals/message-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
@@ -14,7 +14,7 @@ import { AuthContext } from '@/contexts/auth-context';
 import { WorldMembersContext } from '@/contexts/world-members-context';
 import { Button } from '@/components/buttons/button';
 import { ShareWorldModal } from '@/components/modals/share-world-modal';
-import { ItemModel } from '@/models/world/item-model';
+import { ItemModel } from '@/models/world/item/item-model';
 import { AddPerspectiveDepthCommand, SubtractPerspectiveDepthCommand } from '@/logics/world-journey/commands';
 
 const Page: NextPage = function Page() {

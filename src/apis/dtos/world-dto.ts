@@ -1,4 +1,4 @@
-import { WorldModel } from '@/models/world/world-model';
+import { WorldModel } from '@/models/world/world/world-model';
 import { BoundDto, parseBoundDto } from './bound-dto';
 import { UserDto, parseUserDto } from './user-dto';
 import { DateModel } from '@/models/general/date-model';

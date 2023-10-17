@@ -1,5 +1,5 @@
-import { ItemModel } from '@/models/world/item-model';
-import { UnitTypeModel } from '@/models/world/unit-type-model';
+import { ItemModel } from '@/models/world/item/item-model';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 type ItemDto = {
   id: string;
@@ -7,7 +7,7 @@ type ItemDto = {
   traversable: boolean;
   thumbnailSrc: string;
   modelSrc: string;
-  compatibleUnitType: 'static' | 'portal';
+  compatibleUnitType: UnitTypeEnum;
 };
 
 function parseItemDto(itemDto: ItemDto): ItemModel {
@@ -17,7 +17,7 @@ function parseItemDto(itemDto: ItemDto): ItemModel {
     itemDto.traversable,
     itemDto.thumbnailSrc,
     itemDto.modelSrc,
-    UnitTypeModel.new(itemDto.compatibleUnitType)
+    itemDto.compatibleUnitType
   );
 }
 

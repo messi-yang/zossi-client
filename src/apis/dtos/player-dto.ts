@@ -1,13 +1,14 @@
-import { DirectionModel } from '@/models/world/direction-model';
-import { PositionModel } from '@/models/world/position-model';
-import { PlayerModel } from '@/models/world/player-model';
+import { DirectionModel } from '@/models/world/common/direction-model';
+import { PositionModel } from '@/models/world/common/position-model';
+import { PlayerModel } from '@/models/world/player/player-model';
 import type { PositionDto } from './position-dto';
+import { DirectionEnum } from '@/models/world/common/direction-enum';
 
 type PlayerDto = {
   id: string;
   name: string;
   position: PositionDto;
-  direction: 0 | 1 | 2 | 3;
+  direction: DirectionEnum;
   heldItemId: string | null;
 };
 

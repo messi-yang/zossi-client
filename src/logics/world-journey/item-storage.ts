@@ -1,4 +1,4 @@
-import { ItemModel } from '@/models/world/item-model';
+import { ItemModel } from '@/models/world/item/item-model';
 
 export type PlaceholderItemIdsAddedHandler = (placeholderItemIds: string[]) => void;
 export type ItemAddedHandler = (item: ItemModel) => void;

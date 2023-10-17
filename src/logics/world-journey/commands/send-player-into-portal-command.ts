@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionModel } from '@/models/world/position-model';
+import { PositionModel } from '@/models/world/common/position-model';
 import { Command } from './command';
 import { DateModel } from '@/models/general/date-model';
+import { CommandParams } from './command-params';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
 export class SendPlayerIntoPortalCommand implements Command {
   private id: string;
@@ -27,7 +29,19 @@ export class SendPlayerIntoPortalCommand implements Command {
     return new SendPlayerIntoPortalCommand(id, timestamp, playerId, position);
   }
 
-  public execute(): void {}
+  public execute({ unitStorage, playerStorage }: CommandParams): void {
+    const portalUnit = unitStorage.getUnit(this.position);
+    if (!portalUnit || !(portalUnit instanceof PortalUnitModel)) return;
+
+    const targetPosition = portalUnit.getTargetPosition();
+    if (!targetPosition) return;
+
+    const player = playerStorage.getPlayer(this.playerId);
+    if (!player) return;
+
+    player.changePosition(targetPosition);
+    playerStorage.updatePlayer(player);
+  }
 
   public getId() {
     return this.id;

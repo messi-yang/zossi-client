@@ -1,10 +1,10 @@
 import { uniq } from 'lodash';
-import { BoundModel } from '@/models/world/bound-model';
-import { ItemModel } from '@/models/world/item-model';
-import { PlayerModel } from '@/models/world/player-model';
-import { UnitModel } from '@/models/world/unit-model';
-import { WorldModel } from '@/models/world/world-model';
-import { PositionModel } from '@/models/world/position-model';
+import { BoundModel } from '@/models/world/common/bound-model';
+import { ItemModel } from '@/models/world/item/item-model';
+import { PlayerModel } from '@/models/world/player/player-model';
+import { UnitModel } from '@/models/world/unit/unit-model';
+import { WorldModel } from '@/models/world/world/world-model';
+import { PositionModel } from '@/models/world/common/position-model';
 
 import { UnitStorage } from './unit-storage';
 import { MyPlayerChangedHandler, PlayerStorage, PlayersChangedHandler } from './player-storage';

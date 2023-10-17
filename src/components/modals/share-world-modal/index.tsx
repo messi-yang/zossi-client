@@ -3,7 +3,7 @@ import { Text } from '@/components/texts/text';
 import { BaseModal } from '@/components/modals/base-modal';
 import { dataTestids } from './data-test-ids';
 import { WorldMemberModel } from '@/models/iam/world-member-model';
-import { WorldModel } from '@/models/world/world-model';
+import { WorldModel } from '@/models/world/world/world-model';
 import { WorldMemberCard } from '@/components/cards/world-member-card';
 import { Input } from '@/components/inputs/input';
 import { Button } from '@/components/buttons/button';
