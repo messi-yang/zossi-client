@@ -2,12 +2,13 @@ import { PlayerDto, PositionDto, newPositionDto, parsePlayerDto } from '@/apis/d
 import {
   Command,
   AddPlayerCommand,
-  CreatePortalUnitCommand,
   CreateStaticUnitCommand,
+  RemoveStaticUnitCommand,
+  CreatePortalUnitCommand,
+  RemovePortalUnitCommand,
   MovePlayerCommand,
   SendPlayerIntoPortalCommand,
   RemovePlayerCommand,
-  RemoveUnitCommand,
   RotateUnitCommand,
   ChangePlayerHeldItemCommand,
 } from '@/logics/world-journey/commands';
@@ -23,8 +24,9 @@ enum CommandNameEnum {
   SendPlayerIntoPortal = 'SEND_PLAYER_INTO_PORTAL',
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
+  RemoveStaticUnit = 'REMOVE_STATIC_UNIT',
   CreatePortalUnit = 'CREATE_PORTAL_UNIT',
-  RemoveUnit = 'REMOVE_UNIT',
+  RemovePortalUnit = 'REMOVE_PORTAL_UNIT',
   RotateUnit = 'ROTATE_UNIT',
 }
 
@@ -82,6 +84,13 @@ type CreateStaticUnitCommandDto = {
   direction: number;
 };
 
+type RemoveStaticUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RemoveStaticUnit;
+  position: PositionDto;
+};
+
 type CreatePortalUnitCommandDto = {
   id: string;
   timestamp: number;
@@ -91,10 +100,10 @@ type CreatePortalUnitCommandDto = {
   direction: number;
 };
 
-type RemoveUnitCommandDto = {
+type RemovePortalUnitCommandDto = {
   id: string;
   timestamp: number;
-  name: CommandNameEnum.RemoveUnit;
+  name: CommandNameEnum.RemovePortalUnit;
   position: PositionDto;
 };
 
@@ -115,6 +124,14 @@ function parseCreateStaticCommandDto(command: CreateStaticUnitCommandDto): Creat
   );
 }
 
+function parseRemoveStaticUnitCommand(command: RemoveStaticUnitCommandDto): RemoveStaticUnitCommand {
+  return RemoveStaticUnitCommand.load(
+    command.id,
+    command.timestamp,
+    PositionModel.new(command.position.x, command.position.z)
+  );
+}
+
 function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): CreatePortalUnitCommand {
   return CreatePortalUnitCommand.load(
     command.id,
@@ -125,16 +142,16 @@ function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): Crea
   );
 }
 
-function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
-  return RotateUnitCommand.load(
+function parseRemovePortalUnitCommand(command: RemovePortalUnitCommandDto): RemovePortalUnitCommand {
+  return RemovePortalUnitCommand.load(
     command.id,
     command.timestamp,
     PositionModel.new(command.position.x, command.position.z)
   );
 }
 
-function parseRemoveUnitCommand(command: RemoveUnitCommandDto): RemoveUnitCommand {
-  return RemoveUnitCommand.load(
+function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
+  return RotateUnitCommand.load(
     command.id,
     command.timestamp,
     PositionModel.new(command.position.x, command.position.z)
@@ -174,12 +191,14 @@ function parseRemoveRemovePlayerCommand(command: RemovePlayerCommandDto): Remove
 export const parseCommandDto = (commandDto: CommandDto) => {
   if (commandDto.name === CommandNameEnum.CreateStaticUnit) {
     return parseCreateStaticCommandDto(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemoveStaticUnit) {
+    return parseRemoveStaticUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.CreatePortalUnit) {
     return parseCreatePortalUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemovePortalUnit) {
+    return parseRemovePortalUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RotateUnit) {
     return parseRotateUnitCommand(commandDto);
-  } else if (commandDto.name === CommandNameEnum.RemoveUnit) {
-    return parseRemoveUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.AddPlayer) {
     return parseAddPlayerAddPlayerCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.MovePlayer) {
@@ -205,6 +224,14 @@ export const toCommandDto = (command: Command) => {
       direction: command.getDirection().toNumber(),
     };
     return commandDto;
+  } else if (command instanceof RemoveStaticUnitCommand) {
+    const commandDto: RemoveStaticUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.RemoveStaticUnit,
+      position: newPositionDto(command.getPosition()),
+    };
+    return commandDto;
   } else if (command instanceof CreatePortalUnitCommand) {
     const commandDto: CreatePortalUnitCommandDto = {
       id: command.getId(),
@@ -215,19 +242,19 @@ export const toCommandDto = (command: Command) => {
       direction: command.getDirection().toNumber(),
     };
     return commandDto;
+  } else if (command instanceof RemovePortalUnitCommand) {
+    const commandDto: RemovePortalUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.RemovePortalUnit,
+      position: newPositionDto(command.getPosition()),
+    };
+    return commandDto;
   } else if (command instanceof RotateUnitCommand) {
     const commandDto: RotateUnitCommandDto = {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.RotateUnit,
-      position: newPositionDto(command.getPosition()),
-    };
-    return commandDto;
-  } else if (command instanceof RemoveUnitCommand) {
-    const commandDto: RemoveUnitCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestamp(),
-      name: CommandNameEnum.RemoveUnit,
       position: newPositionDto(command.getPosition()),
     };
     return commandDto;
@@ -273,6 +300,7 @@ export type CommandDto =
   | RemovePlayerCommandDto
   | ChangePlayerHeldItemCommandDto
   | CreateStaticUnitCommandDto
+  | RemoveStaticUnitCommandDto
   | CreatePortalUnitCommandDto
-  | RemoveUnitCommandDto
+  | RemovePortalUnitCommandDto
   | RotateUnitCommandDto;

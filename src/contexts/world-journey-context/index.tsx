@@ -6,12 +6,13 @@ import { DirectionModel } from '@/models/world/common/direction-model';
 import {
   AddItemCommand,
   RotateUnitCommand,
-  RemoveUnitCommand,
+  RemoveStaticUnitCommand,
   ChangePlayerHeldItemCommand,
   MovePlayerCommand,
   CreateStaticUnitCommand,
   CreatePortalUnitCommand,
   SendPlayerIntoPortalCommand,
+  RemovePortalUnitCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { PositionModel } from '@/models/world/common/position-model';
@@ -218,9 +219,18 @@ export function Provider({ children }: Props) {
     if (!worldJourney || !worldJourneyApiService.current) return;
 
     const unitPos = worldJourney.getMyPlayer().getFowardPos();
-    const command = RemoveUnitCommand.new(unitPos);
-    worldJourney.executeCommand(command);
-    worldJourneyApiService.current.sendCommand(command);
+    const unitAtPos = worldJourney.getUnit(unitPos);
+    if (!unitAtPos) return;
+
+    if (unitAtPos.getType() === UnitTypeEnum.Static) {
+      const command = RemoveStaticUnitCommand.new(unitPos);
+      worldJourney.executeCommand(command);
+      worldJourneyApiService.current.sendCommand(command);
+    } else if (unitAtPos.getType() === UnitTypeEnum.Portal) {
+      const command = RemovePortalUnitCommand.new(unitPos);
+      worldJourney.executeCommand(command);
+      worldJourneyApiService.current.sendCommand(command);
+    }
   }, [worldJourney]);
 
   const rotateUnit = useCallback(() => {

@@ -3,8 +3,9 @@ import { PositionModel } from '@/models/world/common/position-model';
 import { Command } from './command';
 import { CommandParams } from './command-params';
 import { DateModel } from '@/models/general/date-model';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
-export class RemoveUnitCommand implements Command {
+export class RemovePortalUnitCommand implements Command {
   private id: string;
 
   private timestamp: number;
@@ -18,14 +19,28 @@ export class RemoveUnitCommand implements Command {
   }
 
   static new(position: PositionModel) {
-    return new RemoveUnitCommand(uuidv4(), DateModel.now().getTimestamp(), position);
+    return new RemovePortalUnitCommand(uuidv4(), DateModel.now().getTimestamp(), position);
   }
 
   static load(id: string, timestamp: number, position: PositionModel) {
-    return new RemoveUnitCommand(id, timestamp, position);
+    return new RemovePortalUnitCommand(id, timestamp, position);
   }
 
   public execute({ unitStorage }: CommandParams): void {
+    const portalUnit = unitStorage.getUnit(this.position);
+    if (!portalUnit) return;
+
+    if (!(portalUnit instanceof PortalUnitModel)) return;
+
+    const targetPos = portalUnit.getTargetPosition();
+    if (targetPos) {
+      const targetPortalUnit = unitStorage.getUnit(targetPos);
+      if (targetPortalUnit && targetPortalUnit instanceof PortalUnitModel) {
+        targetPortalUnit.updateTargetPosition(null);
+        unitStorage.updateUnit(targetPortalUnit);
+      }
+    }
+
     unitStorage.removeUnit(this.position);
   }
 
