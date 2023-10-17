@@ -13,6 +13,8 @@ import {
   CreatePortalUnitCommand,
   SendPlayerIntoPortalCommand,
   RemovePortalUnitCommand,
+  AddPerspectiveDepthCommand,
+  SubtractPerspectiveDepthCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { PositionModel } from '@/models/world/common/position-model';
@@ -24,6 +26,8 @@ type ContextValue = {
   connectionStatus: ConnectionStatus;
   items: ItemModel[] | null;
   enterWorld: (WorldId: string) => void;
+  addPerspectiveDepth: () => void;
+  subtractPerspectiveDepth: () => void;
   movePlayer: (direction: DirectionModel) => void;
   changePlayerHeldItem: (item: ItemModel) => void;
   createUnit: () => void;
@@ -37,6 +41,8 @@ const Context = createContext<ContextValue>({
   connectionStatus: 'WAITING',
   items: null,
   enterWorld: () => {},
+  addPerspectiveDepth: () => {},
+  subtractPerspectiveDepth: () => {},
   movePlayer: () => {},
   changePlayerHeldItem: () => {},
   createUnit: () => {},
@@ -113,6 +119,18 @@ export function Provider({ children }: Props) {
     setConnectionStatus('CONNECTING');
     worldJourneyApiService.current = newWorldJourneyApiService;
   }, []);
+
+  const addPerspectiveDepth = useCallback(() => {
+    if (!worldJourney) return;
+
+    worldJourney.executeCommand(AddPerspectiveDepthCommand.new());
+  }, [worldJourney]);
+
+  const subtractPerspectiveDepth = useCallback(() => {
+    if (!worldJourney) return;
+
+    worldJourney.executeCommand(SubtractPerspectiveDepthCommand.new());
+  }, [worldJourney]);
 
   useEffect(() => {
     const currentWorldJourneyApiService = worldJourneyApiService.current;
@@ -249,6 +267,8 @@ export function Provider({ children }: Props) {
           connectionStatus,
           items,
           enterWorld,
+          addPerspectiveDepth,
+          subtractPerspectiveDepth,
           movePlayer,
           leaveWorld,
           changePlayerHeldItem,
@@ -261,6 +281,8 @@ export function Provider({ children }: Props) {
           connectionStatus,
           items,
           enterWorld,
+          addPerspectiveDepth,
+          subtractPerspectiveDepth,
           movePlayer,
           leaveWorld,
           changePlayerHeldItem,

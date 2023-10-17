@@ -15,7 +15,6 @@ import { WorldMembersContext } from '@/contexts/world-members-context';
 import { Button } from '@/components/buttons/button';
 import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item/item-model';
-import { AddPerspectiveDepthCommand, SubtractPerspectiveDepthCommand } from '@/logics/world-journey/commands';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -42,8 +41,10 @@ const Page: NextPage = function Page() {
     worldJourney,
     connectionStatus,
     items,
-    movePlayer,
     enterWorld,
+    addPerspectiveDepth,
+    subtractPerspectiveDepth,
+    movePlayer,
     leaveWorld,
     changePlayerHeldItem,
     createUnit,
@@ -85,20 +86,12 @@ const Page: NextPage = function Page() {
     changePlayerHeldItem(items[targetItemIdIndex % items.length]);
   }, [items, myPlayerHeldItemId, changePlayerHeldItem]);
 
-  const handleEqualClick = useCallback(() => {
-    worldJourney?.executeCommand(AddPerspectiveDepthCommand.new());
-  }, [worldJourney]);
-
-  const handleMinusClick = useCallback(() => {
-    worldJourney?.executeCommand(SubtractPerspectiveDepthCommand.new());
-  }, [worldJourney]);
-
   useKeyPress('KeyP', { onKeyDown: createUnit });
   useKeyPress('KeyO', { onKeyDown: removeUnit });
   useKeyPress('KeyR', { onKeyDown: rotateUnit });
   useKeyPress('Space', { onKeyDown: switchToNextItem });
-  useKeyPress('Equal', { onKeyDown: handleEqualClick });
-  useKeyPress('Minus', { onKeyDown: handleMinusClick });
+  useKeyPress('Equal', { onKeyDown: addPerspectiveDepth });
+  useKeyPress('Minus', { onKeyDown: subtractPerspectiveDepth });
 
   const isUpPressed = useKeyPress('KeyW');
   const isRightPressed = useKeyPress('KeyD');
