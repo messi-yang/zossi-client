@@ -39,9 +39,9 @@ export function ShareWorldModal({ opened, world, worldMembes, onClose }: Props) 
         </div>
         {worldMembes && (
           <div className="mt-5 w-full flex flex-col">
-            {worldMembes.map((worldmember) => (
-              <div>
-                <WorldMemberCard worldMember={worldmember} />
+            {worldMembes.map((worldMember) => (
+              <div key={worldMember.getId()}>
+                <WorldMemberCard worldMember={worldMember} />
               </div>
             ))}
           </div>
