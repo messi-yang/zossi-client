@@ -8,13 +8,14 @@ import {
   RotateUnitCommand,
   RemoveStaticUnitCommand,
   ChangePlayerHeldItemCommand,
-  MovePlayerCommand,
   CreateStaticUnitCommand,
   CreatePortalUnitCommand,
-  SendPlayerIntoPortalCommand,
+  // SendPlayerIntoPortalCommand,
   RemovePortalUnitCommand,
   AddPerspectiveDepthCommand,
   SubtractPerspectiveDepthCommand,
+  MakePlayerStandCommand,
+  MakePlayerWalkCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { PositionModel } from '@/models/world/common/position-model';
@@ -28,7 +29,8 @@ type ContextValue = {
   enterWorld: (WorldId: string) => void;
   addPerspectiveDepth: () => void;
   subtractPerspectiveDepth: () => void;
-  movePlayer: (direction: DirectionModel) => void;
+  makePlayerStand: () => void;
+  makePlayerWalk: (direction: DirectionModel) => void;
   changePlayerHeldItem: (item: ItemModel) => void;
   createUnit: () => void;
   removeUnit: () => void;
@@ -43,7 +45,8 @@ const Context = createContext<ContextValue>({
   enterWorld: () => {},
   addPerspectiveDepth: () => {},
   subtractPerspectiveDepth: () => {},
-  movePlayer: () => {},
+  makePlayerStand: () => {},
+  makePlayerWalk: () => {},
   changePlayerHeldItem: () => {},
   createUnit: () => {},
   removeUnit: () => {},
@@ -120,6 +123,18 @@ export function Provider({ children }: Props) {
     worldJourneyApiService.current = newWorldJourneyApiService;
   }, []);
 
+  useEffect(() => {
+    if (!worldJourney) return () => {};
+
+    const intervalId = setInterval(() => {
+      worldJourney.updatePlayerClientPositions();
+    }, 50);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [worldJourney]);
+
   const addPerspectiveDepth = useCallback(() => {
     if (!worldJourney) return;
 
@@ -133,33 +148,41 @@ export function Provider({ children }: Props) {
   }, [worldJourney]);
 
   useEffect(() => {
-    const currentWorldJourneyApiService = worldJourneyApiService.current;
-    if (!currentWorldJourneyApiService || !worldJourney) {
-      return () => {};
-    }
-
-    return worldJourney.subscribeCommandExecuted((command) => {
-      if (command instanceof MovePlayerCommand) {
-        const myPlayer = worldJourney.getMyPlayer();
-        if (command.getPlayerId() !== myPlayer.getId()) return;
-
-        const playerId = myPlayer.getId();
-        const newPos = myPlayer.getPosition();
-        if (command.getPosition().isEqual(newPos)) return;
-
-        const unitAtMyPlayerPos = worldJourney.getUnit(newPos);
-        if (!unitAtMyPlayerPos) return;
-
-        if (!unitAtMyPlayerPos.getType().isPortal()) return;
-
-        const sendPlayerIntoPortalCommand = SendPlayerIntoPortalCommand.new(playerId, newPos);
-        worldJourney.executeCommand(sendPlayerIntoPortalCommand);
-        currentWorldJourneyApiService.sendCommand(sendPlayerIntoPortalCommand);
-      }
-    });
+    // const currentWorldJourneyApiService = worldJourneyApiService.current;
+    // if (!currentWorldJourneyApiService || !worldJourney) {
+    //   return () => {};
+    // }
+    // return worldJourney.subscribeCommandExecuted((command) => {
+    //   if (command instanceof MovePlayerCommand) {
+    //     const myPlayer = worldJourney.getMyPlayer();
+    //     if (command.getPlayerId() !== myPlayer.getId()) return;
+    //     const playerId = myPlayer.getId();
+    //     const newPos = myPlayer.getPosition();
+    //     if (command.getPosition().isEqual(newPos)) return;
+    //     const unitAtMyPlayerPos = worldJourney.getUnit(newPos);
+    //     if (!unitAtMyPlayerPos) return;
+    //     if (!unitAtMyPlayerPos.getType().isPortal()) return;
+    //     const sendPlayerIntoPortalCommand = SendPlayerIntoPortalCommand.new(playerId, newPos);
+    //     worldJourney.executeCommand(sendPlayerIntoPortalCommand);
+    //     currentWorldJourneyApiService.sendCommand(sendPlayerIntoPortalCommand);
+    //   }
+    // });
   }, [worldJourney]);
 
-  const movePlayer = useCallback(
+  const makePlayerStand = useCallback(() => {
+    if (!worldJourneyApiService.current || !worldJourney) {
+      return;
+    }
+
+    const playerId = worldJourney.getMyPlayer().getId();
+    const playerPosition = worldJourney.getMyPlayer().getPosition();
+    const playerDirection = worldJourney.getMyPlayer().getDirection();
+    const command = MakePlayerStandCommand.new(playerId, playerPosition, playerDirection);
+    worldJourney.executeCommand(command);
+    worldJourneyApiService.current.sendCommand(command);
+  }, [worldJourney]);
+
+  const makePlayerWalk = useCallback(
     (direction: DirectionModel) => {
       if (!worldJourneyApiService.current || !worldJourney) {
         return;
@@ -167,7 +190,7 @@ export function Provider({ children }: Props) {
 
       const playerId = worldJourney.getMyPlayer().getId();
       const playerPosition = worldJourney.getMyPlayer().getPosition();
-      const command = MovePlayerCommand.new(playerId, playerPosition, direction);
+      const command = MakePlayerWalkCommand.new(playerId, playerPosition, direction);
       worldJourney.executeCommand(command);
       worldJourneyApiService.current.sendCommand(command);
     },
@@ -269,7 +292,8 @@ export function Provider({ children }: Props) {
           enterWorld,
           addPerspectiveDepth,
           subtractPerspectiveDepth,
-          movePlayer,
+          makePlayerStand,
+          makePlayerWalk,
           leaveWorld,
           changePlayerHeldItem,
           createUnit,
@@ -283,7 +307,8 @@ export function Provider({ children }: Props) {
           enterWorld,
           addPerspectiveDepth,
           subtractPerspectiveDepth,
-          movePlayer,
+          makePlayerStand,
+          makePlayerWalk,
           leaveWorld,
           changePlayerHeldItem,
           createUnit,

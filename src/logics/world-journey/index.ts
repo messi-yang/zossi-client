@@ -12,6 +12,7 @@ import { Perspective, PerspectiveChangedHandler } from './perspective';
 import { ItemStorage, PlaceholderItemIdsAddedHandler } from './item-storage';
 import { Command } from './commands/command';
 import { CommandExecutedHandler, CommandManager } from './command-manager';
+import { DateModel } from '@/models/general/date-model';
 
 type UnitsChangedHandler = (item: ItemModel, units: UnitModel[] | null) => void;
 
@@ -88,6 +89,42 @@ export class WorldJourney {
 
   public getItem(itemId: string): ItemModel | null {
     return this.itemStorage.getItem(itemId);
+  }
+
+  public updatePlayerClientPositions() {
+    this.playerStorage.getPlayers().forEach((player) => {
+      const playerAction = player.getAction();
+      const playerDirection = player.getDirection();
+      const playerActionPosition = player.getActionPosition();
+
+      if (playerAction.isStand()) return;
+
+      if (playerAction.isWalk()) {
+        const milisecondsAfterAction = DateModel.now().getDiffInMilliseconds(player.getActedAt());
+
+        const playerForwardPos = player.getFowardPos();
+        const unitAtPos = this.unitStorage.getUnit(playerForwardPos);
+        if (unitAtPos) {
+          const item = this.itemStorage.getItem(unitAtPos.getItemId());
+          if (!item) return;
+          if (!item.getTraversable()) return;
+        }
+
+        const playerExpectedPosition = playerActionPosition.shiftByDirection(
+          playerDirection,
+          Math.round(milisecondsAfterAction / 100)
+        );
+        if (!this.world.getBound().doesContainPosition(playerExpectedPosition)) {
+          return;
+        }
+
+        const clonedPlayer = player.clone();
+        clonedPlayer.changePosition(
+          playerActionPosition.shiftByDirection(playerDirection, Math.round(milisecondsAfterAction / 100))
+        );
+        this.playerStorage.updatePlayer(clonedPlayer);
+      }
+    });
   }
 
   public subscribePerspectiveChanged(handler: PerspectiveChangedHandler): () => void {

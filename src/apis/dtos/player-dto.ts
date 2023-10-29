@@ -3,22 +3,29 @@ import { PositionModel } from '@/models/world/common/position-model';
 import { PlayerModel } from '@/models/world/player/player-model';
 import type { PositionDto } from './position-dto';
 import { DirectionEnum } from '@/models/world/common/direction-enum';
+import { PlayerActionVo } from '@/models/world/player/player-action-vo';
+import { PlayerActionEnum } from '@/models/world/player/player-action-enum';
+import { DateModel } from '@/models/general/date-model';
 
 type PlayerDto = {
   id: string;
   name: string;
-  position: PositionDto;
+  actionPosition: PositionDto;
   direction: DirectionEnum;
   heldItemId: string | null;
+  action: PlayerActionEnum;
+  actedAt: string;
 };
 
 function parsePlayerDto(playerDto: PlayerDto): PlayerModel {
   return PlayerModel.new(
     playerDto.id,
     playerDto.name,
-    PositionModel.new(playerDto.position.x, playerDto.position.z),
     DirectionModel.new(playerDto.direction),
-    playerDto.heldItemId
+    playerDto.heldItemId,
+    PlayerActionVo.new(playerDto.action),
+    PositionModel.new(playerDto.actionPosition.x, playerDto.actionPosition.z),
+    DateModel.parseString(playerDto.actedAt)
   );
 }
 

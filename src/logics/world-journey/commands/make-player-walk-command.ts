@@ -4,8 +4,9 @@ import { Command } from './command';
 import { CommandParams } from './command-params';
 import { DirectionModel } from '@/models/world/common/direction-model';
 import { DateModel } from '@/models/general/date-model';
+import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 
-export class MovePlayerCommand implements Command {
+export class MakePlayerWalkCommand implements Command {
   private id: string;
 
   private timestamp: number;
@@ -25,41 +26,23 @@ export class MovePlayerCommand implements Command {
   }
 
   static new(playerId: string, position: PositionModel, direction: DirectionModel) {
-    return new MovePlayerCommand(uuidv4(), DateModel.now().getTimestamp(), playerId, position, direction);
+    return new MakePlayerWalkCommand(uuidv4(), DateModel.now().getTimestamp(), playerId, position, direction);
   }
 
   static load(id: string, timestamp: number, playerId: string, position: PositionModel, direction: DirectionModel) {
-    return new MovePlayerCommand(id, timestamp, playerId, position, direction);
+    return new MakePlayerWalkCommand(id, timestamp, playerId, position, direction);
   }
 
-  public execute({ world, playerStorage, unitStorage, itemStorage }: CommandParams): void {
+  public execute({ playerStorage }: CommandParams): void {
     const player = playerStorage.getPlayer(this.playerId);
     if (!player) return;
 
     const clonedPlayer = player.clone();
     clonedPlayer.changePosition(this.position);
-
-    const playerIsMovingFoward = clonedPlayer.getDirection().isEqual(this.direction);
-    if (!playerIsMovingFoward) {
-      clonedPlayer.changeDirection(this.direction);
-      playerStorage.updatePlayer(clonedPlayer);
-      return;
-    }
-
-    const nextPosition = clonedPlayer.getFowardPos();
-    if (!world.getBound().doesContainPosition(nextPosition)) {
-      return;
-    }
-
-    const unitAtNextPosition = unitStorage.getUnit(nextPosition);
-    if (unitAtNextPosition) {
-      const item = itemStorage.getItem(unitAtNextPosition.getItemId());
-      if (!item) return;
-      if (!item.getTraversable()) return;
-    }
-
-    clonedPlayer.changePosition(nextPosition);
     clonedPlayer.changeDirection(this.direction);
+    clonedPlayer.updateAction(PlayerActionVo.newWalk());
+    clonedPlayer.changeActionPosition(this.position);
+    clonedPlayer.updateActedAt(DateModel.fromTimestamp(this.timestamp));
     playerStorage.updatePlayer(clonedPlayer);
   }
 

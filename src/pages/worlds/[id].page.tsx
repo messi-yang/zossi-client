@@ -3,7 +3,7 @@ import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
-import { useKeyPress } from '@/hooks/use-key-press';
+import { useHotKeys } from '@/hooks/use-hot-keys';
 import { WorldJourneyContext } from '@/contexts/world-journey-context';
 import { DirectionModel } from '@/models/world/common/direction-model';
 import { WorldCanvas } from '@/components/canvas/world-canvas';
@@ -44,7 +44,8 @@ const Page: NextPage = function Page() {
     enterWorld,
     addPerspectiveDepth,
     subtractPerspectiveDepth,
-    movePlayer,
+    makePlayerStand,
+    makePlayerWalk,
     leaveWorld,
     changePlayerHeldItem,
     createUnit,
@@ -86,44 +87,85 @@ const Page: NextPage = function Page() {
     changePlayerHeldItem(items[targetItemIdIndex % items.length]);
   }, [items, myPlayerHeldItemId, changePlayerHeldItem]);
 
-  useKeyPress('KeyP', { onKeyDown: createUnit });
-  useKeyPress('KeyO', { onKeyDown: removeUnit });
-  useKeyPress('KeyR', { onKeyDown: rotateUnit });
-  useKeyPress('Space', { onKeyDown: switchToNextItem });
-  useKeyPress('Equal', { onKeyDown: addPerspectiveDepth });
-  useKeyPress('Minus', { onKeyDown: subtractPerspectiveDepth });
-
-  const isUpPressed = useKeyPress('KeyW');
-  const isRightPressed = useKeyPress('KeyD');
-  const isDownPressed = useKeyPress('KeyS');
-  const isLeftPressed = useKeyPress('KeyA');
-  useEffect(
-    function () {
-      let pressedKeysCount = 0;
-      if (isUpPressed) pressedKeysCount += 1;
-      if (isRightPressed) pressedKeysCount += 1;
-      if (isDownPressed) pressedKeysCount += 1;
-      if (isLeftPressed) pressedKeysCount += 1;
-      if (pressedKeysCount !== 1) {
-        return () => {};
-      }
-
-      const doMove = () => {
-        if (isUpPressed) movePlayer(DirectionModel.newUp());
-        if (isRightPressed) movePlayer(DirectionModel.newRight());
-        if (isDownPressed) movePlayer(DirectionModel.newDown());
-        if (isLeftPressed) movePlayer(DirectionModel.newLeft());
-      };
-
-      doMove();
-      const goUpInterval = setInterval(doMove, 100);
-
-      return () => {
-        clearInterval(goUpInterval);
-      };
+  const handleCreateUnitPressedKeysChange = useCallback(
+    (keys: string[]) => {
+      if (keys.length === 0) return;
+      createUnit();
     },
-    [isUpPressed, isRightPressed, isDownPressed, isLeftPressed, movePlayer]
+    [createUnit]
   );
+  useHotKeys(['KeyP'], { onPressedKeysChange: handleCreateUnitPressedKeysChange });
+
+  const handleRemoveUnitPressedKeysChange = useCallback(
+    (keys: string[]) => {
+      if (keys.length === 0) return;
+      removeUnit();
+    },
+    [removeUnit]
+  );
+  useHotKeys(['KeyO'], { onPressedKeysChange: handleRemoveUnitPressedKeysChange });
+
+  const handleRotateUnitPressedKeysChange = useCallback(
+    (keys: string[]) => {
+      if (keys.length === 0) return;
+      rotateUnit();
+    },
+    [rotateUnit]
+  );
+  useHotKeys(['KeyR'], { onPressedKeysChange: handleRotateUnitPressedKeysChange });
+
+  const handleSwitchToNextItemPressedKeysChange = useCallback(
+    (keys: string[]) => {
+      if (keys.length === 0) return;
+      switchToNextItem();
+    },
+    [switchToNextItem]
+  );
+  useHotKeys(['Space'], { onPressedKeysChange: handleSwitchToNextItemPressedKeysChange });
+
+  const handleAddPerspectiveDepthPressedKeysChange = useCallback(
+    (keys: string[]) => {
+      if (keys.length === 0) return;
+      addPerspectiveDepth();
+    },
+    [addPerspectiveDepth]
+  );
+  useHotKeys(['Equal'], { onPressedKeysChange: handleAddPerspectiveDepthPressedKeysChange });
+
+  const handleSubtractPerspectiveDepthPressedKeysChange = useCallback(
+    (keys: string[]) => {
+      if (keys.length === 0) return;
+      subtractPerspectiveDepth();
+    },
+    [subtractPerspectiveDepth]
+  );
+  useHotKeys(['Minus', 'KeyC'], { onPressedKeysChange: handleSubtractPerspectiveDepthPressedKeysChange });
+
+  const handleMakePlayerWalkPressedKeysChange = useCallback(
+    (keys: string[]) => {
+      const lastKey = keys[keys.length - 1] || null;
+      switch (lastKey) {
+        case 'KeyW':
+          makePlayerWalk(DirectionModel.newUp());
+          break;
+        case 'KeyD':
+          makePlayerWalk(DirectionModel.newRight());
+          break;
+        case 'KeyS':
+          makePlayerWalk(DirectionModel.newDown());
+          break;
+        case 'KeyA':
+          makePlayerWalk(DirectionModel.newLeft());
+          break;
+        default:
+          makePlayerStand();
+      }
+    },
+    [makePlayerStand, makePlayerWalk]
+  );
+  useHotKeys(['KeyW', 'KeyD', 'KeyS', 'KeyA'], {
+    onPressedKeysChange: handleMakePlayerWalkPressedKeysChange,
+  });
 
   const goToDashboardWorldsPage = () => {
     router.push('/dashboard/worlds');

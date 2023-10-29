@@ -1,3 +1,5 @@
+import { DirectionModel } from './direction-model';
+
 export class PositionModel {
   constructor(private x: number, private z: number) {}
 
@@ -17,6 +19,20 @@ export class PositionModel {
 
   public shift(x: number, z: number): PositionModel {
     return PositionModel.new(this.x + x, this.z + z);
+  }
+
+  public shiftByDirection(direction: DirectionModel, distance: number): PositionModel {
+    if (direction.isUp()) {
+      return this.shift(0, -distance);
+    } else if (direction.isRight()) {
+      return this.shift(distance, 0);
+    } else if (direction.isDown()) {
+      return this.shift(0, distance);
+    } else if (direction.isLeft()) {
+      return this.shift(-distance, 0);
+    } else {
+      return this.shift(0, distance);
+    }
   }
 
   public toString(): string {

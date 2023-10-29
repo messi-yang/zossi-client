@@ -6,4 +6,12 @@ export class SizeModel {
   public isEqual(size: SizeModel): boolean {
     return this.width === size.width && this.height === size.height;
   }
+
+  public getWidth(): number {
+    return this.width;
+  }
+
+  public getHeight(): number {
+    return this.height;
+  }
 }

@@ -9,12 +9,20 @@ export class DateModel {
     return new DateModel(new Date(dateString));
   }
 
+  static fromTimestamp(timestamp: number) {
+    return new DateModel(new Date(timestamp));
+  }
+
   public toString() {
     return this.date.toString();
   }
 
   public getTimestamp() {
     return this.date.getTime();
+  }
+
+  public getDiffInMilliseconds(otherDate: DateModel) {
+    return this.date.getTime() - otherDate.date.getTime();
   }
 
   public getSecondsAgo() {

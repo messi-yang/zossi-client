@@ -1,32 +1,59 @@
 import { v4 as uuidv4 } from 'uuid';
 import { PositionModel } from '../common/position-model';
 import { DirectionModel } from '../common/direction-model';
+import { PlayerActionVo } from './player-action-vo';
+import { PlayerActionEnum } from './player-action-enum';
+import { DateModel } from '@/models/general/date-model';
 
 export class PlayerModel {
+  private position: PositionModel;
+
   constructor(
     private id: string,
     private name: string,
-    private position: PositionModel,
     private direction: DirectionModel,
-    private heldItemId: string | null
-  ) {}
+    private heldItemId: string | null,
+    private action: PlayerActionVo,
+    private actionPosition: PositionModel,
+    private actedAt: DateModel
+  ) {
+    this.position = actionPosition;
+  }
 
   static new(
     id: string,
     name: string,
-    position: PositionModel,
     direction: DirectionModel,
-    heldItemId: string | null
+    heldItemId: string | null,
+    action: PlayerActionVo,
+    actionPosition: PositionModel,
+    actedAt: DateModel
   ): PlayerModel {
-    return new PlayerModel(id, name, position, direction, heldItemId);
+    return new PlayerModel(id, name, direction, heldItemId, action, actionPosition, actedAt);
   }
 
   static mockup(): PlayerModel {
-    return PlayerModel.new(uuidv4(), 'Test Player', PositionModel.new(0, 0), DirectionModel.new(2), null);
+    return PlayerModel.new(
+      uuidv4(),
+      'Test Player',
+      DirectionModel.new(2),
+      null,
+      PlayerActionVo.new(PlayerActionEnum.Stand),
+      PositionModel.new(0, 0),
+      DateModel.now()
+    );
   }
 
   public clone(): PlayerModel {
-    return new PlayerModel(this.id, this.name, this.position, this.direction, this.heldItemId);
+    return new PlayerModel(
+      this.id,
+      this.name,
+      this.direction,
+      this.heldItemId,
+      this.action,
+      this.actionPosition,
+      this.actedAt
+    );
   }
 
   public getId(): string {
@@ -73,5 +100,29 @@ export class PlayerModel {
     } else {
       return this.position.shift(0, 1);
     }
+  }
+
+  public getAction(): PlayerActionVo {
+    return this.action;
+  }
+
+  public updateAction(action: PlayerActionVo) {
+    this.action = action;
+  }
+
+  public getActionPosition(): PositionModel {
+    return this.actionPosition;
+  }
+
+  public changeActionPosition(pos: PositionModel) {
+    this.actionPosition = pos;
+  }
+
+  public getActedAt(): DateModel {
+    return this.actedAt;
+  }
+
+  public updateActedAt(date: DateModel) {
+    this.actedAt = date;
   }
 }
