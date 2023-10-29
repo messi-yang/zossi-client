@@ -1,9 +1,9 @@
-export class SizeModel {
+export class SizeVo {
   constructor(private width: number, private height: number) {}
 
-  static new = (width: number, height: number): SizeModel => new SizeModel(width, height);
+  static new = (width: number, height: number): SizeVo => new SizeVo(width, height);
 
-  public isEqual(size: SizeModel): boolean {
+  public isEqual(size: SizeVo): boolean {
     return this.width === size.width && this.height === size.height;
   }
 

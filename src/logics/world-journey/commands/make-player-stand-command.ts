@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { DirectionModel } from '@/models/world/common/direction-model';
-import { DateModel } from '@/models/general/date-model';
+import { DirectionVo } from '@/models/world/common/direction-vo';
+import { DateVo } from '@/models/general/date-vo';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 
 export class MakePlayerStandCommand implements Command {
@@ -13,11 +13,11 @@ export class MakePlayerStandCommand implements Command {
 
   private playerId: string;
 
-  private position: PositionModel;
+  private position: PositionVo;
 
-  private direction: DirectionModel;
+  private direction: DirectionVo;
 
-  constructor(id: string, timestamp: number, playerId: string, position: PositionModel, direction: DirectionModel) {
+  constructor(id: string, timestamp: number, playerId: string, position: PositionVo, direction: DirectionVo) {
     this.id = id;
     this.timestamp = timestamp;
     this.playerId = playerId;
@@ -25,11 +25,11 @@ export class MakePlayerStandCommand implements Command {
     this.direction = direction;
   }
 
-  static new(playerId: string, position: PositionModel, direction: DirectionModel) {
-    return new MakePlayerStandCommand(uuidv4(), DateModel.now().getTimestamp(), playerId, position, direction);
+  static new(playerId: string, position: PositionVo, direction: DirectionVo) {
+    return new MakePlayerStandCommand(uuidv4(), DateVo.now().getTimestamp(), playerId, position, direction);
   }
 
-  static load(id: string, timestamp: number, playerId: string, position: PositionModel, direction: DirectionModel) {
+  static load(id: string, timestamp: number, playerId: string, position: PositionVo, direction: DirectionVo) {
     return new MakePlayerStandCommand(id, timestamp, playerId, position, direction);
   }
 
@@ -42,7 +42,7 @@ export class MakePlayerStandCommand implements Command {
     clonedPlayer.changeDirection(this.direction);
     clonedPlayer.updateAction(PlayerActionVo.newStand());
     clonedPlayer.changeActionPosition(this.position);
-    clonedPlayer.updateActedAt(DateModel.fromTimestamp(this.timestamp));
+    clonedPlayer.updateActedAt(DateVo.fromTimestamp(this.timestamp));
     playerStorage.updatePlayer(clonedPlayer);
   }
 

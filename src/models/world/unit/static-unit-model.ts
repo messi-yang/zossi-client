@@ -1,30 +1,26 @@
-import { DirectionModel } from '../common/direction-model';
-import { PositionModel } from '../common/position-model';
+import { DirectionVo } from '../common/direction-vo';
+import { PositionVo } from '../common/position-vo';
 import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
-import { UnitTypeModel } from './unit-type-model';
+import { UnitTypeVo } from './unit-type-vo';
 
 export class StaticUnitModel implements UnitModel {
-  private type: UnitTypeModel = UnitTypeModel.new(UnitTypeEnum.Static);
+  private type: UnitTypeVo = UnitTypeVo.new(UnitTypeEnum.Static);
 
-  constructor(private itemId: string, private position: PositionModel, private direction: DirectionModel) {}
+  constructor(private itemId: string, private position: PositionVo, private direction: DirectionVo) {}
 
-  static new = (itemId: string, position: PositionModel, direction: DirectionModel): StaticUnitModel =>
+  static new = (itemId: string, position: PositionVo, direction: DirectionVo): StaticUnitModel =>
     new StaticUnitModel(itemId, position, direction);
 
   static mockup(): StaticUnitModel {
-    return new StaticUnitModel(
-      '414b5703-91d1-42fc-a007-36dd8f25e329',
-      PositionModel.new(0, 0),
-      DirectionModel.newDown()
-    );
+    return new StaticUnitModel('414b5703-91d1-42fc-a007-36dd8f25e329', PositionVo.new(0, 0), DirectionVo.newDown());
   }
 
   public clone(): StaticUnitModel {
     return new StaticUnitModel(this.itemId, this.position, this.direction);
   }
 
-  public getType(): UnitTypeModel {
+  public getType(): UnitTypeVo {
     return this.type;
   }
 
@@ -32,15 +28,15 @@ export class StaticUnitModel implements UnitModel {
     return this.itemId;
   }
 
-  public getPosition(): PositionModel {
+  public getPosition(): PositionVo {
     return this.position;
   }
 
-  public getDirection(): DirectionModel {
+  public getDirection(): DirectionVo {
     return this.direction;
   }
 
-  public changeDirection(direction: DirectionModel) {
+  public changeDirection(direction: DirectionVo) {
     this.direction = direction;
   }
 }

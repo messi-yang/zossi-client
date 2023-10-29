@@ -7,7 +7,7 @@ import { PlayerModel } from '@/models/world/player/player-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { LocalStorage } from '@/storages/local-storage';
 import { WorldJourney } from '@/logics/world-journey';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 import { Event, EventNameEnum, WorldEnteredEvent } from './events';
 import { Command } from '@/logics/world-journey/commands';
 
@@ -107,7 +107,7 @@ export class WorldJourneyApiService {
   public ping() {
     const commandDto: PingCommandDto = {
       id: uuidv4(),
-      timestamp: DateModel.now().getTimestamp(),
+      timestamp: DateVo.now().getTimestamp(),
       name: CommandNameEnum.Ping,
     };
     this.sendMessage(commandDto);

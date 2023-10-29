@@ -1,31 +1,31 @@
-import { DirectionModel } from '../common/direction-model';
-import { PositionModel } from '../common/position-model';
+import { DirectionVo } from '../common/direction-vo';
+import { PositionVo } from '../common/position-vo';
 import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
-import { UnitTypeModel } from './unit-type-model';
+import { UnitTypeVo } from './unit-type-vo';
 
 export class PortalUnitModel implements UnitModel {
-  private type: UnitTypeModel = UnitTypeModel.new(UnitTypeEnum.Portal);
+  private type: UnitTypeVo = UnitTypeVo.new(UnitTypeEnum.Portal);
 
   constructor(
     private itemId: string,
-    private position: PositionModel,
-    private direction: DirectionModel,
-    private targetPosition: PositionModel | null
+    private position: PositionVo,
+    private direction: DirectionVo,
+    private targetPosition: PositionVo | null
   ) {}
 
   static new = (
     itemId: string,
-    position: PositionModel,
-    direction: DirectionModel,
-    targetPosition: PositionModel | null
+    position: PositionVo,
+    direction: DirectionVo,
+    targetPosition: PositionVo | null
   ): PortalUnitModel => new PortalUnitModel(itemId, position, direction, targetPosition);
 
   static mockup(): PortalUnitModel {
     return new PortalUnitModel(
       '414b5703-91d1-42fc-a007-36dd8f25e329',
-      PositionModel.new(0, 0),
-      DirectionModel.newDown(),
+      PositionVo.new(0, 0),
+      DirectionVo.newDown(),
       null
     );
   }
@@ -42,23 +42,23 @@ export class PortalUnitModel implements UnitModel {
     return this.itemId;
   }
 
-  public getPosition(): PositionModel {
+  public getPosition(): PositionVo {
     return this.position;
   }
 
-  public getDirection(): DirectionModel {
+  public getDirection(): DirectionVo {
     return this.direction;
   }
 
-  public changeDirection(direction: DirectionModel) {
+  public changeDirection(direction: DirectionVo) {
     this.direction = direction;
   }
 
-  public getTargetPosition(): PositionModel | null {
+  public getTargetPosition(): PositionVo | null {
     return this.targetPosition;
   }
 
-  public updateTargetPosition(targetPosition: PositionModel | null) {
+  public updateTargetPosition(targetPosition: PositionVo | null) {
     this.targetPosition = targetPosition;
   }
 }

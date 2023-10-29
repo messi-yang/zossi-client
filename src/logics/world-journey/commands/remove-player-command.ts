@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 
 export class RemovePlayerCommand implements Command {
   private id: string;
@@ -17,7 +17,7 @@ export class RemovePlayerCommand implements Command {
   }
 
   static new(playerId: string) {
-    return new RemovePlayerCommand(uuidv4(), DateModel.now().getTimestamp(), playerId);
+    return new RemovePlayerCommand(uuidv4(), DateVo.now().getTimestamp(), playerId);
   }
 
   static load(id: string, timestamp: number, playerId: string) {

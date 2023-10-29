@@ -1,19 +1,19 @@
-import { PositionModel } from './position-model';
+import { PositionVo } from './position-vo';
 
-export class BoundModel {
-  constructor(private from: PositionModel, private to: PositionModel) {}
+export class BoundVo {
+  constructor(private from: PositionVo, private to: PositionVo) {}
 
-  static new = (from: PositionModel, to: PositionModel): BoundModel => new BoundModel(from, to);
+  static new = (from: PositionVo, to: PositionVo): BoundVo => new BoundVo(from, to);
 
-  public isEqual(bound: BoundModel): Boolean {
+  public isEqual(bound: BoundVo): Boolean {
     return this.from.isEqual(bound.getFrom()) && this.to.isEqual(bound.getTo());
   }
 
-  public getFrom(): PositionModel {
+  public getFrom(): PositionVo {
     return this.from;
   }
 
-  public getTo(): PositionModel {
+  public getTo(): PositionVo {
     return this.to;
   }
 
@@ -25,7 +25,7 @@ export class BoundModel {
     return this.to.getZ() - this.from.getZ() + 1;
   }
 
-  public doesContainPosition(position: PositionModel): boolean {
+  public doesContainPosition(position: PositionVo): boolean {
     return (
       position.getX() >= this.from.getX() &&
       position.getX() <= this.to.getX() &&

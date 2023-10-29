@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
 export class RemovePortalUnitCommand implements Command {
@@ -10,19 +10,19 @@ export class RemovePortalUnitCommand implements Command {
 
   private timestamp: number;
 
-  private position: PositionModel;
+  private position: PositionVo;
 
-  constructor(id: string, timestamp: number, position: PositionModel) {
+  constructor(id: string, timestamp: number, position: PositionVo) {
     this.id = id;
     this.timestamp = timestamp;
     this.position = position;
   }
 
-  static new(position: PositionModel) {
-    return new RemovePortalUnitCommand(uuidv4(), DateModel.now().getTimestamp(), position);
+  static new(position: PositionVo) {
+    return new RemovePortalUnitCommand(uuidv4(), DateVo.now().getTimestamp(), position);
   }
 
-  static load(id: string, timestamp: number, position: PositionModel) {
+  static load(id: string, timestamp: number, position: PositionVo) {
     return new RemovePortalUnitCommand(id, timestamp, position);
   }
 

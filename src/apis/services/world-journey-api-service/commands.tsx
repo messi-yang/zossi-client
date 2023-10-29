@@ -13,8 +13,8 @@ import {
   MakePlayerStandCommand,
   MakePlayerWalkCommand,
 } from '@/logics/world-journey/commands';
-import { DirectionModel } from '@/models/world/common/direction-model';
-import { PositionModel } from '@/models/world/common/position-model';
+import { DirectionVo } from '@/models/world/common/direction-vo';
+import { PositionVo } from '@/models/world/common/position-vo';
 
 enum CommandNameEnum {
   Ping = 'PING',
@@ -131,8 +131,8 @@ function parseCreateStaticCommandDto(command: CreateStaticUnitCommandDto): Creat
     command.id,
     command.timestamp,
     command.itemId,
-    PositionModel.new(command.position.x, command.position.z),
-    DirectionModel.new(command.direction)
+    PositionVo.new(command.position.x, command.position.z),
+    DirectionVo.new(command.direction)
   );
 }
 
@@ -140,7 +140,7 @@ function parseRemoveStaticUnitCommand(command: RemoveStaticUnitCommandDto): Remo
   return RemoveStaticUnitCommand.load(
     command.id,
     command.timestamp,
-    PositionModel.new(command.position.x, command.position.z)
+    PositionVo.new(command.position.x, command.position.z)
   );
 }
 
@@ -149,8 +149,8 @@ function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): Crea
     command.id,
     command.timestamp,
     command.itemId,
-    PositionModel.new(command.position.x, command.position.z),
-    DirectionModel.new(command.direction)
+    PositionVo.new(command.position.x, command.position.z),
+    DirectionVo.new(command.direction)
   );
 }
 
@@ -158,16 +158,12 @@ function parseRemovePortalUnitCommand(command: RemovePortalUnitCommandDto): Remo
   return RemovePortalUnitCommand.load(
     command.id,
     command.timestamp,
-    PositionModel.new(command.position.x, command.position.z)
+    PositionVo.new(command.position.x, command.position.z)
   );
 }
 
 function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
-  return RotateUnitCommand.load(
-    command.id,
-    command.timestamp,
-    PositionModel.new(command.position.x, command.position.z)
-  );
+  return RotateUnitCommand.load(command.id, command.timestamp, PositionVo.new(command.position.x, command.position.z));
 }
 
 function parseAddPlayerAddPlayerCommand(command: AddPlayerCommandDto): AddPlayerCommand {
@@ -179,8 +175,8 @@ function parseMakePlayerStandCommand(command: MakePlayerStandCommandDto): MakePl
     command.id,
     command.timestamp,
     command.playerId,
-    PositionModel.new(command.actionPosition.x, command.actionPosition.z),
-    DirectionModel.new(command.direction)
+    PositionVo.new(command.actionPosition.x, command.actionPosition.z),
+    DirectionVo.new(command.direction)
   );
 }
 
@@ -189,8 +185,8 @@ function parseMakePlayerWalkCommand(command: MakePlayerWalkCommandDto): MakePlay
     command.id,
     command.timestamp,
     command.playerId,
-    PositionModel.new(command.actionPosition.x, command.actionPosition.z),
-    DirectionModel.new(command.direction)
+    PositionVo.new(command.actionPosition.x, command.actionPosition.z),
+    DirectionVo.new(command.direction)
   );
 }
 
@@ -199,7 +195,7 @@ function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDt
     command.id,
     command.timestamp,
     command.playerId,
-    PositionModel.new(command.position.x, command.position.z)
+    PositionVo.new(command.position.x, command.position.z)
   );
 }
 

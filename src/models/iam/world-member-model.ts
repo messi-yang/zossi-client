@@ -1,21 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
-import { WorldRoleModel } from '../global/world-role-model';
+import { WorldRoleVo } from '../global/world-role-vo';
 import { UserModel } from './user-model';
 
 export class WorldMemberModel {
-  constructor(
-    private id: string,
-    private worldId: string,
-    private user: UserModel,
-    private worldRole: WorldRoleModel
-  ) {}
+  constructor(private id: string, private worldId: string, private user: UserModel, private worldRole: WorldRoleVo) {}
 
-  static new(id: string, worldId: string, user: UserModel, worldRole: WorldRoleModel): WorldMemberModel {
+  static new(id: string, worldId: string, user: UserModel, worldRole: WorldRoleVo): WorldMemberModel {
     return new WorldMemberModel(id, worldId, user, worldRole);
   }
 
   static mockup(): WorldMemberModel {
-    return new WorldMemberModel(uuidv4(), uuidv4(), UserModel.mockup(), WorldRoleModel.new('admin'));
+    return new WorldMemberModel(uuidv4(), uuidv4(), UserModel.mockup(), WorldRoleVo.new('admin'));
   }
 
   public getId(): string {
@@ -30,7 +25,7 @@ export class WorldMemberModel {
     return this.user;
   }
 
-  public getWorldRole(): WorldRoleModel {
+  public getWorldRole(): WorldRoleVo {
     return this.worldRole;
   }
 }

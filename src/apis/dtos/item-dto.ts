@@ -1,6 +1,6 @@
 import { ItemModel } from '@/models/world/item/item-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
-import { UnitTypeModel } from '@/models/world/unit/unit-type-model';
+import { UnitTypeVo } from '@/models/world/unit/unit-type-vo';
 
 type ItemDto = {
   id: string;
@@ -18,7 +18,7 @@ function parseItemDto(itemDto: ItemDto): ItemModel {
     itemDto.traversable,
     itemDto.thumbnailSrc,
     itemDto.modelSrc,
-    UnitTypeModel.new(itemDto.compatibleUnitType)
+    UnitTypeVo.new(itemDto.compatibleUnitType)
   );
 }
 

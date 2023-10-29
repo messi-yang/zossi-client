@@ -1,21 +1,21 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionModel } from '../common/position-model';
-import { DirectionModel } from '../common/direction-model';
+import { PositionVo } from '../common/position-vo';
+import { DirectionVo } from '../common/direction-vo';
 import { PlayerActionVo } from './player-action-vo';
 import { PlayerActionEnum } from './player-action-enum';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 
 export class PlayerModel {
-  private position: PositionModel;
+  private position: PositionVo;
 
   constructor(
     private id: string,
     private name: string,
-    private direction: DirectionModel,
+    private direction: DirectionVo,
     private heldItemId: string | null,
     private action: PlayerActionVo,
-    private actionPosition: PositionModel,
-    private actedAt: DateModel
+    private actionPosition: PositionVo,
+    private actedAt: DateVo
   ) {
     this.position = actionPosition;
   }
@@ -23,11 +23,11 @@ export class PlayerModel {
   static new(
     id: string,
     name: string,
-    direction: DirectionModel,
+    direction: DirectionVo,
     heldItemId: string | null,
     action: PlayerActionVo,
-    actionPosition: PositionModel,
-    actedAt: DateModel
+    actionPosition: PositionVo,
+    actedAt: DateVo
   ): PlayerModel {
     return new PlayerModel(id, name, direction, heldItemId, action, actionPosition, actedAt);
   }
@@ -36,11 +36,11 @@ export class PlayerModel {
     return PlayerModel.new(
       uuidv4(),
       'Test Player',
-      DirectionModel.new(2),
+      DirectionVo.new(2),
       null,
       PlayerActionVo.new(PlayerActionEnum.Stand),
-      PositionModel.new(0, 0),
-      DateModel.now()
+      PositionVo.new(0, 0),
+      DateVo.now()
     );
   }
 
@@ -64,19 +64,19 @@ export class PlayerModel {
     return this.name;
   }
 
-  public getPosition(): PositionModel {
+  public getPosition(): PositionVo {
     return this.position;
   }
 
-  public changePosition(position: PositionModel): void {
+  public changePosition(position: PositionVo): void {
     this.position = position;
   }
 
-  public getDirection(): DirectionModel {
+  public getDirection(): DirectionVo {
     return this.direction;
   }
 
-  public changeDirection(direction: DirectionModel): void {
+  public changeDirection(direction: DirectionVo): void {
     this.direction = direction;
   }
 
@@ -88,7 +88,7 @@ export class PlayerModel {
     this.heldItemId = itemId;
   }
 
-  public getFowardPos(): PositionModel {
+  public getFowardPos(): PositionVo {
     if (this.direction.isUp()) {
       return this.position.shift(0, -1);
     } else if (this.direction.isRight()) {
@@ -110,19 +110,19 @@ export class PlayerModel {
     this.action = action;
   }
 
-  public getActionPosition(): PositionModel {
+  public getActionPosition(): PositionVo {
     return this.actionPosition;
   }
 
-  public changeActionPosition(pos: PositionModel) {
+  public changeActionPosition(pos: PositionVo) {
     this.actionPosition = pos;
   }
 
-  public getActedAt(): DateModel {
+  public getActedAt(): DateVo {
     return this.actedAt;
   }
 
-  public updateActedAt(date: DateModel) {
+  public updateActedAt(date: DateVo) {
     this.actedAt = date;
   }
 }

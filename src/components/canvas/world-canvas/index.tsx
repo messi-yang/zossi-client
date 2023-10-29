@@ -10,7 +10,7 @@ import { rangeMatrix } from '@/utils/common';
 import { createInstancesInScene } from './tjs-utils';
 import { dataTestids } from './data-test-ids';
 import { WorldJourney } from '@/logics/world-journey';
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 
 type Props = {
   worldJourney: WorldJourney;
@@ -115,7 +115,7 @@ export function WorldCanvas({ worldJourney }: Props) {
   );
 
   useEffect(() => {
-    return worldJourney.subscribePerspectiveChanged((perspectiveDepth: number, targetPos: PositionModel) => {
+    return worldJourney.subscribePerspectiveChanged((perspectiveDepth: number, targetPos: PositionVo) => {
       const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((45 / 360) * 2 * Math.PI) + 0.5;
       const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((45 / 360) * 2 * Math.PI) + 0.5;
 

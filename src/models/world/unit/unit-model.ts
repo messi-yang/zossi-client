@@ -1,12 +1,12 @@
-import { DirectionModel } from '../common/direction-model';
-import { PositionModel } from '../common/position-model';
-import { UnitTypeModel } from './unit-type-model';
+import { DirectionVo } from '../common/direction-vo';
+import { PositionVo } from '../common/position-vo';
+import { UnitTypeVo } from './unit-type-vo';
 
 export interface UnitModel {
   clone(): UnitModel;
-  getType(): UnitTypeModel;
+  getType(): UnitTypeVo;
   getItemId(): string;
-  getPosition(): PositionModel;
-  getDirection(): DirectionModel;
-  changeDirection(dir: DirectionModel): void;
+  getPosition(): PositionVo;
+  getDirection(): DirectionVo;
+  changeDirection(dir: DirectionVo): void;
 }

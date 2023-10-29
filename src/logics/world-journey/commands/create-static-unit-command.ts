@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { PositionModel } from '@/models/world/common/position-model';
-import { DirectionModel } from '@/models/world/common/direction-model';
-import { DateModel } from '@/models/general/date-model';
+import { PositionVo } from '@/models/world/common/position-vo';
+import { DirectionVo } from '@/models/world/common/direction-vo';
+import { DateVo } from '@/models/general/date-vo';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 
 export class CreateStaticUnitCommand implements Command {
@@ -13,11 +13,11 @@ export class CreateStaticUnitCommand implements Command {
 
   private itemId: string;
 
-  private position: PositionModel;
+  private position: PositionVo;
 
-  private direction: DirectionModel;
+  private direction: DirectionVo;
 
-  constructor(id: string, timestamp: number, itemId: string, position: PositionModel, direction: DirectionModel) {
+  constructor(id: string, timestamp: number, itemId: string, position: PositionVo, direction: DirectionVo) {
     this.id = id;
     this.timestamp = timestamp;
     this.itemId = itemId;
@@ -25,11 +25,11 @@ export class CreateStaticUnitCommand implements Command {
     this.direction = direction;
   }
 
-  static new(itemId: string, position: PositionModel, direction: DirectionModel) {
-    return new CreateStaticUnitCommand(uuidv4(), DateModel.now().getTimestamp(), itemId, position, direction);
+  static new(itemId: string, position: PositionVo, direction: DirectionVo) {
+    return new CreateStaticUnitCommand(uuidv4(), DateVo.now().getTimestamp(), itemId, position, direction);
   }
 
-  static load(id: string, timestamp: number, itemId: string, position: PositionModel, direction: DirectionModel) {
+  static load(id: string, timestamp: number, itemId: string, position: PositionVo, direction: DirectionVo) {
     return new CreateStaticUnitCommand(id, timestamp, itemId, position, direction);
   }
 

@@ -2,7 +2,7 @@ import { createContext, useCallback, useRef, useState, useMemo, useEffect } from
 import { WorldJourneyApiService } from '@/apis/services/world-journey-api-service';
 import { ItemApiService } from '@/apis/services/item-api-service';
 import { ItemModel } from '@/models/world/item/item-model';
-import { DirectionModel } from '@/models/world/common/direction-model';
+import { DirectionVo } from '@/models/world/common/direction-vo';
 import {
   AddItemCommand,
   RotateUnitCommand,
@@ -18,7 +18,7 @@ import {
   MakePlayerWalkCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -30,7 +30,7 @@ type ContextValue = {
   addPerspectiveDepth: () => void;
   subtractPerspectiveDepth: () => void;
   makePlayerStand: () => void;
-  makePlayerWalk: (direction: DirectionModel) => void;
+  makePlayerWalk: (direction: DirectionVo) => void;
   changePlayerHeldItem: (item: ItemModel) => void;
   createUnit: () => void;
   removeUnit: () => void;
@@ -183,7 +183,7 @@ export function Provider({ children }: Props) {
   }, [worldJourney]);
 
   const makePlayerWalk = useCallback(
-    (direction: DirectionModel) => {
+    (direction: DirectionVo) => {
       if (!worldJourneyApiService.current || !worldJourney) {
         return;
       }
@@ -217,7 +217,7 @@ export function Provider({ children }: Props) {
   );
 
   const createStaticUnit = useCallback(
-    (itemId: string, position: PositionModel, direction: DirectionModel) => {
+    (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourney || !worldJourneyApiService.current) return;
 
       const command = CreateStaticUnitCommand.new(itemId, position, direction);
@@ -228,7 +228,7 @@ export function Provider({ children }: Props) {
   );
 
   const createPortalUnit = useCallback(
-    (itemId: string, position: PositionModel, direction: DirectionModel) => {
+    (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourney || !worldJourneyApiService.current) return;
 
       const command = CreatePortalUnitCommand.new(itemId, position, direction);

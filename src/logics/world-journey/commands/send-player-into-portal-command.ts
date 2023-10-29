@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from './command';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 import { CommandParams } from './command-params';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
@@ -12,20 +12,20 @@ export class SendPlayerIntoPortalCommand implements Command {
 
   private playerId: string;
 
-  private position: PositionModel;
+  private position: PositionVo;
 
-  constructor(id: string, timestamp: number, playerId: string, position: PositionModel) {
+  constructor(id: string, timestamp: number, playerId: string, position: PositionVo) {
     this.id = id;
     this.timestamp = timestamp;
     this.playerId = playerId;
     this.position = position;
   }
 
-  static new(playerId: string, position: PositionModel) {
-    return new SendPlayerIntoPortalCommand(uuidv4(), DateModel.now().getTimestamp(), playerId, position);
+  static new(playerId: string, position: PositionVo) {
+    return new SendPlayerIntoPortalCommand(uuidv4(), DateVo.now().getTimestamp(), playerId, position);
   }
 
-  static load(id: string, timestamp: number, playerId: string, position: PositionModel) {
+  static load(id: string, timestamp: number, playerId: string, position: PositionVo) {
     return new SendPlayerIntoPortalCommand(id, timestamp, playerId, position);
   }
 

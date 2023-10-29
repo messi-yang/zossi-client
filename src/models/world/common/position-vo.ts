@@ -1,11 +1,11 @@
-import { DirectionModel } from './direction-model';
+import { DirectionVo } from './direction-vo';
 
-export class PositionModel {
+export class PositionVo {
   constructor(private x: number, private z: number) {}
 
-  static new = (x: number, z: number): PositionModel => new PositionModel(x, z);
+  static new = (x: number, z: number): PositionVo => new PositionVo(x, z);
 
-  public isEqual(position: PositionModel): boolean {
+  public isEqual(position: PositionVo): boolean {
     return this.x === position.getX() && this.z === position.getZ();
   }
 
@@ -17,11 +17,11 @@ export class PositionModel {
     return this.z;
   }
 
-  public shift(x: number, z: number): PositionModel {
-    return PositionModel.new(this.x + x, this.z + z);
+  public shift(x: number, z: number): PositionVo {
+    return PositionVo.new(this.x + x, this.z + z);
   }
 
-  public shiftByDirection(direction: DirectionModel, distance: number): PositionModel {
+  public shiftByDirection(direction: DirectionVo, distance: number): PositionVo {
     if (direction.isUp()) {
       return this.shift(0, -distance);
     } else if (direction.isRight()) {

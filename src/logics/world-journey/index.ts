@@ -1,10 +1,10 @@
 import { uniq } from 'lodash';
-import { BoundModel } from '@/models/world/common/bound-model';
+import { BoundVo } from '@/models/world/common/bound-vo';
 import { ItemModel } from '@/models/world/item/item-model';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { WorldModel } from '@/models/world/world/world-model';
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 
 import { UnitStorage } from './unit-storage';
 import { MyPlayerChangedHandler, PlayerStorage, PlayersChangedHandler } from './player-storage';
@@ -12,7 +12,7 @@ import { Perspective, PerspectiveChangedHandler } from './perspective';
 import { ItemStorage, PlaceholderItemIdsAddedHandler } from './item-storage';
 import { Command } from './commands/command';
 import { CommandExecutedHandler, CommandManager } from './command-manager';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 
 type UnitsChangedHandler = (item: ItemModel, units: UnitModel[] | null) => void;
 
@@ -64,7 +64,7 @@ export class WorldJourney {
     return this.world;
   }
 
-  public getWorldBound(): BoundModel {
+  public getWorldBound(): BoundVo {
     return this.world.getBound();
   }
 
@@ -79,11 +79,11 @@ export class WorldJourney {
     return this.playerStorage.getMyPlayer();
   }
 
-  public doesPosHavePlayers(pos: PositionModel): boolean {
+  public doesPosHavePlayers(pos: PositionVo): boolean {
     return !!this.playerStorage.getPlayersAtPos(pos);
   }
 
-  public getUnit(position: PositionModel) {
+  public getUnit(position: PositionVo) {
     return this.unitStorage.getUnit(position);
   }
 
@@ -100,7 +100,7 @@ export class WorldJourney {
       if (playerAction.isStand()) return;
 
       if (playerAction.isWalk()) {
-        const milisecondsAfterAction = DateModel.now().getDiffInMilliseconds(player.getActedAt());
+        const milisecondsAfterAction = DateVo.now().getDiffInMilliseconds(player.getActedAt());
 
         const playerForwardPos = player.getFowardPos();
         const unitAtPos = this.unitStorage.getUnit(playerForwardPos);

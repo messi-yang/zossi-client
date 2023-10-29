@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 import { useHotKeys } from '@/hooks/use-hot-keys';
 import { WorldJourneyContext } from '@/contexts/world-journey-context';
-import { DirectionModel } from '@/models/world/common/direction-model';
+import { DirectionVo } from '@/models/world/common/direction-vo';
 import { WorldCanvas } from '@/components/canvas/world-canvas';
 import { MessageModal } from '@/components/modals/message-modal';
 import { SelectItemsBar } from '@/components/bars/select-items-bar';
@@ -146,16 +146,16 @@ const Page: NextPage = function Page() {
       const lastKey = keys[keys.length - 1] || null;
       switch (lastKey) {
         case 'KeyW':
-          makePlayerWalk(DirectionModel.newUp());
+          makePlayerWalk(DirectionVo.newUp());
           break;
         case 'KeyD':
-          makePlayerWalk(DirectionModel.newRight());
+          makePlayerWalk(DirectionVo.newRight());
           break;
         case 'KeyS':
-          makePlayerWalk(DirectionModel.newDown());
+          makePlayerWalk(DirectionVo.newDown());
           break;
         case 'KeyA':
-          makePlayerWalk(DirectionModel.newLeft());
+          makePlayerWalk(DirectionVo.newLeft());
           break;
         default:
           makePlayerStand();

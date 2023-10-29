@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Command } from './command';
 import { CommandParams } from './command-params';
 import { PlayerModel } from '@/models/world/player/player-model';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 
 export class AddPlayerCommand implements Command {
   private id: string;
@@ -18,7 +18,7 @@ export class AddPlayerCommand implements Command {
   }
 
   static new(player: PlayerModel) {
-    return new AddPlayerCommand(uuidv4(), DateModel.now().getTimestamp(), player);
+    return new AddPlayerCommand(uuidv4(), DateVo.now().getTimestamp(), player);
   }
 
   static load(id: string, timestamp: number, player: PlayerModel) {

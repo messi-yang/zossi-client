@@ -1,6 +1,6 @@
 import { uniq } from 'lodash';
 import { PlayerModel } from '@/models/world/player/player-model';
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 
 export type PlayersChangedHandler = (players: PlayerModel[]) => void;
 export type MyPlayerChangedHandler = (player: PlayerModel) => void;
@@ -143,7 +143,7 @@ export class PlayerStorage {
     return true;
   }
 
-  public getPlayersAtPos(pos: PositionModel): PlayerModel[] | null {
+  public getPlayersAtPos(pos: PositionVo): PlayerModel[] | null {
     return this.playersMapByPos[pos.toString()] || null;
   }
 

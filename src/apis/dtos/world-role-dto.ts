@@ -1,9 +1,9 @@
-import { WorldRoleModel } from '@/models/global/world-role-model';
+import { WorldRoleVo } from '@/models/global/world-role-vo';
 
 type WorldRoleDto = 'owner' | 'admin' | 'editor' | 'viewer';
 
-function parseWorldRoleDto(dto: WorldRoleDto): WorldRoleModel {
-  return WorldRoleModel.new(dto);
+function parseWorldRoleDto(dto: WorldRoleDto): WorldRoleVo {
+  return WorldRoleVo.new(dto);
 }
 
 export type { WorldRoleDto };

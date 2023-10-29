@@ -1,16 +1,16 @@
-export class DateModel {
+export class DateVo {
   constructor(private date: Date) {}
 
   static now() {
-    return new DateModel(new Date());
+    return new DateVo(new Date());
   }
 
   static parseString(dateString: string) {
-    return new DateModel(new Date(dateString));
+    return new DateVo(new Date(dateString));
   }
 
   static fromTimestamp(timestamp: number) {
-    return new DateModel(new Date(timestamp));
+    return new DateVo(new Date(timestamp));
   }
 
   public toString() {
@@ -21,7 +21,7 @@ export class DateModel {
     return this.date.getTime();
   }
 
-  public getDiffInMilliseconds(otherDate: DateModel) {
+  public getDiffInMilliseconds(otherDate: DateVo) {
     return this.date.getTime() - otherDate.date.getTime();
   }
 

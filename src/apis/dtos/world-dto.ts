@@ -1,7 +1,7 @@
 import { WorldModel } from '@/models/world/world/world-model';
 import { BoundDto, parseBoundDto } from './bound-dto';
 import { UserDto, parseUserDto } from './user-dto';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 
 type WorldDto = {
   id: string;
@@ -18,8 +18,8 @@ function parseWorldDto(dto: WorldDto): WorldModel {
     dto.name,
     parseUserDto(dto.user),
     parseBoundDto(dto.bound),
-    DateModel.parseString(dto.createdAt),
-    DateModel.parseString(dto.updatedAt)
+    DateVo.parseString(dto.createdAt),
+    DateVo.parseString(dto.updatedAt)
   );
 }
 

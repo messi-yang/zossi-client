@@ -1,20 +1,20 @@
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 
-export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPos: PositionModel) => void;
+export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPos: PositionVo) => void;
 
 export class Perspective {
   private depth: number;
 
-  private targetPos: PositionModel;
+  private targetPos: PositionVo;
 
   private perspectiveChangedHandlers: PerspectiveChangedHandler[] = [];
 
-  constructor(depth: number, targetPos: PositionModel) {
+  constructor(depth: number, targetPos: PositionVo) {
     this.depth = depth;
     this.targetPos = targetPos;
   }
 
-  static new(depth: number, targetPos: PositionModel) {
+  static new(depth: number, targetPos: PositionVo) {
     return new Perspective(depth, targetPos);
   }
 
@@ -30,7 +30,7 @@ export class Perspective {
     this.publishPerspectiveChanged();
   }
 
-  public updateTargetPos(position: PositionModel) {
+  public updateTargetPos(position: PositionVo) {
     this.targetPos = position;
     this.publishPerspectiveChanged();
   }

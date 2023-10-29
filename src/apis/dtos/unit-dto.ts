@@ -1,5 +1,5 @@
-import { DirectionModel } from '@/models/world/common/direction-model';
-import { PositionModel } from '@/models/world/common/position-model';
+import { DirectionVo } from '@/models/world/common/direction-vo';
+import { PositionVo } from '@/models/world/common/position-vo';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { PositionDto } from './position-dto';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
@@ -35,11 +35,11 @@ interface PortalUnitDto extends UnitDtoBase {
 type UnitDto = StaticUnitDto | PortalUnitDto;
 
 function parseUnitDto(unitDto: UnitDto): UnitModel {
-  const position = PositionModel.new(unitDto.position.x, unitDto.position.z);
-  const direction = DirectionModel.new(unitDto.direction);
+  const position = PositionVo.new(unitDto.position.x, unitDto.position.z);
+  const direction = DirectionVo.new(unitDto.direction);
   if (unitDto.type === UnitTypeEnum.Portal) {
     const tartgetPosition = unitDto.info.targetPosition
-      ? PositionModel.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
+      ? PositionVo.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
       : null;
     return PortalUnitModel.new(unitDto.itemId, position, direction, tartgetPosition);
   } else {

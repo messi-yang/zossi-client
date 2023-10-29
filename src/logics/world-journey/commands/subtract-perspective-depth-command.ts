@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 
 export class SubtractPerspectiveDepthCommand implements Command {
   private id: string;
@@ -14,7 +14,7 @@ export class SubtractPerspectiveDepthCommand implements Command {
   }
 
   static new() {
-    return new SubtractPerspectiveDepthCommand(uuidv4(), DateModel.now().getTimestamp());
+    return new SubtractPerspectiveDepthCommand(uuidv4(), DateVo.now().getTimestamp());
   }
 
   static load(id: string, timestamp: number) {

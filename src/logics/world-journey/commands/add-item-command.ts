@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Command } from './command';
 import { CommandParams } from './command-params';
 import { ItemModel } from '@/models/world/item/item-model';
-import { DateModel } from '@/models/general/date-model';
+import { DateVo } from '@/models/general/date-vo';
 
 export class AddItemCommand implements Command {
   private id: string;
@@ -18,7 +18,7 @@ export class AddItemCommand implements Command {
   }
 
   static new(item: ItemModel) {
-    return new AddItemCommand(uuidv4(), DateModel.now().getTimestamp(), item);
+    return new AddItemCommand(uuidv4(), DateVo.now().getTimestamp(), item);
   }
 
   static load(id: string, timestamp: number, item: ItemModel) {

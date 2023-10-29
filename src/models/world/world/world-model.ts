@@ -1,26 +1,26 @@
 import { v4 as uuidv4 } from 'uuid';
-import { BoundModel } from '../common/bound-model';
-import { PositionModel } from '../common/position-model';
+import { BoundVo } from '../common/bound-vo';
+import { PositionVo } from '../common/position-vo';
 import { UserModel } from '../../iam/user-model';
-import { DateModel } from '../../general/date-model';
+import { DateVo } from '../../general/date-vo';
 
 export class WorldModel {
   constructor(
     private id: string,
     private name: string,
     private user: UserModel,
-    private bound: BoundModel,
-    private createdAt: DateModel,
-    private updatedAt: DateModel
+    private bound: BoundVo,
+    private createdAt: DateVo,
+    private updatedAt: DateVo
   ) {}
 
   static new = (
     id: string,
     name: string,
     user: UserModel,
-    bound: BoundModel,
-    createdAt: DateModel,
-    updatedAt: DateModel
+    bound: BoundVo,
+    createdAt: DateVo,
+    updatedAt: DateVo
   ): WorldModel => new WorldModel(id, name, user, bound, createdAt, updatedAt);
 
   static mockup = (): WorldModel =>
@@ -28,9 +28,9 @@ export class WorldModel {
       uuidv4(),
       'Hello World',
       UserModel.mockup(),
-      BoundModel.new(PositionModel.new(-10, -10), PositionModel.new(10, 10)),
-      DateModel.now(),
-      DateModel.now()
+      BoundVo.new(PositionVo.new(-10, -10), PositionVo.new(10, 10)),
+      DateVo.now(),
+      DateVo.now()
     );
 
   public getId(): string {
@@ -45,11 +45,11 @@ export class WorldModel {
     return this.user;
   }
 
-  public getBound(): BoundModel {
+  public getBound(): BoundVo {
     return this.bound;
   }
 
-  public getCreatedAt(): DateModel {
+  public getCreatedAt(): DateVo {
     return this.createdAt;
   }
 

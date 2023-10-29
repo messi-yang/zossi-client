@@ -1,11 +1,11 @@
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 
 type PositionDto = {
   x: number;
   z: number;
 };
 
-const newPositionDto = (position: PositionModel): PositionDto => ({
+const newPositionDto = (position: PositionVo): PositionDto => ({
   x: position.getX(),
   z: position.getZ(),
 });

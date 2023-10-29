@@ -1,5 +1,5 @@
 import { uniq } from 'lodash';
-import { PositionModel } from '@/models/world/common/position-model';
+import { PositionVo } from '@/models/world/common/position-vo';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
@@ -38,7 +38,7 @@ export class UnitStorage {
     return Object.keys(this.unitMapByItemId);
   }
 
-  public getUnit(pos: PositionModel): UnitModel | null {
+  public getUnit(pos: PositionVo): UnitModel | null {
     return this.unitMapByPos[pos.toString()] || null;
   }
 
@@ -64,7 +64,7 @@ export class UnitStorage {
     this.unitMapByPos[posKey] = unit;
   }
 
-  private removeUnitFromUnitMapByPos(position: PositionModel) {
+  private removeUnitFromUnitMapByPos(position: PositionVo) {
     const posKey = position.toString();
     delete this.unitMapByPos[posKey];
   }
@@ -149,7 +149,7 @@ export class UnitStorage {
     return true;
   }
 
-  public removeUnit(position: PositionModel): boolean {
+  public removeUnit(position: PositionVo): boolean {
     const currentUnit = this.getUnit(position);
     if (!currentUnit) return false;
 
