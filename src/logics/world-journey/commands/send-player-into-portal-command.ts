@@ -40,6 +40,8 @@ export class SendPlayerIntoPortalCommand implements Command {
     if (!player) return;
 
     player.changePosition(targetPosition);
+    player.changeActionPosition(targetPosition);
+    player.changeActedAt(DateVo.now());
     playerStorage.updatePlayer(player);
   }
 

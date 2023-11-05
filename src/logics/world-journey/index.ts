@@ -140,9 +140,9 @@ export class WorldJourney {
   }
 
   public subscribeMyPlayerChanged(handler: MyPlayerChangedHandler): () => void {
-    return this.playerStorage.subscribeMyPlayerChanged((myPlayer) => {
-      this.perspective.updateTargetPos(myPlayer.getPosition());
-      handler(myPlayer);
+    return this.playerStorage.subscribeMyPlayerChanged((oldPlayer, player) => {
+      this.perspective.updateTargetPos(player.getPosition());
+      handler(oldPlayer, player);
     });
   }
 

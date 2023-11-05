@@ -58,9 +58,9 @@ const Page: NextPage = function Page() {
   useEffect(() => {
     if (!worldJourney) return () => {};
 
-    return worldJourney.subscribeMyPlayerChanged((myPlayer) => {
-      setMyPlayerHeldItemId(myPlayer.getHeldItemId());
-      setMyPlayerPosText(myPlayer.getPosition().getPositionText());
+    return worldJourney.subscribeMyPlayerChanged((_, player) => {
+      setMyPlayerHeldItemId(player.getHeldItemId());
+      setMyPlayerPosText(player.getPosition().getPositionText());
     });
   }, [worldJourney]);
 

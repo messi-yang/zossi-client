@@ -16,9 +16,11 @@ import {
   SubtractPerspectiveDepthCommand,
   MakePlayerStandCommand,
   MakePlayerWalkCommand,
+  SendPlayerIntoPortalCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { PositionVo } from '@/models/world/common/position-vo';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -89,6 +91,25 @@ export function Provider({ children }: Props) {
       worldJourney.executeCommand(AddItemCommand.new(item));
     });
   }, [worldJourney, items]);
+
+  useEffect(() => {
+    if (!worldJourney) return;
+
+    worldJourney.subscribeMyPlayerChanged((oldPlayer, player) => {
+      const oldPlayerPos = oldPlayer.getPosition();
+      const playerPos = player.getPosition();
+      if (oldPlayerPos.isEqual(playerPos)) {
+        return;
+      }
+
+      const unitAtPlayerPos = worldJourney.getUnit(playerPos);
+      if (!unitAtPlayerPos) return;
+
+      if (unitAtPlayerPos instanceof PortalUnitModel) {
+        worldJourney.executeCommand(SendPlayerIntoPortalCommand.new(player.getId(), playerPos));
+      }
+    });
+  }, [worldJourney]);
 
   const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');

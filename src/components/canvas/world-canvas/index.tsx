@@ -126,7 +126,7 @@ export function WorldCanvas({ worldJourney }: Props) {
   }, [worldJourney]);
 
   useEffect(() => {
-    return worldJourney.subscribeMyPlayerChanged((myPlayer) => {
+    return worldJourney.subscribeMyPlayerChanged((_, myPlayer) => {
       const myPlayerPos = myPlayer.getPosition();
       const [myPlayerPositionX, myPlayerPositionZ] = [myPlayerPos.getX(), myPlayerPos.getZ()];
       dirLight.position.set(myPlayerPositionX, DIR_LIGHT_HEIGHT, myPlayerPositionZ + DIR_LIGHT_Z_OFFSET);

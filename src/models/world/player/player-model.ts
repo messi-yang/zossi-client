@@ -122,6 +122,10 @@ export class PlayerModel {
     return this.actedAt;
   }
 
+  public changeActedAt(actedAt: DateVo): void {
+    this.actedAt = actedAt;
+  }
+
   public updateActedAt(date: DateVo) {
     this.actedAt = date;
   }

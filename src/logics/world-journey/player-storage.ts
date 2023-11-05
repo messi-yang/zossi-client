@@ -3,7 +3,7 @@ import { PlayerModel } from '@/models/world/player/player-model';
 import { PositionVo } from '@/models/world/common/position-vo';
 
 export type PlayersChangedHandler = (players: PlayerModel[]) => void;
-export type MyPlayerChangedHandler = (player: PlayerModel) => void;
+export type MyPlayerChangedHandler = (oldPlyaer: PlayerModel, player: PlayerModel) => void;
 
 export class PlayerStorage {
   private myPlayerId: string;
@@ -125,7 +125,7 @@ export class PlayerStorage {
     this.publishPlayersChanged(this.getPlayers());
 
     if (this.isMyPlayer(player.getId())) {
-      this.publishMyPlayerChanged(this.getMyPlayer());
+      this.publishMyPlayerChanged(oldPlayer, this.getMyPlayer());
     }
 
     return true;
@@ -164,16 +164,16 @@ export class PlayerStorage {
 
   public subscribeMyPlayerChanged(handler: MyPlayerChangedHandler): () => void {
     this.myPlayerChangedHandlers.push(handler);
-    handler(this.getMyPlayer());
+    handler(this.getMyPlayer(), this.getMyPlayer());
 
     return () => {
       this.myPlayerChangedHandlers = this.myPlayerChangedHandlers.filter((hdl) => hdl !== handler);
     };
   }
 
-  private publishMyPlayerChanged(myPlayer: PlayerModel) {
+  private publishMyPlayerChanged(oldPlayer: PlayerModel, player: PlayerModel) {
     this.myPlayerChangedHandlers.forEach((hdl) => {
-      hdl(myPlayer);
+      hdl(oldPlayer, player);
     });
   }
 }
