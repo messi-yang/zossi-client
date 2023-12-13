@@ -93,25 +93,6 @@ export function Provider({ children }: Props) {
     });
   }, [worldJourney, items]);
 
-  useEffect(() => {
-    if (!worldJourney) return;
-
-    worldJourney.subscribeMyPlayerChanged((oldPlayer, player) => {
-      const oldPlayerPos = oldPlayer.getPosition();
-      const playerPos = player.getPosition();
-      if (oldPlayerPos.isEqual(playerPos)) {
-        return;
-      }
-
-      const unitAtPlayerPos = worldJourney.getUnit(playerPos);
-      if (!unitAtPlayerPos) return;
-
-      if (unitAtPlayerPos instanceof PortalUnitModel) {
-        worldJourney.executeCommand(SendPlayerIntoPortalCommand.new(player.getId(), playerPos));
-      }
-    });
-  }, [worldJourney]);
-
   const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
 
@@ -144,6 +125,29 @@ export function Provider({ children }: Props) {
     setConnectionStatus('CONNECTING');
     worldJourneyApiService.current = newWorldJourneyApiService;
   }, []);
+
+  useEffect(() => {
+    if (!worldJourney) return;
+
+    worldJourney.subscribeMyPlayerChanged((oldPlayer, player) => {
+      if (!worldJourneyApiService.current) return;
+
+      const oldPlayerPos = oldPlayer.getPosition();
+      const playerPos = player.getPosition();
+      if (oldPlayerPos.isEqual(playerPos)) {
+        return;
+      }
+
+      const unitAtPlayerPos = worldJourney.getUnit(playerPos);
+      if (!unitAtPlayerPos) return;
+
+      if (unitAtPlayerPos instanceof PortalUnitModel) {
+        const command = SendPlayerIntoPortalCommand.new(player.getId(), playerPos);
+        worldJourney.executeCommand(SendPlayerIntoPortalCommand.new(player.getId(), playerPos));
+        worldJourneyApiService.current.sendCommand(command);
+      }
+    });
+  }, [worldJourney]);
 
   useEffect(() => {
     if (!worldJourney) return () => {};
