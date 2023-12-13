@@ -1,4 +1,5 @@
 import { PlayerDto, PositionDto, newPositionDto, parsePlayerDto } from '@/apis/dtos';
+import { PlayerActionDto, newPlayerActionDto, parsePlayerActionDto } from '@/apis/dtos/player-action-dto';
 import {
   Command,
   AddPlayerCommand,
@@ -10,9 +11,8 @@ import {
   RemovePlayerCommand,
   RotateUnitCommand,
   ChangePlayerHeldItemCommand,
-  MakePlayerStandCommand,
-  MakePlayerWalkCommand,
 } from '@/logics/world-journey/commands';
+import { ChangePlayerActionCommand } from '@/logics/world-journey/commands/change-player-action-command';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
 
@@ -22,8 +22,7 @@ enum CommandNameEnum {
   AddPlayer = 'ADD_PLAYER',
   RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',
-  MakePlayerStand = 'MAKE_PLAYER_STAND',
-  MakePlayerWalk = 'MAKE_PLAYER_WALK',
+  ChangePlayerAction = 'CHANGE_PLAYER_ACTION',
   SendPlayerIntoPortal = 'SEND_PLAYER_INTO_PORTAL',
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
@@ -46,22 +45,12 @@ type AddPlayerCommandDto = {
   player: PlayerDto;
 };
 
-type MakePlayerStandCommandDto = {
+type ChangePlayerActionCommandDto = {
   id: string;
   timestamp: number;
-  name: CommandNameEnum.MakePlayerStand;
+  name: CommandNameEnum.ChangePlayerAction;
   playerId: string;
-  actionPosition: PositionDto;
-  direction: number;
-};
-
-type MakePlayerWalkCommandDto = {
-  id: string;
-  timestamp: number;
-  name: CommandNameEnum.MakePlayerWalk;
-  playerId: string;
-  actionPosition: PositionDto;
-  direction: number;
+  action: PlayerActionDto;
 };
 
 type SendPlayerIntoPortalCommandDto = {
@@ -170,23 +159,12 @@ function parseAddPlayerAddPlayerCommand(command: AddPlayerCommandDto): AddPlayer
   return AddPlayerCommand.load(command.id, command.timestamp, parsePlayerDto(command.player));
 }
 
-function parseMakePlayerStandCommand(command: MakePlayerStandCommandDto): MakePlayerStandCommand {
-  return MakePlayerStandCommand.load(
+function parseChangePlayerActionCommand(command: ChangePlayerActionCommandDto): ChangePlayerActionCommand {
+  return ChangePlayerActionCommand.load(
     command.id,
     command.timestamp,
     command.playerId,
-    PositionVo.new(command.actionPosition.x, command.actionPosition.z),
-    DirectionVo.new(command.direction)
-  );
-}
-
-function parseMakePlayerWalkCommand(command: MakePlayerWalkCommandDto): MakePlayerWalkCommand {
-  return MakePlayerWalkCommand.load(
-    command.id,
-    command.timestamp,
-    command.playerId,
-    PositionVo.new(command.actionPosition.x, command.actionPosition.z),
-    DirectionVo.new(command.direction)
+    parsePlayerActionDto(command.action)
   );
 }
 
@@ -220,10 +198,8 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseRotateUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.AddPlayer) {
     return parseAddPlayerAddPlayerCommand(commandDto);
-  } else if (commandDto.name === CommandNameEnum.MakePlayerStand) {
-    return parseMakePlayerStandCommand(commandDto);
-  } else if (commandDto.name === CommandNameEnum.MakePlayerWalk) {
-    return parseMakePlayerWalkCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.ChangePlayerAction) {
+    return parseChangePlayerActionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
     return parseSendPlayerIntoPortalCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerHeldItem) {
@@ -279,24 +255,13 @@ export const toCommandDto = (command: Command) => {
       position: newPositionDto(command.getPosition()),
     };
     return commandDto;
-  } else if (command instanceof MakePlayerStandCommand) {
-    const commandDto: MakePlayerStandCommandDto = {
+  } else if (command instanceof ChangePlayerActionCommand) {
+    const commandDto: ChangePlayerActionCommandDto = {
       id: command.getId(),
       timestamp: command.getTimestamp(),
-      name: CommandNameEnum.MakePlayerStand,
+      name: CommandNameEnum.ChangePlayerAction,
       playerId: command.getPlayerId(),
-      actionPosition: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
-    };
-    return commandDto;
-  } else if (command instanceof MakePlayerWalkCommand) {
-    const commandDto: MakePlayerWalkCommandDto = {
-      id: command.getId(),
-      timestamp: command.getTimestamp(),
-      name: CommandNameEnum.MakePlayerWalk,
-      playerId: command.getPlayerId(),
-      actionPosition: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
+      action: newPlayerActionDto(command.getAction()),
     };
     return commandDto;
   } else if (command instanceof SendPlayerIntoPortalCommand) {
@@ -326,8 +291,7 @@ export { CommandNameEnum };
 export type CommandDto =
   | PingCommandDto
   | AddPlayerCommandDto
-  | MakePlayerStandCommandDto
-  | MakePlayerWalkCommandDto
+  | ChangePlayerActionCommandDto
   | SendPlayerIntoPortalCommandDto
   | RemovePlayerCommandDto
   | ChangePlayerHeldItemCommandDto

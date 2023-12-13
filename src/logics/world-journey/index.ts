@@ -12,7 +12,6 @@ import { Perspective, PerspectiveChangedHandler } from './perspective';
 import { ItemStorage, PlaceholderItemIdsAddedHandler } from './item-storage';
 import { Command } from './commands/command';
 import { CommandExecutedHandler, CommandManager } from './command-manager';
-import { DateVo } from '@/models/general/date-vo';
 
 type UnitsChangedHandler = (item: ItemModel, units: UnitModel[] | null) => void;
 
@@ -95,13 +94,11 @@ export class WorldJourney {
     this.playerStorage.getPlayers().forEach((player) => {
       const playerAction = player.getAction();
       const playerDirection = player.getDirection();
-      const playerActionPosition = player.getActionPosition();
+      const playerPosition = player.getPosition();
 
       if (playerAction.isStand()) return;
 
       if (playerAction.isWalk()) {
-        const milisecondsAfterAction = DateVo.now().getDiffInMilliseconds(player.getActedAt());
-
         const playerForwardPos = player.getFowardPos();
         const unitAtPos = this.unitStorage.getUnit(playerForwardPos);
         if (unitAtPos) {
@@ -110,18 +107,13 @@ export class WorldJourney {
           if (!item.getTraversable()) return;
         }
 
-        const playerExpectedPosition = playerActionPosition.shiftByDirection(
-          playerDirection,
-          Math.round(milisecondsAfterAction / 100)
-        );
+        const playerExpectedPosition = playerPosition.shiftByDirection(playerDirection, 1);
         if (!this.world.getBound().doesContainPosition(playerExpectedPosition)) {
           return;
         }
 
         const clonedPlayer = player.clone();
-        clonedPlayer.changePosition(
-          playerActionPosition.shiftByDirection(playerDirection, Math.round(milisecondsAfterAction / 100))
-        );
+        clonedPlayer.updatePosition(playerExpectedPosition);
         this.playerStorage.updatePlayer(clonedPlayer);
       }
     });

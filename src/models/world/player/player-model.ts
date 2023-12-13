@@ -2,58 +2,42 @@ import { v4 as uuidv4 } from 'uuid';
 import { PositionVo } from '../common/position-vo';
 import { DirectionVo } from '../common/direction-vo';
 import { PlayerActionVo } from './player-action-vo';
-import { PlayerActionEnum } from './player-action-enum';
+import { PlayerActionNameEnum } from './player-action-name-enum';
 import { DateVo } from '@/models/general/date-vo';
 
 export class PlayerModel {
-  private position: PositionVo;
-
   constructor(
     private id: string,
     private name: string,
-    private direction: DirectionVo,
     private heldItemId: string | null,
     private action: PlayerActionVo,
-    private actionPosition: PositionVo,
-    private actedAt: DateVo
+    private position: PositionVo
   ) {
-    this.position = actionPosition;
+    this.position = position;
   }
 
   static new(
     id: string,
     name: string,
-    direction: DirectionVo,
     heldItemId: string | null,
     action: PlayerActionVo,
-    actionPosition: PositionVo,
-    actedAt: DateVo
+    position: PositionVo
   ): PlayerModel {
-    return new PlayerModel(id, name, direction, heldItemId, action, actionPosition, actedAt);
+    return new PlayerModel(id, name, heldItemId, action, position);
   }
 
   static mockup(): PlayerModel {
     return PlayerModel.new(
       uuidv4(),
       'Test Player',
-      DirectionVo.new(2),
       null,
-      PlayerActionVo.new(PlayerActionEnum.Stand),
-      PositionVo.new(0, 0),
-      DateVo.now()
+      PlayerActionVo.new(PlayerActionNameEnum.Stand, PositionVo.new(0, 0), DirectionVo.new(2), DateVo.now()),
+      PositionVo.new(0, 0)
     );
   }
 
   public clone(): PlayerModel {
-    return new PlayerModel(
-      this.id,
-      this.name,
-      this.direction,
-      this.heldItemId,
-      this.action,
-      this.actionPosition,
-      this.actedAt
-    );
+    return new PlayerModel(this.id, this.name, this.heldItemId, this.action, this.position);
   }
 
   public getId(): string {
@@ -64,20 +48,8 @@ export class PlayerModel {
     return this.name;
   }
 
-  public getPosition(): PositionVo {
-    return this.position;
-  }
-
-  public changePosition(position: PositionVo): void {
-    this.position = position;
-  }
-
   public getDirection(): DirectionVo {
-    return this.direction;
-  }
-
-  public changeDirection(direction: DirectionVo): void {
-    this.direction = direction;
+    return this.action.getDirection();
   }
 
   public getHeldItemId(): string | null {
@@ -89,13 +61,14 @@ export class PlayerModel {
   }
 
   public getFowardPos(): PositionVo {
-    if (this.direction.isUp()) {
+    const direction = this.getDirection();
+    if (direction.isUp()) {
       return this.position.shift(0, -1);
-    } else if (this.direction.isRight()) {
+    } else if (direction.isRight()) {
       return this.position.shift(1, 0);
-    } else if (this.direction.isDown()) {
+    } else if (direction.isDown()) {
       return this.position.shift(0, 1);
-    } else if (this.direction.isLeft()) {
+    } else if (direction.isLeft()) {
       return this.position.shift(-1, 0);
     } else {
       return this.position.shift(0, 1);
@@ -110,23 +83,11 @@ export class PlayerModel {
     this.action = action;
   }
 
-  public getActionPosition(): PositionVo {
-    return this.actionPosition;
+  public getPosition(): PositionVo {
+    return this.position;
   }
 
-  public changeActionPosition(pos: PositionVo) {
-    this.actionPosition = pos;
-  }
-
-  public getActedAt(): DateVo {
-    return this.actedAt;
-  }
-
-  public changeActedAt(actedAt: DateVo): void {
-    this.actedAt = actedAt;
-  }
-
-  public updateActedAt(date: DateVo) {
-    this.actedAt = date;
+  public updatePosition(pos: PositionVo) {
+    this.position = pos;
   }
 }

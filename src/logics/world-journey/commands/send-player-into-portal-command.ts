@@ -39,9 +39,8 @@ export class SendPlayerIntoPortalCommand implements Command {
     const player = playerStorage.getPlayer(this.playerId);
     if (!player) return;
 
-    player.changePosition(targetPosition);
-    player.changeActionPosition(targetPosition);
-    player.changeActedAt(DateVo.now());
+    player.updateAction(player.getAction().updatePosition(targetPosition).updateTime(DateVo.now()));
+    player.updatePosition(targetPosition);
     playerStorage.updatePlayer(player);
   }
 

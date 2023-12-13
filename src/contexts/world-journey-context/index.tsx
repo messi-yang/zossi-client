@@ -14,13 +14,14 @@ import {
   RemovePortalUnitCommand,
   AddPerspectiveDepthCommand,
   SubtractPerspectiveDepthCommand,
-  MakePlayerStandCommand,
-  MakePlayerWalkCommand,
   SendPlayerIntoPortalCommand,
+  ChangePlayerActionCommand,
 } from '@/logics/world-journey/commands';
 import { WorldJourney } from '@/logics/world-journey';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { PlayerActionVo } from '@/models/world/player/player-action-vo';
+import { DateVo } from '@/models/general/date-vo';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -149,7 +150,7 @@ export function Provider({ children }: Props) {
 
     const intervalId = setInterval(() => {
       worldJourney.updatePlayerClientPositions();
-    }, 50);
+    }, 100);
 
     return () => {
       clearInterval(intervalId);
@@ -195,10 +196,11 @@ export function Provider({ children }: Props) {
       return;
     }
 
-    const playerId = worldJourney.getMyPlayer().getId();
-    const playerPosition = worldJourney.getMyPlayer().getPosition();
+    const myPlayer = worldJourney.getMyPlayer();
+    const playerPosition = myPlayer.getPosition();
     const playerDirection = worldJourney.getMyPlayer().getDirection();
-    const command = MakePlayerStandCommand.new(playerId, playerPosition, playerDirection);
+    const playerAction = PlayerActionVo.newStand(playerPosition, playerDirection, DateVo.now());
+    const command = ChangePlayerActionCommand.new(myPlayer.getId(), playerAction);
     worldJourney.executeCommand(command);
     worldJourneyApiService.current.sendCommand(command);
   }, [worldJourney]);
@@ -209,9 +211,10 @@ export function Provider({ children }: Props) {
         return;
       }
 
-      const playerId = worldJourney.getMyPlayer().getId();
-      const playerPosition = worldJourney.getMyPlayer().getPosition();
-      const command = MakePlayerWalkCommand.new(playerId, playerPosition, direction);
+      const myPlayer = worldJourney.getMyPlayer();
+      const playerPosition = myPlayer.getPosition();
+      const playerAction = PlayerActionVo.newWalk(playerPosition, direction, DateVo.now());
+      const command = ChangePlayerActionCommand.new(myPlayer.getId(), playerAction);
       worldJourney.executeCommand(command);
       worldJourneyApiService.current.sendCommand(command);
     },

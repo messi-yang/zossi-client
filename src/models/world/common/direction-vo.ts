@@ -25,7 +25,7 @@ export class DirectionVo {
     return this.direction === direction.direction;
   }
 
-  public toNumber(): number {
+  public toNumber(): DirectionEnum {
     return this.direction;
   }
 
