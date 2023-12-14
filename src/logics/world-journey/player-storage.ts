@@ -76,7 +76,7 @@ export class PlayerStorage {
   }
 
   private addPlayerToPlayerMapByPos(player: PlayerModel) {
-    const posKey = player.getPosition().toString();
+    const posKey = player.getPrecisePosition().toString();
     const playersInOldPos = this.playersMapByPos[posKey];
     if (playersInOldPos) {
       playersInOldPos.push(player);
@@ -92,7 +92,7 @@ export class PlayerStorage {
 
   private removePlayerFromPlayerMapByPos(player: PlayerModel) {
     const playerId = player.getId();
-    const posKey = player.getPosition().toString();
+    const posKey = player.getPrecisePosition().toString();
     const playersInOldPos = this.playersMapByPos[posKey];
     if (playersInOldPos) {
       const newPlayersInOldPos = playersInOldPos.filter((p) => p.getId() !== playerId);

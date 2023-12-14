@@ -10,7 +10,7 @@ import { rangeMatrix } from '@/utils/common';
 import { createInstancesInScene } from './tjs-utils';
 import { dataTestids } from './data-test-ids';
 import { WorldJourney } from '@/logics/world-journey';
-import { PositionVo } from '@/models/world/common/position-vo';
+import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
 type Props = {
   worldJourney: WorldJourney;
@@ -42,8 +42,8 @@ export function WorldCanvas({ worldJourney }: Props) {
   });
   useState<THREE.Group>(() => {
     const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
-    const offsetX = worldBound.getFrom().getX();
-    const offsetZ = worldBound.getFrom().getZ();
+    const offsetX = worldBound.getFrom().getX() - 0.5;
+    const offsetZ = worldBound.getFrom().getZ() - 0.5;
     const boundWidth = worldBound.getWidth();
     const boundheight = worldBound.getHeight();
     const newGrid = new THREE.Group();
@@ -115,19 +115,19 @@ export function WorldCanvas({ worldJourney }: Props) {
   );
 
   useEffect(() => {
-    return worldJourney.subscribePerspectiveChanged((perspectiveDepth: number, targetPos: PositionVo) => {
-      const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((45 / 360) * 2 * Math.PI) + 0.5;
-      const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((45 / 360) * 2 * Math.PI) + 0.5;
+    return worldJourney.subscribePerspectiveChanged((perspectiveDepth: number, targetPrecisePos: PrecisePositionVo) => {
+      const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((45 / 360) * 2 * Math.PI);
+      const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((45 / 360) * 2 * Math.PI);
 
-      const [targetPosX, targetPosZ] = [targetPos.getX(), targetPos.getZ()];
-      camera.position.set(targetPosX, CAMERA_Y_OFFSET, targetPosZ + CAMERA_Z_OFFSET);
-      camera.lookAt(targetPosX, 0, targetPosZ);
+      const [targetPrecisePosX, targetPrecisePosZ] = [targetPrecisePos.getX(), targetPrecisePos.getZ()];
+      camera.position.set(targetPrecisePosX, CAMERA_Y_OFFSET, targetPrecisePosZ + CAMERA_Z_OFFSET);
+      camera.lookAt(targetPrecisePosX, 0, targetPrecisePosZ);
     });
   }, [worldJourney]);
 
   useEffect(() => {
     return worldJourney.subscribeMyPlayerChanged((_, myPlayer) => {
-      const myPlayerPos = myPlayer.getPosition();
+      const myPlayerPos = myPlayer.getPrecisePosition();
       const [myPlayerPositionX, myPlayerPositionZ] = [myPlayerPos.getX(), myPlayerPos.getZ()];
       dirLight.position.set(myPlayerPositionX, DIR_LIGHT_HEIGHT, myPlayerPositionZ + DIR_LIGHT_Z_OFFSET);
       dirLight.target.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
@@ -157,9 +157,9 @@ export function WorldCanvas({ worldJourney }: Props) {
       const grassInstanceStates: { x: number; y: number; z: number; rotate: number }[] = [];
       rangeMatrix(worldBoundWidth, worldBoundHeight, (colIdx, rowIdx) => {
         grassInstanceStates.push({
-          x: boundOffsetX + colIdx + 0.5,
+          x: boundOffsetX + colIdx,
           y: 0,
-          z: boundOffsetZ + rowIdx + 0.5,
+          z: boundOffsetZ + rowIdx,
           rotate: 0,
         });
       });
@@ -177,9 +177,9 @@ export function WorldCanvas({ worldJourney }: Props) {
     const unsubscribePlayersChange = worldJourney.subscribePlayersChanged((players: PlayerModel[]) => {
       removeInstancesFromScene?.();
       const playerInstanceStates = players.map((player) => ({
-        x: player.getPosition().getX() + 0.5,
+        x: player.getPrecisePosition().getX(),
         y: 0,
-        z: player.getPosition().getZ() + 0.5,
+        z: player.getPrecisePosition().getZ(),
         rotate: (player.getDirection().toNumber() * Math.PI) / 2,
       }));
 
@@ -215,7 +215,7 @@ export function WorldCanvas({ worldJourney }: Props) {
 
           textGeometry.computeBoundingBox();
           textGeometry.center();
-          playerNameMesh.position.set(player.getPosition().getX() + 0.5, 1.5, player.getPosition().getZ() + 0.5);
+          playerNameMesh.position.set(player.getPrecisePosition().getX(), 1.5, player.getPrecisePosition().getZ());
           playerNameMesh.rotation.set(-Math.PI / 6, 0, 0);
           playerNameMeshes.push(playerNameMesh);
           scene.add(playerNameMesh);
@@ -247,9 +247,9 @@ export function WorldCanvas({ worldJourney }: Props) {
       if (!itemModel) return;
 
       const itemUnitInstanceStates = units.map((unit) => ({
-        x: unit.getPosition().getX() + 0.5,
+        x: unit.getPosition().getX(),
         y: 0,
-        z: unit.getPosition().getZ() + 0.5,
+        z: unit.getPosition().getZ(),
         rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
       }));
       const [removeInstancesFromScene] = createInstancesInScene(scene, itemModel, itemUnitInstanceStates);

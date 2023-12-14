@@ -4,6 +4,7 @@ import { Command } from './command';
 import { DateVo } from '@/models/general/date-vo';
 import { CommandParams } from './command-params';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
 export class SendPlayerIntoPortalCommand implements Command {
   private id: string;
@@ -39,8 +40,9 @@ export class SendPlayerIntoPortalCommand implements Command {
     const player = playerStorage.getPlayer(this.playerId);
     if (!player) return;
 
-    player.updateAction(player.getAction().updatePosition(targetPosition).updateTime(DateVo.now()));
-    player.updatePosition(targetPosition);
+    const nextPlayerPrecisePosition = PrecisePositionVo.new(targetPosition.getX(), targetPosition.getZ());
+    player.updateAction(player.getAction().updatePrecisePosition(nextPlayerPrecisePosition).updateTime(DateVo.now()));
+    player.updatePrecisePosition(nextPlayerPrecisePosition);
     playerStorage.updatePlayer(player);
   }
 

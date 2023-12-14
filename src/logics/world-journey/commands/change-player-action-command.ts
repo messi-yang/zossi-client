@@ -34,7 +34,7 @@ export class ChangePlayerActionCommand implements Command {
 
     const clonedPlayer = player.clone();
     clonedPlayer.updateAction(this.action);
-    clonedPlayer.updatePosition(this.action.getPosition());
+    clonedPlayer.updatePrecisePosition(this.action.getPrecisePosition());
     playerStorage.updatePlayer(clonedPlayer);
   }
 

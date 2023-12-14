@@ -1,26 +1,31 @@
 import { DateVo } from '@/models/general/date-vo';
-import { PositionVo } from '../common/position-vo';
 import { PlayerActionNameEnum } from './player-action-name-enum';
 import { DirectionVo } from '../common/direction-vo';
+import { PrecisePositionVo } from '../common/precise-position-vo';
 
 export class PlayerActionVo {
   constructor(
     private readonly name: PlayerActionNameEnum,
-    private readonly position: PositionVo,
+    private readonly precisePosition: PrecisePositionVo,
     private readonly direction: DirectionVo,
     private readonly time: DateVo
   ) {}
 
-  static new(name: PlayerActionNameEnum, position: PositionVo, direction: DirectionVo, time: DateVo): PlayerActionVo {
-    return new PlayerActionVo(name, position, direction, time);
+  static new(
+    name: PlayerActionNameEnum,
+    precisePosition: PrecisePositionVo,
+    direction: DirectionVo,
+    time: DateVo
+  ): PlayerActionVo {
+    return new PlayerActionVo(name, precisePosition, direction, time);
   }
 
-  static newWalk(position: PositionVo, direction: DirectionVo, time: DateVo) {
-    return new PlayerActionVo(PlayerActionNameEnum.Walk, position, direction, time);
+  static newWalk(precisePosition: PrecisePositionVo, direction: DirectionVo, time: DateVo) {
+    return new PlayerActionVo(PlayerActionNameEnum.Walk, precisePosition, direction, time);
   }
 
-  static newStand(position: PositionVo, direction: DirectionVo, time: DateVo) {
-    return new PlayerActionVo(PlayerActionNameEnum.Stand, position, direction, time);
+  static newStand(precisePosition: PrecisePositionVo, direction: DirectionVo, time: DateVo) {
+    return new PlayerActionVo(PlayerActionNameEnum.Stand, precisePosition, direction, time);
   }
 
   public isWalk() {
@@ -35,12 +40,12 @@ export class PlayerActionVo {
     return this.name;
   }
 
-  public getPosition(): PositionVo {
-    return this.position;
+  public getPrecisePosition(): PrecisePositionVo {
+    return this.precisePosition;
   }
 
-  public updatePosition(position: PositionVo): PlayerActionVo {
-    return new PlayerActionVo(this.name, position, this.direction, this.time);
+  public updatePrecisePosition(precisePosition: PrecisePositionVo): PlayerActionVo {
+    return new PlayerActionVo(this.name, precisePosition, this.direction, this.time);
   }
 
   public getDirection(): DirectionVo {
@@ -52,6 +57,6 @@ export class PlayerActionVo {
   }
 
   public updateTime(time: DateVo): PlayerActionVo {
-    return new PlayerActionVo(this.name, this.position, this.direction, time);
+    return new PlayerActionVo(this.name, this.precisePosition, this.direction, time);
   }
 }

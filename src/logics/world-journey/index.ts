@@ -35,7 +35,7 @@ export class WorldJourney {
 
     this.playerStorage = PlayerStorage.new(players, myPlayerId);
 
-    this.perspective = Perspective.new(30, this.playerStorage.getMyPlayer().getPosition());
+    this.perspective = Perspective.new(30, this.playerStorage.getMyPlayer().getPrecisePosition());
 
     const appearingItemIdsInUnitStorage = this.unitStorage.getAppearingItemIds();
     const appearingItemIdsInPlayerStorage = this.playerStorage.getAppearingItemIds();
@@ -94,12 +94,12 @@ export class WorldJourney {
     this.playerStorage.getPlayers().forEach((player) => {
       const playerAction = player.getAction();
       const playerDirection = player.getDirection();
-      const playerPosition = player.getPosition();
+      const playerPrecisePosition = player.getPrecisePosition();
 
       if (playerAction.isStand()) return;
 
       if (playerAction.isWalk()) {
-        const playerForwardPos = player.getFowardPos();
+        const playerForwardPos = player.getFowardPosition(0.5);
         const unitAtPos = this.unitStorage.getUnit(playerForwardPos);
         if (unitAtPos) {
           const item = this.itemStorage.getItem(unitAtPos.getItemId());
@@ -107,13 +107,13 @@ export class WorldJourney {
           if (!item.getTraversable()) return;
         }
 
-        const playerExpectedPosition = playerPosition.shiftByDirection(playerDirection, 1);
-        if (!this.world.getBound().doesContainPosition(playerExpectedPosition)) {
+        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.1);
+        if (!this.world.getBound().doesContainPosition(nextPlayerPrecisePosition.toPosition())) {
           return;
         }
 
         const clonedPlayer = player.clone();
-        clonedPlayer.updatePosition(playerExpectedPosition);
+        clonedPlayer.updatePrecisePosition(nextPlayerPrecisePosition);
         this.playerStorage.updatePlayer(clonedPlayer);
       }
     });
@@ -133,7 +133,7 @@ export class WorldJourney {
 
   public subscribeMyPlayerChanged(handler: MyPlayerChangedHandler): () => void {
     return this.playerStorage.subscribeMyPlayerChanged((oldPlayer, player) => {
-      this.perspective.updateTargetPos(player.getPosition());
+      this.perspective.updateTargetPrecisePosition(player.getPrecisePosition());
       handler(oldPlayer, player);
     });
   }

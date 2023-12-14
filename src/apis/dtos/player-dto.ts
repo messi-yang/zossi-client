@@ -1,12 +1,12 @@
-import { PositionVo } from '@/models/world/common/position-vo';
 import { PlayerModel } from '@/models/world/player/player-model';
-import type { PositionDto } from './position-dto';
 import { PlayerActionDto, parsePlayerActionDto } from './player-action-dto';
+import { PrecisePositionDto } from './precise-position-dto';
+import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
 type PlayerDto = {
   id: string;
   name: string;
-  position: PositionDto;
+  precisePosition: PrecisePositionDto;
   heldItemId: string | null;
   action: PlayerActionDto;
 };
@@ -17,7 +17,7 @@ function parsePlayerDto(playerDto: PlayerDto): PlayerModel {
     playerDto.name,
     playerDto.heldItemId,
     parsePlayerActionDto(playerDto.action),
-    PositionVo.new(playerDto.action.position.x, playerDto.action.position.z)
+    PrecisePositionVo.new(playerDto.action.precisePosition.x, playerDto.action.precisePosition.z)
   );
 }
 

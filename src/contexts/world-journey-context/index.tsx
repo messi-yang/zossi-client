@@ -132,8 +132,8 @@ export function Provider({ children }: Props) {
     worldJourney.subscribeMyPlayerChanged((oldPlayer, player) => {
       if (!worldJourneyApiService.current) return;
 
-      const oldPlayerPos = oldPlayer.getPosition();
-      const playerPos = player.getPosition();
+      const oldPlayerPos = oldPlayer.getPrecisePosition().toPosition();
+      const playerPos = player.getPrecisePosition().toPosition();
       if (oldPlayerPos.isEqual(playerPos)) {
         return;
       }
@@ -143,21 +143,48 @@ export function Provider({ children }: Props) {
 
       if (unitAtPlayerPos instanceof PortalUnitModel) {
         const command = SendPlayerIntoPortalCommand.new(player.getId(), playerPos);
-        worldJourney.executeCommand(SendPlayerIntoPortalCommand.new(player.getId(), playerPos));
+        worldJourney.executeCommand(command);
         worldJourneyApiService.current.sendCommand(command);
       }
     });
   }, [worldJourney]);
 
-  useEffect(() => {
-    if (!worldJourney) return () => {};
+  // useEffect(() => {
+  //   if (!worldJourney) return () => {};
 
-    const intervalId = setInterval(() => {
-      worldJourney.updatePlayerClientPositions();
-    }, 100);
+  //   const intervalId = setInterval(() => {
+  //     console.log('!');
+  //     worldJourney.updatePlayerClientPositions();
+  //   }, 16);
+
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, [worldJourney]);
+
+  useEffect(() => {
+    const maxFPS = 100;
+    const frameDelay = 1000 / maxFPS;
+    let lastFrameTime = 0;
+
+    let animateId: number | null = null;
+    function animate() {
+      if (!worldJourney) return;
+
+      const currentTime = performance.now();
+      const elapsed = currentTime - lastFrameTime;
+      if (elapsed > frameDelay) {
+        worldJourney.updatePlayerClientPositions();
+        lastFrameTime = currentTime - (elapsed % frameDelay);
+      }
+      animateId = requestAnimationFrame(animate);
+    }
+    animate();
 
     return () => {
-      clearInterval(intervalId);
+      if (animateId !== null) {
+        cancelAnimationFrame(animateId);
+      }
     };
   }, [worldJourney]);
 
@@ -201,9 +228,9 @@ export function Provider({ children }: Props) {
     }
 
     const myPlayer = worldJourney.getMyPlayer();
-    const playerPosition = myPlayer.getPosition();
+    const playerPrecisePosition = myPlayer.getPrecisePosition();
     const playerDirection = worldJourney.getMyPlayer().getDirection();
-    const playerAction = PlayerActionVo.newStand(playerPosition, playerDirection, DateVo.now());
+    const playerAction = PlayerActionVo.newStand(playerPrecisePosition, playerDirection, DateVo.now());
     const command = ChangePlayerActionCommand.new(myPlayer.getId(), playerAction);
     worldJourney.executeCommand(command);
     worldJourneyApiService.current.sendCommand(command);
@@ -216,8 +243,8 @@ export function Provider({ children }: Props) {
       }
 
       const myPlayer = worldJourney.getMyPlayer();
-      const playerPosition = myPlayer.getPosition();
-      const playerAction = PlayerActionVo.newWalk(playerPosition, direction, DateVo.now());
+      const playerPrecisePosition = myPlayer.getPrecisePosition();
+      const playerAction = PlayerActionVo.newWalk(playerPrecisePosition, direction, DateVo.now());
       const command = ChangePlayerActionCommand.new(myPlayer.getId(), playerAction);
       worldJourney.executeCommand(command);
       worldJourneyApiService.current.sendCommand(command);
@@ -272,21 +299,23 @@ export function Provider({ children }: Props) {
     const myPlayerHeldItem = worldJourney.getMyPlayerHeldItem();
     if (!myPlayerHeldItem) return;
 
-    const position = worldJourney.getMyPlayer().getFowardPos();
-    const direction = worldJourney.getMyPlayer().getDirection().getOppositeDirection();
+    const myPlayer = worldJourney.getMyPlayer();
+    const unitPos = myPlayer.getFowardPosition(1);
+    const direction = myPlayer.getDirection().getOppositeDirection();
 
     const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
     if (compatibleUnitType.isStatic()) {
-      createStaticUnit(myPlayerHeldItem.getId(), position, direction);
+      createStaticUnit(myPlayerHeldItem.getId(), unitPos, direction);
     } else if (compatibleUnitType.isPortal()) {
-      createPortalUnit(myPlayerHeldItem.getId(), position, direction);
+      createPortalUnit(myPlayerHeldItem.getId(), unitPos, direction);
     }
   }, [worldJourney]);
 
   const removeUnit = useCallback(() => {
     if (!worldJourney || !worldJourneyApiService.current) return;
 
-    const unitPos = worldJourney.getMyPlayer().getFowardPos();
+    const myPlayer = worldJourney.getMyPlayer();
+    const unitPos = myPlayer.getFowardPosition(1);
     const unitAtPos = worldJourney.getUnit(unitPos);
     if (!unitAtPos) return;
 
@@ -304,7 +333,8 @@ export function Provider({ children }: Props) {
   const rotateUnit = useCallback(() => {
     if (!worldJourney || !worldJourneyApiService.current) return;
 
-    const unitPos = worldJourney.getMyPlayer().getFowardPos();
+    const myPlayer = worldJourney.getMyPlayer();
+    const unitPos = myPlayer.getFowardPosition(1);
     const command = RotateUnitCommand.new(unitPos);
     worldJourney.executeCommand(command);
     worldJourneyApiService.current.sendCommand(command);

@@ -1,7 +1,11 @@
-import { DirectionVo } from './direction-vo';
-
+/**
+ * Position that has x and z axis, the values can only be integers.
+ */
 export class PositionVo {
-  constructor(private x: number, private z: number) {}
+  constructor(private x: number, private z: number) {
+    this.x = Math.round(x);
+    this.z = Math.round(z);
+  }
 
   static new = (x: number, z: number): PositionVo => new PositionVo(x, z);
 
@@ -21,25 +25,7 @@ export class PositionVo {
     return PositionVo.new(this.x + x, this.z + z);
   }
 
-  public shiftByDirection(direction: DirectionVo, distance: number): PositionVo {
-    if (direction.isUp()) {
-      return this.shift(0, -distance);
-    } else if (direction.isRight()) {
-      return this.shift(distance, 0);
-    } else if (direction.isDown()) {
-      return this.shift(0, distance);
-    } else if (direction.isLeft()) {
-      return this.shift(-distance, 0);
-    } else {
-      return this.shift(0, distance);
-    }
-  }
-
   public toString(): string {
     return `${this.x},${this.z}`;
-  }
-
-  public getPositionText(): string {
-    return `(${this.x}, ${this.z})`;
   }
 }

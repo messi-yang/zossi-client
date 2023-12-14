@@ -1,21 +1,21 @@
-import { PositionVo } from '@/models/world/common/position-vo';
+import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
-export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPos: PositionVo) => void;
+export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo) => void;
 
 export class Perspective {
   private depth: number;
 
-  private targetPos: PositionVo;
+  private targetPrecisePosition: PrecisePositionVo;
 
   private perspectiveChangedHandlers: PerspectiveChangedHandler[] = [];
 
-  constructor(depth: number, targetPos: PositionVo) {
+  constructor(depth: number, targetPrecisePosition: PrecisePositionVo) {
     this.depth = depth;
-    this.targetPos = targetPos;
+    this.targetPrecisePosition = targetPrecisePosition;
   }
 
-  static new(depth: number, targetPos: PositionVo) {
-    return new Perspective(depth, targetPos);
+  static new(depth: number, targetPrecisePosition: PrecisePositionVo) {
+    return new Perspective(depth, targetPrecisePosition);
   }
 
   public addPerspectiveDepth() {
@@ -30,13 +30,13 @@ export class Perspective {
     this.publishPerspectiveChanged();
   }
 
-  public updateTargetPos(position: PositionVo) {
-    this.targetPos = position;
+  public updateTargetPrecisePosition(position: PrecisePositionVo) {
+    this.targetPrecisePosition = position;
     this.publishPerspectiveChanged();
   }
 
   public subscribePerspectiveChanged(handler: PerspectiveChangedHandler): () => void {
-    handler(this.depth, this.targetPos);
+    handler(this.depth, this.targetPrecisePosition);
 
     this.perspectiveChangedHandlers.push(handler);
 
@@ -47,7 +47,7 @@ export class Perspective {
 
   private publishPerspectiveChanged() {
     this.perspectiveChangedHandlers.forEach((hdl) => {
-      hdl(this.depth, this.targetPos);
+      hdl(this.depth, this.targetPrecisePosition);
     });
   }
 }

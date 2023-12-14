@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PositionVo } from '../common/position-vo';
 import { DirectionVo } from '../common/direction-vo';
 import { PlayerActionVo } from './player-action-vo';
 import { PlayerActionNameEnum } from './player-action-name-enum';
 import { DateVo } from '@/models/general/date-vo';
+import { PrecisePositionVo } from '../common/precise-position-vo';
+import { PositionVo } from '../common/position-vo';
 
 export class PlayerModel {
   constructor(
@@ -11,9 +12,9 @@ export class PlayerModel {
     private name: string,
     private heldItemId: string | null,
     private action: PlayerActionVo,
-    private position: PositionVo
+    private precisePosition: PrecisePositionVo
   ) {
-    this.position = position;
+    this.precisePosition = precisePosition;
   }
 
   static new(
@@ -21,9 +22,9 @@ export class PlayerModel {
     name: string,
     heldItemId: string | null,
     action: PlayerActionVo,
-    position: PositionVo
+    precisePosition: PrecisePositionVo
   ): PlayerModel {
-    return new PlayerModel(id, name, heldItemId, action, position);
+    return new PlayerModel(id, name, heldItemId, action, precisePosition);
   }
 
   static mockup(): PlayerModel {
@@ -31,13 +32,13 @@ export class PlayerModel {
       uuidv4(),
       'Test Player',
       null,
-      PlayerActionVo.new(PlayerActionNameEnum.Stand, PositionVo.new(0, 0), DirectionVo.new(2), DateVo.now()),
-      PositionVo.new(0, 0)
+      PlayerActionVo.new(PlayerActionNameEnum.Stand, PrecisePositionVo.new(0, 0), DirectionVo.new(2), DateVo.now()),
+      PrecisePositionVo.new(0, 0)
     );
   }
 
   public clone(): PlayerModel {
-    return new PlayerModel(this.id, this.name, this.heldItemId, this.action, this.position);
+    return new PlayerModel(this.id, this.name, this.heldItemId, this.action, this.precisePosition);
   }
 
   public getId(): string {
@@ -60,21 +61,6 @@ export class PlayerModel {
     this.heldItemId = itemId;
   }
 
-  public getFowardPos(): PositionVo {
-    const direction = this.getDirection();
-    if (direction.isUp()) {
-      return this.position.shift(0, -1);
-    } else if (direction.isRight()) {
-      return this.position.shift(1, 0);
-    } else if (direction.isDown()) {
-      return this.position.shift(0, 1);
-    } else if (direction.isLeft()) {
-      return this.position.shift(-1, 0);
-    } else {
-      return this.position.shift(0, 1);
-    }
-  }
-
   public getAction(): PlayerActionVo {
     return this.action;
   }
@@ -83,11 +69,31 @@ export class PlayerModel {
     this.action = action;
   }
 
-  public getPosition(): PositionVo {
-    return this.position;
+  public getPrecisePosition(): PrecisePositionVo {
+    return this.precisePosition;
   }
 
-  public updatePosition(pos: PositionVo) {
-    this.position = pos;
+  public updatePrecisePosition(pos: PrecisePositionVo) {
+    this.precisePosition = pos;
+  }
+
+  /**
+   * Get the forward position of the player with distance, be aware that the return value is PositionVo not PrecisePositionVo
+   * @param distance adjust this distance in different cases
+   * @returns
+   */
+  public getFowardPosition(distance: number): PositionVo {
+    const direction = this.getDirection();
+    if (direction.isUp()) {
+      return this.precisePosition.shift(0, -distance).toPosition();
+    } else if (direction.isRight()) {
+      return this.precisePosition.shift(distance, 0).toPosition();
+    } else if (direction.isDown()) {
+      return this.precisePosition.shift(0, distance).toPosition();
+    } else if (direction.isLeft()) {
+      return this.precisePosition.shift(-distance, 0).toPosition();
+    } else {
+      return this.precisePosition.shift(0, distance).toPosition();
+    }
   }
 }

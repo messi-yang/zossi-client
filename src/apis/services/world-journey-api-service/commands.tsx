@@ -1,5 +1,13 @@
-import { PlayerDto, PositionDto, newPositionDto, parsePlayerDto } from '@/apis/dtos';
-import { PlayerActionDto, newPlayerActionDto, parsePlayerActionDto } from '@/apis/dtos/player-action-dto';
+import {
+  PlayerActionDto,
+  PlayerDto,
+  PositionDto,
+  newPlayerActionDto,
+  newPositionDto,
+  parsePlayerActionDto,
+  parsePlayerDto,
+} from '@/apis/dtos';
+
 import {
   Command,
   AddPlayerCommand,

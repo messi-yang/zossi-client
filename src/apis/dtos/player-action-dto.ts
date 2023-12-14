@@ -1,14 +1,14 @@
 import { PlayerActionNameEnum } from '@/models/world/player/player-action-name-enum';
-import { PositionDto, newPositionDto } from './position-dto';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { DateVo } from '@/models/general/date-vo';
-import { PositionVo } from '@/models/world/common/position-vo';
 import { DirectionEnum } from '@/models/world/common/direction-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
+import { PrecisePositionDto, newPrecisePositionDto } from './precise-position-dto';
+import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
 export type PlayerActionDto = {
   name: PlayerActionNameEnum;
-  position: PositionDto;
+  precisePosition: PrecisePositionDto;
   direction: DirectionEnum;
   time: number;
 };
@@ -16,7 +16,7 @@ export type PlayerActionDto = {
 export function newPlayerActionDto(playerAction: PlayerActionVo): PlayerActionDto {
   return {
     name: playerAction.getName(),
-    position: newPositionDto(playerAction.getPosition()),
+    precisePosition: newPrecisePositionDto(playerAction.getPrecisePosition()),
     direction: playerAction.getDirection().toNumber(),
     time: playerAction.getTime().getTimestamp(),
   };
@@ -25,7 +25,7 @@ export function newPlayerActionDto(playerAction: PlayerActionVo): PlayerActionDt
 export function parsePlayerActionDto(dto: PlayerActionDto): PlayerActionVo {
   return PlayerActionVo.new(
     dto.name,
-    PositionVo.new(dto.position.x, dto.position.z),
+    PrecisePositionVo.new(dto.precisePosition.x, dto.precisePosition.z),
     DirectionVo.new(dto.direction),
     DateVo.fromTimestamp(dto.time)
   );
