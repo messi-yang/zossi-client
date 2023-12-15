@@ -196,15 +196,25 @@ export function WorldCanvas({ worldJourney }: Props) {
   }, [scene, downloadTjsModel, worldJourney]);
 
   useEffect(() => {
-    let removePlayerNamesFromScene: (() => void) | null = null;
+    const font = downloadTjsFont(FONT_SRC);
+    if (!font) return () => {};
+
+    const playerNameMeshMap: Record<string, THREE.Mesh> = {};
 
     const unsubscribePlayersChange = worldJourney.subscribePlayersChanged((players: PlayerModel[]) => {
-      removePlayerNamesFromScene?.();
-
-      const font = downloadTjsFont(FONT_SRC);
       const playerNameMeshes: THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial>[] = [];
-      if (font) {
-        players.forEach((player) => {
+      const playerIds = players.map((p) => p.getId());
+      players.forEach((player) => {
+        const playerId = player.getId();
+        const existingPlayerNameMeshMap = playerNameMeshMap[playerId];
+        if (existingPlayerNameMeshMap) {
+          existingPlayerNameMeshMap.position.set(
+            player.getPrecisePosition().getX(),
+            1.5,
+            player.getPrecisePosition().getZ()
+          );
+          existingPlayerNameMeshMap.rotation.set(-Math.PI / 6, 0, 0);
+        } else {
           const textGeometry = new TextGeometry(player.getName(), {
             font,
             size: 0.35,
@@ -219,19 +229,24 @@ export function WorldCanvas({ worldJourney }: Props) {
           playerNameMesh.rotation.set(-Math.PI / 6, 0, 0);
           playerNameMeshes.push(playerNameMesh);
           scene.add(playerNameMesh);
-        });
-      }
+          playerNameMeshMap[playerId] = playerNameMesh;
+        }
+      });
 
-      removePlayerNamesFromScene = () => {
-        playerNameMeshes.forEach((playerNameMesh) => {
-          scene.remove(playerNameMesh);
-        });
-      };
+      const unusedPlayerNameMeshes = Object.entries(playerNameMeshMap)
+        .filter(([playerId]) => !playerIds.includes(playerId))
+        .map(([, playerNameMesh]) => playerNameMesh);
+      unusedPlayerNameMeshes.forEach((unusedPlayerNameMesh) => {
+        scene.remove(unusedPlayerNameMesh);
+      });
     });
 
     return () => {
-      removePlayerNamesFromScene?.();
       unsubscribePlayersChange();
+
+      Object.values(playerNameMeshMap).forEach((playerNameMesh) => {
+        scene.remove(playerNameMesh);
+      });
     };
   }, [scene, downloadTjsFont, worldJourney]);
 

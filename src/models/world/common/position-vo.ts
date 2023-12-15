@@ -28,4 +28,8 @@ export class PositionVo {
   public toString(): string {
     return `${this.x},${this.z}`;
   }
+
+  public toText(): string {
+    return `(${this.x},${this.z})`;
+  }
 }

@@ -132,8 +132,8 @@ export function Provider({ children }: Props) {
     worldJourney.subscribeMyPlayerChanged((oldPlayer, player) => {
       if (!worldJourneyApiService.current) return;
 
-      const oldPlayerPos = oldPlayer.getPrecisePosition().toPosition();
-      const playerPos = player.getPrecisePosition().toPosition();
+      const oldPlayerPos = oldPlayer.getPosition();
+      const playerPos = player.getPosition();
       if (oldPlayerPos.isEqual(playerPos)) {
         return;
       }
@@ -163,7 +163,7 @@ export function Provider({ children }: Props) {
   // }, [worldJourney]);
 
   useEffect(() => {
-    const maxFPS = 100;
+    const maxFPS = 50;
     const frameDelay = 1000 / maxFPS;
     let lastFrameTime = 0;
 

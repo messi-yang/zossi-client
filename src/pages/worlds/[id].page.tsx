@@ -60,7 +60,7 @@ const Page: NextPage = function Page() {
 
     return worldJourney.subscribeMyPlayerChanged((_, player) => {
       setMyPlayerHeldItemId(player.getHeldItemId());
-      setMyPlayerPosText(player.getPrecisePosition().toText());
+      setMyPlayerPosText(player.getPosition().toText());
     });
   }, [worldJourney]);
 

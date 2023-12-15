@@ -69,6 +69,10 @@ export class PlayerModel {
     this.action = action;
   }
 
+  public getPosition(): PositionVo {
+    return this.precisePosition.toPosition();
+  }
+
   public getPrecisePosition(): PrecisePositionVo {
     return this.precisePosition;
   }
