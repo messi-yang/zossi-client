@@ -92,10 +92,6 @@ export class WorldJourney {
 
   public updatePlayerClientPositions() {
     this.playerStorage.getPlayers().forEach((player) => {
-      if (false) {
-        return;
-      }
-
       const playerAction = player.getAction();
       const playerDirection = player.getDirection();
       const playerPrecisePosition = player.getPrecisePosition();
@@ -111,7 +107,7 @@ export class WorldJourney {
           if (!item.getTraversable()) return;
         }
 
-        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.4);
+        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.25);
         if (!this.world.getBound().doesContainPosition(nextPlayerPrecisePosition.toPosition())) {
           return;
         }
