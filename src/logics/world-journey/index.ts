@@ -111,7 +111,7 @@ export class WorldJourney {
           if (!item.getTraversable()) return;
         }
 
-        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.2);
+        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.4);
         if (!this.world.getBound().doesContainPosition(nextPlayerPrecisePosition.toPosition())) {
           return;
         }

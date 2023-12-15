@@ -163,7 +163,7 @@ export function Provider({ children }: Props) {
   // }, [worldJourney]);
 
   useEffect(() => {
-    const maxFPS = 50;
+    const maxFPS = 20;
     const frameDelay = 1000 / maxFPS;
     let lastFrameTime = 0;
 
