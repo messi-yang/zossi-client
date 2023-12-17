@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command } from './command';
-import { CommandParams } from './command-params';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { ItemModel } from '@/models/world/item/item-model';
 import { DateVo } from '@/models/general/date-vo';
 
@@ -25,8 +25,8 @@ export class AddItemCommand implements Command {
     return new AddItemCommand(id, timestamp, item);
   }
 
-  public execute({ itemStorage }: CommandParams): void {
-    itemStorage.addItem(this.item);
+  public execute({ itemManager }: CommandParams): void {
+    itemManager.addItem(this.item);
   }
 
   public getId() {

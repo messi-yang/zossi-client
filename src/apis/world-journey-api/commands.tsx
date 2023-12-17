@@ -8,21 +8,19 @@ import {
   parsePlayerDto,
 } from '@/apis/dtos';
 
-import {
-  Command,
-  AddPlayerCommand,
-  CreateStaticUnitCommand,
-  RemoveStaticUnitCommand,
-  CreatePortalUnitCommand,
-  RemovePortalUnitCommand,
-  SendPlayerIntoPortalCommand,
-  RemovePlayerCommand,
-  RotateUnitCommand,
-  ChangePlayerHeldItemCommand,
-} from '@/logics/world-journey/commands';
-import { ChangePlayerActionCommand } from '@/logics/world-journey/commands/change-player-action-command';
+import { ChangePlayerActionCommand } from '@/logics/world-journey/managers/command-manager/commands/change-player-action-command';
+import { SendPlayerIntoPortalCommand } from '@/logics/world-journey/managers/command-manager/commands/send-player-into-portal-command';
+import { CreateStaticUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/create-static-unit-command';
+import { ChangePlayerHeldItemCommand } from '@/logics/world-journey/managers/command-manager/commands/change-player-held-item-command';
+import { CreatePortalUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/create-portal-unit-command';
+import { RemoveStaticUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-static-unit-command';
+import { RemovePortalUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-portal-unit-command';
+import { RotateUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/rotate-unit-command';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
+import { AddPlayerCommand } from '@/logics/world-journey/managers/command-manager/commands/add-player-command';
+import { RemovePlayerCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-player-command';
+import { Command } from '@/logics/world-journey/managers/command-manager/command';
 
 enum CommandNameEnum {
   Ping = 'PING',

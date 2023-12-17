@@ -7,7 +7,7 @@ import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
 type UnitsChangedHandler = (itemId: string, units: UnitModel[] | null) => void;
 
-export class UnitStorage {
+export class UnitManager {
   private unitMapByPos: Record<string, UnitModel | undefined>;
 
   private unitMapByItemId: Record<string, UnitModel[] | undefined>;
@@ -30,8 +30,8 @@ export class UnitStorage {
     });
   }
 
-  static new(units: UnitModel[]): UnitStorage {
-    return new UnitStorage(units);
+  static new(units: UnitModel[]): UnitManager {
+    return new UnitManager(units);
   }
 
   public getAppearingItemIds(): string[] {

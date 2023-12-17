@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command } from './command';
-import { CommandParams } from './command-params';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { DateVo } from '@/models/general/date-vo';
@@ -33,19 +33,19 @@ export class CreateStaticUnitCommand implements Command {
     return new CreateStaticUnitCommand(id, timestamp, itemId, position, direction);
   }
 
-  public execute({ unitStorage, playerStorage, itemStorage }: CommandParams): void {
-    const item = itemStorage.getItem(this.itemId);
+  public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
+    const item = itemManager.getItem(this.itemId);
     if (!item) return;
 
     if (!item.getCompatibleUnitType().isStatic()) return;
 
-    const unitAtPos = unitStorage.getUnit(this.position);
+    const unitAtPos = unitManager.getUnit(this.position);
     if (unitAtPos) return;
 
-    const playersAtPos = playerStorage.getPlayersAtPos(this.position);
+    const playersAtPos = playerManager.getPlayersAtPos(this.position);
     if (playersAtPos) return;
 
-    unitStorage.addUnit(StaticUnitModel.new(this.itemId, this.position, this.direction));
+    unitManager.addUnit(StaticUnitModel.new(this.itemId, this.position, this.direction));
   }
 
   public getId() {

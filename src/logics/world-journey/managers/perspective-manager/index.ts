@@ -2,7 +2,7 @@ import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
 export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo) => void;
 
-export class Perspective {
+export class PerspectiveManager {
   private depth: number;
 
   private targetPrecisePosition: PrecisePositionVo;
@@ -15,7 +15,7 @@ export class Perspective {
   }
 
   static new(depth: number, targetPrecisePosition: PrecisePositionVo) {
-    return new Perspective(depth, targetPrecisePosition);
+    return new PerspectiveManager(depth, targetPrecisePosition);
   }
 
   public addPerspectiveDepth() {

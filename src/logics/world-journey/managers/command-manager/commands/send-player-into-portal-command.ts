@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { PositionVo } from '@/models/world/common/position-vo';
-import { Command } from './command';
+import { Command } from '../command';
 import { DateVo } from '@/models/general/date-vo';
-import { CommandParams } from './command-params';
+import { CommandParams } from '../command-params';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
@@ -30,20 +30,20 @@ export class SendPlayerIntoPortalCommand implements Command {
     return new SendPlayerIntoPortalCommand(id, timestamp, playerId, position);
   }
 
-  public execute({ unitStorage, playerStorage }: CommandParams): void {
-    const portalUnit = unitStorage.getUnit(this.position);
+  public execute({ unitManager, playerManager }: CommandParams): void {
+    const portalUnit = unitManager.getUnit(this.position);
     if (!portalUnit || !(portalUnit instanceof PortalUnitModel)) return;
 
     const targetPosition = portalUnit.getTargetPosition();
     if (!targetPosition) return;
 
-    const player = playerStorage.getPlayer(this.playerId);
+    const player = playerManager.getPlayer(this.playerId);
     if (!player) return;
 
     const nextPlayerPrecisePosition = PrecisePositionVo.new(targetPosition.getX(), targetPosition.getZ());
     player.updateAction(player.getAction().updatePrecisePosition(nextPlayerPrecisePosition).updateTime(DateVo.now()));
     player.updatePrecisePosition(nextPlayerPrecisePosition);
-    playerStorage.updatePlayer(player);
+    playerManager.updatePlayer(player);
   }
 
   public getId() {

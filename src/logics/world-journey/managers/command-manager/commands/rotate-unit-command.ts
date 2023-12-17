@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { PositionVo } from '@/models/world/common/position-vo';
-import { Command } from './command';
-import { CommandParams } from './command-params';
 import { DateVo } from '@/models/general/date-vo';
 
-export class RemoveStaticUnitCommand implements Command {
+export class RotateUnitCommand implements Command {
   private id: string;
 
   private timestamp: number;
@@ -18,15 +18,21 @@ export class RemoveStaticUnitCommand implements Command {
   }
 
   static new(position: PositionVo) {
-    return new RemoveStaticUnitCommand(uuidv4(), DateVo.now().getTimestamp(), position);
+    return new RotateUnitCommand(uuidv4(), DateVo.now().getTimestamp(), position);
   }
 
   static load(id: string, timestamp: number, position: PositionVo) {
-    return new RemoveStaticUnitCommand(id, timestamp, position);
+    return new RotateUnitCommand(id, timestamp, position);
   }
 
-  public execute({ unitStorage }: CommandParams): void {
-    unitStorage.removeUnit(this.position);
+  public execute({ unitManager }: CommandParams): void {
+    const unit = unitManager.getUnit(this.position);
+    if (!unit) return;
+
+    const clonedUnit = unit.clone();
+    clonedUnit.changeDirection(clonedUnit.getDirection().rotate());
+
+    unitManager.updateUnit(clonedUnit);
   }
 
   public getId() {

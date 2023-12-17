@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command } from './command';
-import { CommandParams } from './command-params';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
 
 export class ChangePlayerHeldItemCommand implements Command {
@@ -27,18 +27,18 @@ export class ChangePlayerHeldItemCommand implements Command {
     return new ChangePlayerHeldItemCommand(id, timestamp, playerId, itemId);
   }
 
-  public execute({ playerStorage, itemStorage }: CommandParams): void {
-    const player = playerStorage.getPlayer(this.playerId);
+  public execute({ playerManager, itemManager }: CommandParams): void {
+    const player = playerManager.getPlayer(this.playerId);
     if (!player) return;
 
     const clonedPlayer = player.clone();
 
     clonedPlayer.changeHeldItemId(this.itemId);
     if (this.itemId) {
-      itemStorage.addPlaceholderItemId(this.itemId);
+      itemManager.addPlaceholderItemId(this.itemId);
     }
 
-    playerStorage.updatePlayer(clonedPlayer);
+    playerManager.updatePlayer(clonedPlayer);
   }
 
   public getId() {

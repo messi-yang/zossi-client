@@ -5,7 +5,7 @@ import { PositionVo } from '@/models/world/common/position-vo';
 export type PlayersChangedHandler = (players: PlayerModel[]) => void;
 export type MyPlayerChangedHandler = (oldPlyaer: PlayerModel, player: PlayerModel) => void;
 
-export class PlayerStorage {
+export class PlayerManager {
   private myPlayerId: string;
 
   private playerMap: Record<string, PlayerModel> = {};
@@ -31,7 +31,7 @@ export class PlayerStorage {
   }
 
   static new(players: PlayerModel[], myPlayerId: string) {
-    return new PlayerStorage(players, myPlayerId);
+    return new PlayerManager(players, myPlayerId);
   }
 
   public getAppearingItemIds(): string[] {

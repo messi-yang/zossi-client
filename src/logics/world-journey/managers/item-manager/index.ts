@@ -3,7 +3,7 @@ import { ItemModel } from '@/models/world/item/item-model';
 export type PlaceholderItemIdsAddedHandler = (placeholderItemIds: string[]) => void;
 export type ItemAddedHandler = (item: ItemModel) => void;
 
-export class ItemStorage {
+export class ItemManager {
   /**
    * Placeholder item ids that stores the references to the coming items.
    * Once the items are added to the storage, the corresponding placeholder item ids will be erased.
@@ -22,7 +22,7 @@ export class ItemStorage {
   }
 
   static new(placeholderItemIds: string[]) {
-    return new ItemStorage(placeholderItemIds);
+    return new ItemManager(placeholderItemIds);
   }
 
   private getPlaceholderItemIds(): string[] {

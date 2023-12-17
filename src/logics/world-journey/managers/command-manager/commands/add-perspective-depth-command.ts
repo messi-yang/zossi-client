@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command } from './command';
-import { CommandParams } from './command-params';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
 
 export class AddPerspectiveDepthCommand implements Command {
@@ -29,7 +29,7 @@ export class AddPerspectiveDepthCommand implements Command {
     return this.timestamp;
   }
 
-  public execute({ perspective }: CommandParams): void {
-    perspective.addPerspectiveDepth();
+  public execute({ perspectiveManager }: CommandParams): void {
+    perspectiveManager.addPerspectiveDepth();
   }
 }

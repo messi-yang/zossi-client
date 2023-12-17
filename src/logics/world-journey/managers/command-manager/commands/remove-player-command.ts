@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command } from './command';
-import { CommandParams } from './command-params';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
 
 export class RemovePlayerCommand implements Command {
@@ -24,8 +24,8 @@ export class RemovePlayerCommand implements Command {
     return new RemovePlayerCommand(id, timestamp, playerId);
   }
 
-  public execute({ playerStorage }: CommandParams): void {
-    playerStorage.removePlayer(this.playerId);
+  public execute({ playerManager }: CommandParams): void {
+    playerManager.removePlayer(this.playerId);
   }
 
   public getId() {

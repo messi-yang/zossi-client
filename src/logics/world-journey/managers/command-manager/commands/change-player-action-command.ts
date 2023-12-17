@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command } from './command';
-import { CommandParams } from './command-params';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 
@@ -28,14 +28,14 @@ export class ChangePlayerActionCommand implements Command {
     return new ChangePlayerActionCommand(id, timestamp, playerId, action);
   }
 
-  public execute({ playerStorage }: CommandParams): void {
-    const player = playerStorage.getPlayer(this.playerId);
+  public execute({ playerManager }: CommandParams): void {
+    const player = playerManager.getPlayer(this.playerId);
     if (!player) return;
 
     const clonedPlayer = player.clone();
     clonedPlayer.updateAction(this.action);
     clonedPlayer.updatePrecisePosition(this.action.getPrecisePosition());
-    playerStorage.updatePlayer(clonedPlayer);
+    playerManager.updatePlayer(clonedPlayer);
   }
 
   public getId() {

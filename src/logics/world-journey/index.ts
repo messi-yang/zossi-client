@@ -6,43 +6,56 @@ import { UnitModel } from '@/models/world/unit/unit-model';
 import { WorldModel } from '@/models/world/world/world-model';
 import { PositionVo } from '@/models/world/common/position-vo';
 
-import { UnitStorage } from './unit-storage';
-import { MyPlayerChangedHandler, PlayerStorage, PlayersChangedHandler } from './player-storage';
-import { Perspective, PerspectiveChangedHandler } from './perspective';
-import { ItemStorage, PlaceholderItemIdsAddedHandler } from './item-storage';
-import { Command } from './commands/command';
-import { CommandExecutedHandler, CommandManager } from './command-manager';
+import { UnitManager } from './managers/unit-manager';
+import { MyPlayerChangedHandler, PlayerManager, PlayersChangedHandler } from './managers/player-manager';
+import { PerspectiveManager, PerspectiveChangedHandler } from './managers/perspective-manager';
+import { ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
+import { Command } from './managers/command-manager/command';
+import { CommandManager } from './managers/command-manager';
 
 type UnitsChangedHandler = (item: ItemModel, units: UnitModel[] | null) => void;
 
 export class WorldJourney {
   private world: WorldModel;
 
-  private unitStorage: UnitStorage;
+  private unitManager: UnitManager;
 
-  private playerStorage: PlayerStorage;
+  private playerManager: PlayerManager;
 
-  private itemStorage: ItemStorage;
+  private itemManager: ItemManager;
 
   private commandManager: CommandManager;
 
-  private perspective: Perspective;
+  private perspectiveManager: PerspectiveManager;
+
+  private animateId: number | null = null;
 
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
     this.world = world;
 
-    this.unitStorage = UnitStorage.new(units);
+    this.unitManager = UnitManager.new(units);
 
-    this.playerStorage = PlayerStorage.new(players, myPlayerId);
+    this.playerManager = PlayerManager.new(players, myPlayerId);
 
-    this.perspective = Perspective.new(30, this.playerStorage.getMyPlayer().getPrecisePosition());
+    this.perspectiveManager = PerspectiveManager.new(30, this.playerManager.getMyPlayer().getPrecisePosition());
 
-    const appearingItemIdsInUnitStorage = this.unitStorage.getAppearingItemIds();
-    const appearingItemIdsInPlayerStorage = this.playerStorage.getAppearingItemIds();
-    const appearingItemIds = uniq([...appearingItemIdsInUnitStorage, ...appearingItemIdsInPlayerStorage]);
-    this.itemStorage = ItemStorage.new(appearingItemIds);
+    const appearingItemIdsInUnitManager = this.unitManager.getAppearingItemIds();
+    const appearingItemIdsInPlayerManager = this.playerManager.getAppearingItemIds();
+    const appearingItemIds = uniq([...appearingItemIdsInUnitManager, ...appearingItemIdsInPlayerManager]);
+    this.itemManager = ItemManager.new(appearingItemIds);
 
     this.commandManager = CommandManager.new();
+
+    this.calculatePlayerPositionsTicker();
+    this.subscribeMyPlayerChanged((_, newMyPlayer) => {
+      this.perspectiveManager.updateTargetPrecisePosition(newMyPlayer.getPrecisePosition());
+    });
+  }
+
+  public destroy() {
+    if (this.animateId !== null) {
+      cancelAnimationFrame(this.animateId);
+    }
   }
 
   static new(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
@@ -52,10 +65,10 @@ export class WorldJourney {
   public executeCommand(command: Command) {
     this.commandManager.executeCommand(command, {
       world: this.world,
-      playerStorage: this.playerStorage,
-      unitStorage: this.unitStorage,
-      itemStorage: this.itemStorage,
-      perspective: this.perspective,
+      playerManager: this.playerManager,
+      unitManager: this.unitManager,
+      itemManager: this.itemManager,
+      perspectiveManager: this.perspectiveManager,
     });
   }
 
@@ -75,23 +88,23 @@ export class WorldJourney {
   }
 
   public getMyPlayer(): PlayerModel {
-    return this.playerStorage.getMyPlayer();
+    return this.playerManager.getMyPlayer();
   }
 
   public doesPosHavePlayers(pos: PositionVo): boolean {
-    return !!this.playerStorage.getPlayersAtPos(pos);
+    return !!this.playerManager.getPlayersAtPos(pos);
   }
 
   public getUnit(position: PositionVo) {
-    return this.unitStorage.getUnit(position);
+    return this.unitManager.getUnit(position);
   }
 
   public getItem(itemId: string): ItemModel | null {
-    return this.itemStorage.getItem(itemId);
+    return this.itemManager.getItem(itemId);
   }
 
-  public updatePlayerClientPositions() {
-    this.playerStorage.getPlayers().forEach((player) => {
+  private calculatePlayerPositions() {
+    this.playerManager.getPlayers().forEach((player) => {
       const playerAction = player.getAction();
       const playerDirection = player.getDirection();
       const playerPrecisePosition = player.getPrecisePosition();
@@ -100,9 +113,9 @@ export class WorldJourney {
 
       if (playerAction.isWalk()) {
         const playerForwardPos = player.getFowardPosition(0.5);
-        const unitAtPos = this.unitStorage.getUnit(playerForwardPos);
+        const unitAtPos = this.unitManager.getUnit(playerForwardPos);
         if (unitAtPos) {
-          const item = this.itemStorage.getItem(unitAtPos.getItemId());
+          const item = this.itemManager.getItem(unitAtPos.getItemId());
           if (!item) return;
           if (!item.getTraversable()) return;
         }
@@ -114,35 +127,51 @@ export class WorldJourney {
 
         const clonedPlayer = player.clone();
         clonedPlayer.updatePrecisePosition(nextPlayerPrecisePosition);
-        this.playerStorage.updatePlayer(clonedPlayer);
+        this.playerManager.updatePlayer(clonedPlayer);
       }
     });
   }
 
+  private calculatePlayerPositionsTicker() {
+    const maxFPS = 20;
+    const frameDelay = 1000 / maxFPS;
+    let lastFrameTime = 0;
+
+    const animate = () => {
+      const currentTime = performance.now();
+      const elapsed = currentTime - lastFrameTime;
+      if (elapsed > frameDelay) {
+        this.calculatePlayerPositions();
+        lastFrameTime = currentTime - (elapsed % frameDelay);
+      }
+      this.animateId = requestAnimationFrame(animate);
+    };
+    animate();
+  }
+
   public subscribePerspectiveChanged(handler: PerspectiveChangedHandler): () => void {
-    return this.perspective.subscribePerspectiveChanged((depth, targetPos) => {
+    return this.perspectiveManager.subscribePerspectiveChanged((depth, targetPos) => {
       handler(depth, targetPos);
     });
   }
 
   public subscribePlayersChanged(handler: PlayersChangedHandler): () => void {
-    return this.playerStorage.subscribePlayersChanged((players) => {
+    return this.playerManager.subscribePlayersChanged((players) => {
       handler(players);
     });
   }
 
   public subscribeMyPlayerChanged(handler: MyPlayerChangedHandler): () => void {
-    return this.playerStorage.subscribeMyPlayerChanged((oldPlayer, player) => {
-      this.perspective.updateTargetPrecisePosition(player.getPrecisePosition());
+    return this.playerManager.subscribeMyPlayerChanged((oldPlayer, player) => {
       handler(oldPlayer, player);
     });
   }
 
   public subscribeUnitsChanged(handler: UnitsChangedHandler): () => void {
-    const itemAddedUnsubscriber = this.itemStorage.subscribeItemAdded((item) => {
-      handler(item, this.unitStorage.getUnitsByItemId(item.getId()));
+    const itemAddedUnsubscriber = this.itemManager.subscribeItemAdded((item) => {
+      handler(item, this.unitManager.getUnitsByItemId(item.getId()));
     });
-    const unitsChangedUnsubscriber = this.unitStorage.subscribeUnitsChanged((itemId, units) => {
+    const unitsChangedUnsubscriber = this.unitManager.subscribeUnitsChanged((itemId, units) => {
       const item = this.getItem(itemId);
       if (!item) return;
 
@@ -156,14 +185,8 @@ export class WorldJourney {
   }
 
   public subscribePlaceholderItemIdsAdded(handler: PlaceholderItemIdsAddedHandler): () => void {
-    return this.itemStorage.subscribePlaceholderItemIdsAdded((itemIds: string[]) => {
+    return this.itemManager.subscribePlaceholderItemIdsAdded((itemIds: string[]) => {
       handler(itemIds);
-    });
-  }
-
-  public subscribeCommandExecuted(handler: CommandExecutedHandler): () => void {
-    return this.commandManager.subscribeCommandExecuted((command: Command) => {
-      handler(command);
     });
   }
 }

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { PositionVo } from '@/models/world/common/position-vo';
-import { Command } from './command';
-import { CommandParams } from './command-params';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
@@ -26,22 +26,22 @@ export class RemovePortalUnitCommand implements Command {
     return new RemovePortalUnitCommand(id, timestamp, position);
   }
 
-  public execute({ unitStorage }: CommandParams): void {
-    const portalUnit = unitStorage.getUnit(this.position);
+  public execute({ unitManager }: CommandParams): void {
+    const portalUnit = unitManager.getUnit(this.position);
     if (!portalUnit) return;
 
     if (!(portalUnit instanceof PortalUnitModel)) return;
 
     const targetPos = portalUnit.getTargetPosition();
     if (targetPos) {
-      const targetPortalUnit = unitStorage.getUnit(targetPos);
+      const targetPortalUnit = unitManager.getUnit(targetPos);
       if (targetPortalUnit && targetPortalUnit instanceof PortalUnitModel) {
         targetPortalUnit.updateTargetPosition(null);
-        unitStorage.updateUnit(targetPortalUnit);
+        unitManager.updateUnit(targetPortalUnit);
       }
     }
 
-    unitStorage.removeUnit(this.position);
+    unitManager.removeUnit(this.position);
   }
 
   public getId() {

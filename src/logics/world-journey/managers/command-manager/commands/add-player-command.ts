@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Command } from './command';
-import { CommandParams } from './command-params';
+import { Command } from '../command';
+import { CommandParams } from '../command-params';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { DateVo } from '@/models/general/date-vo';
 
@@ -25,12 +25,12 @@ export class AddPlayerCommand implements Command {
     return new AddPlayerCommand(id, timestamp, player);
   }
 
-  public execute({ playerStorage, itemStorage }: CommandParams): void {
-    playerStorage.addPlayer(this.player);
+  public execute({ playerManager, itemManager }: CommandParams): void {
+    playerManager.addPlayer(this.player);
 
     const playerHeldItemId = this.player.getHeldItemId();
     if (playerHeldItemId) {
-      itemStorage.addPlaceholderItemId(playerHeldItemId);
+      itemManager.addPlaceholderItemId(playerHeldItemId);
     }
   }
 

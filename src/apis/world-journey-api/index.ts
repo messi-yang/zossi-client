@@ -9,7 +9,7 @@ import { LocalStorage } from '@/storages/local-storage';
 import { WorldJourney } from '@/logics/world-journey';
 import { DateVo } from '@/models/general/date-vo';
 import { Event, EventNameEnum, WorldEnteredEvent } from './events';
-import { Command } from '@/logics/world-journey/commands';
+import { Command } from '@/logics/world-journey/managers/command-manager/command';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
