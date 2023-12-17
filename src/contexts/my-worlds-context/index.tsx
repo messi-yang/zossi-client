@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
-import { WorldApiService } from '@/apis/services/world-api-service';
+import { WorldApi } from '@/apis/world-api';
 import { WorldModel } from '@/models/world/world/world-model';
 
 type StatusMap = {
@@ -37,21 +37,21 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [worldApiService] = useState<WorldApiService>(() => WorldApiService.new());
+  const [worldApi] = useState<WorldApi>(() => WorldApi.new());
   const initialContextValue = createInitialContextValue();
   const [myWorlds, setMyWorlds] = useState<WorldModel[] | null>(initialContextValue.myWorlds);
 
   const getMyWorlds = useCallback(async () => {
-    const newMyWorlds = await worldApiService.getMyWorlds();
+    const newMyWorlds = await worldApi.getMyWorlds();
     setMyWorlds(newMyWorlds);
-  }, [worldApiService]);
+  }, [worldApi]);
 
   const [isCreatingWorld, setIsCreatingWorld] = useState(false);
   const createWorld = useCallback(
     async (name: string) => {
       setIsCreatingWorld(true);
       try {
-        const newWorld = await worldApiService.createWorld(name);
+        const newWorld = await worldApi.createWorld(name);
         setMyWorlds((_myWorlds) => [newWorld, ...(_myWorlds || [])]);
       } catch (e) {
         console.error(e);
@@ -59,7 +59,7 @@ function Provider({ children }: Props) {
         setIsCreatingWorld(false);
       }
     },
-    [worldApiService]
+    [worldApi]
   );
 
   const [deleteWorldStatusMap, setDeleteWorldStatusMap] = useState<StatusMap>({});
@@ -70,7 +70,7 @@ function Provider({ children }: Props) {
         return prev;
       });
       try {
-        await worldApiService.deleteWorld(worldId);
+        await worldApi.deleteWorld(worldId);
         setMyWorlds((prev) => {
           if (!prev) return null;
           return prev.filter((world) => world.getId() !== worldId);
@@ -84,7 +84,7 @@ function Provider({ children }: Props) {
         });
       }
     },
-    [worldApiService]
+    [worldApi]
   );
 
   return (

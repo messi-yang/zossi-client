@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
-import { WorldMemberApiService } from '@/apis/services/world-member-api-service';
+import { WorldMemberApi } from '@/apis/world-member-api';
 import { WorldMemberModel } from '@/models/iam/world-member-model';
 
 type ContextValue = {
@@ -21,11 +21,11 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [worldMemberApiService] = useState<WorldMemberApiService>(() => WorldMemberApiService.new());
+  const [worldMemberApi] = useState<WorldMemberApi>(() => WorldMemberApi.new());
   const [worldMembers, setWorldMembers] = useState<WorldMemberModel[] | null>(null);
 
   const getWorldMembers = useCallback(async (worldId: string) => {
-    const returnedWorldMembers = await worldMemberApiService.getWorldMembers(worldId);
+    const returnedWorldMembers = await worldMemberApi.getWorldMembers(worldId);
     setWorldMembers(returnedWorldMembers);
   }, []);
 

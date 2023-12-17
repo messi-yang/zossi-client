@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { AuthApiService } from '@/apis/services/auth-api-service';
+import { AuthApi } from '@/apis/auth-api';
 import { LocalStorage } from '@/storages/local-storage';
 import { EventMediator, EventType } from '@/events';
 
@@ -30,7 +30,7 @@ type Props = {
 
 function Provider({ children }: Props) {
   const [eventMediator] = useState(() => EventMediator.new());
-  const [authApiService] = useState<AuthApiService>(() => AuthApiService.new());
+  const [authApi] = useState<AuthApi>(() => AuthApi.new());
   const [localStorage] = useState(() => LocalStorage.get());
   const router = useRouter();
 
@@ -48,7 +48,7 @@ function Provider({ children }: Props) {
   }, [localStorage]);
 
   const startGoogleOauthFlow = useCallback(() => {
-    authApiService.startGoogleOauthFlow(clientRedirectPath);
+    authApi.startGoogleOauthFlow(clientRedirectPath);
   }, [clientRedirectPath]);
 
   const signIn = useCallback(

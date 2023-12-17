@@ -1,6 +1,6 @@
 import { createContext, useCallback, useRef, useState, useMemo, useEffect } from 'react';
-import { WorldJourneyApiService } from '@/apis/services/world-journey-api-service';
-import { ItemApiService } from '@/apis/services/item-api-service';
+import { WorldJourneyApi } from '@/apis/world-journey-api';
+import { ItemApi } from '@/apis/item-api';
 import { ItemModel } from '@/models/world/item/item-model';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import {
@@ -62,7 +62,7 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const [itemApiService] = useState<ItemApiService>(() => ItemApiService.new());
+  const [itemApi] = useState<ItemApi>(() => ItemApi.new());
   const [items, setItems] = useState<ItemModel[] | null>([]);
   const [worldJourney, setWorldJourney] = useState<WorldJourney | null>(null);
 
@@ -70,7 +70,7 @@ export function Provider({ children }: Props) {
     if (!worldJourney) return;
 
     worldJourney.subscribePlaceholderItemIdsAdded((placeholderItemIds) => {
-      itemApiService.getItemsOfIds(placeholderItemIds).then((_items) => {
+      itemApi.getItemsOfIds(placeholderItemIds).then((_items) => {
         _items.forEach((item) => {
           worldJourney.executeCommand(AddItemCommand.new(item));
         });
@@ -79,7 +79,7 @@ export function Provider({ children }: Props) {
   }, [worldJourney]);
 
   const fetchItems = useCallback(async () => {
-    const newItems = await itemApiService.getItems();
+    const newItems = await itemApi.getItems();
     setItems(newItems);
   }, []);
   useEffect(() => {
@@ -93,16 +93,16 @@ export function Provider({ children }: Props) {
     });
   }, [worldJourney, items]);
 
-  const worldJourneyApiService = useRef<WorldJourneyApiService | null>(null);
+  const worldJourneyApi = useRef<WorldJourneyApi | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
 
   const enterWorld = useCallback((WorldId: string) => {
-    if (worldJourneyApiService.current) {
+    if (worldJourneyApi.current) {
       return;
     }
 
     let newWorldJourney: WorldJourney | null = null;
-    const newWorldJourneyApiService = WorldJourneyApiService.new(WorldId, {
+    const newWorldJourneyApi = WorldJourneyApi.new(WorldId, {
       onWorldEntered: (_worldJourney) => {
         newWorldJourney = _worldJourney;
         setWorldJourney(_worldJourney);
@@ -119,18 +119,18 @@ export function Provider({ children }: Props) {
       },
       onClose: () => {
         setConnectionStatus('DISCONNECTED');
-        worldJourneyApiService.current = null;
+        worldJourneyApi.current = null;
       },
     });
     setConnectionStatus('CONNECTING');
-    worldJourneyApiService.current = newWorldJourneyApiService;
+    worldJourneyApi.current = newWorldJourneyApi;
   }, []);
 
   useEffect(() => {
     if (!worldJourney) return;
 
     worldJourney.subscribeMyPlayerChanged((oldPlayer, player) => {
-      if (!worldJourneyApiService.current) return;
+      if (!worldJourneyApi.current) return;
 
       const oldPlayerPos = oldPlayer.getPosition();
       const playerPos = player.getPosition();
@@ -144,7 +144,7 @@ export function Provider({ children }: Props) {
       if (unitAtPlayerPos instanceof PortalUnitModel) {
         const command = SendPlayerIntoPortalCommand.new(player.getId(), playerPos);
         worldJourney.executeCommand(command);
-        worldJourneyApiService.current.sendCommand(command);
+        worldJourneyApi.current.sendCommand(command);
       }
     });
   }, [worldJourney]);
@@ -201,8 +201,8 @@ export function Provider({ children }: Props) {
   }, [worldJourney]);
 
   useEffect(() => {
-    // const currentWorldJourneyApiService = worldJourneyApiService.current;
-    // if (!currentWorldJourneyApiService || !worldJourney) {
+    // const currentWorldJourneyApi = worldJourneyApi.current;
+    // if (!currentWorldJourneyApi || !worldJourney) {
     //   return () => {};
     // }
     // return worldJourney.subscribeCommandExecuted((command) => {
@@ -217,13 +217,13 @@ export function Provider({ children }: Props) {
     //     if (!unitAtMyPlayerPos.getType().isPortal()) return;
     //     const sendPlayerIntoPortalCommand = SendPlayerIntoPortalCommand.new(playerId, newPos);
     //     worldJourney.executeCommand(sendPlayerIntoPortalCommand);
-    //     currentWorldJourneyApiService.sendCommand(sendPlayerIntoPortalCommand);
+    //     currentWorldJourneyApi.sendCommand(sendPlayerIntoPortalCommand);
     //   }
     // });
   }, [worldJourney]);
 
   const makePlayerStand = useCallback(() => {
-    if (!worldJourneyApiService.current || !worldJourney) {
+    if (!worldJourneyApi.current || !worldJourney) {
       return;
     }
 
@@ -233,12 +233,12 @@ export function Provider({ children }: Props) {
     const playerAction = PlayerActionVo.newStand(playerPrecisePosition, playerDirection, DateVo.now());
     const command = ChangePlayerActionCommand.new(myPlayer.getId(), playerAction);
     worldJourney.executeCommand(command);
-    worldJourneyApiService.current.sendCommand(command);
+    worldJourneyApi.current.sendCommand(command);
   }, [worldJourney]);
 
   const makePlayerWalk = useCallback(
     (direction: DirectionVo) => {
-      if (!worldJourneyApiService.current || !worldJourney) {
+      if (!worldJourneyApi.current || !worldJourney) {
         return;
       }
 
@@ -247,48 +247,48 @@ export function Provider({ children }: Props) {
       const playerAction = PlayerActionVo.newWalk(playerPrecisePosition, direction, DateVo.now());
       const command = ChangePlayerActionCommand.new(myPlayer.getId(), playerAction);
       worldJourney.executeCommand(command);
-      worldJourneyApiService.current.sendCommand(command);
+      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourney]
   );
 
   const leaveWorld = useCallback(() => {
-    if (!worldJourneyApiService.current) {
+    if (!worldJourneyApi.current) {
       return;
     }
     setConnectionStatus('DISCONNECTING');
-    worldJourneyApiService.current.disconnect();
+    worldJourneyApi.current.disconnect();
   }, []);
 
   const changePlayerHeldItem = useCallback(
     (item: ItemModel) => {
-      if (!worldJourney || !worldJourneyApiService.current) return;
+      if (!worldJourney || !worldJourneyApi.current) return;
 
       const command = ChangePlayerHeldItemCommand.new(worldJourney.getMyPlayer().getId(), item.getId());
       worldJourney.executeCommand(command);
-      worldJourneyApiService.current.sendCommand(command);
+      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourney]
   );
 
   const createStaticUnit = useCallback(
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
-      if (!worldJourney || !worldJourneyApiService.current) return;
+      if (!worldJourney || !worldJourneyApi.current) return;
 
       const command = CreateStaticUnitCommand.new(itemId, position, direction);
       worldJourney.executeCommand(command);
-      worldJourneyApiService.current.sendCommand(command);
+      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourney]
   );
 
   const createPortalUnit = useCallback(
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
-      if (!worldJourney || !worldJourneyApiService.current) return;
+      if (!worldJourney || !worldJourneyApi.current) return;
 
       const command = CreatePortalUnitCommand.new(itemId, position, direction);
       worldJourney.executeCommand(command);
-      worldJourneyApiService.current.sendCommand(command);
+      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourney]
   );
@@ -312,7 +312,7 @@ export function Provider({ children }: Props) {
   }, [worldJourney]);
 
   const removeUnit = useCallback(() => {
-    if (!worldJourney || !worldJourneyApiService.current) return;
+    if (!worldJourney || !worldJourneyApi.current) return;
 
     const myPlayer = worldJourney.getMyPlayer();
     const unitPos = myPlayer.getFowardPosition(1);
@@ -322,22 +322,22 @@ export function Provider({ children }: Props) {
     if (unitAtPos.getType().isStatic()) {
       const command = RemoveStaticUnitCommand.new(unitPos);
       worldJourney.executeCommand(command);
-      worldJourneyApiService.current.sendCommand(command);
+      worldJourneyApi.current.sendCommand(command);
     } else if (unitAtPos.getType().isPortal()) {
       const command = RemovePortalUnitCommand.new(unitPos);
       worldJourney.executeCommand(command);
-      worldJourneyApiService.current.sendCommand(command);
+      worldJourneyApi.current.sendCommand(command);
     }
   }, [worldJourney]);
 
   const rotateUnit = useCallback(() => {
-    if (!worldJourney || !worldJourneyApiService.current) return;
+    if (!worldJourney || !worldJourneyApi.current) return;
 
     const myPlayer = worldJourney.getMyPlayer();
     const unitPos = myPlayer.getFowardPosition(1);
     const command = RotateUnitCommand.new(unitPos);
     worldJourney.executeCommand(command);
-    worldJourneyApiService.current.sendCommand(command);
+    worldJourneyApi.current.sendCommand(command);
   }, [worldJourney]);
 
   return (

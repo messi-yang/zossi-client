@@ -3,15 +3,15 @@ import { ItemDto, parseItemDto } from '@/apis/dtos';
 import { ItemModel } from '@/models/world/item/item-model';
 import { AxiosProvider } from '@/providers/axios-provider';
 
-export class ItemApiService {
+export class ItemApi {
   private axios: Axios;
 
   constructor() {
     this.axios = AxiosProvider.new(`${process.env.API_URL}/api/items`);
   }
 
-  static new(): ItemApiService {
-    return new ItemApiService();
+  static new(): ItemApi {
+    return new ItemApi();
   }
 
   async getItems(): Promise<ItemModel[]> {

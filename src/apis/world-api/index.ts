@@ -3,15 +3,15 @@ import { WorldDto, parseWorldDto } from '@/apis/dtos';
 import { WorldModel } from '@/models/world/world/world-model';
 import { AxiosProvider } from '@/providers/axios-provider';
 
-export class WorldApiService {
+export class WorldApi {
   private axios: Axios;
 
   constructor() {
     this.axios = AxiosProvider.new(`${process.env.API_URL}/api/worlds`);
   }
 
-  static new(): WorldApiService {
-    return new WorldApiService();
+  static new(): WorldApi {
+    return new WorldApi();
   }
 
   async queryWorlds(limit: number, offset: number): Promise<WorldModel[]> {

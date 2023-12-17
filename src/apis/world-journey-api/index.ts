@@ -20,7 +20,7 @@ function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitMode
   ];
 }
 
-export class WorldJourneyApiService {
+export class WorldJourneyApi {
   private socket: WebSocket;
 
   constructor(
@@ -85,8 +85,8 @@ export class WorldJourneyApiService {
       onClose: () => void;
       onOpen: () => void;
     }
-  ): WorldJourneyApiService {
-    return new WorldJourneyApiService(worldId, events);
+  ): WorldJourneyApi {
+    return new WorldJourneyApi(worldId, events);
   }
 
   public disconnect() {

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
-import { UserApiService } from '@/apis/services/user-api-service';
+import { UserApi } from '@/apis/user-api';
 import { LocalStorage } from '@/storages/local-storage';
 import { UserModel } from '@/models/iam/user-model';
 
@@ -26,13 +26,13 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [userApiService] = useState<UserApiService>(() => UserApiService.new());
+  const [userApi] = useState<UserApi>(() => UserApi.new());
   const [user, setUser] = useState<UserModel | null>(null);
   const [isUpdatingMyUser, setIsUpdatingMyUser] = useState(false);
   const [localStorage] = useState(() => LocalStorage.get());
 
   const getMyUser = useCallback(async () => {
-    const returnedUser = await userApiService.getMyUser();
+    const returnedUser = await userApi.getMyUser();
     setUser(returnedUser);
   }, []);
 
@@ -43,7 +43,7 @@ function Provider({ children }: Props) {
       try {
         setIsUpdatingMyUser(true);
 
-        const updatedUser = await userApiService.updateMyUser(username, friendlyName);
+        const updatedUser = await userApi.updateMyUser(username, friendlyName);
         setUser(updatedUser);
       } finally {
         setIsUpdatingMyUser(false);

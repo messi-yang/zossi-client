@@ -3,15 +3,15 @@ import { WorldMemberDto, parseWorldMemberDto } from '@/apis/dtos';
 import { AxiosProvider } from '@/providers/axios-provider';
 import { WorldMemberModel } from '@/models/iam/world-member-model';
 
-export class WorldMemberApiService {
+export class WorldMemberApi {
   private axios: Axios;
 
   constructor() {
     this.axios = AxiosProvider.new(`${process.env.API_URL}/api/worlds`);
   }
 
-  static new(): WorldMemberApiService {
-    return new WorldMemberApiService();
+  static new(): WorldMemberApi {
+    return new WorldMemberApi();
   }
 
   async getWorldMembers(worldId: string): Promise<WorldMemberModel[]> {

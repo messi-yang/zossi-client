@@ -2,15 +2,15 @@ import { Axios } from 'axios';
 import { AxiosProvider } from '@/providers/axios-provider';
 import { UserDto, parseUserDto } from '@/apis/dtos/user-dto';
 
-export class UserApiService {
+export class UserApi {
   private axios: Axios;
 
   constructor() {
     this.axios = AxiosProvider.new(`${process.env.API_URL}/api/users`);
   }
 
-  static new(): UserApiService {
-    return new UserApiService();
+  static new(): UserApi {
+    return new UserApi();
   }
 
   async getMyUser() {
