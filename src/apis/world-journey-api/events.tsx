@@ -1,4 +1,6 @@
-import type { WorldDto, PlayerDto, UnitDto } from '@/apis/dtos';
+import { PlayerDto } from '../dtos/player-dto';
+import { UnitDto } from '../dtos/unit-dto';
+import { WorldDto } from '../dtos/world-dto';
 import { CommandDto } from './commands';
 
 enum EventNameEnum {

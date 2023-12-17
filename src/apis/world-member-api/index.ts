@@ -1,7 +1,7 @@
 import { Axios } from 'axios';
-import { WorldMemberDto, parseWorldMemberDto } from '@/apis/dtos';
 import { AxiosProvider } from '@/providers/axios-provider';
 import { WorldMemberModel } from '@/models/iam/world-member-model';
+import { WorldMemberDto, parseWorldMemberDto } from '../dtos/world-member-dto';
 
 export class WorldMemberApi {
   private axios: Axios;

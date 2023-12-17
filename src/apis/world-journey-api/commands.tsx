@@ -1,13 +1,3 @@
-import {
-  PlayerActionDto,
-  PlayerDto,
-  PositionDto,
-  newPlayerActionDto,
-  newPositionDto,
-  parsePlayerActionDto,
-  parsePlayerDto,
-} from '@/apis/dtos';
-
 import { ChangePlayerActionCommand } from '@/logics/world-journey/managers/command-manager/commands/change-player-action-command';
 import { SendPlayerIntoPortalCommand } from '@/logics/world-journey/managers/command-manager/commands/send-player-into-portal-command';
 import { CreateStaticUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/create-static-unit-command';
@@ -21,6 +11,9 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { AddPlayerCommand } from '@/logics/world-journey/managers/command-manager/commands/add-player-command';
 import { RemovePlayerCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-player-command';
 import { Command } from '@/logics/world-journey/managers/command-manager/command';
+import { PlayerDto, parsePlayerDto } from '../dtos/player-dto';
+import { PlayerActionDto, newPlayerActionDto, parsePlayerActionDto } from '../dtos/player-action-dto';
+import { PositionDto, newPositionDto } from '../dtos/position-dto';
 
 enum CommandNameEnum {
   Ping = 'PING',

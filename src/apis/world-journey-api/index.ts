@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { parsePlayerDto, parseUnitDto, parseWorldDto } from '@/apis/dtos';
 import { CommandNameEnum, parseCommandDto, toCommandDto } from './commands';
 import type { PingCommandDto } from './commands';
 import { WorldModel } from '@/models/world/world/world-model';
@@ -10,6 +9,9 @@ import { WorldJourney } from '@/logics/world-journey';
 import { DateVo } from '@/models/general/date-vo';
 import { Event, EventNameEnum, WorldEnteredEvent } from './events';
 import { Command } from '@/logics/world-journey/managers/command-manager/command';
+import { parseWorldDto } from '../dtos/world-dto';
+import { parseUnitDto } from '../dtos/unit-dto';
+import { parsePlayerDto } from '../dtos/player-dto';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
