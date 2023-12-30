@@ -2,11 +2,8 @@ import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
 import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
-import { UnitTypeVo } from './unit-type-vo';
 
 export class PortalUnitModel implements UnitModel {
-  private type: UnitTypeVo = UnitTypeVo.new(UnitTypeEnum.Portal);
-
   constructor(
     private itemId: string,
     private position: PositionVo,
@@ -34,8 +31,8 @@ export class PortalUnitModel implements UnitModel {
     return new PortalUnitModel(this.itemId, this.position, this.direction, this.targetPosition);
   }
 
-  public getType() {
-    return this.type;
+  public getType(): UnitTypeEnum.Portal {
+    return UnitTypeEnum.Portal;
   }
 
   public getItemId(): string {

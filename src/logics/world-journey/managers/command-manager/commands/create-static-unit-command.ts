@@ -5,6 +5,7 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { DateVo } from '@/models/general/date-vo';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 export class CreateStaticUnitCommand implements Command {
   private id: string;
@@ -37,7 +38,7 @@ export class CreateStaticUnitCommand implements Command {
     const item = itemManager.getItem(this.itemId);
     if (!item) return;
 
-    if (!item.getCompatibleUnitType().isStatic()) return;
+    if (!(item.getCompatibleUnitType() === UnitTypeEnum.Static)) return;
 
     const unitAtPos = unitManager.getUnit(this.position);
     if (unitAtPos) return;

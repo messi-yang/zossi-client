@@ -258,8 +258,9 @@ export function WorldCanvas({ worldJourney }: Props) {
       instanceCycler[itemId]?.();
 
       if (!units) return;
-      const itemModel = downloadTjsModel(item.getModelSrc());
-      if (!itemModel) return;
+      const itemModels = item.getModelSources().map(downloadTjsModel);
+
+      if (!itemModels[0]) return;
 
       const itemUnitInstanceStates = units.map((unit) => ({
         x: unit.getPosition().getX(),
@@ -267,7 +268,7 @@ export function WorldCanvas({ worldJourney }: Props) {
         z: unit.getPosition().getZ(),
         rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
       }));
-      const [removeInstancesFromScene] = createInstancesInScene(scene, itemModel, itemUnitInstanceStates);
+      const [removeInstancesFromScene] = createInstancesInScene(scene, itemModels[0], itemUnitInstanceStates);
 
       instanceCycler[itemId] = removeInstancesFromScene;
     });

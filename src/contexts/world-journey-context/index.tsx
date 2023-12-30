@@ -19,6 +19,7 @@ import { CreatePortalUnitCommand } from '@/logics/world-journey/managers/command
 import { RemoveStaticUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-static-unit-command';
 import { RemovePortalUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-portal-unit-command';
 import { RotateUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/rotate-unit-command';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -249,9 +250,9 @@ export function Provider({ children }: Props) {
     const direction = myPlayer.getDirection().getOppositeDirection();
 
     const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
-    if (compatibleUnitType.isStatic()) {
+    if (compatibleUnitType === UnitTypeEnum.Static) {
       createStaticUnit(myPlayerHeldItem.getId(), unitPos, direction);
-    } else if (compatibleUnitType.isPortal()) {
+    } else if (compatibleUnitType === UnitTypeEnum.Portal) {
       createPortalUnit(myPlayerHeldItem.getId(), unitPos, direction);
     }
   }, [worldJourney]);
@@ -264,11 +265,11 @@ export function Provider({ children }: Props) {
     const unitAtPos = worldJourney.getUnit(unitPos);
     if (!unitAtPos) return;
 
-    if (unitAtPos.getType().isStatic()) {
+    if (unitAtPos.getType() === UnitTypeEnum.Static) {
       const command = RemoveStaticUnitCommand.new(unitPos);
       worldJourney.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
-    } else if (unitAtPos.getType().isPortal()) {
+    } else if (unitAtPos.getType() === UnitTypeEnum.Portal) {
       const command = RemovePortalUnitCommand.new(unitPos);
       worldJourney.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);

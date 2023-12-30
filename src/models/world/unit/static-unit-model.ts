@@ -2,11 +2,8 @@ import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
 import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
-import { UnitTypeVo } from './unit-type-vo';
 
 export class StaticUnitModel implements UnitModel {
-  private type: UnitTypeVo = UnitTypeVo.new(UnitTypeEnum.Static);
-
   constructor(private itemId: string, private position: PositionVo, private direction: DirectionVo) {}
 
   static new = (itemId: string, position: PositionVo, direction: DirectionVo): StaticUnitModel =>
@@ -20,8 +17,8 @@ export class StaticUnitModel implements UnitModel {
     return new StaticUnitModel(this.itemId, this.position, this.direction);
   }
 
-  public getType(): UnitTypeVo {
-    return this.type;
+  public getType(): UnitTypeEnum.Static {
+    return UnitTypeEnum.Static;
   }
 
   public getItemId(): string {
