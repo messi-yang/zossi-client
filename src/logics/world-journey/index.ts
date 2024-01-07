@@ -6,14 +6,12 @@ import { UnitModel } from '@/models/world/unit/unit-model';
 import { WorldModel } from '@/models/world/world/world-model';
 import { PositionVo } from '@/models/world/common/position-vo';
 
-import { UnitManager } from './managers/unit-manager';
+import { UnitManager, UnitsChangedHandler } from './managers/unit-manager';
 import { MyPlayerChangedHandler, PlayerManager, PlayersChangedHandler } from './managers/player-manager';
 import { PerspectiveManager, PerspectiveChangedHandler } from './managers/perspective-manager';
-import { ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
+import { ItemAddedHandler, ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandManager } from './managers/command-manager';
-
-type UnitsChangedHandler = (item: ItemModel, units: UnitModel[] | null) => void;
 
 export class WorldJourney {
   private world: WorldModel;
@@ -91,12 +89,20 @@ export class WorldJourney {
     return this.playerManager.getMyPlayer();
   }
 
+  public getPlayers(): PlayerModel[] {
+    return this.playerManager.getPlayers();
+  }
+
   public doesPosHavePlayers(pos: PositionVo): boolean {
     return !!this.playerManager.getPlayersAtPos(pos);
   }
 
   public getUnit(position: PositionVo) {
     return this.unitManager.getUnit(position);
+  }
+
+  public getUnitsOfItem(itemId: string): UnitModel[] {
+    return this.unitManager.getUnitsByItemId(itemId);
   }
 
   public getItem(itemId: string): ItemModel | null {
@@ -150,36 +156,25 @@ export class WorldJourney {
   }
 
   public subscribePerspectiveChanged(handler: PerspectiveChangedHandler): () => void {
-    return this.perspectiveManager.subscribePerspectiveChanged((depth, targetPos) => {
-      handler(depth, targetPos);
-    });
+    return this.perspectiveManager.subscribePerspectiveChanged(handler);
   }
 
   public subscribePlayersChanged(handler: PlayersChangedHandler): () => void {
-    return this.playerManager.subscribePlayersChanged((players) => {
-      handler(players);
-    });
+    return this.playerManager.subscribePlayersChanged(handler);
   }
 
   public subscribeMyPlayerChanged(handler: MyPlayerChangedHandler): () => void {
-    return this.playerManager.subscribeMyPlayerChanged((oldPlayer, player) => {
-      handler(oldPlayer, player);
-    });
+    return this.playerManager.subscribeMyPlayerChanged(handler);
+  }
+
+  public subscribeItemAdded(handler: ItemAddedHandler): () => void {
+    return this.itemManager.subscribeItemAdded(handler);
   }
 
   public subscribeUnitsChanged(handler: UnitsChangedHandler): () => void {
-    const itemAddedUnsubscriber = this.itemManager.subscribeItemAdded((item) => {
-      handler(item, this.unitManager.getUnitsByItemId(item.getId()));
-    });
-    const unitsChangedUnsubscriber = this.unitManager.subscribeUnitsChanged((itemId, units) => {
-      const item = this.getItem(itemId);
-      if (!item) return;
-
-      handler(item, units);
-    });
+    const unitsChangedUnsubscriber = this.unitManager.subscribeUnitsChanged(handler);
 
     return () => {
-      itemAddedUnsubscriber();
       unitsChangedUnsubscriber();
     };
   }

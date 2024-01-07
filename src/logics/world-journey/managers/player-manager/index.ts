@@ -2,7 +2,7 @@ import { uniq } from 'lodash';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { PositionVo } from '@/models/world/common/position-vo';
 
-export type PlayersChangedHandler = (players: PlayerModel[]) => void;
+export type PlayersChangedHandler = (oldPlayers: PlayerModel[], newPlayers: PlayerModel[]) => void;
 export type MyPlayerChangedHandler = (oldPlyaer: PlayerModel, player: PlayerModel) => void;
 
 export class PlayerManager {
@@ -149,7 +149,7 @@ export class PlayerManager {
 
   public subscribePlayersChanged(handler: PlayersChangedHandler): () => void {
     this.playersChangedHandlers.push(handler);
-    handler(this.getPlayers());
+    handler([], this.getPlayers());
 
     return () => {
       this.playersChangedHandlers = this.playersChangedHandlers.filter((hdl) => hdl !== handler);
@@ -158,7 +158,7 @@ export class PlayerManager {
 
   private publishPlayersChanged(players: PlayerModel[]) {
     this.playersChangedHandlers.forEach((hdl) => {
-      hdl(players);
+      hdl(this.getPlayers(), players);
     });
   }
 

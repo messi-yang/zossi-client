@@ -1,315 +1,113 @@
-import { useEffect, useState, useRef, useContext, useMemo } from 'react';
-import * as THREE from 'three';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { useEffect, useRef, useMemo } from 'react';
 
 import { PlayerModel } from '@/models/world/player/player-model';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
-import { TjsContext } from '@/contexts/tjs-context';
-import { rangeMatrix } from '@/utils/common';
-import { createInstancesInScene } from './tjs-utils';
 import { dataTestids } from './data-test-ids';
 import { WorldJourney } from '@/logics/world-journey';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
+import { WorldRenderer } from './world-renderer';
 
 type Props = {
   worldJourney: WorldJourney;
 };
 
-const CHARACTER_MODEL_SRC = '/characters/car.gltf';
-const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
-const FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
-const CAMERA_FOV = 50;
-const DIR_LIGHT_HEIGHT = 20;
-const DIR_LIGHT_Z_OFFSET = 20;
-const HEMI_LIGHT_HEIGHT = 20;
-
 export function WorldCanvas({ worldJourney }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
+  const worldRenderer = useMemo(() => WorldRenderer.new(worldJourney.getWorldBound()), [worldJourney]);
+  useEffect(() => {
+    if (!wrapperRef.current) return () => {};
 
-  const worldBound = useMemo(() => worldJourney.getWorldBound(), [worldJourney]);
+    worldRenderer.mount(wrapperRef.current);
 
-  const [scene] = useState<THREE.Scene>(() => {
-    const newScene = new THREE.Scene();
-    newScene.background = new THREE.Color(0x87ceeb);
+    return () => {
+      worldRenderer.destroy();
+    };
+  }, [worldRenderer, wrapperRef.current]);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.5);
-    hemiLight.position.set(0, HEMI_LIGHT_HEIGHT, 0);
-    newScene.add(hemiLight);
+  useEffect(() => {
+    if (!wrapperDomRect) return;
 
-    return newScene;
-  });
-  useState<THREE.Group>(() => {
-    const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
-    const offsetX = worldBound.getFrom().getX() - 0.5;
-    const offsetZ = worldBound.getFrom().getZ() - 0.5;
-    const boundWidth = worldBound.getWidth();
-    const boundheight = worldBound.getHeight();
-    const newGrid = new THREE.Group();
-    for (let x = 0; x <= boundWidth; x += 1) {
-      const points: THREE.Vector3[] = [
-        new THREE.Vector3(x + offsetX, 0, offsetZ),
-        new THREE.Vector3(x + offsetX, 0, offsetZ + boundheight),
-      ];
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      newGrid.add(new THREE.Line(geometry, material));
-    }
-    for (let z = 0; z <= boundheight; z += 1) {
-      const points: THREE.Vector3[] = [
-        new THREE.Vector3(offsetX, 0, z + offsetZ),
-        new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ),
-      ];
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      newGrid.add(new THREE.Line(geometry, material));
-    }
-    newGrid.position.set(0, 0.1, 0);
-    scene.add(newGrid);
-    return newGrid;
-  });
-  const [dirLight] = useState<THREE.DirectionalLight>(() => {
-    const newDirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    newDirLight.castShadow = true;
-    newDirLight.position.set(0, DIR_LIGHT_HEIGHT, DIR_LIGHT_Z_OFFSET);
-    newDirLight.target.position.set(0, 0, 0);
-    newDirLight.shadow.mapSize.set(4096, 4096);
-    newDirLight.shadow.camera = new THREE.OrthographicCamera(-100, 100, 100, -100, 0.5, 500);
-    scene.add(newDirLight);
-    scene.add(newDirLight.target);
-    return newDirLight;
-  });
-  const [camera] = useState<THREE.PerspectiveCamera>(() => {
-    const newCamera = new THREE.PerspectiveCamera(CAMERA_FOV, 1, 0.1, 1000);
-    scene.add(newCamera);
-    return newCamera;
-  });
-  const [renderer] = useState<THREE.WebGLRenderer>(() => {
-    const newRenderer = new THREE.WebGLRenderer({ antialias: true });
-    newRenderer.outputEncoding = THREE.sRGBEncoding;
-    newRenderer.shadowMap.enabled = true;
-    newRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    return newRenderer;
-  });
-  const { downloadTjsModel, downloadTjsFont } = useContext(TjsContext);
+    worldRenderer.updateCanvasSize(wrapperDomRect.width, wrapperDomRect.height);
+  }, [wrapperDomRect, worldRenderer]);
 
-  useEffect(
-    function putRendererOnWrapperRefReady() {
-      if (!wrapperRef.current) {
-        return;
+  useEffect(() => {
+    const maxFps = 60;
+    const frameDelay = 1000 / maxFps;
+    let lastFrameTime = 0;
+    let animateCount = 0;
+    let animateId: number | null = null;
+
+    const animate = () => {
+      const currentTime = performance.now();
+      const elapsed = currentTime - lastFrameTime;
+      if (elapsed > frameDelay) {
+        if (animateCount % 600 === 0)
+          console.log(`Render Information: ${JSON.stringify(worldRenderer.getRenderer().info.render)}`);
+        lastFrameTime = currentTime - (elapsed % frameDelay);
+        worldRenderer.render();
+        animateCount += 1;
       }
+      animateId = requestAnimationFrame(animate);
+    };
+    animate();
 
-      wrapperRef.current.appendChild(renderer.domElement);
-    },
-    [wrapperRef.current]
-  );
-
-  useEffect(
-    function updateRendererOnWrapperDomRectChange() {
-      if (!wrapperDomRect) {
-        return;
+    return () => {
+      if (animateId) {
+        cancelAnimationFrame(animateId);
       }
-      renderer.setSize(wrapperDomRect.width, wrapperDomRect.height);
-      renderer.setPixelRatio(2);
-    },
-    [renderer, wrapperDomRect]
-  );
+    };
+  }, [worldRenderer]);
+
+  useEffect(() => {
+    return worldRenderer.subscribeItemModelsDownloadedEvent((itemId) => {
+      worldRenderer.updateUnitsOfItem(itemId, worldJourney.getUnitsOfItem(itemId));
+    });
+  }, [worldJourney, worldRenderer]);
+
+  useEffect(() => {
+    return worldJourney.subscribeItemAdded((item) => {
+      worldRenderer.downloadItemModels(item);
+    });
+  }, [worldJourney, worldRenderer]);
+
+  useEffect(() => {
+    return worldJourney.subscribeUnitsChanged((itemId, units) => {
+      worldRenderer.updateUnitsOfItem(itemId, units);
+    });
+  }, [worldJourney, worldRenderer]);
+
+  useEffect(() => {
+    return worldJourney.subscribeMyPlayerChanged((_, newMyPlayer) => {
+      worldRenderer.updateDirectionalLightPosition(newMyPlayer.getPosition());
+    });
+  }, [worldJourney, worldRenderer]);
 
   useEffect(() => {
     return worldJourney.subscribePerspectiveChanged((perspectiveDepth: number, targetPrecisePos: PrecisePositionVo) => {
-      const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((45 / 360) * 2 * Math.PI);
-      const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((45 / 360) * 2 * Math.PI);
-
-      const [targetPrecisePosX, targetPrecisePosZ] = [targetPrecisePos.getX(), targetPrecisePos.getZ()];
-      camera.position.set(targetPrecisePosX, CAMERA_Y_OFFSET, targetPrecisePosZ + CAMERA_Z_OFFSET);
-      camera.lookAt(targetPrecisePosX, 0, targetPrecisePosZ);
+      worldRenderer.updateCameraPosition(perspectiveDepth, targetPrecisePos);
     });
-  }, [worldJourney]);
+  }, [worldJourney, worldRenderer]);
 
   useEffect(() => {
-    return worldJourney.subscribeMyPlayerChanged((_, myPlayer) => {
-      const myPlayerPos = myPlayer.getPrecisePosition();
-      const [myPlayerPositionX, myPlayerPositionZ] = [myPlayerPos.getX(), myPlayerPos.getZ()];
-      dirLight.position.set(myPlayerPositionX, DIR_LIGHT_HEIGHT, myPlayerPositionZ + DIR_LIGHT_Z_OFFSET);
-      dirLight.target.position.set(myPlayerPositionX, 0, myPlayerPositionZ);
+    return worldRenderer.subscribePlayerModelDownloadedEvent(() => {
+      worldRenderer.updatePlayers(worldJourney.getPlayers());
     });
-  }, [worldJourney]);
-
-  useEffect(
-    function updateCameraAspectOnWrapperDomRectChange() {
-      if (!wrapperDomRect) {
-        return;
-      }
-      camera.aspect = wrapperDomRect.width / wrapperDomRect.height;
-      camera.updateProjectionMatrix();
-    },
-    [camera, wrapperDomRect]
-  );
-
-  useEffect(
-    function updateBaseOnWorldBoundUpdate() {
-      const lawnModel = downloadTjsModel(BASE_MODEL_SRC);
-      if (!lawnModel) return () => {};
-
-      const boundOffsetX = worldBound.getFrom().getX();
-      const boundOffsetZ = worldBound.getFrom().getZ();
-      const worldBoundWidth = worldBound.getWidth();
-      const worldBoundHeight = worldBound.getHeight();
-      const grassInstanceStates: { x: number; y: number; z: number; rotate: number }[] = [];
-      rangeMatrix(worldBoundWidth, worldBoundHeight, (colIdx, rowIdx) => {
-        grassInstanceStates.push({
-          x: boundOffsetX + colIdx,
-          y: 0,
-          z: boundOffsetZ + rowIdx,
-          rotate: 0,
-        });
-      });
-      const [removeInstancesFromScene] = createInstancesInScene(scene, lawnModel, grassInstanceStates);
-      return () => {
-        removeInstancesFromScene();
-      };
-    },
-    [scene, downloadTjsModel, worldBound]
-  );
+  }, [worldRenderer, worldJourney]);
 
   useEffect(() => {
-    let removeInstancesFromScene: (() => void) | null = null;
-
-    const unsubscribePlayersChange = worldJourney.subscribePlayersChanged((players: PlayerModel[]) => {
-      removeInstancesFromScene?.();
-      const playerInstanceStates = players.map((player) => ({
-        x: player.getPrecisePosition().getX(),
-        y: 0,
-        z: player.getPrecisePosition().getZ(),
-        rotate: (player.getDirection().toNumber() * Math.PI) / 2,
-      }));
-
-      const playerModel = downloadTjsModel(CHARACTER_MODEL_SRC);
-      if (playerModel) {
-        [removeInstancesFromScene] = createInstancesInScene(scene, playerModel, playerInstanceStates);
-      }
+    return worldRenderer.subscribePlayerNameFontDownloadedEvent(() => {
+      worldRenderer.updatePlayerNames(worldJourney.getPlayers());
     });
-
-    return () => {
-      removeInstancesFromScene?.();
-      unsubscribePlayersChange();
-    };
-  }, [scene, downloadTjsModel, worldJourney]);
+  }, [worldRenderer, worldJourney]);
 
   useEffect(() => {
-    const font = downloadTjsFont(FONT_SRC);
-    if (!font) return () => {};
-
-    const playerNameMeshMap: Record<string, THREE.Mesh> = {};
-
-    const unsubscribePlayersChange = worldJourney.subscribePlayersChanged((players: PlayerModel[]) => {
-      const playerNameMeshes: THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial>[] = [];
-      const playerIds = players.map((p) => p.getId());
-      players.forEach((player) => {
-        const playerId = player.getId();
-        const existingPlayerNameMeshMap = playerNameMeshMap[playerId];
-        if (existingPlayerNameMeshMap) {
-          existingPlayerNameMeshMap.position.set(
-            player.getPrecisePosition().getX(),
-            1.5,
-            player.getPrecisePosition().getZ()
-          );
-          existingPlayerNameMeshMap.rotation.set(-Math.PI / 6, 0, 0);
-        } else {
-          const textGeometry = new TextGeometry(player.getName(), {
-            font,
-            size: 0.35,
-            height: 0.05,
-          });
-          const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.7, transparent: true });
-          const playerNameMesh = new THREE.Mesh(textGeometry, textMaterial);
-
-          textGeometry.computeBoundingBox();
-          textGeometry.center();
-          playerNameMesh.position.set(player.getPrecisePosition().getX(), 1.5, player.getPrecisePosition().getZ());
-          playerNameMesh.rotation.set(-Math.PI / 6, 0, 0);
-          playerNameMeshes.push(playerNameMesh);
-          scene.add(playerNameMesh);
-          playerNameMeshMap[playerId] = playerNameMesh;
-        }
-      });
-
-      const unusedPlayerNameMeshes = Object.entries(playerNameMeshMap)
-        .filter(([playerId]) => !playerIds.includes(playerId))
-        .map(([, playerNameMesh]) => playerNameMesh);
-      unusedPlayerNameMeshes.forEach((unusedPlayerNameMesh) => {
-        scene.remove(unusedPlayerNameMesh);
-      });
+    return worldJourney.subscribePlayersChanged((_, players: PlayerModel[]) => {
+      worldRenderer.updatePlayers(players);
+      worldRenderer.updatePlayerNames(players);
     });
-
-    return () => {
-      unsubscribePlayersChange();
-
-      Object.values(playerNameMeshMap).forEach((playerNameMesh) => {
-        scene.remove(playerNameMesh);
-      });
-    };
-  }, [scene, downloadTjsFont, worldJourney]);
-
-  useEffect(() => {
-    const instanceCycler: Record<string, (() => void) | undefined> = {};
-
-    const unsubscriber = worldJourney.subscribeUnitsChanged((item, units) => {
-      const itemId = item.getId();
-      instanceCycler[itemId]?.();
-
-      if (!units) return;
-      const itemModels = item.getModelSources().map(downloadTjsModel);
-
-      if (!itemModels[0]) return;
-
-      const itemUnitInstanceStates = units.map((unit) => ({
-        x: unit.getPosition().getX(),
-        y: 0,
-        z: unit.getPosition().getZ(),
-        rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
-      }));
-      const [removeInstancesFromScene] = createInstancesInScene(scene, itemModels[0], itemUnitInstanceStates);
-
-      instanceCycler[itemId] = removeInstancesFromScene;
-    });
-
-    return () => {
-      unsubscriber();
-      Object.values(instanceCycler).forEach((cycler) => {
-        cycler?.();
-      });
-    };
-  }, [scene, downloadTjsModel, worldJourney]);
-
-  useEffect(
-    function animateEffect() {
-      const maxFPS = 60;
-      const frameDelay = 1000 / maxFPS;
-      let lastFrameTime = 0;
-      let animateCount = 0;
-
-      let animateId: number | null = null;
-      function animate() {
-        const currentTime = performance.now();
-        const elapsed = currentTime - lastFrameTime;
-        if (elapsed > frameDelay) {
-          if (animateCount % 600 === 0) console.log(`Render Information: ${JSON.stringify(renderer.info.render)}`);
-          lastFrameTime = currentTime - (elapsed % frameDelay);
-          renderer.render(scene, camera);
-          animateCount += 1;
-        }
-        animateId = requestAnimationFrame(animate);
-      }
-      animate();
-
-      return () => {
-        if (animateId !== null) {
-          cancelAnimationFrame(animateId);
-        }
-      };
-    },
-    [renderer, scene, camera]
-  );
+  }, [worldRenderer, worldJourney]);
 
   return <div data-testid={dataTestids.root} ref={wrapperRef} className="relative w-full h-full flex" />;
 }

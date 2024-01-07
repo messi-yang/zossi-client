@@ -5,7 +5,7 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
-type UnitsChangedHandler = (itemId: string, units: UnitModel[] | null) => void;
+export type UnitsChangedHandler = (itemId: string, units: UnitModel[]) => void;
 
 export class UnitManager {
   private unitMapByPos: Record<string, UnitModel | undefined>;
@@ -42,8 +42,8 @@ export class UnitManager {
     return this.unitMapByPos[pos.toString()] || null;
   }
 
-  public getUnitsByItemId(itemId: string): UnitModel[] | null {
-    return this.unitMapByItemId[itemId] || null;
+  public getUnitsByItemId(itemId: string): UnitModel[] {
+    return this.unitMapByItemId[itemId] || [];
   }
 
   public getPortalUnits() {
