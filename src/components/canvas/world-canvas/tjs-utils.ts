@@ -1,17 +1,24 @@
 import * as THREE from 'three';
 
-type InstancedMeshInfo = {
+export type InstancedMeshInfo = {
   mesh: THREE.InstancedMesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
   meshScale: THREE.Vector3;
   meshPosition: THREE.Vector3;
   meshQuaternion: THREE.Quaternion;
 };
 
+export type InstanceState = {
+  x: number;
+  y: number;
+  z: number;
+  rotate: number;
+};
+
 export const createInstancesInScene = (
   scene: THREE.Scene,
   model: THREE.Group,
   instanceStates: { x: number; y: number; z: number; rotate: number }[]
-): [removeInstancesFromScene: () => void] => {
+): (() => void) => {
   const modelMeshes: THREE.Mesh[] = [];
   model.traverse((node) => {
     const currentNode = node as THREE.Mesh;
@@ -56,11 +63,9 @@ export const createInstancesInScene = (
     scene.add(mesh);
   });
 
-  return [
-    () => {
-      modelInstancedMeshInfos.forEach(({ mesh }) => {
-        scene.remove(mesh);
-      });
-    },
-  ];
+  return () => {
+    modelInstancedMeshInfos.forEach(({ mesh }) => {
+      scene.remove(mesh);
+    });
+  };
 };

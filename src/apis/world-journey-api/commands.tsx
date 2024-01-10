@@ -14,6 +14,8 @@ import { Command } from '@/logics/world-journey/managers/command-manager/command
 import { PlayerDto, parsePlayerDto } from '../dtos/player-dto';
 import { PlayerActionDto, newPlayerActionDto, parsePlayerActionDto } from '../dtos/player-action-dto';
 import { PositionDto, newPositionDto } from '../dtos/position-dto';
+import { CreateFenceUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/create-fence-unit-command';
+import { RemoveFenceUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-fence-unit-command';
 
 enum CommandNameEnum {
   Ping = 'PING',
@@ -26,6 +28,8 @@ enum CommandNameEnum {
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
   RemoveStaticUnit = 'REMOVE_STATIC_UNIT',
+  CreateFenceUnit = 'CREATE_FENCE_UNIT',
+  RemoveFenceUnit = 'REMOVE_FENCE_UNIT',
   CreatePortalUnit = 'CREATE_PORTAL_UNIT',
   RemovePortalUnit = 'REMOVE_PORTAL_UNIT',
   RotateUnit = 'ROTATE_UNIT',
@@ -91,6 +95,22 @@ type RemoveStaticUnitCommandDto = {
   position: PositionDto;
 };
 
+type CreateFenceUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.CreateFenceUnit;
+  itemId: string;
+  position: PositionDto;
+  direction: number;
+};
+
+type RemoveFenceUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RemoveFenceUnit;
+  position: PositionDto;
+};
+
 type CreatePortalUnitCommandDto = {
   id: string;
   timestamp: number;
@@ -114,7 +134,7 @@ type RotateUnitCommandDto = {
   position: PositionDto;
 };
 
-function parseCreateStaticCommandDto(command: CreateStaticUnitCommandDto): CreateStaticUnitCommand {
+function parseCreateStaticCommand(command: CreateStaticUnitCommandDto): CreateStaticUnitCommand {
   return CreateStaticUnitCommand.load(
     command.id,
     command.timestamp,
@@ -126,6 +146,24 @@ function parseCreateStaticCommandDto(command: CreateStaticUnitCommandDto): Creat
 
 function parseRemoveStaticUnitCommand(command: RemoveStaticUnitCommandDto): RemoveStaticUnitCommand {
   return RemoveStaticUnitCommand.load(
+    command.id,
+    command.timestamp,
+    PositionVo.new(command.position.x, command.position.z)
+  );
+}
+
+function parseCreateFenceCommand(command: CreateFenceUnitCommandDto): CreateFenceUnitCommand {
+  return CreateFenceUnitCommand.load(
+    command.id,
+    command.timestamp,
+    command.itemId,
+    PositionVo.new(command.position.x, command.position.z),
+    DirectionVo.new(command.direction)
+  );
+}
+
+function parseRemoveFenceUnitCommand(command: RemoveFenceUnitCommandDto): RemoveFenceUnitCommand {
+  return RemoveFenceUnitCommand.load(
     command.id,
     command.timestamp,
     PositionVo.new(command.position.x, command.position.z)
@@ -186,9 +224,13 @@ function parseRemoveRemovePlayerCommand(command: RemovePlayerCommandDto): Remove
 
 export const parseCommandDto = (commandDto: CommandDto) => {
   if (commandDto.name === CommandNameEnum.CreateStaticUnit) {
-    return parseCreateStaticCommandDto(commandDto);
+    return parseCreateStaticCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemoveStaticUnit) {
     return parseRemoveStaticUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.CreateFenceUnit) {
+    return parseCreateFenceCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemoveFenceUnit) {
+    return parseRemoveFenceUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.CreatePortalUnit) {
     return parseCreatePortalUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemovePortalUnit) {
@@ -225,6 +267,24 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.RemoveStaticUnit,
+      position: newPositionDto(command.getPosition()),
+    };
+    return commandDto;
+  } else if (command instanceof CreateFenceUnitCommand) {
+    const commandDto: CreateFenceUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.CreateFenceUnit,
+      itemId: command.getItemId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
+    };
+    return commandDto;
+  } else if (command instanceof RemoveFenceUnitCommand) {
+    const commandDto: RemoveFenceUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.RemoveFenceUnit,
       position: newPositionDto(command.getPosition()),
     };
     return commandDto;
@@ -296,6 +356,8 @@ export type CommandDto =
   | ChangePlayerHeldItemCommandDto
   | CreateStaticUnitCommandDto
   | RemoveStaticUnitCommandDto
+  | CreateFenceUnitCommandDto
+  | RemoveFenceUnitCommandDto
   | CreatePortalUnitCommandDto
   | RemovePortalUnitCommandDto
   | RotateUnitCommandDto;

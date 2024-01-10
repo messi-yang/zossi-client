@@ -20,6 +20,8 @@ import { RemoveStaticUnitCommand } from '@/logics/world-journey/managers/command
 import { RemovePortalUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-portal-unit-command';
 import { RotateUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/rotate-unit-command';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
+import { CreateFenceUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/create-fence-unit-command';
+import { RemoveFenceUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-fence-unit-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -228,6 +230,17 @@ export function Provider({ children }: Props) {
     [worldJourney]
   );
 
+  const createFenceUnit = useCallback(
+    (itemId: string, position: PositionVo, direction: DirectionVo) => {
+      if (!worldJourney || !worldJourneyApi.current) return;
+
+      const command = CreateFenceUnitCommand.new(itemId, position, direction);
+      worldJourney.executeCommand(command);
+      worldJourneyApi.current.sendCommand(command);
+    },
+    [worldJourney]
+  );
+
   const createPortalUnit = useCallback(
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourney || !worldJourneyApi.current) return;
@@ -252,6 +265,8 @@ export function Provider({ children }: Props) {
     const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
     if (compatibleUnitType === UnitTypeEnum.Static) {
       createStaticUnit(myPlayerHeldItem.getId(), unitPos, direction);
+    } else if (compatibleUnitType === UnitTypeEnum.Fence) {
+      createFenceUnit(myPlayerHeldItem.getId(), unitPos, direction);
     } else if (compatibleUnitType === UnitTypeEnum.Portal) {
       createPortalUnit(myPlayerHeldItem.getId(), unitPos, direction);
     }
@@ -267,6 +282,10 @@ export function Provider({ children }: Props) {
 
     if (unitAtPos.getType() === UnitTypeEnum.Static) {
       const command = RemoveStaticUnitCommand.new(unitPos);
+      worldJourney.executeCommand(command);
+      worldJourneyApi.current.sendCommand(command);
+    } else if (unitAtPos.getType() === UnitTypeEnum.Fence) {
+      const command = RemoveFenceUnitCommand.new(unitPos);
       worldJourney.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     } else if (unitAtPos.getType() === UnitTypeEnum.Portal) {

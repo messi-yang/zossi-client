@@ -21,6 +21,22 @@ export class PositionVo {
     return this.z;
   }
 
+  public getLeftPosition(): PositionVo {
+    return PositionVo.new(this.x - 1, this.z);
+  }
+
+  public getTopPosition(): PositionVo {
+    return PositionVo.new(this.x, this.z - 1);
+  }
+
+  public getRightPosition(): PositionVo {
+    return PositionVo.new(this.x + 1, this.z);
+  }
+
+  public getBottomPosition(): PositionVo {
+    return PositionVo.new(this.x, this.z + 1);
+  }
+
   public shift(x: number, z: number): PositionVo {
     return PositionVo.new(this.x + x, this.z + z);
   }

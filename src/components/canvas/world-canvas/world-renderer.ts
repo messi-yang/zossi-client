@@ -10,7 +10,9 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { PlayerModel } from '@/models/world/player/player-model';
-import { createInstancesInScene } from './tjs-utils';
+import { InstanceState, createInstancesInScene } from './tjs-utils';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
+import { DirectionVo } from '@/models/world/common/direction-vo';
 
 const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
@@ -84,7 +86,7 @@ export class WorldRenderer {
     element.appendChild(this.renderer.domElement);
   }
 
-  public destroy() {
+  public destroy(element: HTMLElement) {
     this.baseModelInstancesCleaner();
 
     Object.values(this.existingPlayerNameFontMeshesMap).forEach((mesh) => {
@@ -96,6 +98,8 @@ export class WorldRenderer {
     });
 
     this.baseModelInstancesCleaner();
+
+    element.removeChild(this.renderer.domElement);
   }
 
   private async downloadFont(fontSrc: string): Promise<Font> {
@@ -254,7 +258,7 @@ export class WorldRenderer {
         rotate: 0,
       });
     });
-    const [removeInstancesFromScene] = createInstancesInScene(this.scene, baseModel, grassInstanceStates);
+    const removeInstancesFromScene = createInstancesInScene(this.scene, baseModel, grassInstanceStates);
     this.baseModelInstancesCleaner = removeInstancesFromScene;
   }
 
@@ -305,7 +309,85 @@ export class WorldRenderer {
     return newRenderer;
   }
 
-  public updateUnitsOfItem(itemId: string, units: UnitModel[]) {
+  private updateFenceUnits(item: ItemModel, units: UnitModel[], getUnit: (position: PositionVo) => UnitModel | null) {
+    const itemId = item.getId();
+
+    const itemModels = this.itemModelsMap[itemId];
+    if (!itemModels) return;
+
+    this.itemModelInstancesCleanerMap[itemId]?.();
+
+    const unitInstancesByModel: Record<0 | 1 | 2 | 3, InstanceState[]> = {
+      0: [],
+      1: [],
+      2: [],
+      3: [],
+    };
+    units.forEach((unit) => {
+      const unitPosition = unit.getPosition();
+      const sameAdjacentUnitFlags = [
+        getUnit(unitPosition.getBottomPosition())?.getItemId() === itemId,
+        getUnit(unitPosition.getRightPosition())?.getItemId() === itemId,
+        getUnit(unitPosition.getTopPosition())?.getItemId() === itemId,
+        getUnit(unitPosition.getLeftPosition())?.getItemId() === itemId,
+      ];
+      const sameAdjacentUnitCount = sameAdjacentUnitFlags.filter((flag) => flag).length;
+      let modelIndex: 0 | 1 | 2 | 3 = 0;
+      let unitDirection = DirectionVo.new(0);
+      if (sameAdjacentUnitCount === 4) {
+        modelIndex = 3;
+        unitDirection = DirectionVo.new(0);
+      } else if (sameAdjacentUnitCount === 3) {
+        modelIndex = 2;
+        unitDirection = DirectionVo.new(sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0);
+      } else if (sameAdjacentUnitCount === 2) {
+        if (
+          sameAdjacentUnitFlags[0] === sameAdjacentUnitFlags[1] ||
+          sameAdjacentUnitFlags[1] === sameAdjacentUnitFlags[2]
+        ) {
+          modelIndex = 1;
+          if (sameAdjacentUnitFlags[0] && sameAdjacentUnitFlags[1]) {
+            unitDirection = DirectionVo.new(2);
+          } else if (sameAdjacentUnitFlags[1] && sameAdjacentUnitFlags[2]) {
+            unitDirection = DirectionVo.new(3);
+          } else if (sameAdjacentUnitFlags[2] && sameAdjacentUnitFlags[3]) {
+            unitDirection = DirectionVo.new(0);
+          } else if (sameAdjacentUnitFlags[3] && sameAdjacentUnitFlags[0]) {
+            unitDirection = DirectionVo.new(1);
+          }
+        } else {
+          modelIndex = 0;
+          unitDirection = DirectionVo.new(sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0);
+        }
+      } else if (sameAdjacentUnitCount === 1) {
+        modelIndex = 0;
+        unitDirection = DirectionVo.new((sameAdjacentUnitFlags.findIndex((flag) => flag) || 0) + 1);
+      }
+
+      unitInstancesByModel[modelIndex].push({
+        x: unit.getPosition().getX(),
+        y: 0,
+        z: unit.getPosition().getZ(),
+        rotate: (Math.PI / 2) * (unitDirection ? unitDirection.toNumber() : unit.getDirection().toNumber()),
+      });
+    });
+
+    const cleaners: (() => void)[] = [];
+    cleaners.push(createInstancesInScene(this.scene, itemModels[0], unitInstancesByModel[0]));
+    cleaners.push(createInstancesInScene(this.scene, itemModels[1], unitInstancesByModel[1]));
+    cleaners.push(createInstancesInScene(this.scene, itemModels[2], unitInstancesByModel[2]));
+    cleaners.push(createInstancesInScene(this.scene, itemModels[3], unitInstancesByModel[3]));
+
+    this.itemModelInstancesCleanerMap[itemId] = () => {
+      cleaners.forEach((cleaner) => {
+        cleaner();
+      });
+    };
+  }
+
+  private updateOtherUnits(item: ItemModel, units: UnitModel[]) {
+    const itemId = item.getId();
+
     const itemModels = this.itemModelsMap[itemId];
     if (!itemModels) return;
 
@@ -317,8 +399,17 @@ export class WorldRenderer {
       z: unit.getPosition().getZ(),
       rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
     }));
-    const [removeInstancesFromScene] = createInstancesInScene(this.scene, itemModels[0], itemUnitInstanceStates);
+    const removeInstancesFromScene = createInstancesInScene(this.scene, itemModels[0], itemUnitInstanceStates);
     this.itemModelInstancesCleanerMap[itemId] = removeInstancesFromScene;
+  }
+
+  public updateUnitsOfItem(item: ItemModel, units: UnitModel[], getUnit: (position: PositionVo) => UnitModel | null) {
+    const itemCompatibleUnitType = item.getCompatibleUnitType();
+    if (itemCompatibleUnitType === UnitTypeEnum.Fence) {
+      this.updateFenceUnits(item, units, getUnit);
+    } else {
+      this.updateOtherUnits(item, units);
+    }
   }
 
   public updatePlayers(players: PlayerModel[]): void {
@@ -332,7 +423,7 @@ export class WorldRenderer {
       rotate: (player.getDirection().toNumber() * Math.PI) / 2,
     }));
 
-    const [removeInstancesFromScene] = createInstancesInScene(this.scene, this.playerModel, playerInstanceStates);
+    const removeInstancesFromScene = createInstancesInScene(this.scene, this.playerModel, playerInstanceStates);
 
     this.playerModelInstancesCleaner = removeInstancesFromScene;
   }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useCallback } from 'react';
 
 import { PlayerModel } from '@/models/world/player/player-model';
 import { useDomRect } from '@/hooks/use-dom-rect';
@@ -7,6 +7,7 @@ import { dataTestids } from './data-test-ids';
 import { WorldJourney } from '@/logics/world-journey';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { WorldRenderer } from './world-renderer';
+import { PositionVo } from '@/models/world/common/position-vo';
 
 type Props = {
   worldJourney: WorldJourney;
@@ -22,7 +23,9 @@ export function WorldCanvas({ worldJourney }: Props) {
     worldRenderer.mount(wrapperRef.current);
 
     return () => {
-      worldRenderer.destroy();
+      if (!wrapperRef.current) return;
+
+      worldRenderer.destroy(wrapperRef.current);
     };
   }, [worldRenderer, wrapperRef.current]);
 
@@ -60,11 +63,20 @@ export function WorldCanvas({ worldJourney }: Props) {
     };
   }, [worldRenderer]);
 
+  const getUnit = useCallback(
+    (position: PositionVo) => {
+      return worldJourney.getUnit(position);
+    },
+    [worldJourney]
+  );
+
   useEffect(() => {
     return worldRenderer.subscribeItemModelsDownloadedEvent((itemId) => {
-      worldRenderer.updateUnitsOfItem(itemId, worldJourney.getUnitsOfItem(itemId));
+      const item = worldJourney.getItem(itemId);
+      if (!item) return;
+      worldRenderer.updateUnitsOfItem(item, worldJourney.getUnitsOfItem(itemId), getUnit);
     });
-  }, [worldJourney, worldRenderer]);
+  }, [worldJourney, worldRenderer, getUnit]);
 
   useEffect(() => {
     return worldJourney.subscribeItemAdded((item) => {
@@ -74,9 +86,11 @@ export function WorldCanvas({ worldJourney }: Props) {
 
   useEffect(() => {
     return worldJourney.subscribeUnitsChanged((itemId, units) => {
-      worldRenderer.updateUnitsOfItem(itemId, units);
+      const item = worldJourney.getItem(itemId);
+      if (!item) return;
+      worldRenderer.updateUnitsOfItem(item, units, getUnit);
     });
-  }, [worldJourney, worldRenderer]);
+  }, [worldJourney, worldRenderer, getUnit]);
 
   useEffect(() => {
     return worldJourney.subscribeMyPlayerChanged((_, newMyPlayer) => {
