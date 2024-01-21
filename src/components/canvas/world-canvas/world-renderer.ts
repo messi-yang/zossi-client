@@ -339,7 +339,7 @@ export class WorldRenderer {
         unitDirection = DirectionVo.new(0);
       } else if (sameAdjacentUnitCount === 3) {
         modelIndex = 2;
-        unitDirection = DirectionVo.new(sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0);
+        unitDirection = DirectionVo.new((sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0) + 1);
       } else if (sameAdjacentUnitCount === 2) {
         if (
           sameAdjacentUnitFlags[0] === sameAdjacentUnitFlags[1] ||
@@ -347,13 +347,13 @@ export class WorldRenderer {
         ) {
           modelIndex = 1;
           if (sameAdjacentUnitFlags[0] && sameAdjacentUnitFlags[1]) {
-            unitDirection = DirectionVo.new(2);
-          } else if (sameAdjacentUnitFlags[1] && sameAdjacentUnitFlags[2]) {
-            unitDirection = DirectionVo.new(3);
-          } else if (sameAdjacentUnitFlags[2] && sameAdjacentUnitFlags[3]) {
             unitDirection = DirectionVo.new(0);
-          } else if (sameAdjacentUnitFlags[3] && sameAdjacentUnitFlags[0]) {
+          } else if (sameAdjacentUnitFlags[1] && sameAdjacentUnitFlags[2]) {
             unitDirection = DirectionVo.new(1);
+          } else if (sameAdjacentUnitFlags[2] && sameAdjacentUnitFlags[3]) {
+            unitDirection = DirectionVo.new(2);
+          } else if (sameAdjacentUnitFlags[3] && sameAdjacentUnitFlags[0]) {
+            unitDirection = DirectionVo.new(3);
           }
         } else {
           modelIndex = 0;

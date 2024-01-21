@@ -6,6 +6,7 @@ import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionEnum } from '@/models/world/common/direction-enum';
+import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 
 type UnitDtoBase = {
   type: UnitTypeEnum;
@@ -22,6 +23,14 @@ interface StaticUnitDto extends UnitDtoBase {
   info: null;
 }
 
+interface FenceUnitDto extends UnitDtoBase {
+  type: UnitTypeEnum.Fence;
+  itemId: string;
+  position: PositionDto;
+  direction: DirectionEnum;
+  info: null;
+}
+
 interface PortalUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Portal;
   itemId: string;
@@ -32,7 +41,7 @@ interface PortalUnitDto extends UnitDtoBase {
   };
 }
 
-type UnitDto = StaticUnitDto | PortalUnitDto;
+type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto;
 
 function parseUnitDto(unitDto: UnitDto): UnitModel {
   const position = PositionVo.new(unitDto.position.x, unitDto.position.z);
@@ -42,6 +51,8 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
       ? PositionVo.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
       : null;
     return PortalUnitModel.new(unitDto.itemId, position, direction, tartgetPosition);
+  } else if (unitDto.type === UnitTypeEnum.Fence) {
+    return FenceUnitModel.new(unitDto.itemId, position, direction);
   } else {
     return StaticUnitModel.new(unitDto.itemId, position, direction);
   }
