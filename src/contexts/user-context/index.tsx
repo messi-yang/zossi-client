@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
-import { UserApi } from '@/apis/user-api';
-import { LocalStorage } from '@/storages/local-storage';
+import { UserApi } from '@/adapters/apis/user-api';
+import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
 import { UserModel } from '@/models/iam/user-model';
 
 type ContextValue = {
@@ -29,7 +29,7 @@ function Provider({ children }: Props) {
   const [userApi] = useState<UserApi>(() => UserApi.new());
   const [user, setUser] = useState<UserModel | null>(null);
   const [isUpdatingMyUser, setIsUpdatingMyUser] = useState(false);
-  const [localStorage] = useState(() => LocalStorage.get());
+  const [authSessionStorage] = useState(() => AuthSessionStorage.get());
 
   const getMyUser = useCallback(async () => {
     const returnedUser = await userApi.getMyUser();
@@ -53,12 +53,12 @@ function Provider({ children }: Props) {
   );
 
   useEffect(() => {
-    const accessToken = localStorage.getAccessToken();
+    const accessToken = authSessionStorage.getAccessToken();
     if (!accessToken) {
       return;
     }
     getMyUser();
-  }, [localStorage.getAccessToken()]);
+  }, [authSessionStorage.getAccessToken()]);
 
   return (
     <Context.Provider

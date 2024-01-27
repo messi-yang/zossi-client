@@ -1,5 +1,5 @@
 import { Axios } from 'axios';
-import { AxiosProvider } from '@/providers/axios-provider';
+import { AxiosProvider } from '@/adapters/apis/axios-provider';
 import { WorldMemberModel } from '@/models/iam/world-member-model';
 import { WorldMemberDto, parseWorldMemberDto } from '../dtos/world-member-dto';
 

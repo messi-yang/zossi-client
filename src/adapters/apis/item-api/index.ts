@@ -1,6 +1,6 @@
 import { Axios } from 'axios';
 import { ItemModel } from '@/models/world/item/item-model';
-import { AxiosProvider } from '@/providers/axios-provider';
+import { AxiosProvider } from '@/adapters/apis/axios-provider';
 import { ItemDto, parseItemDto } from '../dtos/item-dto';
 
 export class ItemApi {

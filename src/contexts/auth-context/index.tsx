@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { AuthApi } from '@/apis/auth-api';
-import { LocalStorage } from '@/storages/local-storage';
+import { AuthApi } from '@/adapters/apis/auth-api';
+import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
 import { EventMediator, EventType } from '@/events';
 
 type ContextValue = {
@@ -31,7 +31,7 @@ type Props = {
 function Provider({ children }: Props) {
   const [eventMediator] = useState(() => EventMediator.new());
   const [authApi] = useState<AuthApi>(() => AuthApi.new());
-  const [localStorage] = useState(() => LocalStorage.get());
+  const [authSessionStorage] = useState(() => AuthSessionStorage.get());
   const router = useRouter();
 
   const [clientRedirectPath, setClientRedirectPath] = useState('/dashboard/worlds');
@@ -41,11 +41,11 @@ function Provider({ children }: Props) {
 
   const [isSingedIn, setIsSignedIn] = useState(false);
   useEffect(() => {
-    const accessToken = localStorage.getAccessToken();
+    const accessToken = authSessionStorage.getAccessToken();
     if (accessToken) {
       setIsSignedIn(true);
     }
-  }, [localStorage]);
+  }, [authSessionStorage]);
 
   const startGoogleOauthFlow = useCallback(() => {
     authApi.startGoogleOauthFlow(clientRedirectPath);
@@ -53,18 +53,18 @@ function Provider({ children }: Props) {
 
   const signIn = useCallback(
     (accessToken: string) => {
-      localStorage.setAccessToken(accessToken);
+      authSessionStorage.setAccessToken(accessToken);
       setIsSignedIn(true);
     },
-    [localStorage]
+    [authSessionStorage]
   );
 
   const signOut = useCallback(async () => {
-    localStorage.removeAccessToken();
+    authSessionStorage.removeAccessToken();
 
     await router.push('/');
     window.location.reload();
-  }, [localStorage]);
+  }, [authSessionStorage]);
 
   useEffect(() => {
     const unauthorizeHandler = () => {

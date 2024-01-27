@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
-import { WorldMemberApi } from '@/apis/world-member-api';
+import { WorldMemberApi } from '@/adapters/apis/world-member-api';
 import { WorldMemberModel } from '@/models/iam/world-member-model';
 
 type ContextValue = {

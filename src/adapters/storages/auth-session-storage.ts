@@ -1,13 +1,13 @@
-const singleton: LocalStorage | null = null;
+const singleton: AuthSessionStorage | null = null;
 
-export class LocalStorage {
+export class AuthSessionStorage {
   constructor(private webStorage: Storage) {}
 
   static get() {
     if (singleton) {
       return singleton;
     }
-    return new LocalStorage(globalThis.localStorage);
+    return new AuthSessionStorage(globalThis.localStorage);
   }
 
   getAccessToken(): string | null {

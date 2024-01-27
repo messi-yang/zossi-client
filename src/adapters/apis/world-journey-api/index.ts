@@ -3,7 +3,7 @@ import type { PingCommandDto } from './commands';
 import { WorldModel } from '@/models/world/world/world-model';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
-import { LocalStorage } from '@/storages/local-storage';
+import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
 import { WorldJourneyService } from '@/services/world-journey-service';
 import { DateVo } from '@/models/general/date-vo';
 import { Event, EventNameEnum, WorldEnteredEvent } from './events';
@@ -35,8 +35,8 @@ export class WorldJourneyApi {
       onOpen: () => void;
     }
   ) {
-    const localStorage = LocalStorage.get();
-    const accessToken = localStorage.getAccessToken();
+    const authSessionStorage = AuthSessionStorage.get();
+    const accessToken = authSessionStorage.getAccessToken();
 
     const socketUrl = `${process.env.API_SOCKET_URL}/api/world-journey/?id=${worldId}&access-token=${accessToken}`;
     const socket = new WebSocket(socketUrl, []);

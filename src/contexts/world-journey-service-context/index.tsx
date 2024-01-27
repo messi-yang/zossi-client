@@ -1,6 +1,6 @@
 import { createContext, useCallback, useRef, useState, useMemo, useEffect } from 'react';
-import { WorldJourneyApi } from '@/apis/world-journey-api';
-import { ItemApi } from '@/apis/item-api';
+import { WorldJourneyApi } from '@/adapters/apis/world-journey-api';
+import { ItemApi } from '@/adapters/apis/item-api';
 import { ItemModel } from '@/models/world/item/item-model';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { WorldJourneyService } from '@/services/world-journey-service';

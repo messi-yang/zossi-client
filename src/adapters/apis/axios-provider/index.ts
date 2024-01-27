@@ -1,5 +1,5 @@
 import axios, { Axios } from 'axios';
-import { LocalStorage } from '@/storages/local-storage';
+import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
 import { EventMediator, eventFactory } from '@/events';
 
 export class AxiosProvider {
@@ -8,8 +8,8 @@ export class AxiosProvider {
       baseURL,
     });
     newAxios.interceptors.request.use((config) => {
-      const localStorage = LocalStorage.get();
-      const accessToken = localStorage.getAccessToken();
+      const authSessionStorage = AuthSessionStorage.get();
+      const accessToken = authSessionStorage.getAccessToken();
       config.headers.Authorization = accessToken ? `Bearer ${accessToken}` : '';
       return config;
     });
@@ -17,8 +17,8 @@ export class AxiosProvider {
       (response) => response,
       (error) => {
         if (error.response && error.response.status === 401) {
-          const localStorage = LocalStorage.get();
-          localStorage.removeAccessToken();
+          const authSessionStorage = AuthSessionStorage.get();
+          authSessionStorage.removeAccessToken();
 
           const eventMediator = EventMediator.new();
           eventMediator.publish(eventFactory.newApiUnauthorizedEvent());

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
-import { WorldApi } from '@/apis/world-api';
+import { WorldApi } from '@/adapters/apis/world-api';
 import { WorldModel } from '@/models/world/world/world-model';
 
 type StatusMap = {
