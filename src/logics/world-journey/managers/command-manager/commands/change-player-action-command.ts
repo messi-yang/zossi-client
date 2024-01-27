@@ -1,8 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class ChangePlayerActionCommand implements Command {
   private id: string;
@@ -21,7 +21,7 @@ export class ChangePlayerActionCommand implements Command {
   }
 
   static new(playerId: string, action: PlayerActionVo) {
-    return new ChangePlayerActionCommand(uuidv4(), DateVo.now().getTimestamp(), playerId, action);
+    return new ChangePlayerActionCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, action);
   }
 
   static load(id: string, timestamp: number, playerId: string, action: PlayerActionVo) {

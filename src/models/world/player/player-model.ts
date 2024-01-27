@@ -1,10 +1,10 @@
-import { v4 as uuidv4 } from 'uuid';
 import { DirectionVo } from '../common/direction-vo';
 import { PlayerActionVo } from './player-action-vo';
 import { PlayerActionNameEnum } from './player-action-name-enum';
 import { DateVo } from '@/models/general/date-vo';
 import { PrecisePositionVo } from '../common/precise-position-vo';
 import { PositionVo } from '../common/position-vo';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class PlayerModel {
   constructor(
@@ -29,7 +29,7 @@ export class PlayerModel {
 
   static mockup(): PlayerModel {
     return PlayerModel.new(
-      uuidv4(),
+      generateUuidV4(),
       'Test Player',
       null,
       PlayerActionVo.new(PlayerActionNameEnum.Stand, PrecisePositionVo.new(0, 0), DirectionVo.new(2), DateVo.now()),

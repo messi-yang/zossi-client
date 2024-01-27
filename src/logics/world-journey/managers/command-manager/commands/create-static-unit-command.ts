@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { PositionVo } from '@/models/world/common/position-vo';
@@ -6,6 +5,7 @@ import { DirectionVo } from '@/models/world/common/direction-vo';
 import { DateVo } from '@/models/general/date-vo';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class CreateStaticUnitCommand implements Command {
   private id: string;
@@ -27,7 +27,7 @@ export class CreateStaticUnitCommand implements Command {
   }
 
   static new(itemId: string, position: PositionVo, direction: DirectionVo) {
-    return new CreateStaticUnitCommand(uuidv4(), DateVo.now().getTimestamp(), itemId, position, direction);
+    return new CreateStaticUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), itemId, position, direction);
   }
 
   static load(id: string, timestamp: number, itemId: string, position: PositionVo, direction: DirectionVo) {

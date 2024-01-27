@@ -1,7 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class ChangePlayerHeldItemCommand implements Command {
   private id: string;
@@ -20,7 +20,7 @@ export class ChangePlayerHeldItemCommand implements Command {
   }
 
   static new(playerId: string, itemId: string) {
-    return new ChangePlayerHeldItemCommand(uuidv4(), DateVo.now().getTimestamp(), playerId, itemId);
+    return new ChangePlayerHeldItemCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, itemId);
   }
 
   static load(id: string, timestamp: number, playerId: string, itemId: string) {

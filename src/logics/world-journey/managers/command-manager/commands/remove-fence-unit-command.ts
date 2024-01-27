@@ -1,8 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class RemoveFenceUnitCommand implements Command {
   private id: string;
@@ -18,7 +18,7 @@ export class RemoveFenceUnitCommand implements Command {
   }
 
   static new(position: PositionVo) {
-    return new RemoveFenceUnitCommand(uuidv4(), DateVo.now().getTimestamp(), position);
+    return new RemoveFenceUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), position);
   }
 
   static load(id: string, timestamp: number, position: PositionVo) {

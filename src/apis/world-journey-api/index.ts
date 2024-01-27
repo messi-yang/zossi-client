@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { CommandNameEnum, parseCommandDto, toCommandDto } from './commands';
 import type { PingCommandDto } from './commands';
 import { WorldModel } from '@/models/world/world/world-model';
@@ -12,6 +11,7 @@ import { Command } from '@/logics/world-journey/managers/command-manager/command
 import { parseWorldDto } from '../dtos/world-dto';
 import { parseUnitDto } from '../dtos/unit-dto';
 import { parsePlayerDto } from '../dtos/player-dto';
+import { generateUuidV4 } from '@/utils/uuid';
 
 function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
@@ -108,7 +108,7 @@ export class WorldJourneyApi {
 
   public ping() {
     const commandDto: PingCommandDto = {
-      id: uuidv4(),
+      id: generateUuidV4(),
       timestamp: DateVo.now().getTimestamp(),
       name: CommandNameEnum.Ping,
     };

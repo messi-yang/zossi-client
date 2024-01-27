@@ -1,10 +1,10 @@
-import { v4 as uuidv4 } from 'uuid';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from '../command';
 import { DateVo } from '@/models/general/date-vo';
 import { CommandParams } from '../command-params';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class SendPlayerIntoPortalCommand implements Command {
   private id: string;
@@ -23,7 +23,7 @@ export class SendPlayerIntoPortalCommand implements Command {
   }
 
   static new(playerId: string, position: PositionVo) {
-    return new SendPlayerIntoPortalCommand(uuidv4(), DateVo.now().getTimestamp(), playerId, position);
+    return new SendPlayerIntoPortalCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, position);
   }
 
   static load(id: string, timestamp: number, playerId: string, position: PositionVo) {

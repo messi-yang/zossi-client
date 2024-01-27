@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
 import { UnitTypeEnum } from '../unit/unit-type-enum';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class ItemModel {
   constructor(
@@ -22,7 +22,7 @@ export class ItemModel {
 
   static mockup(): ItemModel {
     return ItemModel.new(
-      uuidv4(),
+      generateUuidV4(),
       'stone',
       true,
       '/placeholder-item.png',

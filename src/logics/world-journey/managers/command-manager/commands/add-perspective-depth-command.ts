@@ -1,7 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class AddPerspectiveDepthCommand implements Command {
   private id: string;
@@ -14,7 +14,7 @@ export class AddPerspectiveDepthCommand implements Command {
   }
 
   static new() {
-    return new AddPerspectiveDepthCommand(uuidv4(), DateVo.now().getTimestamp());
+    return new AddPerspectiveDepthCommand(generateUuidV4(), DateVo.now().getTimestamp());
   }
 
   static load(id: string, timestamp: number) {

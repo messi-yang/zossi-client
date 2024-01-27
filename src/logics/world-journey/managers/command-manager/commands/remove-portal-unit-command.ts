@@ -1,9 +1,9 @@
-import { v4 as uuidv4 } from 'uuid';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/general/date-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class RemovePortalUnitCommand implements Command {
   private id: string;
@@ -19,7 +19,7 @@ export class RemovePortalUnitCommand implements Command {
   }
 
   static new(position: PositionVo) {
-    return new RemovePortalUnitCommand(uuidv4(), DateVo.now().getTimestamp(), position);
+    return new RemovePortalUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), position);
   }
 
   static load(id: string, timestamp: number, position: PositionVo) {

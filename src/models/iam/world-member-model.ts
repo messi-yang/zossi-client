@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from 'uuid';
 import { WorldRoleVo } from '../global/world-role-vo';
 import { UserModel } from './user-model';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class WorldMemberModel {
   constructor(private id: string, private worldId: string, private user: UserModel, private worldRole: WorldRoleVo) {}
@@ -10,7 +10,7 @@ export class WorldMemberModel {
   }
 
   static mockup(): WorldMemberModel {
-    return new WorldMemberModel(uuidv4(), uuidv4(), UserModel.mockup(), WorldRoleVo.new('admin'));
+    return new WorldMemberModel(generateUuidV4(), generateUuidV4(), UserModel.mockup(), WorldRoleVo.new('admin'));
   }
 
   public getId(): string {

@@ -1,8 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
 import { BoundVo } from '../common/bound-vo';
 import { PositionVo } from '../common/position-vo';
 import { UserModel } from '../../iam/user-model';
 import { DateVo } from '../../general/date-vo';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class WorldModel {
   constructor(
@@ -25,7 +25,7 @@ export class WorldModel {
 
   static mockup = (): WorldModel =>
     new WorldModel(
-      uuidv4(),
+      generateUuidV4(),
       'Hello World',
       UserModel.mockup(),
       BoundVo.new(PositionVo.new(-10, -10), PositionVo.new(10, 10)),

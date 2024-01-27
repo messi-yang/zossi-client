@@ -1,8 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
 import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
 import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
+import { generateUuidV4 } from '@/utils/uuid';
 
 export class FenceUnitModel implements UnitModel {
   constructor(private itemId: string, private position: PositionVo, private direction: DirectionVo) {}
@@ -11,7 +11,7 @@ export class FenceUnitModel implements UnitModel {
     new FenceUnitModel(itemId, position, direction);
 
   static mockup(): FenceUnitModel {
-    return new FenceUnitModel(uuidv4(), PositionVo.new(0, 0), DirectionVo.newDown());
+    return new FenceUnitModel(generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown());
   }
 
   public clone(): FenceUnitModel {
