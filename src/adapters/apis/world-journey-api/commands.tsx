@@ -19,7 +19,6 @@ import { RemoveFenceUnitCommand } from '@/services/world-journey-service/manager
 
 enum CommandNameEnum {
   Ping = 'PING',
-  DisplayError = 'DISPLAY_ERROR',
   AddPlayer = 'ADD_PLAYER',
   RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',
@@ -214,7 +213,7 @@ function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDt
   );
 }
 
-function parseChangeChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
+function parseChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
   return ChangePlayerHeldItemCommand.load(command.id, command.timestamp, command.playerId, command.itemId);
 }
 
@@ -244,7 +243,7 @@ export const parseCommandDto = (commandDto: CommandDto) => {
   } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
     return parseSendPlayerIntoPortalCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerHeldItem) {
-    return parseChangeChangePlayerHeldItemCommand(commandDto);
+    return parseChangePlayerHeldItemCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemovePlayer) {
     return parseRemoveRemovePlayerCommand(commandDto);
   }
