@@ -1,15 +1,12 @@
 import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
-import { UnitModel } from './unit-model';
+import { BaseUnitModel, UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
 
-export class PortalUnitModel implements UnitModel {
-  constructor(
-    private itemId: string,
-    private position: PositionVo,
-    private direction: DirectionVo,
-    private targetPosition: PositionVo | null
-  ) {}
+export class PortalUnitModel extends BaseUnitModel implements UnitModel {
+  constructor(itemId: string, position: PositionVo, direction: DirectionVo, private targetPosition: PositionVo | null) {
+    super(itemId, position, direction);
+  }
 
   static new = (
     itemId: string,
@@ -28,27 +25,11 @@ export class PortalUnitModel implements UnitModel {
   }
 
   public clone(): PortalUnitModel {
-    return new PortalUnitModel(this.itemId, this.position, this.direction, this.targetPosition);
+    return new PortalUnitModel(this.getItemId(), this.getPosition(), this.getDirection(), this.targetPosition);
   }
 
   public getType(): UnitTypeEnum.Portal {
     return UnitTypeEnum.Portal;
-  }
-
-  public getItemId(): string {
-    return this.itemId;
-  }
-
-  public getPosition(): PositionVo {
-    return this.position;
-  }
-
-  public getDirection(): DirectionVo {
-    return this.direction;
-  }
-
-  public changeDirection(direction: DirectionVo) {
-    this.direction = direction;
   }
 
   public getTargetPosition(): PositionVo | null {

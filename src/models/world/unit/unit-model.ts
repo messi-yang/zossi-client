@@ -10,3 +10,23 @@ export interface UnitModel {
   getDirection(): DirectionVo;
   changeDirection(dir: DirectionVo): void;
 }
+
+export abstract class BaseUnitModel {
+  constructor(private itemId: string, private position: PositionVo, private direction: DirectionVo) {}
+
+  public getItemId(): string {
+    return this.itemId;
+  }
+
+  public getPosition(): PositionVo {
+    return this.position;
+  }
+
+  public getDirection(): DirectionVo {
+    return this.direction;
+  }
+
+  public changeDirection(direction: DirectionVo) {
+    this.direction = direction;
+  }
+}
