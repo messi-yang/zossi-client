@@ -13,7 +13,7 @@ import { ItemAddedHandler, ItemManager, PlaceholderItemIdsAddedHandler } from '.
 import { Command } from './managers/command-manager/command';
 import { CommandManager } from './managers/command-manager';
 
-export class WorldJourney {
+export class WorldJourneyService {
   private world: WorldModel;
 
   private unitManager: UnitManager;
@@ -57,7 +57,7 @@ export class WorldJourney {
   }
 
   static new(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
-    return new WorldJourney(world, players, myPlayerId, units);
+    return new WorldJourneyService(world, players, myPlayerId, units);
   }
 
   public executeCommand(command: Command) {

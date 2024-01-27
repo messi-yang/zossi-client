@@ -4,10 +4,10 @@ import { WorldModel } from '@/models/world/world/world-model';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { LocalStorage } from '@/storages/local-storage';
-import { WorldJourney } from '@/logics/world-journey';
+import { WorldJourneyService } from '@/services/world-journey-service';
 import { DateVo } from '@/models/general/date-vo';
 import { Event, EventNameEnum, WorldEnteredEvent } from './events';
-import { Command } from '@/logics/world-journey/managers/command-manager/command';
+import { Command } from '@/services/world-journey-service/managers/command-manager/command';
 import { parseWorldDto } from '../dtos/world-dto';
 import { parseUnitDto } from '../dtos/unit-dto';
 import { parsePlayerDto } from '../dtos/player-dto';
@@ -28,7 +28,7 @@ export class WorldJourneyApi {
   constructor(
     worldId: string,
     events: {
-      onWorldEntered: (worldJourney: WorldJourney) => void;
+      onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandSucceeded: (command: Command) => void;
       onErrored: (message: string) => void;
       onClose: () => void;
@@ -50,8 +50,8 @@ export class WorldJourneyApi {
       console.log(event);
       if (event.name === EventNameEnum.WorldEntered) {
         const [world, units, myPlayerId, players] = parseWorldEnteredEvent(event);
-        const worldJourney = WorldJourney.new(world, players, myPlayerId, units);
-        events.onWorldEntered(worldJourney);
+        const worldJourneyService = WorldJourneyService.new(world, players, myPlayerId, units);
+        events.onWorldEntered(worldJourneyService);
       } else if (event.name === EventNameEnum.CommandSucceeded) {
         const command = parseCommandDto(event.command);
         if (!command) return;
@@ -81,7 +81,7 @@ export class WorldJourneyApi {
   static new(
     worldId: string,
     events: {
-      onWorldEntered: (worldJourney: WorldJourney) => void;
+      onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandSucceeded: (command: Command) => void;
       onErrored: (message: string) => void;
       onClose: () => void;

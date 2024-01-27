@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 
 import { useHotKeys } from '@/hooks/use-hot-keys';
-import { WorldJourneyContext } from '@/contexts/world-journey-context';
+import { WorldJourneyServiceContext } from '@/contexts/world-journey-service-context';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { WorldCanvas } from '@/components/canvas/world-canvas';
 import { MessageModal } from '@/components/modals/message-modal';
@@ -38,7 +38,7 @@ const Page: NextPage = function Page() {
 
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
-    worldJourney,
+    worldJourneyService,
     connectionStatus,
     items,
     enterWorld,
@@ -51,18 +51,18 @@ const Page: NextPage = function Page() {
     createUnit,
     removeUnit,
     rotateUnit,
-  } = useContext(WorldJourneyContext);
+  } = useContext(WorldJourneyServiceContext);
 
   const [myPlayerHeldItemId, setMyPlayerHeldItemId] = useState<string | null>(null);
   const [myPlayerPosText, setMyPlayerPosText] = useState<string | null>(null);
   useEffect(() => {
-    if (!worldJourney) return () => {};
+    if (!worldJourneyService) return () => {};
 
-    return worldJourney.subscribeMyPlayerChanged((_, player) => {
+    return worldJourneyService.subscribeMyPlayerChanged((_, player) => {
       setMyPlayerHeldItemId(player.getHeldItemId());
       setMyPlayerPosText(player.getPosition().toText());
     });
-  }, [worldJourney]);
+  }, [worldJourneyService]);
 
   const isReconnectModalVisible = connectionStatus === 'DISCONNECTED';
 
@@ -197,10 +197,10 @@ const Page: NextPage = function Page() {
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
       />
-      {worldJourney && (
+      {worldJourneyService && (
         <ShareWorldModal
           opened={isShareWorldModalVisible}
-          world={worldJourney.getWorld()}
+          world={worldJourneyService.getWorld()}
           worldMembes={worldMembers}
           onClose={handleShareWorldModalClose}
         />
@@ -226,7 +226,9 @@ const Page: NextPage = function Page() {
         <Image src="/assets/images/logos/small-logo.png" alt="small logo" width={28} height={28} />
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
-        <section className="w-full h-full">{worldJourney && <WorldCanvas worldJourney={worldJourney} />}</section>
+        <section className="w-full h-full">
+          {worldJourneyService && <WorldCanvas worldJourneyService={worldJourneyService} />}
+        </section>
       </section>
     </main>
   );

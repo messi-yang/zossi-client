@@ -1,21 +1,21 @@
-import { ChangePlayerActionCommand } from '@/logics/world-journey/managers/command-manager/commands/change-player-action-command';
-import { SendPlayerIntoPortalCommand } from '@/logics/world-journey/managers/command-manager/commands/send-player-into-portal-command';
-import { CreateStaticUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/create-static-unit-command';
-import { ChangePlayerHeldItemCommand } from '@/logics/world-journey/managers/command-manager/commands/change-player-held-item-command';
-import { CreatePortalUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/create-portal-unit-command';
-import { RemoveStaticUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-static-unit-command';
-import { RemovePortalUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-portal-unit-command';
-import { RotateUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/rotate-unit-command';
+import { ChangePlayerActionCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-action-command';
+import { SendPlayerIntoPortalCommand } from '@/services/world-journey-service/managers/command-manager/commands/send-player-into-portal-command';
+import { CreateStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-static-unit-command';
+import { ChangePlayerHeldItemCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-held-item-command';
+import { CreatePortalUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-portal-unit-command';
+import { RemoveStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-static-unit-command';
+import { RemovePortalUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-portal-unit-command';
+import { RotateUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/rotate-unit-command';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
-import { AddPlayerCommand } from '@/logics/world-journey/managers/command-manager/commands/add-player-command';
-import { RemovePlayerCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-player-command';
-import { Command } from '@/logics/world-journey/managers/command-manager/command';
+import { AddPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-player-command';
+import { RemovePlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-player-command';
+import { Command } from '@/services/world-journey-service/managers/command-manager/command';
 import { PlayerDto, parsePlayerDto } from '../dtos/player-dto';
 import { PlayerActionDto, newPlayerActionDto, parsePlayerActionDto } from '../dtos/player-action-dto';
 import { PositionDto, newPositionDto } from '../dtos/position-dto';
-import { CreateFenceUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/create-fence-unit-command';
-import { RemoveFenceUnitCommand } from '@/logics/world-journey/managers/command-manager/commands/remove-fence-unit-command';
+import { CreateFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-fence-unit-command';
+import { RemoveFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-fence-unit-command';
 
 enum CommandNameEnum {
   Ping = 'PING',
