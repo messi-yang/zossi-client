@@ -16,6 +16,8 @@ import { PlayerActionDto, newPlayerActionDto, parsePlayerActionDto } from '../dt
 import { PositionDto, newPositionDto } from '../dtos/position-dto';
 import { CreateFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-fence-unit-command';
 import { RemoveFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-fence-unit-command';
+import { CreateLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-link-unit-command';
+import { RemoveLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-link-unit-command';
 
 enum CommandNameEnum {
   Ping = 'PING',
@@ -31,6 +33,8 @@ enum CommandNameEnum {
   RemoveFenceUnit = 'REMOVE_FENCE_UNIT',
   CreatePortalUnit = 'CREATE_PORTAL_UNIT',
   RemovePortalUnit = 'REMOVE_PORTAL_UNIT',
+  CreateLinkUnit = 'CREATE_LINK_UNIT',
+  RemoveLinkUnit = 'REMOVE_LINK_UNIT',
   RotateUnit = 'ROTATE_UNIT',
 }
 
@@ -126,6 +130,23 @@ type RemovePortalUnitCommandDto = {
   position: PositionDto;
 };
 
+type CreateLinkUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.CreateLinkUnit;
+  itemId: string;
+  position: PositionDto;
+  direction: number;
+  url: string;
+};
+
+type RemoveLinkUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RemoveLinkUnit;
+  position: PositionDto;
+};
+
 type RotateUnitCommandDto = {
   id: string;
   timestamp: number;
@@ -187,6 +208,25 @@ function parseRemovePortalUnitCommand(command: RemovePortalUnitCommandDto): Remo
   );
 }
 
+function parseCreateLinkUnitCommand(command: CreateLinkUnitCommandDto): CreateLinkUnitCommand {
+  return CreateLinkUnitCommand.load(
+    command.id,
+    command.timestamp,
+    command.itemId,
+    PositionVo.new(command.position.x, command.position.z),
+    DirectionVo.new(command.direction),
+    command.url
+  );
+}
+
+function parseRemoveLinkUnitCommand(command: RemoveLinkUnitCommandDto): RemoveLinkUnitCommand {
+  return RemoveLinkUnitCommand.load(
+    command.id,
+    command.timestamp,
+    PositionVo.new(command.position.x, command.position.z)
+  );
+}
+
 function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
   return RotateUnitCommand.load(command.id, command.timestamp, PositionVo.new(command.position.x, command.position.z));
 }
@@ -234,6 +274,10 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseCreatePortalUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemovePortalUnit) {
     return parseRemovePortalUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.CreateLinkUnit) {
+    return parseCreateLinkUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemoveLinkUnit) {
+    return parseRemoveLinkUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RotateUnit) {
     return parseRotateUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.AddPlayer) {
@@ -305,6 +349,25 @@ export const toCommandDto = (command: Command) => {
       position: newPositionDto(command.getPosition()),
     };
     return commandDto;
+  } else if (command instanceof CreateLinkUnitCommand) {
+    const commandDto: CreateLinkUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.CreateLinkUnit,
+      itemId: command.getItemId(),
+      position: newPositionDto(command.getPosition()),
+      direction: command.getDirection().toNumber(),
+      url: command.getUrl(),
+    };
+    return commandDto;
+  } else if (command instanceof RemoveLinkUnitCommand) {
+    const commandDto: RemoveLinkUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.RemoveLinkUnit,
+      position: newPositionDto(command.getPosition()),
+    };
+    return commandDto;
   } else if (command instanceof RotateUnitCommand) {
     const commandDto: RotateUnitCommandDto = {
       id: command.getId(),
@@ -359,4 +422,6 @@ export type CommandDto =
   | RemoveFenceUnitCommandDto
   | CreatePortalUnitCommandDto
   | RemovePortalUnitCommandDto
+  | CreateLinkUnitCommandDto
+  | RemoveLinkUnitCommandDto
   | RotateUnitCommandDto;

@@ -19,9 +19,12 @@ import { CreatePortalUnitCommand } from '@/services/world-journey-service/manage
 import { RemoveStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-static-unit-command';
 import { RemovePortalUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-portal-unit-command';
 import { RotateUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/rotate-unit-command';
-import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { CreateFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-fence-unit-command';
 import { RemoveFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-fence-unit-command';
+import { CreateLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-link-unit-command';
+import { RemoveLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-link-unit-command';
+import { dipatchUnitType } from '@/models/world/unit/utils';
+import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -35,6 +38,7 @@ type ContextValue = {
   makePlayerStand: () => void;
   makePlayerWalk: (direction: DirectionVo) => void;
   changePlayerHeldItem: (item: ItemModel) => void;
+  engageUnit: () => void;
   createUnit: () => void;
   removeUnit: () => void;
   rotateUnit: () => void;
@@ -51,6 +55,7 @@ const Context = createContext<ContextValue>({
   makePlayerStand: () => {},
   makePlayerWalk: () => {},
   changePlayerHeldItem: () => {},
+  engageUnit: () => {},
   createUnit: () => {},
   removeUnit: () => {},
   rotateUnit: () => {},
@@ -252,6 +257,17 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
+  const createLinkUnit = useCallback(
+    (itemId: string, position: PositionVo, direction: DirectionVo) => {
+      if (!worldJourneyService || !worldJourneyApi.current) return;
+
+      const command = CreateLinkUnitCommand.new(itemId, position, direction, 'https://www.google.com');
+      worldJourneyService.executeCommand(command);
+      worldJourneyApi.current.sendCommand(command);
+    },
+    [worldJourneyService]
+  );
+
   const createUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
@@ -263,36 +279,74 @@ export function Provider({ children }: Props) {
     const direction = myPlayer.getDirection().getOppositeDirection();
 
     const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
-    if (compatibleUnitType === UnitTypeEnum.Static) {
-      createStaticUnit(myPlayerHeldItem.getId(), unitPos, direction);
-    } else if (compatibleUnitType === UnitTypeEnum.Fence) {
-      createFenceUnit(myPlayerHeldItem.getId(), unitPos, direction);
-    } else if (compatibleUnitType === UnitTypeEnum.Portal) {
-      createPortalUnit(myPlayerHeldItem.getId(), unitPos, direction);
-    }
+    dipatchUnitType(compatibleUnitType, {
+      static: () => {
+        createStaticUnit(myPlayerHeldItem.getId(), unitPos, direction);
+      },
+      fence: () => {
+        createFenceUnit(myPlayerHeldItem.getId(), unitPos, direction);
+      },
+      portal: () => {
+        createPortalUnit(myPlayerHeldItem.getId(), unitPos, direction);
+      },
+      link: () => {
+        createLinkUnit(myPlayerHeldItem.getId(), unitPos, direction);
+      },
+    });
   }, [worldJourneyService]);
 
-  const removeUnit = useCallback(() => {
-    if (!worldJourneyService || !worldJourneyApi.current) return;
+  const engageUnit = useCallback(() => {
+    if (!worldJourneyService) return;
 
     const myPlayer = worldJourneyService.getMyPlayer();
     const unitPos = myPlayer.getFowardPosition(1);
     const unitAtPos = worldJourneyService.getUnit(unitPos);
     if (!unitAtPos) return;
 
-    if (unitAtPos.getType() === UnitTypeEnum.Static) {
-      const command = RemoveStaticUnitCommand.new(unitPos);
-      worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
-    } else if (unitAtPos.getType() === UnitTypeEnum.Fence) {
-      const command = RemoveFenceUnitCommand.new(unitPos);
-      worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
-    } else if (unitAtPos.getType() === UnitTypeEnum.Portal) {
-      const command = RemovePortalUnitCommand.new(unitPos);
-      worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
+    console.log(unitAtPos);
+    if (unitAtPos instanceof LinkUnitModel) {
+      window.open(unitAtPos.getUrl());
     }
+  }, [worldJourneyService]);
+
+  const removeUnit = useCallback(() => {
+    if (!worldJourneyService) return;
+
+    const myPlayer = worldJourneyService.getMyPlayer();
+    const unitPos = myPlayer.getFowardPosition(1);
+    const unitAtPos = worldJourneyService.getUnit(unitPos);
+    if (!unitAtPos) return;
+
+    dipatchUnitType(unitAtPos.getType(), {
+      static: () => {
+        if (!worldJourneyApi.current) return;
+
+        const command = RemoveStaticUnitCommand.new(unitPos);
+        worldJourneyService.executeCommand(command);
+        worldJourneyApi.current.sendCommand(command);
+      },
+      fence: () => {
+        if (!worldJourneyApi.current) return;
+
+        const command = RemoveFenceUnitCommand.new(unitPos);
+        worldJourneyService.executeCommand(command);
+        worldJourneyApi.current.sendCommand(command);
+      },
+      portal: () => {
+        if (!worldJourneyApi.current) return;
+
+        const command = RemovePortalUnitCommand.new(unitPos);
+        worldJourneyService.executeCommand(command);
+        worldJourneyApi.current.sendCommand(command);
+      },
+      link: () => {
+        if (!worldJourneyApi.current) return;
+
+        const command = RemoveLinkUnitCommand.new(unitPos);
+        worldJourneyService.executeCommand(command);
+        worldJourneyApi.current.sendCommand(command);
+      },
+    });
   }, [worldJourneyService]);
 
   const rotateUnit = useCallback(() => {
@@ -319,6 +373,7 @@ export function Provider({ children }: Props) {
           makePlayerWalk,
           leaveWorld,
           changePlayerHeldItem,
+          engageUnit,
           createUnit,
           removeUnit,
           rotateUnit,
@@ -334,6 +389,7 @@ export function Provider({ children }: Props) {
           makePlayerWalk,
           leaveWorld,
           changePlayerHeldItem,
+          engageUnit,
           createUnit,
           removeUnit,
           rotateUnit,

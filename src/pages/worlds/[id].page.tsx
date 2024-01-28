@@ -48,10 +48,20 @@ const Page: NextPage = function Page() {
     makePlayerWalk,
     leaveWorld,
     changePlayerHeldItem,
+    engageUnit,
     createUnit,
     removeUnit,
     rotateUnit,
   } = useContext(WorldJourneyServiceContext);
+
+  const handleEngageUnitPressedKeysChange = useCallback(
+    (keys: string[]) => {
+      if (keys.length === 0) return;
+      engageUnit();
+    },
+    [engageUnit]
+  );
+  useHotKeys(['KeyG'], { onPressedKeysChange: handleEngageUnitPressedKeysChange });
 
   const [myPlayerHeldItemId, setMyPlayerHeldItemId] = useState<string | null>(null);
   const [myPlayerPosText, setMyPlayerPosText] = useState<string | null>(null);

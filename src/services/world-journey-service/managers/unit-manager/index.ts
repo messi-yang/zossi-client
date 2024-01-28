@@ -4,6 +4,9 @@ import { UnitModel } from '@/models/world/unit/unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
+import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
+import { unitResolver } from '@/models/world/unit/utils';
 
 export type UnitsChangedHandler = (itemId: string, units: UnitModel[]) => void;
 
@@ -14,15 +17,16 @@ export class UnitManager {
 
   private unitMapByType: {
     [UnitTypeEnum.Static]: StaticUnitModel[];
+    [UnitTypeEnum.Fence]: FenceUnitModel[];
     [UnitTypeEnum.Portal]: PortalUnitModel[];
-  };
+    [UnitTypeEnum.Link]: LinkUnitModel[];
+  } = { static: [], fence: [], portal: [], link: [] };
 
   private unitsChangedHandler: UnitsChangedHandler[] = [];
 
   constructor(units: UnitModel[]) {
     this.unitMapByPos = {};
     this.unitMapByItemId = {};
-    this.unitMapByType = { portal: [], static: [] };
     units.forEach((unit) => {
       this.addUnitToUnitMapByPos(unit);
       this.addUnitToUnitMapByItemId(unit);
@@ -48,10 +52,6 @@ export class UnitManager {
 
   public getPortalUnits() {
     return this.unitMapByType.portal;
-  }
-
-  public getStaticUnits() {
-    return this.unitMapByType.static;
   }
 
   private addUnitToUnitMapByPos(unit: UnitModel) {
@@ -98,11 +98,12 @@ export class UnitManager {
   }
 
   private addUnitToUnitMapByType(unit: UnitModel) {
-    if (unit instanceof StaticUnitModel) {
-      this.unitMapByType[UnitTypeEnum.Static].push(unit);
-    } else if (unit instanceof PortalUnitModel) {
-      this.unitMapByType[UnitTypeEnum.Portal].push(unit);
-    }
+    unitResolver(unit, {
+      static: this.unitMapByType[UnitTypeEnum.Static].push,
+      fence: this.unitMapByType[UnitTypeEnum.Fence].push,
+      portal: this.unitMapByType[UnitTypeEnum.Portal].push,
+      link: this.unitMapByType[UnitTypeEnum.Link].push,
+    });
   }
 
   private updateUnitFromUnitMapByType(oldUnit: UnitModel, unit: UnitModel) {
@@ -111,15 +112,28 @@ export class UnitManager {
   }
 
   private removeUnitFromUnitMapByType(oldUnit: UnitModel) {
-    if (oldUnit instanceof StaticUnitModel) {
-      this.unitMapByType[UnitTypeEnum.Static] = this.unitMapByType[UnitTypeEnum.Static].filter(
-        (unit) => !unit.getPosition().isEqual(oldUnit.getPosition())
-      );
-    } else if (oldUnit instanceof PortalUnitModel) {
-      this.unitMapByType[UnitTypeEnum.Portal] = this.unitMapByType[UnitTypeEnum.Portal].filter(
-        (unit) => !unit.getPosition().isEqual(oldUnit.getPosition())
-      );
-    }
+    unitResolver(oldUnit, {
+      static: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Static] = this.unitMapByType[UnitTypeEnum.Static].filter(
+          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
+        );
+      },
+      fence: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Fence] = this.unitMapByType[UnitTypeEnum.Fence].filter(
+          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
+        );
+      },
+      portal: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Portal] = this.unitMapByType[UnitTypeEnum.Portal].filter(
+          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
+        );
+      },
+      link: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Link] = this.unitMapByType[UnitTypeEnum.Link].filter(
+          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
+        );
+      },
+    });
   }
 
   public addUnit(unit: UnitModel): boolean {
