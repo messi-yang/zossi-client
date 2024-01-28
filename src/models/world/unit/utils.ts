@@ -8,24 +8,25 @@ import { UnitTypeEnum } from './unit-type-enum';
 /**
  * This function is mainly for making sure you handle every type of unit
  */
-export const unitResolver = (
+export const dispatchUnit = <T>(
   unit: UnitModel,
   mapper: {
-    [UnitTypeEnum.Static]: (_unit: StaticUnitModel) => void;
-    [UnitTypeEnum.Fence]: (_unit: FenceUnitModel) => void;
-    [UnitTypeEnum.Portal]: (_unit: PortalUnitModel) => void;
-    [UnitTypeEnum.Link]: (_unit: LinkUnitModel) => void;
+    [UnitTypeEnum.Static]: (_unit: StaticUnitModel) => T;
+    [UnitTypeEnum.Fence]: (_unit: FenceUnitModel) => T;
+    [UnitTypeEnum.Portal]: (_unit: PortalUnitModel) => T;
+    [UnitTypeEnum.Link]: (_unit: LinkUnitModel) => T;
   }
-): void => {
+): T => {
   if (unit instanceof StaticUnitModel) {
-    mapper[UnitTypeEnum.Static](unit);
+    return mapper[UnitTypeEnum.Static](unit);
   } else if (unit instanceof FenceUnitModel) {
-    mapper[UnitTypeEnum.Fence](unit);
+    return mapper[UnitTypeEnum.Fence](unit);
   } else if (unit instanceof PortalUnitModel) {
-    mapper[UnitTypeEnum.Portal](unit);
+    return mapper[UnitTypeEnum.Portal](unit);
   } else if (unit instanceof LinkUnitModel) {
-    mapper[UnitTypeEnum.Link](unit);
+    return mapper[UnitTypeEnum.Link](unit);
   }
+  throw new Error(`The unit type ${unit.getType()} is not handled here`);
 };
 
 /**

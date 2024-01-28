@@ -6,7 +6,7 @@ import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
-import { unitResolver } from '@/models/world/unit/utils';
+import { dispatchUnit } from '@/models/world/unit/utils';
 
 export type UnitsChangedHandler = (itemId: string, units: UnitModel[]) => void;
 
@@ -98,7 +98,7 @@ export class UnitManager {
   }
 
   private addUnitToUnitMapByType(unit: UnitModel) {
-    unitResolver(unit, {
+    dispatchUnit(unit, {
       static: this.unitMapByType[UnitTypeEnum.Static].push,
       fence: this.unitMapByType[UnitTypeEnum.Fence].push,
       portal: this.unitMapByType[UnitTypeEnum.Portal].push,
@@ -112,7 +112,7 @@ export class UnitManager {
   }
 
   private removeUnitFromUnitMapByType(oldUnit: UnitModel) {
-    unitResolver(oldUnit, {
+    dispatchUnit(oldUnit, {
       static: (_unit) => {
         this.unitMapByType[UnitTypeEnum.Static] = this.unitMapByType[UnitTypeEnum.Static].filter(
           (unit) => !unit.getPosition().isEqual(_unit.getPosition())
