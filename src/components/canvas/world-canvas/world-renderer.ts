@@ -362,6 +362,9 @@ export class WorldRenderer {
       } else if (sameAdjacentUnitCount === 1) {
         modelIndex = 0;
         unitDirection = DirectionVo.new((sameAdjacentUnitFlags.findIndex((flag) => flag) || 0) + 1);
+      } else {
+        modelIndex = 0;
+        unitDirection = unit.getDirection();
       }
 
       unitInstancesByModel[modelIndex].push({
