@@ -260,10 +260,10 @@ export function Provider({ children }: Props) {
   );
 
   const createLinkUnit = useCallback(
-    (itemId: string, position: PositionVo, direction: DirectionVo) => {
+    (itemId: string, position: PositionVo, direction: DirectionVo, url: string) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreateLinkUnitCommand.new(itemId, position, direction, 'https://www.google.com');
+      const command = CreateLinkUnitCommand.new(itemId, position, direction, url);
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -292,7 +292,8 @@ export function Provider({ children }: Props) {
         createPortalUnit(myPlayerHeldItem.getId(), unitPos, direction);
       },
       link: () => {
-        createLinkUnit(myPlayerHeldItem.getId(), unitPos, direction);
+        const url = prompt('Enter url');
+        createLinkUnit(myPlayerHeldItem.getId(), unitPos, direction, url || '');
       },
     });
   }, [worldJourneyService]);
