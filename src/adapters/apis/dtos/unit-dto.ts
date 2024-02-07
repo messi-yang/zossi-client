@@ -47,9 +47,6 @@ interface LinkUnitDto extends UnitDtoBase {
   itemId: string;
   position: PositionDto;
   direction: DirectionEnum;
-  info: {
-    url: string;
-  };
 }
 
 type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto;
@@ -68,7 +65,7 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
       : null;
     return PortalUnitModel.new(unitDto.itemId, position, direction, tartgetPosition);
   } else {
-    return LinkUnitModel.new(unitDto.itemId, position, direction, unitDto.info.url);
+    return LinkUnitModel.new(unitDto.itemId, position, direction);
   }
 }
 

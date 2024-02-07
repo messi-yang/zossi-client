@@ -63,7 +63,7 @@ export class CreateLinkUnitCommand implements Command {
     const playersAtPos = playerManager.getPlayersAtPos(this.position);
     if (playersAtPos) return;
 
-    unitManager.addUnit(LinkUnitModel.new(this.itemId, this.position, this.direction, this.url));
+    unitManager.addUnit(LinkUnitModel.new(this.itemId, this.position, this.direction));
   }
 
   public getId() {

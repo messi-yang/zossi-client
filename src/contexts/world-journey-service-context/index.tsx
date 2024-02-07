@@ -25,6 +25,7 @@ import { CreateLinkUnitCommand } from '@/services/world-journey-service/managers
 import { RemoveLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-link-unit-command';
 import { dipatchUnitType } from '@/models/world/unit/utils';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
+import { LinkUnitApi } from '@/adapters/apis/link-unit-api';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -67,7 +68,8 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const [itemApi] = useState<ItemApi>(() => ItemApi.new());
+  const linkUnitApi = useMemo(() => LinkUnitApi.new(), []);
+  const itemApi = useMemo<ItemApi>(() => ItemApi.new(), []);
   const [items, setItems] = useState<ItemModel[] | null>([]);
   const [worldJourneyService, setWorldJourneyService] = useState<WorldJourneyService | null>(null);
 
@@ -295,7 +297,7 @@ export function Provider({ children }: Props) {
     });
   }, [worldJourneyService]);
 
-  const engageUnit = useCallback(() => {
+  const engageUnit = useCallback(async () => {
     if (!worldJourneyService) return;
 
     const myPlayer = worldJourneyService.getMyPlayer();
@@ -303,9 +305,12 @@ export function Provider({ children }: Props) {
     const unitAtPos = worldJourneyService.getUnit(unitPos);
     if (!unitAtPos) return;
 
-    console.log(unitAtPos);
     if (unitAtPos instanceof LinkUnitModel) {
-      window.open(unitAtPos.getUrl());
+      const linkUnitUrl = await linkUnitApi.getLinkUnitUrl(
+        worldJourneyService.getWorld().getId(),
+        unitAtPos.getPosition()
+      );
+      window.open(linkUnitUrl);
     }
   }, [worldJourneyService]);
 
