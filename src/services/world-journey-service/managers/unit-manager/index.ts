@@ -99,10 +99,18 @@ export class UnitManager {
 
   private addUnitToUnitMapByType(unit: UnitModel) {
     dispatchUnit(unit, {
-      static: this.unitMapByType[UnitTypeEnum.Static].push,
-      fence: this.unitMapByType[UnitTypeEnum.Fence].push,
-      portal: this.unitMapByType[UnitTypeEnum.Portal].push,
-      link: this.unitMapByType[UnitTypeEnum.Link].push,
+      static: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Static].push(_unit);
+      },
+      fence: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Fence].push(_unit);
+      },
+      portal: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Portal].push(_unit);
+      },
+      link: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Link].push(_unit);
+      },
     });
   }
 
