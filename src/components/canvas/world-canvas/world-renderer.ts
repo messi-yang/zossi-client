@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 
 import { ItemModel } from '@/models/world/item/item-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
@@ -10,7 +9,7 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { PlayerModel } from '@/models/world/player/player-model';
-import { InstanceState, createInstancesInScene } from './tjs-utils';
+import { InstanceState, createInstancesInScene, createTextMesh } from './tjs-utils';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 
@@ -388,6 +387,40 @@ export class WorldRenderer {
     };
   }
 
+  private updateLinkUnits(item: ItemModel, units: UnitModel[]) {
+    const font = this.fontMap[FONT_SRC];
+    if (!font) return;
+
+    const itemId = item.getId();
+
+    const itemModels = this.itemModelsMap[itemId];
+    if (!itemModels) return;
+
+    this.itemModelInstancesCleanerMap[itemId]?.();
+
+    const itemUnitInstanceStates = units.map((unit) => ({
+      x: unit.getPosition().getX(),
+      y: 0,
+      z: unit.getPosition().getZ(),
+      rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
+    }));
+
+    const linkUnitTexts = units.map((unit) => {
+      const textMesh = createTextMesh(font, 'hello', unit.getPosition().getX(), 3, unit.getPosition().getZ());
+      this.scene.add(textMesh);
+
+      return textMesh;
+    });
+
+    const removeInstancesFromScene = createInstancesInScene(this.scene, itemModels[0], itemUnitInstanceStates);
+    this.itemModelInstancesCleanerMap[itemId] = () => {
+      linkUnitTexts.forEach((linkUnitText) => {
+        this.scene.remove(linkUnitText);
+      });
+      removeInstancesFromScene();
+    };
+  }
+
   private updateOtherUnits(item: ItemModel, units: UnitModel[]) {
     const itemId = item.getId();
 
@@ -410,6 +443,8 @@ export class WorldRenderer {
     const itemCompatibleUnitType = item.getCompatibleUnitType();
     if (itemCompatibleUnitType === UnitTypeEnum.Fence) {
       this.updateFenceUnits(item, units, getUnit);
+    } else if (itemCompatibleUnitType === UnitTypeEnum.Link) {
+      this.updateLinkUnits(item, units);
     } else {
       this.updateOtherUnits(item, units);
     }
@@ -435,7 +470,6 @@ export class WorldRenderer {
     const font = this.fontMap[FONT_SRC];
     if (!font) return;
 
-    const playerNameMeshes: THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial>[] = [];
     const playerIds = players.map((p) => p.getId());
     players.forEach((player) => {
       const playerId = player.getId();
@@ -448,19 +482,13 @@ export class WorldRenderer {
         );
         existingPlayerNameMesh.rotation.set(-Math.PI / 6, 0, 0);
       } else {
-        const textGeometry = new TextGeometry(player.getName(), {
+        const playerNameMesh = createTextMesh(
           font,
-          size: 0.35,
-          height: 0.05,
-        });
-        const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.7, transparent: true });
-        const playerNameMesh = new THREE.Mesh(textGeometry, textMaterial);
-
-        textGeometry.computeBoundingBox();
-        textGeometry.center();
-        playerNameMesh.position.set(player.getPrecisePosition().getX(), 1.5, player.getPrecisePosition().getZ());
-        playerNameMesh.rotation.set(-Math.PI / 6, 0, 0);
-        playerNameMeshes.push(playerNameMesh);
+          player.getName(),
+          player.getPosition().getX(),
+          1.5,
+          player.getPosition().getZ()
+        );
         this.scene.add(playerNameMesh);
         this.existingPlayerNameFontMeshesMap[playerId] = playerNameMesh;
       }
