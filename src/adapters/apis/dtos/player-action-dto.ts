@@ -1,6 +1,6 @@
 import { PlayerActionNameEnum } from '@/models/world/player/player-action-name-enum';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
-import { DateVo } from '@/models/general/date-vo';
+import { DateVo } from '@/models/global/date-vo';
 import { DirectionEnum } from '@/models/world/common/direction-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PrecisePositionDto, newPrecisePositionDto } from './precise-position-dto';

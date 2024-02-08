@@ -1,7 +1,7 @@
 import { DirectionVo } from '../common/direction-vo';
 import { PlayerActionVo } from './player-action-vo';
 import { PlayerActionNameEnum } from './player-action-name-enum';
-import { DateVo } from '@/models/general/date-vo';
+import { DateVo } from '@/models/global/date-vo';
 import { PrecisePositionVo } from '../common/precise-position-vo';
 import { PositionVo } from '../common/position-vo';
 import { generateUuidV4 } from '@/utils/uuid';

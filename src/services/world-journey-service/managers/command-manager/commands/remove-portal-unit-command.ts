@@ -1,7 +1,7 @@
 import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
-import { DateVo } from '@/models/general/date-vo';
+import { DateVo } from '@/models/global/date-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { generateUuidV4 } from '@/utils/uuid';
 

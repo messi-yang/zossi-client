@@ -1,6 +1,6 @@
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
-import { DateVo } from '@/models/general/date-vo';
+import { DateVo } from '@/models/global/date-vo';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 

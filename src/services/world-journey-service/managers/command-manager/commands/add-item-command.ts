@@ -1,7 +1,7 @@
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { ItemModel } from '@/models/world/item/item-model';
-import { DateVo } from '@/models/general/date-vo';
+import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
 export class AddItemCommand implements Command {

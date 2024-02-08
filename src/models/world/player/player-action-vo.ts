@@ -1,4 +1,4 @@
-import { DateVo } from '@/models/general/date-vo';
+import { DateVo } from '@/models/global/date-vo';
 import { PlayerActionNameEnum } from './player-action-name-enum';
 import { DirectionVo } from '../common/direction-vo';
 import { PrecisePositionVo } from '../common/precise-position-vo';

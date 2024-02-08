@@ -7,7 +7,7 @@ import { WorldJourneyService } from '@/services/world-journey-service';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
-import { DateVo } from '@/models/general/date-vo';
+import { DateVo } from '@/models/global/date-vo';
 import { AddItemCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-item-command';
 import { SendPlayerIntoPortalCommand } from '@/services/world-journey-service/managers/command-manager/commands/send-player-into-portal-command';
 import { AddPerspectiveDepthCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-perspective-depth-command';

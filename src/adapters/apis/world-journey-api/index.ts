@@ -5,7 +5,7 @@ import { PlayerModel } from '@/models/world/player/player-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
 import { WorldJourneyService } from '@/services/world-journey-service';
-import { DateVo } from '@/models/general/date-vo';
+import { DateVo } from '@/models/global/date-vo';
 import { Event, EventNameEnum, WorldEnteredEvent } from './events';
 import { Command } from '@/services/world-journey-service/managers/command-manager/command';
 import { parseWorldDto } from '../dtos/world-dto';

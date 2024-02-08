@@ -1,7 +1,7 @@
 import { BoundVo } from '../common/bound-vo';
 import { PositionVo } from '../common/position-vo';
 import { UserModel } from '../../iam/user-model';
-import { DateVo } from '../../general/date-vo';
+import { DateVo } from '../../global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
 export class WorldModel {
