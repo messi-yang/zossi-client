@@ -113,7 +113,17 @@ export function WorldCanvas({ worldJourneyService }: Props) {
   }, [worldRenderer, worldJourneyService]);
 
   useEffect(() => {
-    return worldRenderer.subscribePlayerNameFontDownloadedEvent(() => {
+    return worldRenderer.subscribeFontDownloadedEvent(() => {
+      Object.entries(worldJourneyService.getAllUnitsByItemId()).forEach(([itemId, units]) => {
+        const item = worldJourneyService.getItem(itemId);
+        if (!item) return;
+        worldRenderer.updateUnitsOfItem(item, units, getUnit);
+      });
+    });
+  }, [worldRenderer, worldJourneyService]);
+
+  useEffect(() => {
+    return worldRenderer.subscribeFontDownloadedEvent(() => {
       worldRenderer.updatePlayerNames(worldJourneyService.getPlayers());
     });
   }, [worldRenderer, worldJourneyService]);

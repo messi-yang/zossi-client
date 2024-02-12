@@ -105,6 +105,13 @@ export class WorldJourneyService {
     return this.unitManager.getUnitsByItemId(itemId);
   }
 
+  /**
+   * Get all units separated by item id
+   */
+  public getAllUnitsByItemId() {
+    return this.unitManager.getAllUnitsByItemId();
+  }
+
   public getItem(itemId: string): ItemModel | null {
     return this.itemManager.getItem(itemId);
   }

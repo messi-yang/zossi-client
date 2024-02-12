@@ -22,7 +22,7 @@ const FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_r
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
 
 type ItemModelsDownloadedEventSubscriber = (itemId: string) => void;
-type PlayerNameFontDownloadedEventSubscriber = () => void;
+type FontDownloadedEventSubscriber = () => void;
 type PlayerModelDownloadedEventSubscriber = () => void;
 
 export class WorldRenderer {
@@ -38,7 +38,7 @@ export class WorldRenderer {
 
   private fontMap: Record<string, Font | undefined> = {};
 
-  private playerNameFontDownloadedEventSubscribers: PlayerNameFontDownloadedEventSubscriber[] = [];
+  private fontDownloadedEventSubscribers: FontDownloadedEventSubscriber[] = [];
 
   private existingPlayerNameFontMeshesMap: Record<string, THREE.Mesh> = {};
 
@@ -114,7 +114,7 @@ export class WorldRenderer {
     const playerFont = await this.downloadFont(fontSource);
     this.fontMap[fontSource] = playerFont;
 
-    this.playerNameFontDownloadedEventSubscribers.forEach((sub) => {
+    this.fontDownloadedEventSubscribers.forEach((sub) => {
       sub();
     });
   }
@@ -152,11 +152,11 @@ export class WorldRenderer {
     };
   }
 
-  public subscribePlayerNameFontDownloadedEvent(subscriber: PlayerNameFontDownloadedEventSubscriber): () => void {
-    this.playerNameFontDownloadedEventSubscribers.push(subscriber);
+  public subscribeFontDownloadedEvent(subscriber: FontDownloadedEventSubscriber): () => void {
+    this.fontDownloadedEventSubscribers.push(subscriber);
 
     return () => {
-      this.playerNameFontDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
+      this.fontDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
     };
   }
 
@@ -387,10 +387,7 @@ export class WorldRenderer {
     };
   }
 
-  private updateLinkUnits(item: ItemModel, units: UnitModel[]) {
-    const font = this.fontMap[FONT_SRC];
-    if (!font) return;
-
+  private updateLinkUnits(item: ItemModel, units: UnitModel[], font: Font) {
     const itemId = item.getId();
 
     const itemModels = this.itemModelsMap[itemId];
@@ -440,11 +437,14 @@ export class WorldRenderer {
   }
 
   public updateUnitsOfItem(item: ItemModel, units: UnitModel[], getUnit: (position: PositionVo) => UnitModel | null) {
+    const font = this.fontMap[FONT_SRC];
+    if (!font) return;
+
     const itemCompatibleUnitType = item.getCompatibleUnitType();
     if (itemCompatibleUnitType === UnitTypeEnum.Fence) {
       this.updateFenceUnits(item, units, getUnit);
     } else if (itemCompatibleUnitType === UnitTypeEnum.Link) {
-      this.updateLinkUnits(item, units);
+      this.updateLinkUnits(item, units, font);
     } else {
       this.updateOtherUnits(item, units);
     }

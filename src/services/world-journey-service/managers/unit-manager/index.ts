@@ -50,6 +50,16 @@ export class UnitManager {
     return this.unitMapByItemId[itemId] || [];
   }
 
+  public getAllUnitsByItemId(): { [itemId: string]: UnitModel[] } {
+    const res: { [itemId: string]: UnitModel[] } = {};
+    Object.entries(this.unitMapByItemId).forEach(([itemId, units]) => {
+      if (units) {
+        res[itemId] = units;
+      }
+    });
+    return res;
+  }
+
   public getPortalUnits() {
     return this.unitMapByType.portal;
   }
