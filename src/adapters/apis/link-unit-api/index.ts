@@ -1,7 +1,5 @@
 import { Axios } from 'axios';
 import { AxiosProvider } from '@/adapters/apis/axios-provider';
-import { PositionVo } from '@/models/world/common/position-vo';
-import { newPositionDto } from '../dtos/position-dto';
 
 export class LinkUnitApi {
   private axios: Axios;
@@ -14,11 +12,8 @@ export class LinkUnitApi {
     return new LinkUnitApi();
   }
 
-  async getLinkUnitUrl(worldId: string, position: PositionVo): Promise<string> {
-    const { data } = await this.axios.post<{ url: string }>('/get-url', {
-      worldId,
-      position: newPositionDto(position),
-    });
+  async getLinkUnit(id: string): Promise<string> {
+    const { data } = await this.axios.get<{ url: string }>(`/${id}`);
     return data.url;
   }
 }
