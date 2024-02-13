@@ -18,12 +18,15 @@ export class CreatePortalUnitCommand implements Command {
 
   private direction: DirectionVo;
 
+  private unit: PortalUnitModel;
+
   constructor(id: string, timestamp: number, itemId: string, position: PositionVo, direction: DirectionVo) {
     this.id = id;
     this.timestamp = timestamp;
     this.itemId = itemId;
     this.position = position;
     this.direction = direction;
+    this.unit = PortalUnitModel.new(this.itemId, this.position, this.direction, null);
   }
 
   static new(itemId: string, position: PositionVo, direction: DirectionVo) {
@@ -46,7 +49,7 @@ export class CreatePortalUnitCommand implements Command {
     const playersAtPos = playerManager.getPlayersAtPos(this.position);
     if (playersAtPos) return;
 
-    const newPortalUnit = PortalUnitModel.new(this.itemId, this.position, this.direction, null);
+    const newPortalUnit = this.unit;
 
     const portalsWithoutTarget = unitManager.getPortalUnits().filter((unit) => !unit.getTargetPosition());
     if (portalsWithoutTarget.length === 0) {
@@ -73,6 +76,10 @@ export class CreatePortalUnitCommand implements Command {
 
   public getId() {
     return this.id;
+  }
+
+  public getUnitId() {
+    return this.unit.getId();
   }
 
   public getTimestamp() {

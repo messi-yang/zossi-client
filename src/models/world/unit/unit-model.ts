@@ -12,7 +12,16 @@ export interface UnitModel {
 }
 
 export abstract class BaseUnitModel {
-  constructor(private itemId: string, private position: PositionVo, private direction: DirectionVo) {}
+  constructor(
+    private id: string,
+    private itemId: string,
+    private position: PositionVo,
+    private direction: DirectionVo
+  ) {}
+
+  public getId(): string {
+    return this.id;
+  }
 
   public getItemId(): string {
     return this.itemId;

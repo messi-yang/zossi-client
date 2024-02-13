@@ -20,6 +20,8 @@ export class CreateLinkUnitCommand implements Command {
 
   private url: string;
 
+  private unit: LinkUnitModel;
+
   constructor(
     id: string,
     timestamp: number,
@@ -34,6 +36,7 @@ export class CreateLinkUnitCommand implements Command {
     this.position = position;
     this.direction = direction;
     this.url = url;
+    this.unit = LinkUnitModel.new(this.itemId, this.position, this.direction);
   }
 
   static new(itemId: string, position: PositionVo, direction: DirectionVo, url: string) {
@@ -63,11 +66,15 @@ export class CreateLinkUnitCommand implements Command {
     const playersAtPos = playerManager.getPlayersAtPos(this.position);
     if (playersAtPos) return;
 
-    unitManager.addUnit(LinkUnitModel.new(this.itemId, this.position, this.direction));
+    unitManager.addUnit(this.unit);
   }
 
   public getId() {
     return this.id;
+  }
+
+  public getUnitId() {
+    return this.unit.getId();
   }
 
   public getTimestamp() {

@@ -86,6 +86,7 @@ type CreateStaticUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreateStaticUnit;
+  unitId: string;
   itemId: string;
   position: PositionDto;
   direction: number;
@@ -102,6 +103,7 @@ type CreateFenceUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreateFenceUnit;
+  unitId: string;
   itemId: string;
   position: PositionDto;
   direction: number;
@@ -118,6 +120,7 @@ type CreatePortalUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreatePortalUnit;
+  unitId: string;
   itemId: string;
   position: PositionDto;
   direction: number;
@@ -134,6 +137,7 @@ type CreateLinkUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreateLinkUnit;
+  unitId: string;
   itemId: string;
   position: PositionDto;
   direction: number;
@@ -300,6 +304,7 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreateStaticUnit,
+      unitId: command.getUnitId(),
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
@@ -318,6 +323,7 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreateFenceUnit,
+      unitId: command.getUnitId(),
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
@@ -336,6 +342,7 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreatePortalUnit,
+      unitId: command.getUnitId(),
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
@@ -354,6 +361,7 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreateLinkUnit,
+      unitId: command.getUnitId(),
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),

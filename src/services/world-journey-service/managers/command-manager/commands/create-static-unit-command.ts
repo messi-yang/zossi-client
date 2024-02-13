@@ -18,12 +18,15 @@ export class CreateStaticUnitCommand implements Command {
 
   private direction: DirectionVo;
 
+  private unit: StaticUnitModel;
+
   constructor(id: string, timestamp: number, itemId: string, position: PositionVo, direction: DirectionVo) {
     this.id = id;
     this.timestamp = timestamp;
     this.itemId = itemId;
     this.position = position;
     this.direction = direction;
+    this.unit = StaticUnitModel.new(this.itemId, this.position, this.direction);
   }
 
   static new(itemId: string, position: PositionVo, direction: DirectionVo) {
@@ -46,11 +49,15 @@ export class CreateStaticUnitCommand implements Command {
     const playersAtPos = playerManager.getPlayersAtPos(this.position);
     if (playersAtPos) return;
 
-    unitManager.addUnit(StaticUnitModel.new(this.itemId, this.position, this.direction));
+    unitManager.addUnit(this.unit);
   }
 
   public getId() {
     return this.id;
+  }
+
+  public getUnitId() {
+    return this.unit.getId();
   }
 
   public getTimestamp() {

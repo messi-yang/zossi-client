@@ -6,14 +6,14 @@ import { UnitTypeEnum } from './unit-type-enum';
 
 export class StaticUnitModel extends BaseUnitModel implements UnitModel {
   static new = (itemId: string, position: PositionVo, direction: DirectionVo): StaticUnitModel =>
-    new StaticUnitModel(itemId, position, direction);
+    new StaticUnitModel(generateUuidV4(), itemId, position, direction);
 
   static mockup(): StaticUnitModel {
-    return new StaticUnitModel(generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown());
+    return new StaticUnitModel(generateUuidV4(), generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown());
   }
 
   public clone() {
-    return new StaticUnitModel(this.getItemId(), this.getPosition(), this.getDirection());
+    return new StaticUnitModel(this.getId(), this.getItemId(), this.getPosition(), this.getDirection());
   }
 
   public getType() {

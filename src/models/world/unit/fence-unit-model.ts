@@ -6,14 +6,14 @@ import { generateUuidV4 } from '@/utils/uuid';
 
 export class FenceUnitModel extends BaseUnitModel implements UnitModel {
   static new = (itemId: string, position: PositionVo, direction: DirectionVo): FenceUnitModel =>
-    new FenceUnitModel(itemId, position, direction);
+    new FenceUnitModel(generateUuidV4(), itemId, position, direction);
 
   static mockup(): FenceUnitModel {
-    return new FenceUnitModel(generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown());
+    return new FenceUnitModel(generateUuidV4(), generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown());
   }
 
   public clone() {
-    return new FenceUnitModel(this.getItemId(), this.getPosition(), this.getDirection());
+    return new FenceUnitModel(this.getId(), this.getItemId(), this.getPosition(), this.getDirection());
   }
 
   public getType() {

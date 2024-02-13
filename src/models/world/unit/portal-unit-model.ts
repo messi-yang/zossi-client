@@ -1,11 +1,18 @@
+import { generateUuidV4 } from '@/utils/uuid';
 import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
 import { BaseUnitModel, UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
 
 export class PortalUnitModel extends BaseUnitModel implements UnitModel {
-  constructor(itemId: string, position: PositionVo, direction: DirectionVo, private targetPosition: PositionVo | null) {
-    super(itemId, position, direction);
+  constructor(
+    id: string,
+    itemId: string,
+    position: PositionVo,
+    direction: DirectionVo,
+    private targetPosition: PositionVo | null
+  ) {
+    super(id, itemId, position, direction);
   }
 
   static new = (
@@ -13,19 +20,20 @@ export class PortalUnitModel extends BaseUnitModel implements UnitModel {
     position: PositionVo,
     direction: DirectionVo,
     targetPosition: PositionVo | null
-  ): PortalUnitModel => new PortalUnitModel(itemId, position, direction, targetPosition);
+  ): PortalUnitModel => new PortalUnitModel(generateUuidV4(), itemId, position, direction, targetPosition);
 
   static mockup(): PortalUnitModel {
-    return new PortalUnitModel(
-      '414b5703-91d1-42fc-a007-36dd8f25e329',
-      PositionVo.new(0, 0),
-      DirectionVo.newDown(),
-      null
-    );
+    return new PortalUnitModel(generateUuidV4(), generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown(), null);
   }
 
   public clone(): PortalUnitModel {
-    return new PortalUnitModel(this.getItemId(), this.getPosition(), this.getDirection(), this.targetPosition);
+    return new PortalUnitModel(
+      this.getId(),
+      this.getItemId(),
+      this.getPosition(),
+      this.getDirection(),
+      this.targetPosition
+    );
   }
 
   public getType(): UnitTypeEnum.Portal {
