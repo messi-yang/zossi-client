@@ -1,4 +1,3 @@
-import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
@@ -9,24 +8,24 @@ export class RemoveLinkUnitCommand implements Command {
 
   private timestamp: number;
 
-  private position: PositionVo;
+  private unitId: string;
 
-  constructor(id: string, timestamp: number, position: PositionVo) {
+  constructor(id: string, timestamp: number, unitId: string) {
     this.id = id;
     this.timestamp = timestamp;
-    this.position = position;
+    this.unitId = unitId;
   }
 
-  static new(position: PositionVo) {
-    return new RemoveLinkUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), position);
+  static new(unitId: string) {
+    return new RemoveLinkUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), unitId);
   }
 
-  static load(id: string, timestamp: number, position: PositionVo) {
-    return new RemoveLinkUnitCommand(id, timestamp, position);
+  static load(id: string, timestamp: number, unitId: string) {
+    return new RemoveLinkUnitCommand(id, timestamp, unitId);
   }
 
   public execute({ unitManager }: CommandParams): void {
-    unitManager.removeUnit(this.position);
+    unitManager.removeUnit(this.unitId);
   }
 
   public getId() {
@@ -37,7 +36,7 @@ export class RemoveLinkUnitCommand implements Command {
     return this.timestamp;
   }
 
-  public getPosition() {
-    return this.position;
+  public getUnitId() {
+    return this.unitId;
   }
 }

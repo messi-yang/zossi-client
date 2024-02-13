@@ -60,7 +60,7 @@ export class CreateLinkUnitCommand implements Command {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Link)) return;
 
-    const unitAtPos = unitManager.getUnit(this.position);
+    const unitAtPos = unitManager.getUnitByPos(this.position);
     if (unitAtPos) return;
 
     const playersAtPos = playerManager.getPlayersAtPos(this.position);

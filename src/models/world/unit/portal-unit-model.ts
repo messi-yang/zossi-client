@@ -22,6 +22,14 @@ export class PortalUnitModel extends BaseUnitModel implements UnitModel {
     targetPosition: PositionVo | null
   ): PortalUnitModel => new PortalUnitModel(generateUuidV4(), itemId, position, direction, targetPosition);
 
+  static load = (
+    id: string,
+    itemId: string,
+    position: PositionVo,
+    direction: DirectionVo,
+    targetPosition: PositionVo | null
+  ): PortalUnitModel => new PortalUnitModel(id, itemId, position, direction, targetPosition);
+
   static mockup(): PortalUnitModel {
     return new PortalUnitModel(generateUuidV4(), generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown(), null);
   }

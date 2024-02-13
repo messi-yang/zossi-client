@@ -4,6 +4,7 @@ import { UnitTypeEnum } from './unit-type-enum';
 
 export interface UnitModel {
   clone(): UnitModel;
+  getId(): string;
   getType(): UnitTypeEnum;
   getItemId(): string;
   getPosition(): PositionVo;

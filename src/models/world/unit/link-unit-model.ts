@@ -8,6 +8,9 @@ export class LinkUnitModel extends BaseUnitModel implements UnitModel {
   static new = (itemId: string, position: PositionVo, direction: DirectionVo): LinkUnitModel =>
     new LinkUnitModel(generateUuidV4(), itemId, position, direction);
 
+  static load = (id: string, itemId: string, position: PositionVo, direction: DirectionVo): LinkUnitModel =>
+    new LinkUnitModel(id, itemId, position, direction);
+
   static mockup(): LinkUnitModel {
     return new LinkUnitModel(generateUuidV4(), generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown());
   }

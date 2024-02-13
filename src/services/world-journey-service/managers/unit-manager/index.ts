@@ -11,6 +11,8 @@ import { dispatchUnit } from '@/models/world/unit/utils';
 export type UnitsChangedHandler = (itemId: string, units: UnitModel[]) => void;
 
 export class UnitManager {
+  private unitMapById: Record<string, UnitModel | undefined>;
+
   private unitMapByPos: Record<string, UnitModel | undefined>;
 
   private unitMapByItemId: Record<string, UnitModel[] | undefined>;
@@ -25,9 +27,11 @@ export class UnitManager {
   private unitsChangedHandler: UnitsChangedHandler[] = [];
 
   constructor(units: UnitModel[]) {
+    this.unitMapById = {};
     this.unitMapByPos = {};
     this.unitMapByItemId = {};
     units.forEach((unit) => {
+      this.addUnitToUnitMapById(unit);
       this.addUnitToUnitMapByPos(unit);
       this.addUnitToUnitMapByItemId(unit);
       this.addUnitToUnitMapByType(unit);
@@ -42,7 +46,11 @@ export class UnitManager {
     return Object.keys(this.unitMapByItemId);
   }
 
-  public getUnit(pos: PositionVo): UnitModel | null {
+  public getUnit(id: string): UnitModel | null {
+    return this.unitMapById[id] || null;
+  }
+
+  public getUnitByPos(pos: PositionVo): UnitModel | null {
     return this.unitMapByPos[pos.toString()] || null;
   }
 
@@ -62,6 +70,18 @@ export class UnitManager {
 
   public getPortalUnits() {
     return this.unitMapByType.portal;
+  }
+
+  private addUnitToUnitMapById(unit: UnitModel) {
+    this.unitMapById[unit.getId()] = unit;
+  }
+
+  private updateUnitInUnitMapById(unit: UnitModel) {
+    this.unitMapById[unit.getId()] = unit;
+  }
+
+  private removeUnitFromUnitMapById(id: string) {
+    delete this.unitMapById[id];
   }
 
   private addUnitToUnitMapByPos(unit: UnitModel) {
@@ -155,9 +175,10 @@ export class UnitManager {
   }
 
   public addUnit(unit: UnitModel): boolean {
-    const currentUnit = this.getUnit(unit.getPosition());
+    const currentUnit = this.getUnitByPos(unit.getPosition());
     if (currentUnit) return false;
 
+    this.addUnitToUnitMapById(unit);
     this.addUnitToUnitMapByPos(unit);
     this.addUnitToUnitMapByItemId(unit);
     this.addUnitToUnitMapByType(unit);
@@ -167,9 +188,10 @@ export class UnitManager {
   }
 
   public updateUnit(unit: UnitModel): boolean {
-    const currentUnit = this.getUnit(unit.getPosition());
+    const currentUnit = this.getUnitByPos(unit.getPosition());
     if (!currentUnit) return false;
 
+    this.updateUnitInUnitMapById(unit);
     this.updateUnitInUnitMapByPos(unit);
     this.updateUnitFromUnitMapByItemId(currentUnit, unit);
     this.updateUnitFromUnitMapByType(currentUnit, unit);
@@ -181,10 +203,11 @@ export class UnitManager {
     return true;
   }
 
-  public removeUnit(position: PositionVo): boolean {
-    const currentUnit = this.getUnit(position);
+  public removeUnit(id: string): boolean {
+    const currentUnit = this.getUnit(id);
     if (!currentUnit) return false;
 
+    this.removeUnitFromUnitMapById(currentUnit.getId());
     this.removeUnitFromUnitMapByPos(currentUnit.getPosition());
     this.removeUnitFromUnitMapByItemId(currentUnit);
     this.removeUnitFromUnitMapByType(currentUnit);

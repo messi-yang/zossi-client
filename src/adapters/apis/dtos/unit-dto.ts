@@ -14,29 +14,22 @@ type UnitDtoBase = {
   itemId: string;
   position: PositionDto;
   direction: DirectionEnum;
+  infoId: string;
+  info: Object | null;
 };
 
 interface StaticUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Static;
-  itemId: string;
-  position: PositionDto;
-  direction: DirectionEnum;
   info: null;
 }
 
 interface FenceUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Fence;
-  itemId: string;
-  position: PositionDto;
-  direction: DirectionEnum;
   info: null;
 }
 
 interface PortalUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Portal;
-  itemId: string;
-  position: PositionDto;
-  direction: DirectionEnum;
   info: {
     targetPosition: PositionDto | null;
   };
@@ -44,9 +37,6 @@ interface PortalUnitDto extends UnitDtoBase {
 
 interface LinkUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Link;
-  itemId: string;
-  position: PositionDto;
-  direction: DirectionEnum;
 }
 
 type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto;
@@ -56,16 +46,16 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
   const direction = DirectionVo.new(unitDto.direction);
 
   if (unitDto.type === UnitTypeEnum.Static) {
-    return StaticUnitModel.new(unitDto.itemId, position, direction);
+    return StaticUnitModel.load(unitDto.infoId, unitDto.itemId, position, direction);
   } else if (unitDto.type === UnitTypeEnum.Fence) {
-    return FenceUnitModel.new(unitDto.itemId, position, direction);
+    return FenceUnitModel.load(unitDto.infoId, unitDto.itemId, position, direction);
   } else if (unitDto.type === UnitTypeEnum.Portal) {
     const tartgetPosition = unitDto.info.targetPosition
       ? PositionVo.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
       : null;
-    return PortalUnitModel.new(unitDto.itemId, position, direction, tartgetPosition);
+    return PortalUnitModel.load(unitDto.infoId, unitDto.itemId, position, direction, tartgetPosition);
   } else {
-    return LinkUnitModel.new(unitDto.itemId, position, direction);
+    return LinkUnitModel.load(unitDto.infoId, unitDto.itemId, position, direction);
   }
 }
 

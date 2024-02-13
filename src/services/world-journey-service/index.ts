@@ -98,7 +98,7 @@ export class WorldJourneyService {
   }
 
   public getUnit(position: PositionVo) {
-    return this.unitManager.getUnit(position);
+    return this.unitManager.getUnitByPos(position);
   }
 
   public getUnitsOfItem(itemId: string): UnitModel[] {
@@ -126,7 +126,7 @@ export class WorldJourneyService {
 
       if (playerAction.isWalk()) {
         const playerForwardPos = player.getFowardPosition(0.5);
-        const unitAtPos = this.unitManager.getUnit(playerForwardPos);
+        const unitAtPos = this.unitManager.getUnitByPos(playerForwardPos);
         if (unitAtPos) {
           const item = this.itemManager.getItem(unitAtPos.getItemId());
           if (!item) return;

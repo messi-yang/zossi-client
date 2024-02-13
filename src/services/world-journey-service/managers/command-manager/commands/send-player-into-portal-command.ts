@@ -31,7 +31,7 @@ export class SendPlayerIntoPortalCommand implements Command {
   }
 
   public execute({ unitManager, playerManager }: CommandParams): void {
-    const portalUnit = unitManager.getUnit(this.position);
+    const portalUnit = unitManager.getUnitByPos(this.position);
     if (!portalUnit || !(portalUnit instanceof PortalUnitModel)) return;
 
     const targetPosition = portalUnit.getTargetPosition();

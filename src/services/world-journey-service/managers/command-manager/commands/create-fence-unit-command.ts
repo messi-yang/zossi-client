@@ -43,7 +43,7 @@ export class CreateFenceUnitCommand implements Command {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Fence)) return;
 
-    const unitAtPos = unitManager.getUnit(this.position);
+    const unitAtPos = unitManager.getUnitByPos(this.position);
     if (unitAtPos) return;
 
     const playersAtPos = playerManager.getPlayersAtPos(this.position);

@@ -323,32 +323,34 @@ export function Provider({ children }: Props) {
     const unitAtPos = worldJourneyService.getUnit(unitPos);
     if (!unitAtPos) return;
 
+    const unitId = unitAtPos.getId();
+
     dipatchUnitType(unitAtPos.getType(), {
       static: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemoveStaticUnitCommand.new(unitPos);
+        const command = RemoveStaticUnitCommand.new(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
       fence: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemoveFenceUnitCommand.new(unitPos);
+        const command = RemoveFenceUnitCommand.new(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
       portal: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemovePortalUnitCommand.new(unitPos);
+        const command = RemovePortalUnitCommand.new(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
       link: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemoveLinkUnitCommand.new(unitPos);
+        const command = RemoveLinkUnitCommand.new(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
@@ -360,7 +362,10 @@ export function Provider({ children }: Props) {
 
     const myPlayer = worldJourneyService.getMyPlayer();
     const unitPos = myPlayer.getFowardPosition(1);
-    const command = RotateUnitCommand.new(unitPos);
+    const unitAtPos = worldJourneyService.getUnit(unitPos);
+    if (!unitAtPos) return;
+
+    const command = RotateUnitCommand.new(unitAtPos.getId());
     worldJourneyService.executeCommand(command);
     worldJourneyApi.current.sendCommand(command);
   }, [worldJourneyService]);

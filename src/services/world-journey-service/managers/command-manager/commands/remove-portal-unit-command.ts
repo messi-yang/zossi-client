@@ -1,4 +1,3 @@
-import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
@@ -10,38 +9,38 @@ export class RemovePortalUnitCommand implements Command {
 
   private timestamp: number;
 
-  private position: PositionVo;
+  private unitId: string;
 
-  constructor(id: string, timestamp: number, position: PositionVo) {
+  constructor(id: string, timestamp: number, unitId: string) {
     this.id = id;
     this.timestamp = timestamp;
-    this.position = position;
+    this.unitId = unitId;
   }
 
-  static new(position: PositionVo) {
-    return new RemovePortalUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), position);
+  static new(unitId: string) {
+    return new RemovePortalUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), unitId);
   }
 
-  static load(id: string, timestamp: number, position: PositionVo) {
-    return new RemovePortalUnitCommand(id, timestamp, position);
+  static load(id: string, timestamp: number, unitId: string) {
+    return new RemovePortalUnitCommand(id, timestamp, unitId);
   }
 
   public execute({ unitManager }: CommandParams): void {
-    const portalUnit = unitManager.getUnit(this.position);
+    const portalUnit = unitManager.getUnit(this.unitId);
     if (!portalUnit) return;
 
     if (!(portalUnit instanceof PortalUnitModel)) return;
 
     const targetPos = portalUnit.getTargetPosition();
     if (targetPos) {
-      const targetPortalUnit = unitManager.getUnit(targetPos);
+      const targetPortalUnit = unitManager.getUnitByPos(targetPos);
       if (targetPortalUnit && targetPortalUnit instanceof PortalUnitModel) {
         targetPortalUnit.updateTargetPosition(null);
         unitManager.updateUnit(targetPortalUnit);
       }
     }
 
-    unitManager.removeUnit(this.position);
+    unitManager.removeUnit(this.unitId);
   }
 
   public getId() {
@@ -52,7 +51,7 @@ export class RemovePortalUnitCommand implements Command {
     return this.timestamp;
   }
 
-  public getPosition() {
-    return this.position;
+  public getUnitId() {
+    return this.unitId;
   }
 }

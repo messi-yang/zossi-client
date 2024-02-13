@@ -8,6 +8,9 @@ export class FenceUnitModel extends BaseUnitModel implements UnitModel {
   static new = (itemId: string, position: PositionVo, direction: DirectionVo): FenceUnitModel =>
     new FenceUnitModel(generateUuidV4(), itemId, position, direction);
 
+  static load = (id: string, itemId: string, position: PositionVo, direction: DirectionVo): FenceUnitModel =>
+    new FenceUnitModel(id, itemId, position, direction);
+
   static mockup(): FenceUnitModel {
     return new FenceUnitModel(generateUuidV4(), generateUuidV4(), PositionVo.new(0, 0), DirectionVo.newDown());
   }

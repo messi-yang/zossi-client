@@ -1,6 +1,5 @@
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
-import { PositionVo } from '@/models/world/common/position-vo';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
@@ -9,24 +8,24 @@ export class RotateUnitCommand implements Command {
 
   private timestamp: number;
 
-  private position: PositionVo;
+  private unitId: string;
 
-  constructor(id: string, timestamp: number, position: PositionVo) {
+  constructor(id: string, timestamp: number, unitId: string) {
     this.id = id;
     this.timestamp = timestamp;
-    this.position = position;
+    this.unitId = unitId;
   }
 
-  static new(position: PositionVo) {
-    return new RotateUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), position);
+  static new(unitId: string) {
+    return new RotateUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), unitId);
   }
 
-  static load(id: string, timestamp: number, position: PositionVo) {
-    return new RotateUnitCommand(id, timestamp, position);
+  static load(id: string, timestamp: number, unitId: string) {
+    return new RotateUnitCommand(id, timestamp, unitId);
   }
 
   public execute({ unitManager }: CommandParams): void {
-    const unit = unitManager.getUnit(this.position);
+    const unit = unitManager.getUnit(this.unitId);
     if (!unit) return;
 
     const clonedUnit = unit.clone();
@@ -43,7 +42,7 @@ export class RotateUnitCommand implements Command {
     return this.timestamp;
   }
 
-  public getPosition() {
-    return this.position;
+  public getUnitId() {
+    return this.unitId;
   }
 }
