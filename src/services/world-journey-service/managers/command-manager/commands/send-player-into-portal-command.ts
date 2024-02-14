@@ -1,4 +1,3 @@
-import { PositionVo } from '@/models/world/common/position-vo';
 import { Command } from '../command';
 import { DateVo } from '@/models/global/date-vo';
 import { CommandParams } from '../command-params';
@@ -7,31 +6,18 @@ import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
 export class SendPlayerIntoPortalCommand implements Command {
-  private id: string;
+  constructor(private id: string, private timestamp: number, private playerId: string, private unitId: string) {}
 
-  private timestamp: number;
-
-  private playerId: string;
-
-  private position: PositionVo;
-
-  constructor(id: string, timestamp: number, playerId: string, position: PositionVo) {
-    this.id = id;
-    this.timestamp = timestamp;
-    this.playerId = playerId;
-    this.position = position;
+  static new(playerId: string, unitId: string) {
+    return new SendPlayerIntoPortalCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, unitId);
   }
 
-  static new(playerId: string, position: PositionVo) {
-    return new SendPlayerIntoPortalCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, position);
-  }
-
-  static load(id: string, timestamp: number, playerId: string, position: PositionVo) {
-    return new SendPlayerIntoPortalCommand(id, timestamp, playerId, position);
+  static load(id: string, timestamp: number, playerId: string, unitId: string) {
+    return new SendPlayerIntoPortalCommand(id, timestamp, playerId, unitId);
   }
 
   public execute({ unitManager, playerManager }: CommandParams): void {
-    const portalUnit = unitManager.getUnitByPos(this.position);
+    const portalUnit = unitManager.getUnit(this.unitId);
     if (!portalUnit || !(portalUnit instanceof PortalUnitModel)) return;
 
     const targetPosition = portalUnit.getTargetPosition();
@@ -58,7 +44,7 @@ export class SendPlayerIntoPortalCommand implements Command {
     return this.playerId;
   }
 
-  public getPosition() {
-    return this.position;
+  public getUnitId() {
+    return this.unitId;
   }
 }

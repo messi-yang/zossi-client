@@ -68,7 +68,7 @@ type SendPlayerIntoPortalCommandDto = {
   timestamp: number;
   name: CommandNameEnum.SendPlayerIntoPortal;
   playerId: string;
-  position: PositionDto;
+  unitId: string;
 };
 
 type RemovePlayerCommandDto = {
@@ -250,12 +250,7 @@ function parseChangePlayerActionCommand(command: ChangePlayerActionCommandDto): 
 }
 
 function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDto): SendPlayerIntoPortalCommand {
-  return SendPlayerIntoPortalCommand.load(
-    command.id,
-    command.timestamp,
-    command.playerId,
-    PositionVo.new(command.position.x, command.position.z)
-  );
+  return SendPlayerIntoPortalCommand.load(command.id, command.timestamp, command.playerId, command.unitId);
 }
 
 function parseChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
@@ -400,7 +395,7 @@ export const toCommandDto = (command: Command) => {
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.SendPlayerIntoPortal,
       playerId: command.getPlayerId(),
-      position: newPositionDto(command.getPosition()),
+      unitId: command.getUnitId(),
     };
     return commandDto;
   } else if (command instanceof ChangePlayerHeldItemCommand) {

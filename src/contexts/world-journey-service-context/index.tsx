@@ -161,11 +161,9 @@ export function Provider({ children }: Props) {
       const unitAtPlayerPos = worldJourneyService.getUnit(playerPos);
       if (!unitAtPlayerPos) return;
 
-      if (unitAtPlayerPos instanceof PortalUnitModel) {
-        const command = SendPlayerIntoPortalCommand.new(player.getId(), playerPos);
-        worldJourneyService.executeCommand(command);
-        worldJourneyApi.current.sendCommand(command);
-      }
+      const command = SendPlayerIntoPortalCommand.new(player.getId(), unitAtPlayerPos.getId());
+      worldJourneyService.executeCommand(command);
+      worldJourneyApi.current.sendCommand(command);
     });
   }, [worldJourneyService]);
 
