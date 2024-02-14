@@ -26,6 +26,8 @@ import { RemoveLinkUnitCommand } from '@/services/world-journey-service/managers
 import { dipatchUnitType } from '@/models/world/unit/utils';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { LinkUnitApi } from '@/adapters/apis/link-unit-api';
+import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
+import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
 
@@ -230,7 +232,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreateStaticUnitCommand.new(itemId, position, direction);
+      const command = CreateStaticUnitCommand.new(StaticUnitModel.new(itemId, position, direction));
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -241,7 +243,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreateFenceUnitCommand.new(itemId, position, direction);
+      const command = CreateFenceUnitCommand.new(FenceUnitModel.new(itemId, position, direction));
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -252,7 +254,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreatePortalUnitCommand.new(itemId, position, direction);
+      const command = CreatePortalUnitCommand.new(PortalUnitModel.new(itemId, position, direction, null));
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -263,7 +265,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo, url: string) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreateLinkUnitCommand.new(itemId, position, direction, url);
+      const command = CreateLinkUnitCommand.new(LinkUnitModel.new(itemId, position, direction), url);
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },

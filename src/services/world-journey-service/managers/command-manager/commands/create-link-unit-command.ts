@@ -1,7 +1,5 @@
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
-import { PositionVo } from '@/models/world/common/position-vo';
-import { DirectionVo } from '@/models/world/common/direction-vo';
 import { DateVo } from '@/models/global/date-vo';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
@@ -12,58 +10,29 @@ export class CreateLinkUnitCommand implements Command {
 
   private timestamp: number;
 
-  private itemId: string;
-
-  private position: PositionVo;
-
-  private direction: DirectionVo;
-
-  private url: string;
-
-  private unit: LinkUnitModel;
-
-  constructor(
-    id: string,
-    timestamp: number,
-    itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    url: string
-  ) {
+  constructor(id: string, timestamp: number, private unit: LinkUnitModel, private url: string) {
     this.id = id;
     this.timestamp = timestamp;
-    this.itemId = itemId;
-    this.position = position;
-    this.direction = direction;
-    this.url = url;
-    this.unit = LinkUnitModel.new(this.itemId, this.position, this.direction);
   }
 
-  static new(itemId: string, position: PositionVo, direction: DirectionVo, url: string) {
-    return new CreateLinkUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), itemId, position, direction, url);
+  static new(unit: LinkUnitModel, url: string) {
+    return new CreateLinkUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), unit, url);
   }
 
-  static load(
-    id: string,
-    timestamp: number,
-    itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    url: string
-  ) {
-    return new CreateLinkUnitCommand(id, timestamp, itemId, position, direction, url);
+  static load(id: string, timestamp: number, unit: LinkUnitModel, url: string) {
+    return new CreateLinkUnitCommand(id, timestamp, unit, url);
   }
 
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
-    const item = itemManager.getItem(this.itemId);
+    const item = itemManager.getItem(this.unit.getItemId());
     if (!item) return;
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Link)) return;
 
-    const unitAtPos = unitManager.getUnitByPos(this.position);
+    const unitAtPos = unitManager.getUnitByPos(this.unit.getPosition());
     if (unitAtPos) return;
 
-    const playersAtPos = playerManager.getPlayersAtPos(this.position);
+    const playersAtPos = playerManager.getPlayersAtPos(this.unit.getPosition());
     if (playersAtPos) return;
 
     unitManager.addUnit(this.unit);
@@ -81,16 +50,8 @@ export class CreateLinkUnitCommand implements Command {
     return this.timestamp;
   }
 
-  public getItemId() {
-    return this.itemId;
-  }
-
-  public getPosition() {
-    return this.position;
-  }
-
-  public getDirection() {
-    return this.direction;
+  public getUnit() {
+    return this.unit;
   }
 
   public getUrl() {

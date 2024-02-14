@@ -18,6 +18,10 @@ import { CreateFenceUnitCommand } from '@/services/world-journey-service/manager
 import { RemoveFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-fence-unit-command';
 import { CreateLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-link-unit-command';
 import { RemoveLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-link-unit-command';
+import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
+import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 
 enum CommandNameEnum {
   Ping = 'PING',
@@ -162,9 +166,12 @@ function parseCreateStaticCommand(command: CreateStaticUnitCommandDto): CreateSt
   return CreateStaticUnitCommand.load(
     command.id,
     command.timestamp,
-    command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction)
+    StaticUnitModel.load(
+      command.unitId,
+      command.itemId,
+      PositionVo.new(command.position.x, command.position.z),
+      DirectionVo.new(command.direction)
+    )
   );
 }
 
@@ -176,9 +183,12 @@ function parseCreateFenceCommand(command: CreateFenceUnitCommandDto): CreateFenc
   return CreateFenceUnitCommand.load(
     command.id,
     command.timestamp,
-    command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction)
+    FenceUnitModel.load(
+      command.unitId,
+      command.itemId,
+      PositionVo.new(command.position.x, command.position.z),
+      DirectionVo.new(command.direction)
+    )
   );
 }
 
@@ -190,9 +200,13 @@ function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): Crea
   return CreatePortalUnitCommand.load(
     command.id,
     command.timestamp,
-    command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction)
+    PortalUnitModel.load(
+      command.unitId,
+      command.itemId,
+      PositionVo.new(command.position.x, command.position.z),
+      DirectionVo.new(command.direction),
+      null
+    )
   );
 }
 
@@ -204,9 +218,12 @@ function parseCreateLinkUnitCommand(command: CreateLinkUnitCommandDto): CreateLi
   return CreateLinkUnitCommand.load(
     command.id,
     command.timestamp,
-    command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction),
+    LinkUnitModel.load(
+      command.id,
+      command.itemId,
+      PositionVo.new(command.position.x, command.position.z),
+      DirectionVo.new(command.direction)
+    ),
     command.url
   );
 }
@@ -288,10 +305,10 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreateStaticUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
+      unitId: command.getUnit().getId(),
+      itemId: command.getUnit().getItemId(),
+      position: newPositionDto(command.getUnit().getPosition()),
+      direction: command.getUnit().getDirection().toNumber(),
     };
     return commandDto;
   } else if (command instanceof RemoveStaticUnitCommand) {
@@ -307,10 +324,10 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreateFenceUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
+      unitId: command.getUnit().getId(),
+      itemId: command.getUnit().getItemId(),
+      position: newPositionDto(command.getUnit().getPosition()),
+      direction: command.getUnit().getDirection().toNumber(),
     };
     return commandDto;
   } else if (command instanceof RemoveFenceUnitCommand) {
@@ -326,10 +343,10 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreatePortalUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
+      unitId: command.getUnit().getId(),
+      itemId: command.getUnit().getItemId(),
+      position: newPositionDto(command.getUnit().getPosition()),
+      direction: command.getUnit().getDirection().toNumber(),
     };
     return commandDto;
   } else if (command instanceof RemovePortalUnitCommand) {
@@ -345,10 +362,10 @@ export const toCommandDto = (command: Command) => {
       id: command.getId(),
       timestamp: command.getTimestamp(),
       name: CommandNameEnum.CreateLinkUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
+      unitId: command.getUnit().getId(),
+      itemId: command.getUnit().getItemId(),
+      position: newPositionDto(command.getUnit().getPosition()),
+      direction: command.getUnit().getDirection().toNumber(),
       url: command.getUrl(),
     };
     return commandDto;
