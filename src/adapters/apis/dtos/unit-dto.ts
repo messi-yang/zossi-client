@@ -10,11 +10,11 @@ import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 
 type UnitDtoBase = {
+  id: string;
   type: UnitTypeEnum;
   itemId: string;
   position: PositionDto;
   direction: DirectionEnum;
-  infoId: string;
   info: Object | null;
 };
 
@@ -46,16 +46,16 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
   const direction = DirectionVo.new(unitDto.direction);
 
   if (unitDto.type === UnitTypeEnum.Static) {
-    return StaticUnitModel.load(unitDto.infoId, unitDto.itemId, position, direction);
+    return StaticUnitModel.load(unitDto.id, unitDto.itemId, position, direction);
   } else if (unitDto.type === UnitTypeEnum.Fence) {
-    return FenceUnitModel.load(unitDto.infoId, unitDto.itemId, position, direction);
+    return FenceUnitModel.load(unitDto.id, unitDto.itemId, position, direction);
   } else if (unitDto.type === UnitTypeEnum.Portal) {
     const tartgetPosition = unitDto.info.targetPosition
       ? PositionVo.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
       : null;
-    return PortalUnitModel.load(unitDto.infoId, unitDto.itemId, position, direction, tartgetPosition);
+    return PortalUnitModel.load(unitDto.id, unitDto.itemId, position, direction, tartgetPosition);
   } else {
-    return LinkUnitModel.load(unitDto.infoId, unitDto.itemId, position, direction);
+    return LinkUnitModel.load(unitDto.id, unitDto.itemId, position, direction);
   }
 }
 
