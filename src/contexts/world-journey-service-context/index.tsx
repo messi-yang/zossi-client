@@ -309,7 +309,7 @@ export function Provider({ children }: Props) {
     if (!unitAtPos) return;
 
     if (unitAtPos instanceof LinkUnitModel) {
-      const linkUnitUrl = await linkUnitApi.getLinkUnit(unitAtPos.getId());
+      const linkUnitUrl = await linkUnitApi.getLinkUnitUrl(unitAtPos.getId());
       window.open(linkUnitUrl);
     }
   }, [worldJourneyService]);

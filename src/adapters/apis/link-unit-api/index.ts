@@ -12,7 +12,7 @@ export class LinkUnitApi {
     return new LinkUnitApi();
   }
 
-  async getLinkUnit(id: string): Promise<string> {
+  async getLinkUnitUrl(id: string): Promise<string> {
     const { data } = await this.axios.get<{ url: string }>(`/${id}`);
     return data.url;
   }
