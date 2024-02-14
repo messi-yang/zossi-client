@@ -145,6 +145,7 @@ type CreateLinkUnitCommandDto = {
   itemId: string;
   position: PositionDto;
   direction: number;
+  label: string | null;
   url: string;
 };
 
@@ -222,7 +223,8 @@ function parseCreateLinkUnitCommand(command: CreateLinkUnitCommandDto): CreateLi
       command.id,
       command.itemId,
       PositionVo.new(command.position.x, command.position.z),
-      DirectionVo.new(command.direction)
+      DirectionVo.new(command.direction),
+      command.label
     ),
     command.url
   );
@@ -361,6 +363,7 @@ export const toCommandDto = (command: Command) => {
       itemId: command.getUnit().getItemId(),
       position: newPositionDto(command.getUnit().getPosition()),
       direction: command.getUnit().getDirection().toNumber(),
+      label: command.getUnit().getLabel(),
       url: command.getUrl(),
     };
     return commandDto;

@@ -403,7 +403,13 @@ export class WorldRenderer {
     }));
 
     const linkUnitTexts = units.map((unit) => {
-      const textMesh = createTextMesh(font, 'hello', unit.getPosition().getX(), 3, unit.getPosition().getZ());
+      const textMesh = createTextMesh(
+        font,
+        unit.getLabel() ?? 'Link',
+        unit.getPosition().getX(),
+        3,
+        unit.getPosition().getZ()
+      );
       this.scene.add(textMesh);
 
       return textMesh;

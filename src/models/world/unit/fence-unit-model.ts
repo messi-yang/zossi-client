@@ -5,6 +5,10 @@ import { UnitTypeEnum } from './unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 
 export class FenceUnitModel extends BaseUnitModel implements UnitModel {
+  constructor(id: string, itemId: string, position: PositionVo, direction: DirectionVo) {
+    super(id, itemId, position, direction, null);
+  }
+
   static new = (itemId: string, position: PositionVo, direction: DirectionVo): FenceUnitModel =>
     new FenceUnitModel(generateUuidV4(), itemId, position, direction);
 

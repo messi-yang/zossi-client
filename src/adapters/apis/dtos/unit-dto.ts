@@ -15,6 +15,7 @@ type UnitDtoBase = {
   itemId: string;
   position: PositionDto;
   direction: DirectionEnum;
+  label: string | null;
   info: Object | null;
 };
 
@@ -55,7 +56,7 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
       : null;
     return PortalUnitModel.load(unitDto.id, unitDto.itemId, position, direction, tartgetPosition);
   } else {
-    return LinkUnitModel.load(unitDto.id, unitDto.itemId, position, direction);
+    return LinkUnitModel.load(unitDto.id, unitDto.itemId, position, direction, unitDto.label);
   }
 }
 

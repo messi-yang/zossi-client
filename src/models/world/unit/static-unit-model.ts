@@ -5,6 +5,10 @@ import { BaseUnitModel, UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
 
 export class StaticUnitModel extends BaseUnitModel implements UnitModel {
+  constructor(id: string, itemId: string, position: PositionVo, direction: DirectionVo) {
+    super(id, itemId, position, direction, null);
+  }
+
   static new = (itemId: string, position: PositionVo, direction: DirectionVo): StaticUnitModel =>
     new StaticUnitModel(generateUuidV4(), itemId, position, direction);
 

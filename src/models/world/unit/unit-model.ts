@@ -9,6 +9,7 @@ export interface UnitModel {
   getItemId(): string;
   getPosition(): PositionVo;
   getDirection(): DirectionVo;
+  getLabel(): string | null;
   changeDirection(dir: DirectionVo): void;
 }
 
@@ -17,7 +18,8 @@ export abstract class BaseUnitModel {
     private id: string,
     private itemId: string,
     private position: PositionVo,
-    private direction: DirectionVo
+    private direction: DirectionVo,
+    private label: string | null
   ) {}
 
   public getId(): string {
@@ -38,5 +40,9 @@ export abstract class BaseUnitModel {
 
   public changeDirection(direction: DirectionVo) {
     this.direction = direction;
+  }
+
+  public getLabel(): string | null {
+    return this.label;
   }
 }

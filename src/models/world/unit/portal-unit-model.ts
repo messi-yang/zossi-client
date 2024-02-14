@@ -12,7 +12,7 @@ export class PortalUnitModel extends BaseUnitModel implements UnitModel {
     direction: DirectionVo,
     private targetPosition: PositionVo | null
   ) {
-    super(id, itemId, position, direction);
+    super(id, itemId, position, direction, null);
   }
 
   static new = (
