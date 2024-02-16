@@ -184,16 +184,8 @@ export class WorldRenderer {
     });
   }
 
-  public getScene(): THREE.Scene {
-    return this.scene;
-  }
-
-  public getCamera(): THREE.PerspectiveCamera {
-    return this.camera;
-  }
-
-  public getRenderer(): THREE.WebGLRenderer {
-    return this.renderer;
+  public printRendererInfomation(): void {
+    console.log(`Render Information: ${JSON.stringify(this.renderer.info.render)}`);
   }
 
   private updateCameraAspect(width: number, height: number) {
@@ -230,7 +222,7 @@ export class WorldRenderer {
     const newScene = new THREE.Scene();
     newScene.background = new THREE.Color(0x87ceeb);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.5);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);
     hemiLight.position.set(0, HEMI_LIGHT_HEIGHT, 0);
     newScene.add(hemiLight);
 
@@ -290,7 +282,7 @@ export class WorldRenderer {
   }
 
   private createDirectionalLight(): THREE.DirectionalLight {
-    const newDirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const newDirLight = new THREE.DirectionalLight(0xffffff, 1);
     newDirLight.castShadow = true;
     newDirLight.position.set(0, DIR_LIGHT_HEIGHT, DIR_LIGHT_Z_OFFSET);
     newDirLight.target.position.set(0, 0, 0);
@@ -302,7 +294,6 @@ export class WorldRenderer {
 
   private createRenderer(): THREE.WebGLRenderer {
     const newRenderer = new THREE.WebGLRenderer({ antialias: true });
-    newRenderer.outputEncoding = THREE.sRGBEncoding;
     newRenderer.shadowMap.enabled = true;
     newRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
     return newRenderer;

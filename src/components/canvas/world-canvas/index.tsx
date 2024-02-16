@@ -46,8 +46,7 @@ export function WorldCanvas({ worldJourneyService }: Props) {
       const currentTime = performance.now();
       const elapsed = currentTime - lastFrameTime;
       if (elapsed > frameDelay) {
-        if (animateCount % 600 === 0)
-          console.log(`Render Information: ${JSON.stringify(worldRenderer.getRenderer().info.render)}`);
+        if (animateCount % 600 === 0) worldRenderer.printRendererInfomation();
         lastFrameTime = currentTime - (elapsed % frameDelay);
         worldRenderer.render();
         animateCount += 1;
