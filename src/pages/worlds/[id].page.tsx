@@ -82,6 +82,7 @@ const Page: NextPage = function Page() {
         return () => {};
       }
       enterWorld(worldId);
+
       return () => {
         leaveWorld();
       };

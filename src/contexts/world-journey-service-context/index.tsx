@@ -29,7 +29,7 @@ import { LinkUnitApi } from '@/adapters/apis/link-unit-api';
 import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 
-type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTING' | 'DISCONNECTED';
+type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
 type ContextValue = {
   worldJourneyService: WorldJourneyService | null;
@@ -116,8 +116,16 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
+  const leaveWorld = useCallback(() => {
+    worldJourneyApi.current?.disconnect();
+    worldJourneyApi.current = null;
+    setWorldJourneyService(null);
+    setConnectionStatus('WAITING');
+  }, []);
+
   const enterWorld = useCallback((WorldId: string) => {
     if (worldJourneyApi.current) {
+      leaveWorld();
       return;
     }
 
@@ -137,9 +145,10 @@ export function Provider({ children }: Props) {
       onOpen: () => {
         setConnectionStatus('OPEN');
       },
-      onClose: () => {
-        setConnectionStatus('DISCONNECTED');
+      onDisconnect: () => {
         worldJourneyApi.current = null;
+        setWorldJourneyService(null);
+        setConnectionStatus('DISCONNECTED');
       },
     });
     setConnectionStatus('CONNECTING');
@@ -208,12 +217,6 @@ export function Provider({ children }: Props) {
     },
     [worldJourneyService]
   );
-
-  const leaveWorld = useCallback(() => {
-    setWorldJourneyService(null);
-    setConnectionStatus('DISCONNECTING');
-    worldJourneyApi.current?.disconnect();
-  }, []);
 
   const changePlayerHeldItem = useCallback(
     (item: ItemModel) => {

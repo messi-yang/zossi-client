@@ -25,13 +25,15 @@ function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitMode
 export class WorldJourneyApi {
   private socket: WebSocket;
 
+  private disconnectedByUser: boolean = false;
+
   constructor(
     worldId: string,
     events: {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandSucceeded: (command: Command) => void;
       onErrored: (message: string) => void;
-      onClose: () => void;
+      onDisconnect: () => void;
       onOpen: () => void;
     }
   ) {
@@ -65,7 +67,9 @@ export class WorldJourneyApi {
       if (pingServerInterval) {
         clearInterval(pingServerInterval);
       }
-      events.onClose();
+      if (!this.disconnectedByUser) {
+        events.onDisconnect();
+      }
     };
 
     socket.onopen = () => {
@@ -84,7 +88,7 @@ export class WorldJourneyApi {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandSucceeded: (command: Command) => void;
       onErrored: (message: string) => void;
-      onClose: () => void;
+      onDisconnect: () => void;
       onOpen: () => void;
     }
   ): WorldJourneyApi {
@@ -92,6 +96,7 @@ export class WorldJourneyApi {
   }
 
   public disconnect() {
+    this.disconnectedByUser = true;
     this.socket.close();
   }
 
