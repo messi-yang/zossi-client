@@ -17,9 +17,9 @@ export function SelectItemsBar({ selectedItemId, items, onSelect = () => {} }: P
   const selectedItem = items?.find((item) => item.getId() === selectedItemId) || null;
 
   return (
-    <section data-testid={dataTestids.root} className="flex">
+    <section data-testid={dataTestids.root} className="w-[1000px] grid grid-cols-12 gap-2">
       {(items || []).map((item) => (
-        <div key={item.getId()} className={classnames('shrink-0', 'mr-2', 'flex', 'w-[70px]', 'h-[70px]')}>
+        <div key={item.getId()} className={classnames('aspect-square')}>
           <ItemBox item={item} active={selectedItem?.getId() === item.getId()} onClick={() => handleItemSelect(item)} />
         </div>
       ))}
