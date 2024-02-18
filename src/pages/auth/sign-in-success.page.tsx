@@ -21,7 +21,7 @@ const Page: NextPage = function Page() {
   return (
     <main className="relative w-full h-screen flex justify-center items-center bg-[#1E1E1E]">
       <div className="flex flex-col items-center">
-        <Text color="text-white">Login Success!</Text>
+        <Text>Login Success!</Text>
       </div>
     </main>
   );

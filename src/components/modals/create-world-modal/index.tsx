@@ -32,9 +32,7 @@ export function CreateWorldModal({ opened, onConfirm = () => {}, onCancel = () =
         data-testid={dataTestids.root}
         className="relative p-6 w-full h-full flex flex-col items-center border-4 border-solid border-white bg-[#121212]"
       >
-        <Text color="text-white" size="text-lg">
-          Create new world
-        </Text>
+        <Text size="text-lg">Create new world</Text>
         <div className="mt-5 w-full">
           <Field label="Name">
             <Input value={worldName} onInput={setWorldName} placeholder="Enter world name" />

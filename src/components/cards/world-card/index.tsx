@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import { WorldModel } from '@/models/world/world/world-model';
 import { Text } from '@/components/texts/text';
 import { IconButton } from '@/components/buttons/icon-button';
-import { UserAvatar } from '@/components/avatars/user-avatar';
+import defaultImage from './default-image.jpg';
 import { dataTestids } from './data-test-ids';
 
 type Props = {
@@ -16,29 +16,29 @@ export function WorldCard({ world, deleting = false, onDeleteClick = () => {} }:
     <div
       data-testid={dataTestids.root}
       className={classnames(
+        'w-full',
         'relative',
         'bg-black',
         deleting && 'opacity-30',
-        'border',
-        'border-white',
-        'rounded-lg',
-        deleting && 'pointer-events-none'
+        'rounded-3xl',
+        deleting && 'pointer-events-none',
+        'overflow-hidden',
+        'p-4',
+        'pt-24',
+        'object-contain'
       )}
+      style={{
+        backgroundImage: `url("${defaultImage.src}")`,
+      }}
     >
       <div className={classnames('absolute', 'top-2', 'right-2', 'inline-flex')}>
         <IconButton icon="cross" onClick={onDeleteClick} />
       </div>
-      <div className={classnames('flex', 'flex-col', 'p-5')}>
-        <Text>{world.getName()}</Text>
-        <div className={classnames('mt-2', 'flex', 'flex-row', 'items-center')}>
-          <UserAvatar size="small" user={world.getUser()} />
-          <div className="ml-2 grow">
-            <Text>{world.getUser().getUsername()}</Text>
-          </div>
-          <div className="ml-2">
-            <Text>{world.getEditedAtCopy()}</Text>
-          </div>
-        </div>
+      <div className={classnames('flex', 'flex-col', 'p-3', 'bg-white', 'bg-opacity-30', 'rounded-xl')}>
+        <Text color="text-stone-800" size="text-lg" weight="font-bold">
+          {world.getName()}
+        </Text>
+        <Text>{world.getEditedAtCopy()}</Text>
       </div>
     </div>
   );

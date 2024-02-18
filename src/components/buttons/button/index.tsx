@@ -88,9 +88,7 @@ export function Button({ text, fullWidth = false, rightChild, loading = false, o
         }}
       />
       <div className={classnames('relative', 'z-10', 'w-full', 'h-full', 'flex', 'justify-center', 'items-center')}>
-        <Text color="text-white" size="text-lg">
-          {loading ? 'Processing...' : text}
-        </Text>
+        <Text size="text-lg">{loading ? 'Processing...' : text}</Text>
         {rightChild && <div className="ml-2">{rightChild}</div>}
       </div>
     </button>

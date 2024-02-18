@@ -219,9 +219,7 @@ const Page: NextPage = function Page() {
       <div className="absolute top-2 right-3 z-10 flex items-center">
         <Button text="Share" onClick={handleShareClick} />
         <div className="ml-3 w-24 flex justify-center">
-          <Text size="text-xl" color="text-white">
-            {myPlayerPosText}
-          </Text>
+          <Text size="text-xl">{myPlayerPosText}</Text>
         </div>
       </div>
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">

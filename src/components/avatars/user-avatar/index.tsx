@@ -22,7 +22,7 @@ export function UserAvatar({ user, size = 'large', onClick }: Props) {
         'items-center',
         'justify-center',
         'bg-orange-500',
-        'text-white',
+        'text-stone-50',
         'cursor-pointer'
       )}
       onClick={onClick}

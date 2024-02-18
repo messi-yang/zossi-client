@@ -7,6 +7,7 @@ import { Field } from '@/components/fields/field';
 import { Input } from '@/components/inputs/input';
 import { Button } from '@/components/buttons/button';
 import { UserModel } from '@/models/iam/user-model';
+import { AuthContext } from '@/contexts/auth-context';
 
 const Page: NextPage = function Page() {
   const { user, getMyUser, updateMyUser, isUpdatingMyUser } = useContext(UserContext);
@@ -20,6 +21,11 @@ const Page: NextPage = function Page() {
   useEffect(() => {
     getMyUser();
   }, []);
+
+  const { signOut } = useContext(AuthContext);
+  const handleLogoutClick = () => {
+    signOut();
+  };
 
   const handleEditUserClick = useCallback(() => {
     resetDraftUser(user);
@@ -59,33 +65,29 @@ const Page: NextPage = function Page() {
   );
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      panel={
+        <div className="flex items-center justify-end">
+          <Button text="Logout" onClick={handleLogoutClick} />
+        </div>
+      }
+    >
       <main className="relative flex">
         <div className="w-full max-w-4xl flex flex-col">
           <Text size="text-xl">Account Information</Text>
           <div className="mt-5">
             <Field label="Email address">
-              <Text color="text-white" size="text-base">
-                {user?.getEmailAddress() || ''}
-              </Text>
+              <Text size="text-base">{user?.getEmailAddress() || ''}</Text>
             </Field>
             <div className="mt-5">
               <Field label="Username">
-                {!isEditingUser && (
-                  <Text color="text-white" size="text-base">
-                    {user?.getUsername() || ''}
-                  </Text>
-                )}
+                {!isEditingUser && <Text size="text-base">{user?.getUsername() || ''}</Text>}
                 {isEditingUser && <Input value={draftUser?.getUsername() || ''} onInput={handleUsernameInput} />}
               </Field>
             </div>
             <div className="mt-5">
               <Field label="Friendly Name">
-                {!isEditingUser && (
-                  <Text color="text-white" size="text-base">
-                    {user?.getFriendlyName() || ''}
-                  </Text>
-                )}
+                {!isEditingUser && <Text size="text-base">{user?.getFriendlyName() || ''}</Text>}
                 {isEditingUser && (
                   <Input value={draftUser?.getFriendlyName() || ''} onInput={handleFriendlyNameInput} />
                 )}

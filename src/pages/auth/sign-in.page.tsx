@@ -23,9 +23,7 @@ const Page: NextPage = function Page() {
   return (
     <main className="relative w-full h-screen flex justify-center items-center bg-[#1E1E1E]">
       <div className="flex flex-col items-center">
-        <Text color="text-white" size="text-base">
-          Welcome To
-        </Text>
+        <Text size="text-base">Welcome To</Text>
         <div className="mt-5">
           <Button
             text="Continue with"
