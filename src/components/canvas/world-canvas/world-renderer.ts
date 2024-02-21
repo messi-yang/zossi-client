@@ -18,11 +18,11 @@ const HEMI_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
-const FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
+const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
 const CHARACTER_MODEL_SRC = '/characters/car.gltf';
 
 type ItemModelsDownloadedEventSubscriber = (itemId: string) => void;
-type FontDownloadedEventSubscriber = () => void;
+type DefaultFontDownloadedEventSubscriber = () => void;
 type PlayerModelDownloadedEventSubscriber = () => void;
 
 export class WorldRenderer {
@@ -38,7 +38,7 @@ export class WorldRenderer {
 
   private fontMap: Record<string, Font | undefined> = {};
 
-  private fontDownloadedEventSubscribers: FontDownloadedEventSubscriber[] = [];
+  private defaultFontDownloadedEventSubscribers: DefaultFontDownloadedEventSubscriber[] = [];
 
   private existingPlayerNameFontMeshesMap: Record<string, THREE.Mesh> = {};
 
@@ -69,7 +69,7 @@ export class WorldRenderer {
 
     this.createBase(worldBound);
 
-    this.downloadPlayerNameFont(FONT_SRC);
+    this.downloadDefaultFont(DEFAULT_FONT_SRC);
     this.downloadPlayerModel();
   }
 
@@ -110,11 +110,11 @@ export class WorldRenderer {
     });
   }
 
-  private async downloadPlayerNameFont(fontSource: string) {
+  private async downloadDefaultFont(fontSource: string) {
     const playerFont = await this.downloadFont(fontSource);
     this.fontMap[fontSource] = playerFont;
 
-    this.fontDownloadedEventSubscribers.forEach((sub) => {
+    this.defaultFontDownloadedEventSubscribers.forEach((sub) => {
       sub();
     });
   }
@@ -152,11 +152,11 @@ export class WorldRenderer {
     };
   }
 
-  public subscribeFontDownloadedEvent(subscriber: FontDownloadedEventSubscriber): () => void {
-    this.fontDownloadedEventSubscribers.push(subscriber);
+  public subscribeDefaultFontDownloadedEvent(subscriber: DefaultFontDownloadedEventSubscriber): () => void {
+    this.defaultFontDownloadedEventSubscribers.push(subscriber);
 
     return () => {
-      this.fontDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
+      this.defaultFontDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
     };
   }
 
@@ -434,7 +434,7 @@ export class WorldRenderer {
   }
 
   public updateUnitsOfItem(item: ItemModel, units: UnitModel[], getUnit: (position: PositionVo) => UnitModel | null) {
-    const font = this.fontMap[FONT_SRC];
+    const font = this.fontMap[DEFAULT_FONT_SRC];
     if (!font) return;
 
     const itemCompatibleUnitType = item.getCompatibleUnitType();
@@ -464,7 +464,7 @@ export class WorldRenderer {
   }
 
   public updatePlayerNames(players: PlayerModel[]): void {
-    const font = this.fontMap[FONT_SRC];
+    const font = this.fontMap[DEFAULT_FONT_SRC];
     if (!font) return;
 
     const playerIds = players.map((p) => p.getId());
