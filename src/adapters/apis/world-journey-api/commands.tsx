@@ -220,7 +220,7 @@ function parseCreateLinkUnitCommand(command: CreateLinkUnitCommandDto): CreateLi
     command.id,
     command.timestamp,
     LinkUnitModel.load(
-      command.id,
+      command.unitId,
       command.itemId,
       PositionVo.new(command.position.x, command.position.z),
       DirectionVo.new(command.direction),
