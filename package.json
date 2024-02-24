@@ -24,6 +24,7 @@
     "next": "13.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.1",
     "resize-observer-polyfill": "^1.5.1",
     "three": "^0.161.0",
     "uuid": "^9.0.0"

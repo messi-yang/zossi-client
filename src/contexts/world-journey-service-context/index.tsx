@@ -28,6 +28,7 @@ import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { LinkUnitApi } from '@/adapters/apis/link-unit-api';
 import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
+import { NotificationEventDispatcher } from '@/event-dispatchers/notification-event-dispatcher';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -74,6 +75,7 @@ export function Provider({ children }: Props) {
   const itemApi = useMemo<ItemApi>(() => ItemApi.new(), []);
   const [items, setItems] = useState<ItemModel[] | null>([]);
   const [worldJourneyService, setWorldJourneyService] = useState<WorldJourneyService | null>(null);
+  const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.new(), []);
 
   useEffect(() => {
     if (!worldJourneyService) return;
@@ -139,8 +141,8 @@ export function Provider({ children }: Props) {
         if (!newWorldJourneyService) return;
         newWorldJourneyService.executeCommand(command);
       },
-      onErrored: () => {
-        // TODO - do something
+      onErrored: (message) => {
+        notificationEventDispatcher.publishErrorTriggeredEvent(message);
       },
       onOpen: () => {
         setConnectionStatus('OPEN');
@@ -170,9 +172,11 @@ export function Provider({ children }: Props) {
       const unitAtPlayerPos = worldJourneyService.getUnit(playerPos);
       if (!unitAtPlayerPos) return;
 
-      const command = SendPlayerIntoPortalCommand.new(player.getId(), unitAtPlayerPos.getId());
-      worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
+      if (unitAtPlayerPos instanceof PortalUnitModel) {
+        const command = SendPlayerIntoPortalCommand.new(player.getId(), unitAtPlayerPos.getId());
+        worldJourneyService.executeCommand(command);
+        worldJourneyApi.current.sendCommand(command);
+      }
     });
   }, [worldJourneyService]);
 
@@ -371,45 +375,25 @@ export function Provider({ children }: Props) {
     worldJourneyApi.current.sendCommand(command);
   }, [worldJourneyService]);
 
+  const context = {
+    worldJourneyService,
+    connectionStatus,
+    items,
+    enterWorld,
+    addPerspectiveDepth,
+    subtractPerspectiveDepth,
+    makePlayerStand,
+    makePlayerWalk,
+    leaveWorld,
+    changePlayerHeldItem,
+    engageUnit,
+    createUnit,
+    removeUnit,
+    rotateUnit,
+  };
+
   return (
-    <Context.Provider
-      value={useMemo<ContextValue>(
-        () => ({
-          worldJourneyService,
-          connectionStatus,
-          items,
-          enterWorld,
-          addPerspectiveDepth,
-          subtractPerspectiveDepth,
-          makePlayerStand,
-          makePlayerWalk,
-          leaveWorld,
-          changePlayerHeldItem,
-          engageUnit,
-          createUnit,
-          removeUnit,
-          rotateUnit,
-        }),
-        [
-          worldJourneyService,
-          connectionStatus,
-          items,
-          enterWorld,
-          addPerspectiveDepth,
-          subtractPerspectiveDepth,
-          makePlayerStand,
-          makePlayerWalk,
-          leaveWorld,
-          changePlayerHeldItem,
-          engageUnit,
-          createUnit,
-          removeUnit,
-          rotateUnit,
-        ]
-      )}
-    >
-      {children}
-    </Context.Provider>
+    <Context.Provider value={useMemo<ContextValue>(() => context, Object.values(context))}>{children}</Context.Provider>
   );
 }
 

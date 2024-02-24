@@ -1,6 +1,7 @@
 import { createContext, useCallback, useState, useMemo } from 'react';
 import { WorldApi } from '@/adapters/apis/world-api';
 import { WorldModel } from '@/models/world/world/world-model';
+import { NotificationEventDispatcher } from '@/event-dispatchers/notification-event-dispatcher';
 
 type StatusMap = {
   [worldId: string]: boolean | undefined;
@@ -40,6 +41,7 @@ function Provider({ children }: Props) {
   const [worldApi] = useState<WorldApi>(() => WorldApi.new());
   const initialContextValue = createInitialContextValue();
   const [myWorlds, setMyWorlds] = useState<WorldModel[] | null>(initialContextValue.myWorlds);
+  const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.new(), []);
 
   const getMyWorlds = useCallback(async () => {
     const newMyWorlds = await worldApi.getMyWorlds();
@@ -75,8 +77,8 @@ function Provider({ children }: Props) {
           if (!prev) return null;
           return prev.filter((world) => world.getId() !== worldId);
         });
-      } catch (e) {
-        console.error(e);
+      } catch (e: any) {
+        notificationEventDispatcher.publishErrorTriggeredEvent(e.message);
       } finally {
         setDeleteWorldStatusMap((prev) => {
           delete prev[worldId];

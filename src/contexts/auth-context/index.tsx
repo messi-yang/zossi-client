@@ -2,7 +2,7 @@ import { createContext, useCallback, useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/router';
 import { AuthApi } from '@/adapters/apis/auth-api';
 import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
-import { EventMediator, EventType } from '@/events';
+import { AuthenticationEventDispatcher } from '@/event-dispatchers/authentication-event-dispatcher';
 
 type ContextValue = {
   isSingedIn: boolean;
@@ -29,7 +29,7 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [eventMediator] = useState(() => EventMediator.new());
+  const [authenticationEventDispatcher] = useState(() => AuthenticationEventDispatcher.new());
   const [authApi] = useState<AuthApi>(() => AuthApi.new());
   const [authSessionStorage] = useState(() => AuthSessionStorage.get());
   const router = useRouter();
@@ -67,14 +67,14 @@ function Provider({ children }: Props) {
   }, [authSessionStorage]);
 
   useEffect(() => {
-    const unauthorizeHandler = () => {
+    const unauthenticatedEventHandler = () => {
       setIsSignedIn(false);
       setClientRedirectPath(router.asPath);
       router.push('/auth/sign-in');
     };
 
-    const unsubscribe = eventMediator.subscribe(EventType.ApiUnauthorized, () => {
-      unauthorizeHandler();
+    const unsubscribe = authenticationEventDispatcher.subscribeUnauthenticatedEvent(() => {
+      unauthenticatedEventHandler();
     });
 
     return () => {

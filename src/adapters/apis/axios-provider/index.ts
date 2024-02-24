@@ -1,6 +1,6 @@
 import axios, { Axios } from 'axios';
 import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
-import { EventMediator, eventFactory } from '@/events';
+import { AuthenticationEventDispatcher } from '@/event-dispatchers/authentication-event-dispatcher';
 
 export class AxiosProvider {
   static new(baseURL: string): Axios {
@@ -20,8 +20,8 @@ export class AxiosProvider {
           const authSessionStorage = AuthSessionStorage.get();
           authSessionStorage.removeAccessToken();
 
-          const eventMediator = EventMediator.new();
-          eventMediator.publish(eventFactory.newApiUnauthorizedEvent());
+          const authenticationEventDispatcher = AuthenticationEventDispatcher.new();
+          authenticationEventDispatcher.publishUnauthenticatedEvent();
         }
         return Promise.reject(error);
       }
