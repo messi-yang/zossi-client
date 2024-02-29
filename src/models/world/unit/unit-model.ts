@@ -13,7 +13,7 @@ export interface UnitModel {
   changeDirection(dir: DirectionVo): void;
 }
 
-export abstract class BaseUnitModel {
+export abstract class BaseUnitModel implements UnitModel {
   constructor(
     private id: string,
     private itemId: string,
@@ -22,9 +22,12 @@ export abstract class BaseUnitModel {
     private label: string | null
   ) {}
 
+  abstract clone(): UnitModel;
+
   public getId(): string {
     return this.id;
   }
+  abstract getType(): UnitTypeEnum;
 
   public getItemId(): string {
     return this.itemId;
