@@ -92,12 +92,6 @@ export function WorldCanvas({ worldJourneyService }: Props) {
   }, [worldJourneyService, worldRenderer, getUnit]);
 
   useEffect(() => {
-    return worldJourneyService.subscribeMyPlayerChanged((_, newMyPlayer) => {
-      worldRenderer.updateDirectionalLightPosition(newMyPlayer.getPosition());
-    });
-  }, [worldJourneyService, worldRenderer]);
-
-  useEffect(() => {
     return worldJourneyService.subscribePerspectiveChanged(
       (perspectiveDepth: number, targetPrecisePos: PrecisePositionVo) => {
         worldRenderer.updateCameraPosition(perspectiveDepth, targetPrecisePos);

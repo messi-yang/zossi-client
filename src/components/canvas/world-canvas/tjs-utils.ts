@@ -53,6 +53,7 @@ export const createInstancesInScene = (
   const modelInstancedMeshInfos: InstancedMeshInfo[] = modelMeshes.map((baseObjMesh) => {
     const mesh = new THREE.InstancedMesh(baseObjMesh.geometry, baseObjMesh.material, instanceStates.length);
     mesh.receiveShadow = true;
+    mesh.castShadow = true;
     return {
       mesh,
       meshScale: baseObjMesh.getWorldScale(new THREE.Vector3()),

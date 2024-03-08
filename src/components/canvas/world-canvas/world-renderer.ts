@@ -203,12 +203,6 @@ export class WorldRenderer {
     this.updateRendererSize(width, height);
   }
 
-  public updateDirectionalLightPosition(position: PositionVo) {
-    const [posX, posZ] = [position.getX(), position.getZ()];
-    this.directionalLight.position.set(posX, DIR_LIGHT_HEIGHT, posZ + DIR_LIGHT_Z_OFFSET);
-    this.directionalLight.target.position.set(posX, 0, posZ);
-  }
-
   public updateCameraPosition(perspectiveDepth: number, targetPrecisePos: PrecisePositionVo) {
     const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((45 / 360) * 2 * Math.PI);
     const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((45 / 360) * 2 * Math.PI);
@@ -284,7 +278,7 @@ export class WorldRenderer {
   private createDirectionalLight(): THREE.DirectionalLight {
     const newDirLight = new THREE.DirectionalLight(0xffffff, 1);
     newDirLight.castShadow = true;
-    newDirLight.position.set(0, DIR_LIGHT_HEIGHT, DIR_LIGHT_Z_OFFSET);
+    newDirLight.position.set(-10, DIR_LIGHT_HEIGHT, DIR_LIGHT_Z_OFFSET);
     newDirLight.target.position.set(0, 0, 0);
     newDirLight.shadow.mapSize.set(4096, 4096);
     newDirLight.shadow.camera = new THREE.OrthographicCamera(-100, 100, 100, -100, 0.5, 500);
