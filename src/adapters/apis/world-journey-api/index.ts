@@ -80,6 +80,9 @@ export class WorldJourneyApi {
     };
 
     this.socket = socket;
+
+    // @ts-expect-error
+    window.sendCommand = this.sendCommand.bind(this);
   }
 
   static new(

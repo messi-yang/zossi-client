@@ -22,6 +22,9 @@ import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
+import { CreateEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-embed-unit-command';
+import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
+import { RemoveEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-embed-unit-command';
 
 enum CommandNameEnum {
   Ping = 'PING',
@@ -39,6 +42,8 @@ enum CommandNameEnum {
   RemovePortalUnit = 'REMOVE_PORTAL_UNIT',
   CreateLinkUnit = 'CREATE_LINK_UNIT',
   RemoveLinkUnit = 'REMOVE_LINK_UNIT',
+  CreateEmbedUnit = 'CREATE_EMBED_UNIT',
+  RemoveEmbedUnit = 'REMOVE_EMBED_UNIT',
   RotateUnit = 'ROTATE_UNIT',
 }
 
@@ -156,6 +161,25 @@ type RemoveLinkUnitCommandDto = {
   unitId: string;
 };
 
+type CreateEmbedUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.CreateEmbedUnit;
+  unitId: string;
+  itemId: string;
+  position: PositionDto;
+  direction: number;
+  label: string | null;
+  embedCode: string;
+};
+
+type RemoveEmbedUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RemoveEmbedUnit;
+  unitId: string;
+};
+
 type RotateUnitCommandDto = {
   id: string;
   timestamp: number;
@@ -234,6 +258,25 @@ function parseRemoveLinkUnitCommand(command: RemoveLinkUnitCommandDto): RemoveLi
   return RemoveLinkUnitCommand.load(command.id, command.timestamp, command.unitId);
 }
 
+function parseCreateEmbedUnitCommand(command: CreateEmbedUnitCommandDto): CreateEmbedUnitCommand {
+  return CreateEmbedUnitCommand.load(
+    command.id,
+    command.timestamp,
+    EmbedUnitModel.load(
+      command.unitId,
+      command.itemId,
+      PositionVo.new(command.position.x, command.position.z),
+      DirectionVo.new(command.direction),
+      command.label
+    ),
+    command.embedCode
+  );
+}
+
+function parseRemoveEmbedUnitCommand(command: RemoveEmbedUnitCommandDto): RemoveEmbedUnitCommand {
+  return RemoveEmbedUnitCommand.load(command.id, command.timestamp, command.unitId);
+}
+
 function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
   return RotateUnitCommand.load(command.id, command.timestamp, command.unitId);
 }
@@ -280,6 +323,10 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseCreateLinkUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemoveLinkUnit) {
     return parseRemoveLinkUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.CreateEmbedUnit) {
+    return parseCreateEmbedUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemoveEmbedUnit) {
+    return parseRemoveEmbedUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RotateUnit) {
     return parseRotateUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.AddPlayer) {
@@ -375,6 +422,27 @@ export const toCommandDto = (command: Command) => {
       unitId: command.getUnitId(),
     };
     return commandDto;
+  } else if (command instanceof CreateEmbedUnitCommand) {
+    const commandDto: CreateEmbedUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.CreateEmbedUnit,
+      unitId: command.getUnit().getId(),
+      itemId: command.getUnit().getItemId(),
+      position: newPositionDto(command.getUnit().getPosition()),
+      direction: command.getUnit().getDirection().toNumber(),
+      label: command.getUnit().getLabel(),
+      embedCode: command.getEmbedCode(),
+    };
+    return commandDto;
+  } else if (command instanceof RemoveEmbedUnitCommand) {
+    const commandDto: RemoveEmbedUnitCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.RemoveEmbedUnit,
+      unitId: command.getUnitId(),
+    };
+    return commandDto;
   } else if (command instanceof RotateUnitCommand) {
     const commandDto: RotateUnitCommandDto = {
       id: command.getId(),
@@ -431,4 +499,6 @@ export type CommandDto =
   | RemovePortalUnitCommandDto
   | CreateLinkUnitCommandDto
   | RemoveLinkUnitCommandDto
+  | CreateEmbedUnitCommandDto
+  | RemoveEmbedUnitCommandDto
   | RotateUnitCommandDto;

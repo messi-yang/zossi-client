@@ -15,6 +15,7 @@ import { WorldMembersContext } from '@/contexts/world-members-context';
 import { Button } from '@/components/buttons/button';
 import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item/item-model';
+import { EmbedModal } from '@/components/modals/embed-modal';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -52,6 +53,8 @@ const Page: NextPage = function Page() {
     createUnit,
     removeUnit,
     rotateUnit,
+    embedCode,
+    cleanEmbedCode,
   } = useContext(WorldJourneyServiceContext);
 
   const handleEngageUnitPressedKeysChange = useCallback(
@@ -202,6 +205,7 @@ const Page: NextPage = function Page() {
 
   return (
     <main className="relative w-full h-screen">
+      {embedCode && <EmbedModal opened embedCode={embedCode} onClose={cleanEmbedCode} />}
       <MessageModal
         opened={isReconnectModalVisible}
         message="You're disconnected to the world."

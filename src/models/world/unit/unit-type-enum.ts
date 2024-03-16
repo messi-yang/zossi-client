@@ -3,4 +3,5 @@ export enum UnitTypeEnum {
   Fence = 'fence',
   Portal = 'portal',
   Link = 'link',
+  Embed = 'embed',
 }

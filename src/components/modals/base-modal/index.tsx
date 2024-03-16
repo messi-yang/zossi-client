@@ -3,7 +3,7 @@ import { Background } from './sub-components/background';
 import { Modal } from './sub-components/modal';
 
 type BaseModalProps = {
-  width: number;
+  width?: number;
   height?: number;
   opened: boolean;
   children: JSX.Element;

@@ -8,6 +8,7 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionEnum } from '@/models/world/common/direction-enum';
 import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
+import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 
 type UnitDtoBase = {
   id: string;
@@ -40,7 +41,11 @@ interface LinkUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Link;
 }
 
-type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto;
+interface EmbedUnitDto extends UnitDtoBase {
+  type: UnitTypeEnum.Embed;
+}
+
+type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | EmbedUnitDto;
 
 function parseUnitDto(unitDto: UnitDto): UnitModel {
   const position = PositionVo.new(unitDto.position.x, unitDto.position.z);
@@ -55,8 +60,10 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
       ? PositionVo.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
       : null;
     return PortalUnitModel.load(unitDto.id, unitDto.itemId, position, direction, tartgetPosition);
-  } else {
+  } else if (unitDto.type === UnitTypeEnum.Link) {
     return LinkUnitModel.load(unitDto.id, unitDto.itemId, position, direction, unitDto.label);
+  } else {
+    return EmbedUnitModel.load(unitDto.id, unitDto.itemId, position, direction, unitDto.label);
   }
 }
 

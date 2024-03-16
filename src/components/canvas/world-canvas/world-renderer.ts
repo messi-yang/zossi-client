@@ -409,6 +409,43 @@ export class WorldRenderer {
     };
   }
 
+  private updateEmbedUnits(item: ItemModel, units: UnitModel[], font: Font) {
+    const itemId = item.getId();
+
+    const itemModels = this.itemModelsMap[itemId];
+    if (!itemModels) return;
+
+    this.itemModelInstancesCleanerMap[itemId]?.();
+
+    const itemUnitInstanceStates = units.map((unit) => ({
+      x: unit.getPosition().getX(),
+      y: 0,
+      z: unit.getPosition().getZ(),
+      rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
+    }));
+
+    const unitLabels = units.map((unit) => {
+      const textMesh = createTextMesh(
+        font,
+        unit.getLabel() ?? 'Link',
+        unit.getPosition().getX(),
+        1.5,
+        unit.getPosition().getZ()
+      );
+      this.scene.add(textMesh);
+
+      return textMesh;
+    });
+
+    const removeInstancesFromScene = createInstancesInScene(this.scene, itemModels[0], itemUnitInstanceStates);
+    this.itemModelInstancesCleanerMap[itemId] = () => {
+      unitLabels.forEach((unitLabel) => {
+        this.scene.remove(unitLabel);
+      });
+      removeInstancesFromScene();
+    };
+  }
+
   private updateOtherUnits(item: ItemModel, units: UnitModel[]) {
     const itemId = item.getId();
 
@@ -436,6 +473,8 @@ export class WorldRenderer {
       this.updateFenceUnits(item, units, getUnit);
     } else if (itemCompatibleUnitType === UnitTypeEnum.Link) {
       this.updateLinkUnits(item, units, font);
+    } else if (itemCompatibleUnitType === UnitTypeEnum.Embed) {
+      this.updateEmbedUnits(item, units, font);
     } else {
       this.updateOtherUnits(item, units);
     }

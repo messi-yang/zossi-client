@@ -29,6 +29,10 @@ import { LinkUnitApi } from '@/adapters/apis/link-unit-api';
 import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { NotificationEventDispatcher } from '@/event-dispatchers/notification-event-dispatcher';
+import { CreateEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-embed-unit-command';
+import { RemoveEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-embed-unit-command';
+import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
+import { EmbedUnitApi } from '@/adapters/apis/embed-unit-api';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -47,6 +51,8 @@ type ContextValue = {
   removeUnit: () => void;
   rotateUnit: () => void;
   leaveWorld: () => void;
+  embedCode: string | null;
+  cleanEmbedCode: () => void;
 };
 
 const Context = createContext<ContextValue>({
@@ -64,6 +70,8 @@ const Context = createContext<ContextValue>({
   removeUnit: () => {},
   rotateUnit: () => {},
   leaveWorld: () => {},
+  embedCode: null,
+  cleanEmbedCode: () => {},
 });
 
 type Props = {
@@ -72,10 +80,16 @@ type Props = {
 
 export function Provider({ children }: Props) {
   const linkUnitApi = useMemo(() => LinkUnitApi.new(), []);
+  const embedUnitApi = useMemo(() => EmbedUnitApi.new(), []);
   const itemApi = useMemo<ItemApi>(() => ItemApi.new(), []);
   const [items, setItems] = useState<ItemModel[] | null>([]);
   const [worldJourneyService, setWorldJourneyService] = useState<WorldJourneyService | null>(null);
   const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.new(), []);
+
+  const [embedCode, setEmbedCode] = useState<string | null>(null);
+  const cleanEmbedCode = useCallback(() => {
+    setEmbedCode(null);
+  }, []);
 
   useEffect(() => {
     if (!worldJourneyService) return;
@@ -277,6 +291,20 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
+  const createEmbedUnit = useCallback(
+    (itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, inputEmbedCode: string) => {
+      if (!worldJourneyService || !worldJourneyApi.current) return;
+
+      const command = CreateEmbedUnitCommand.new(
+        EmbedUnitModel.new(itemId, position, direction, label),
+        inputEmbedCode
+      );
+      worldJourneyService.executeCommand(command);
+      worldJourneyApi.current.sendCommand(command);
+    },
+    [worldJourneyService]
+  );
+
   const createUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
@@ -303,6 +331,11 @@ export function Provider({ children }: Props) {
         const label = prompt('Enter label');
         createLinkUnit(myPlayerHeldItem.getId(), unitPos, direction, label, url ?? '');
       },
+      embed: () => {
+        const enteredEmbedCode = prompt('Enter embed code');
+        const label = prompt('Enter label');
+        createEmbedUnit(myPlayerHeldItem.getId(), unitPos, direction, label, enteredEmbedCode ?? '');
+      },
     });
   }, [worldJourneyService]);
 
@@ -317,6 +350,9 @@ export function Provider({ children }: Props) {
     if (unitAtPos instanceof LinkUnitModel) {
       const linkUnitUrl = await linkUnitApi.getLinkUnitUrl(unitAtPos.getId());
       window.open(linkUnitUrl);
+    } else if (unitAtPos instanceof EmbedUnitModel) {
+      const embedUnitUrl = await embedUnitApi.getEmbedUnitEmbedCode(unitAtPos.getId());
+      setEmbedCode(embedUnitUrl);
     }
   }, [worldJourneyService]);
 
@@ -359,6 +395,13 @@ export function Provider({ children }: Props) {
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
+      embed: () => {
+        if (!worldJourneyApi.current) return;
+
+        const command = RemoveEmbedUnitCommand.new(unitId);
+        worldJourneyService.executeCommand(command);
+        worldJourneyApi.current.sendCommand(command);
+      },
     });
   }, [worldJourneyService]);
 
@@ -390,6 +433,8 @@ export function Provider({ children }: Props) {
     createUnit,
     removeUnit,
     rotateUnit,
+    embedCode,
+    cleanEmbedCode,
   };
 
   return (

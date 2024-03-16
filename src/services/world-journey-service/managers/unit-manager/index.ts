@@ -7,6 +7,7 @@ import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { dispatchUnit } from '@/models/world/unit/utils';
+import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 
 export type UnitsChangedHandler = (itemId: string, units: UnitModel[]) => void;
 
@@ -22,7 +23,8 @@ export class UnitManager {
     [UnitTypeEnum.Fence]: FenceUnitModel[];
     [UnitTypeEnum.Portal]: PortalUnitModel[];
     [UnitTypeEnum.Link]: LinkUnitModel[];
-  } = { static: [], fence: [], portal: [], link: [] };
+    [UnitTypeEnum.Embed]: EmbedUnitModel[];
+  } = { static: [], fence: [], portal: [], link: [], embed: [] };
 
   private unitsChangedHandler: UnitsChangedHandler[] = [];
 
@@ -141,6 +143,9 @@ export class UnitManager {
       link: (_unit) => {
         this.unitMapByType[UnitTypeEnum.Link].push(_unit);
       },
+      embed: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Embed].push(_unit);
+      },
     });
   }
 
@@ -168,6 +173,11 @@ export class UnitManager {
       },
       link: (_unit) => {
         this.unitMapByType[UnitTypeEnum.Link] = this.unitMapByType[UnitTypeEnum.Link].filter(
+          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
+        );
+      },
+      embed: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Embed] = this.unitMapByType[UnitTypeEnum.Embed].filter(
           (unit) => !unit.getPosition().isEqual(_unit.getPosition())
         );
       },

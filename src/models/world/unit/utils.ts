@@ -1,3 +1,4 @@
+import { EmbedUnitModel } from './embed-unit-model';
 import { FenceUnitModel } from './fence-unit-model';
 import { LinkUnitModel } from './link-unit-model';
 import { PortalUnitModel } from './portal-unit-model';
@@ -15,6 +16,7 @@ export const dispatchUnit = <T>(
     [UnitTypeEnum.Fence]: (_unit: FenceUnitModel) => T;
     [UnitTypeEnum.Portal]: (_unit: PortalUnitModel) => T;
     [UnitTypeEnum.Link]: (_unit: LinkUnitModel) => T;
+    [UnitTypeEnum.Embed]: (_unit: EmbedUnitModel) => T;
   }
 ): T => {
   if (unit instanceof StaticUnitModel) {
@@ -25,6 +27,8 @@ export const dispatchUnit = <T>(
     return mapper[UnitTypeEnum.Portal](unit);
   } else if (unit instanceof LinkUnitModel) {
     return mapper[UnitTypeEnum.Link](unit);
+  } else if (unit instanceof EmbedUnitModel) {
+    return mapper[UnitTypeEnum.Embed](unit);
   }
   throw new Error(`The unit type ${unit.getType()} is not handled here`);
 };
@@ -39,6 +43,7 @@ export const dipatchUnitType = <T>(
     [UnitTypeEnum.Fence]: () => T;
     [UnitTypeEnum.Portal]: () => T;
     [UnitTypeEnum.Link]: () => T;
+    [UnitTypeEnum.Embed]: () => T;
   }
 ): T => {
   if (unitType === UnitTypeEnum.Static) {
@@ -47,7 +52,9 @@ export const dipatchUnitType = <T>(
     return mapper[UnitTypeEnum.Fence]();
   } else if (unitType === UnitTypeEnum.Portal) {
     return mapper[UnitTypeEnum.Portal]();
-  } else {
+  } else if (unitType === UnitTypeEnum.Link) {
     return mapper[UnitTypeEnum.Link]();
+  } else {
+    return mapper[UnitTypeEnum.Embed]();
   }
 };
