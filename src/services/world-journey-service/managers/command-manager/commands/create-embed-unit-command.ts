@@ -1,18 +1,13 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class CreateEmbedUnitCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class CreateEmbedUnitCommand extends BaseCommand {
   constructor(id: string, timestamp: number, private unit: EmbedUnitModel, private embedCode: string) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
   }
 
   static new(unit: EmbedUnitModel, embedCode: string) {
@@ -36,18 +31,6 @@ export class CreateEmbedUnitCommand implements Command {
     if (playersAtPos) return;
 
     unitManager.addUnit(this.unit);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getUnitId() {
-    return this.unit.getId();
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getUnit() {

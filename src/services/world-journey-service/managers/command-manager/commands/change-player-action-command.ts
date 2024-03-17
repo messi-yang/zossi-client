@@ -1,21 +1,16 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class ChangePlayerActionCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class ChangePlayerActionCommand extends BaseCommand {
   private playerId: string;
 
   private action: PlayerActionVo;
 
   constructor(id: string, timestamp: number, playerId: string, action: PlayerActionVo) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
     this.playerId = playerId;
     this.action = action;
   }
@@ -36,14 +31,6 @@ export class ChangePlayerActionCommand implements Command {
     clonedPlayer.updateAction(this.action);
     clonedPlayer.updatePrecisePosition(this.action.getPrecisePosition());
     playerManager.updatePlayer(clonedPlayer);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getPlayerId() {

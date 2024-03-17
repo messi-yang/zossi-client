@@ -1,18 +1,13 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class CreatePortalUnitCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class CreatePortalUnitCommand extends BaseCommand {
   constructor(id: string, timestamp: number, private unit: PortalUnitModel) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
   }
 
   static new(unit: PortalUnitModel) {
@@ -58,14 +53,6 @@ export class CreatePortalUnitCommand implements Command {
       newPortalUnit.updateTargetPosition(topLeftMostPortalWithoutTarget.getPosition());
       unitManager.addUnit(newPortalUnit);
     }
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getUnit() {

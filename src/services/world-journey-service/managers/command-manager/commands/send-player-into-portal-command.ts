@@ -1,12 +1,14 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { DateVo } from '@/models/global/date-vo';
 import { CommandParams } from '../command-params';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class SendPlayerIntoPortalCommand implements Command {
-  constructor(private id: string, private timestamp: number, private playerId: string, private unitId: string) {}
+export class SendPlayerIntoPortalCommand extends BaseCommand {
+  constructor(id: string, timestamp: number, private playerId: string, private unitId: string) {
+    super(id, timestamp);
+  }
 
   static new(playerId: string, unitId: string) {
     return new SendPlayerIntoPortalCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, unitId);
@@ -30,14 +32,6 @@ export class SendPlayerIntoPortalCommand implements Command {
     player.updateAction(player.getAction().updatePrecisePosition(nextPlayerPrecisePosition).updateTime(DateVo.now()));
     player.updatePrecisePosition(nextPlayerPrecisePosition);
     playerManager.updatePlayer(player);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getPlayerId() {

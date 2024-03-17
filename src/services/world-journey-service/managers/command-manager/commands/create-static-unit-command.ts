@@ -1,18 +1,13 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class CreateStaticUnitCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class CreateStaticUnitCommand extends BaseCommand {
   constructor(id: string, timestamp: number, private unit: StaticUnitModel) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
   }
 
   static new(unit: StaticUnitModel) {
@@ -36,14 +31,6 @@ export class CreateStaticUnitCommand implements Command {
     if (playersAtPos) return;
 
     unitManager.addUnit(this.unit);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getUnit() {

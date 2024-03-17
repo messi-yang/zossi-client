@@ -1,18 +1,13 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class RemoveFenceUnitCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class RemoveFenceUnitCommand extends BaseCommand {
   private unitId: string;
 
   constructor(id: string, timestamp: number, unitId: string) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
     this.unitId = unitId;
   }
 
@@ -26,14 +21,6 @@ export class RemoveFenceUnitCommand implements Command {
 
   public execute({ unitManager }: CommandParams): void {
     unitManager.removeUnit(this.unitId);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getUnitId() {

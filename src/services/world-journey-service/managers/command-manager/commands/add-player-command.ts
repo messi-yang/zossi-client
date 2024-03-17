@@ -1,19 +1,14 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class AddPlayerCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class AddPlayerCommand extends BaseCommand {
   private player: PlayerModel;
 
   constructor(id: string, timestamp: number, player: PlayerModel) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
     this.player = player;
   }
 
@@ -32,14 +27,6 @@ export class AddPlayerCommand implements Command {
     if (playerHeldItemId) {
       itemManager.addPlaceholderItemId(playerHeldItemId);
     }
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getPlayer() {

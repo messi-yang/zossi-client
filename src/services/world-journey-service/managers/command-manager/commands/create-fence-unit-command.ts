@@ -1,18 +1,13 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class CreateFenceUnitCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class CreateFenceUnitCommand extends BaseCommand {
   constructor(id: string, timestamp: number, private unit: FenceUnitModel) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
   }
 
   static new(unit: FenceUnitModel) {
@@ -36,14 +31,6 @@ export class CreateFenceUnitCommand implements Command {
     if (playersAtPos) return;
 
     unitManager.addUnit(this.unit);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getUnit() {

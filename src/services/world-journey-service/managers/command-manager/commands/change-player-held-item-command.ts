@@ -1,20 +1,15 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class ChangePlayerHeldItemCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class ChangePlayerHeldItemCommand extends BaseCommand {
   private playerId: string;
 
   private itemId: string;
 
   constructor(id: string, timestamp: number, playerId: string, itemId: string) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
     this.playerId = playerId;
     this.itemId = itemId;
   }
@@ -39,14 +34,6 @@ export class ChangePlayerHeldItemCommand implements Command {
     }
 
     playerManager.updatePlayer(clonedPlayer);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getPlayerId() {

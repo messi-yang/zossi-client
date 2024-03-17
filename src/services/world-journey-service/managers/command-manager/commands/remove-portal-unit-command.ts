@@ -1,19 +1,14 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class RemovePortalUnitCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class RemovePortalUnitCommand extends BaseCommand {
   private unitId: string;
 
   constructor(id: string, timestamp: number, unitId: string) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
     this.unitId = unitId;
   }
 
@@ -41,14 +36,6 @@ export class RemovePortalUnitCommand implements Command {
     }
 
     unitManager.removeUnit(this.unitId);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getUnitId() {

@@ -1,19 +1,14 @@
-import { Command } from '../command';
+import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
 import { ItemModel } from '@/models/world/item/item-model';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class AddItemCommand implements Command {
-  private id: string;
-
-  private timestamp: number;
-
+export class AddItemCommand extends BaseCommand {
   private item: ItemModel;
 
   constructor(id: string, timestamp: number, item: ItemModel) {
-    this.id = id;
-    this.timestamp = timestamp;
+    super(id, timestamp);
     this.item = item;
   }
 
@@ -27,14 +22,6 @@ export class AddItemCommand implements Command {
 
   public execute({ itemManager }: CommandParams): void {
     itemManager.addItem(this.item);
-  }
-
-  public getId() {
-    return this.id;
-  }
-
-  public getTimestamp() {
-    return this.timestamp;
   }
 
   public getItem() {
