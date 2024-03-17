@@ -392,7 +392,7 @@ export class WorldRenderer {
         font,
         unit.getLabel() ?? 'Link',
         unit.getPosition().getX(),
-        3,
+        1.5,
         unit.getPosition().getZ()
       );
       this.scene.add(textMesh);
