@@ -119,12 +119,11 @@ export class WorldJourneyService {
   private calculatePlayerPositions() {
     this.playerManager.getPlayers().forEach((player) => {
       const playerAction = player.getAction();
-      const playerDirection = player.getDirection();
-      const playerPrecisePosition = player.getPrecisePosition();
-
       if (playerAction.isStand()) return;
 
       if (playerAction.isWalk()) {
+        const playerDirection = player.getDirection();
+        const playerPrecisePosition = player.getPrecisePosition();
         const playerForwardPos = player.getFowardPosition(0.5);
         const unitAtPos = this.unitManager.getUnitByPos(playerForwardPos);
         if (unitAtPos) {
@@ -133,7 +132,7 @@ export class WorldJourneyService {
           if (!item.getTraversable()) return;
         }
 
-        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.2);
+        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.1);
         if (!this.world.getBound().doesContainPosition(nextPlayerPrecisePosition.toPosition())) {
           return;
         }
@@ -146,7 +145,7 @@ export class WorldJourneyService {
   }
 
   private calculatePlayerPositionsTicker() {
-    const maxFPS = 25;
+    const maxFPS = 60;
     const frameDelay = 1000 / maxFPS;
     let lastFrameTime = 0;
 
