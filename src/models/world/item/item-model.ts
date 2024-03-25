@@ -1,3 +1,4 @@
+import { DimensionVo } from '../common/dimension-vo';
 import { UnitTypeEnum } from '../unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 
@@ -5,6 +6,7 @@ export class ItemModel {
   constructor(
     private id: string,
     private name: string,
+    private dimension: DimensionVo,
     private traversable: boolean,
     private thumbnailSrc: string,
     private modelSources: string[],
@@ -14,16 +16,18 @@ export class ItemModel {
   static new = (
     id: string,
     name: string,
+    dimension: DimensionVo,
     traversable: boolean,
     thumbnailSrc: string,
     modelSources: string[],
     compatibleUnitType: UnitTypeEnum
-  ) => new ItemModel(id, name, traversable, thumbnailSrc, modelSources, compatibleUnitType);
+  ) => new ItemModel(id, name, dimension, traversable, thumbnailSrc, modelSources, compatibleUnitType);
 
   static mockup(): ItemModel {
     return ItemModel.new(
       generateUuidV4(),
       'stone',
+      DimensionVo.new(1, 1),
       true,
       '/placeholder-item.png',
       ['characters/car.gltf'],
@@ -41,6 +45,10 @@ export class ItemModel {
 
   public getName(): string {
     return this.name;
+  }
+
+  public getDimension(): DimensionVo {
+    return this.dimension;
   }
 
   public getTraversable(): boolean {

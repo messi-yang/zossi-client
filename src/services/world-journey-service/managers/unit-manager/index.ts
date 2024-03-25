@@ -87,18 +87,22 @@ export class UnitManager {
   }
 
   private addUnitToUnitMapByPos(unit: UnitModel) {
-    const posKey = unit.getPosition().toString();
-    this.unitMapByPos[posKey] = unit;
+    unit.getOccupiedPositions().forEach((occupiedPos) => {
+      const posKey = occupiedPos.toString();
+      this.unitMapByPos[posKey] = unit;
+    });
   }
 
-  private updateUnitInUnitMapByPos(unit: UnitModel) {
-    const posKey = unit.getPosition().toString();
-    this.unitMapByPos[posKey] = unit;
+  private updateUnitInUnitMapByPos(oldUnit: UnitModel, unit: UnitModel) {
+    this.removeUnitFromUnitMapByPos(oldUnit);
+    this.addUnitToUnitMapByPos(unit);
   }
 
-  private removeUnitFromUnitMapByPos(position: PositionVo) {
-    const posKey = position.toString();
-    delete this.unitMapByPos[posKey];
+  private removeUnitFromUnitMapByPos(unit: UnitModel) {
+    unit.getOccupiedPositions().forEach((occupiedPos) => {
+      const posKey = occupiedPos.toString();
+      delete this.unitMapByPos[posKey];
+    });
   }
 
   private addUnitToUnitMapByItemId(unit: UnitModel) {
@@ -202,7 +206,7 @@ export class UnitManager {
     if (!currentUnit) return false;
 
     this.updateUnitInUnitMapById(unit);
-    this.updateUnitInUnitMapByPos(unit);
+    this.updateUnitInUnitMapByPos(currentUnit, unit);
     this.updateUnitFromUnitMapByItemId(currentUnit, unit);
     this.updateUnitFromUnitMapByType(currentUnit, unit);
 
@@ -218,7 +222,7 @@ export class UnitManager {
     if (!currentUnit) return false;
 
     this.removeUnitFromUnitMapById(currentUnit.getId());
-    this.removeUnitFromUnitMapByPos(currentUnit.getPosition());
+    this.removeUnitFromUnitMapByPos(currentUnit);
     this.removeUnitFromUnitMapByItemId(currentUnit);
     this.removeUnitFromUnitMapByType(currentUnit);
 

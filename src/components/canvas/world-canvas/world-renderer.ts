@@ -4,7 +4,6 @@ import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 
 import { ItemModel } from '@/models/world/item/item-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
-import { rangeMatrix } from '@/utils/common';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BoundVo } from '@/models/world/common/bound-vo';
@@ -230,16 +229,12 @@ export class WorldRenderer {
   private async createBase(worldBound: BoundVo) {
     const baseModel = await this.downloadModel(BASE_MODEL_SRC);
 
-    const boundOffsetX = worldBound.getFrom().getX();
-    const boundOffsetZ = worldBound.getFrom().getZ();
-    const worldBoundWidth = worldBound.getWidth();
-    const worldBoundHeight = worldBound.getHeight();
     const grassInstanceStates: { x: number; y: number; z: number; rotate: number }[] = [];
-    rangeMatrix(worldBoundWidth, worldBoundHeight, (colIdx, rowIdx) => {
+    worldBound.iterate((position) => {
       grassInstanceStates.push({
-        x: boundOffsetX + colIdx,
+        x: position.getX(),
         y: 0,
-        z: boundOffsetZ + rowIdx,
+        z: position.getZ(),
         rotate: 0,
       });
     });
@@ -252,7 +247,7 @@ export class WorldRenderer {
     const offsetX = worldBound.getFrom().getX() - 0.5;
     const offsetZ = worldBound.getFrom().getZ() - 0.5;
     const boundWidth = worldBound.getWidth();
-    const boundheight = worldBound.getHeight();
+    const boundheight = worldBound.getDepth();
     const grid = new THREE.Group();
     for (let x = 0; x <= boundWidth; x += 1) {
       const points: THREE.Vector3[] = [
@@ -352,9 +347,9 @@ export class WorldRenderer {
       }
 
       unitInstancesByModel[modelIndex].push({
-        x: unit.getPosition().getX(),
+        x: unit.getCenterPrecisePosition().getX(),
         y: 0,
-        z: unit.getPosition().getZ(),
+        z: unit.getCenterPrecisePosition().getZ(),
         rotate: (Math.PI / 2) * (unitDirection ? unitDirection.toNumber() : unit.getDirection().toNumber()),
       });
     });
@@ -381,9 +376,9 @@ export class WorldRenderer {
     this.itemModelInstancesCleanerMap[itemId]?.();
 
     const itemUnitInstanceStates = units.map((unit) => ({
-      x: unit.getPosition().getX(),
+      x: unit.getCenterPrecisePosition().getX(),
       y: 0,
-      z: unit.getPosition().getZ(),
+      z: unit.getCenterPrecisePosition().getZ(),
       rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
     }));
 
@@ -391,9 +386,9 @@ export class WorldRenderer {
       const textMesh = createTextMesh(
         font,
         unit.getLabel() ?? 'Link',
-        unit.getPosition().getX(),
+        unit.getCenterPrecisePosition().getX(),
         1.5,
-        unit.getPosition().getZ()
+        unit.getCenterPrecisePosition().getZ()
       );
       this.scene.add(textMesh);
 
@@ -418,9 +413,9 @@ export class WorldRenderer {
     this.itemModelInstancesCleanerMap[itemId]?.();
 
     const itemUnitInstanceStates = units.map((unit) => ({
-      x: unit.getPosition().getX(),
+      x: unit.getCenterPrecisePosition().getX(),
       y: 0,
-      z: unit.getPosition().getZ(),
+      z: unit.getCenterPrecisePosition().getZ(),
       rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
     }));
 
@@ -428,9 +423,9 @@ export class WorldRenderer {
       const textMesh = createTextMesh(
         font,
         unit.getLabel() ?? 'Link',
-        unit.getPosition().getX(),
+        unit.getCenterPrecisePosition().getX(),
         1.5,
-        unit.getPosition().getZ()
+        unit.getCenterPrecisePosition().getZ()
       );
       this.scene.add(textMesh);
 
@@ -455,9 +450,9 @@ export class WorldRenderer {
     this.itemModelInstancesCleanerMap[itemId]?.();
 
     const itemUnitInstanceStates = units.map((unit) => ({
-      x: unit.getPosition().getX(),
+      x: unit.getCenterPrecisePosition().getX(),
       y: 0,
-      z: unit.getPosition().getZ(),
+      z: unit.getCenterPrecisePosition().getZ(),
       rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
     }));
     const removeInstancesFromScene = createInstancesInScene(this.scene, itemModels[0], itemUnitInstanceStates);

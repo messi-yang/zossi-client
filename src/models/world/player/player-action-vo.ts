@@ -20,12 +20,12 @@ export class PlayerActionVo {
     return new PlayerActionVo(name, precisePosition, direction, time);
   }
 
-  static newWalk(precisePosition: PrecisePositionVo, direction: DirectionVo, time: DateVo) {
-    return new PlayerActionVo(PlayerActionNameEnum.Walk, precisePosition, direction, time);
+  static newWalk(precisePosition: PrecisePositionVo, direction: DirectionVo) {
+    return new PlayerActionVo(PlayerActionNameEnum.Walk, precisePosition, direction, DateVo.now());
   }
 
-  static newStand(precisePosition: PrecisePositionVo, direction: DirectionVo, time: DateVo) {
-    return new PlayerActionVo(PlayerActionNameEnum.Stand, precisePosition, direction, time);
+  static newStand(precisePosition: PrecisePositionVo, direction: DirectionVo) {
+    return new PlayerActionVo(PlayerActionNameEnum.Stand, precisePosition, direction, DateVo.now());
   }
 
   public isWalk() {

@@ -5,6 +5,7 @@ import { DateVo } from '@/models/global/date-vo';
 import { PrecisePositionVo } from '../common/precise-position-vo';
 import { PositionVo } from '../common/position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
+import { DimensionVo } from '../common/dimension-vo';
 
 export class PlayerModel {
   constructor(
@@ -83,8 +84,6 @@ export class PlayerModel {
 
   /**
    * Get the forward position of the player with distance, be aware that the return value is PositionVo not PrecisePositionVo
-   * @param distance adjust this distance in different cases
-   * @returns
    */
   public getFowardPosition(distance: number): PositionVo {
     const direction = this.getDirection();
@@ -98,6 +97,26 @@ export class PlayerModel {
       return this.precisePosition.shift(-distance, 0).toPosition();
     } else {
       return this.precisePosition.shift(0, distance).toPosition();
+    }
+  }
+
+  /**
+   * Get the desired position of the new unit based on new unit's dimension
+   */
+  public getDesiredNewUnitPosition(unitDimension: DimensionVo): PositionVo {
+    const playerDirection = this.getDirection();
+    const playerPosition = this.getPosition();
+    const unitDimensionWidth = unitDimension.getWidth();
+    const unitDimensionDepth = unitDimension.getDepth();
+
+    if (playerDirection.isDown()) {
+      return playerPosition.shift(-Math.floor((unitDimensionWidth - 1) / 2), 1);
+    } else if (playerDirection.isRight()) {
+      return playerPosition.shift(1, -Math.floor((unitDimensionWidth - 1) / 2));
+    } else if (playerDirection.isUp()) {
+      return playerPosition.shift(-Math.floor((unitDimensionWidth - 1) / 2), -unitDimensionDepth);
+    } else {
+      return playerPosition.shift(-unitDimensionDepth, -Math.floor((unitDimensionWidth - 1) / 2));
     }
   }
 }

@@ -1,4 +1,5 @@
 import { PositionVo } from './position-vo';
+import { PrecisePositionVo } from './precise-position-vo';
 
 export class BoundVo {
   constructor(private from: PositionVo, private to: PositionVo) {}
@@ -21,8 +22,12 @@ export class BoundVo {
     return this.to.getX() - this.from.getX() + 1;
   }
 
-  public getHeight(): number {
+  public getDepth(): number {
     return this.to.getZ() - this.from.getZ() + 1;
+  }
+
+  public getCenterPrecisePosition(): PrecisePositionVo {
+    return PrecisePositionVo.new((this.to.getX() + this.from.getX()) / 2, (this.to.getZ() + this.from.getZ()) / 2);
   }
 
   public doesContainPosition(position: PositionVo): boolean {
@@ -32,5 +37,13 @@ export class BoundVo {
       position.getZ() >= this.from.getZ() &&
       position.getZ() <= this.to.getZ()
     );
+  }
+
+  public iterate(cb: (position: PositionVo) => void): void {
+    for (let x = this.from.getX(); x <= this.to.getX(); x += 1) {
+      for (let z = this.from.getZ(); z <= this.to.getZ(); z += 1) {
+        cb(PositionVo.new(x, z));
+      }
+    }
   }
 }

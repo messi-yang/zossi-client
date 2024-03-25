@@ -24,7 +24,7 @@ export class RotateUnitCommand extends BaseCommand {
     if (!unit) return;
 
     const clonedUnit = unit.clone();
-    clonedUnit.changeDirection(clonedUnit.getDirection().rotate());
+    clonedUnit.rotate();
 
     unitManager.updateUnit(clonedUnit);
   }

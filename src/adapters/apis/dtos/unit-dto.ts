@@ -9,6 +9,8 @@ import { DirectionEnum } from '@/models/world/common/direction-enum';
 import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
+import { DimensionDto } from './dimension-dto';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
 
 type UnitDtoBase = {
   id: string;
@@ -16,6 +18,7 @@ type UnitDtoBase = {
   itemId: string;
   position: PositionDto;
   direction: DirectionEnum;
+  dimension: DimensionDto;
   label: string | null;
   info: Object | null;
 };
@@ -50,20 +53,21 @@ type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | Embe
 function parseUnitDto(unitDto: UnitDto): UnitModel {
   const position = PositionVo.new(unitDto.position.x, unitDto.position.z);
   const direction = DirectionVo.new(unitDto.direction);
+  const dimension = DimensionVo.new(unitDto.dimension.width, unitDto.dimension.depth);
 
   if (unitDto.type === UnitTypeEnum.Static) {
-    return StaticUnitModel.load(unitDto.id, unitDto.itemId, position, direction);
+    return StaticUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension);
   } else if (unitDto.type === UnitTypeEnum.Fence) {
-    return FenceUnitModel.load(unitDto.id, unitDto.itemId, position, direction);
+    return FenceUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension);
   } else if (unitDto.type === UnitTypeEnum.Portal) {
     const tartgetPosition = unitDto.info.targetPosition
       ? PositionVo.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
       : null;
-    return PortalUnitModel.load(unitDto.id, unitDto.itemId, position, direction, tartgetPosition);
+    return PortalUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, tartgetPosition);
   } else if (unitDto.type === UnitTypeEnum.Link) {
-    return LinkUnitModel.load(unitDto.id, unitDto.itemId, position, direction, unitDto.label);
+    return LinkUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
   } else {
-    return EmbedUnitModel.load(unitDto.id, unitDto.itemId, position, direction, unitDto.label);
+    return EmbedUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
   }
 }
 
