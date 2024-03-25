@@ -132,7 +132,7 @@ export class WorldJourneyService {
           if (!item.getTraversable()) return;
         }
 
-        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.5);
+        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.25);
         if (!this.world.getBound().doesContainPosition(nextPlayerPrecisePosition.toPosition())) {
           return;
         }
@@ -145,7 +145,7 @@ export class WorldJourneyService {
   }
 
   private calculatePlayerPositionsTicker() {
-    const maxFPS = 10;
+    const maxFPS = 24;
     const frameDelay = 1000 / maxFPS;
     let lastFrameTime = 0;
 
