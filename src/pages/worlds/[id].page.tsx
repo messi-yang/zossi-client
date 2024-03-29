@@ -77,7 +77,18 @@ const Page: NextPage = function Page() {
     });
   }, [worldJourneyService]);
 
-  const isReconnectModalVisible = connectionStatus === 'DISCONNECTED';
+  const isDisconnected = connectionStatus === 'DISCONNECTED';
+  useEffect(() => {
+    if (!isDisconnected) return () => {};
+
+    const timeout = setTimeout(() => {
+      window.location.href = '/dashboard/worlds';
+    }, 5000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isDisconnected]);
 
   useEffect(
     function enterWorldOnInit() {
@@ -207,7 +218,7 @@ const Page: NextPage = function Page() {
     <main className="relative w-full h-screen">
       {embedCode && <EmbedModal opened embedCode={embedCode} onClose={cleanEmbedCode} />}
       <MessageModal
-        opened={isReconnectModalVisible}
+        opened={isDisconnected}
         message="You're disconnected to the world."
         buttonCopy="Reconnect"
         onComfirm={handleRecconectModalConfirmClick}
