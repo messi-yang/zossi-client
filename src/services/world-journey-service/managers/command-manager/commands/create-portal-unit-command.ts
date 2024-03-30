@@ -47,13 +47,7 @@ export class CreatePortalUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Portal)) return;
 
-    const unitAtPos = unitManager.getUnitByPos(this.position);
-    if (unitAtPos) return;
-
-    const playersAtPos = playerManager.getPlayersAtPos(this.position);
-    if (playersAtPos) return;
-
-    const newPortalUnit = PortalUnitModel.new(
+    const newUnit = PortalUnitModel.new(
       this.unitId,
       this.itemId,
       this.position,
@@ -62,9 +56,19 @@ export class CreatePortalUnitCommand extends BaseCommand {
       null
     );
 
+    const occupiedPositions = newUnit.getOccupiedPositions();
+    for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {
+      const occupiedPosition = occupiedPositions[occupiedPositionIdx];
+      const unitAtPos = unitManager.getUnitByPos(occupiedPosition);
+      if (unitAtPos) return;
+
+      const playersAtPos = playerManager.getPlayersAtPos(occupiedPosition);
+      if (playersAtPos) return;
+    }
+
     const portalsWithoutTarget = unitManager.getPortalUnits().filter((unit) => !unit.getTargetUnitId());
     if (portalsWithoutTarget.length === 0) {
-      unitManager.addUnit(newPortalUnit);
+      unitManager.addUnit(newUnit);
     } else {
       const topLeftMostPortalWithoutTarget = portalsWithoutTarget.sort((unitA, unitB) => {
         const unitPosA = unitA.getPosition();
@@ -77,11 +81,11 @@ export class CreatePortalUnitCommand extends BaseCommand {
         }
       })[0];
 
-      topLeftMostPortalWithoutTarget.updateTargetUnitId(newPortalUnit.getId());
+      topLeftMostPortalWithoutTarget.updateTargetUnitId(newUnit.getId());
       unitManager.updateUnit(topLeftMostPortalWithoutTarget);
 
-      newPortalUnit.updateTargetUnitId(topLeftMostPortalWithoutTarget.getId());
-      unitManager.addUnit(newPortalUnit);
+      newUnit.updateTargetUnitId(topLeftMostPortalWithoutTarget.getId());
+      unitManager.addUnit(newUnit);
     }
   }
 

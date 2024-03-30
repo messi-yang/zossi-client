@@ -53,12 +53,6 @@ export class CreateLinkUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Link)) return;
 
-    const unitAtPos = unitManager.getUnitByPos(this.position);
-    if (unitAtPos) return;
-
-    const playersAtPos = playerManager.getPlayersAtPos(this.position);
-    if (playersAtPos) return;
-
     const newUnit = LinkUnitModel.new(
       this.unitId,
       this.itemId,
@@ -67,6 +61,16 @@ export class CreateLinkUnitCommand extends BaseCommand {
       item.getDimension(),
       this.label
     );
+
+    const occupiedPositions = newUnit.getOccupiedPositions();
+    for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {
+      const occupiedPosition = occupiedPositions[occupiedPositionIdx];
+      const unitAtPos = unitManager.getUnitByPos(occupiedPosition);
+      if (unitAtPos) return;
+
+      const playersAtPos = playerManager.getPlayersAtPos(occupiedPosition);
+      if (playersAtPos) return;
+    }
 
     unitManager.addUnit(newUnit);
   }
