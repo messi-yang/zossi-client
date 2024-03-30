@@ -47,13 +47,17 @@ export class CreateStaticUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Static)) return;
 
-    const unitAtPos = unitManager.getUnitByPos(this.position);
-    if (unitAtPos) return;
-
-    const playersAtPos = playerManager.getPlayersAtPos(this.position);
-    if (playersAtPos) return;
-
     const newUnit = StaticUnitModel.new(this.unitId, this.itemId, this.position, this.direction, item.getDimension());
+
+    const occupiedPositions = newUnit.getOccupiedPositions();
+    for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {
+      const occupiedPosition = occupiedPositions[occupiedPositionIdx];
+      const unitAtPos = unitManager.getUnitByPos(occupiedPosition);
+      if (unitAtPos) return;
+
+      const playersAtPos = playerManager.getPlayersAtPos(occupiedPosition);
+      if (playersAtPos) return;
+    }
 
     unitManager.addUnit(newUnit);
   }
