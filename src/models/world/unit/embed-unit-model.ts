@@ -6,6 +6,17 @@ import { UnitTypeEnum } from './unit-type-enum';
 import { DimensionVo } from '../common/dimension-vo';
 
 export class EmbedUnitModel extends BaseUnitModel implements UnitModel {
+  constructor(
+    id: string,
+    itemId: string,
+    position: PositionVo,
+    direction: DirectionVo,
+    dimension: DimensionVo,
+    label: string | null
+  ) {
+    super(id, UnitTypeEnum.Embed, itemId, position, direction, dimension, label);
+  }
+
   static new = (
     id: string,
     itemId: string,
@@ -35,9 +46,5 @@ export class EmbedUnitModel extends BaseUnitModel implements UnitModel {
       this.getDimension(),
       this.getLabel()
     );
-  }
-
-  public getType(): UnitTypeEnum.Embed {
-    return UnitTypeEnum.Embed;
   }
 }

@@ -14,7 +14,7 @@ export class PortalUnitModel extends BaseUnitModel {
     dimension: DimensionVo,
     private targetUnitId: string | null
   ) {
-    super(id, itemId, position, direction, dimension, null);
+    super(id, UnitTypeEnum.Portal, itemId, position, direction, dimension, null);
   }
 
   static new = (
@@ -46,10 +46,6 @@ export class PortalUnitModel extends BaseUnitModel {
       this.getDimension(),
       this.targetUnitId
     );
-  }
-
-  public getType(): UnitTypeEnum.Portal {
-    return UnitTypeEnum.Portal;
   }
 
   public getTargetUnitId(): string | null {

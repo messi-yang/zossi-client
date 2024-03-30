@@ -22,6 +22,7 @@ export interface UnitModel {
 export abstract class BaseUnitModel implements UnitModel {
   constructor(
     private id: string,
+    private type: UnitTypeEnum,
     private itemId: string,
     private position: PositionVo,
     private direction: DirectionVo,
@@ -34,7 +35,10 @@ export abstract class BaseUnitModel implements UnitModel {
   public getId(): string {
     return this.id;
   }
-  abstract getType(): UnitTypeEnum;
+
+  public getType(): UnitTypeEnum {
+    return this.type;
+  }
 
   public getItemId(): string {
     return this.itemId;
