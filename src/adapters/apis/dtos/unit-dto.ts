@@ -37,6 +37,7 @@ interface PortalUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Portal;
   info: {
     targetPosition: PositionDto | null;
+    target_unit_id: string | null;
   };
 }
 
@@ -60,10 +61,7 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
   } else if (unitDto.type === UnitTypeEnum.Fence) {
     return FenceUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension);
   } else if (unitDto.type === UnitTypeEnum.Portal) {
-    const tartgetPosition = unitDto.info.targetPosition
-      ? PositionVo.new(unitDto.info.targetPosition.x, unitDto.info.targetPosition.z)
-      : null;
-    return PortalUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, tartgetPosition);
+    return PortalUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.info.target_unit_id);
   } else if (unitDto.type === UnitTypeEnum.Link) {
     return LinkUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
   } else {

@@ -22,11 +22,16 @@ export class SendPlayerIntoPortalCommand extends BaseCommand {
     const portalUnit = unitManager.getUnit(this.unitId);
     if (!portalUnit || !(portalUnit instanceof PortalUnitModel)) return;
 
-    const targetPosition = portalUnit.getTargetPosition();
-    if (!targetPosition) return;
+    const targetUnitId = portalUnit.getTargetUnitId();
+    if (!targetUnitId) return;
+
+    const targetUnit = unitManager.getUnit(targetUnitId);
+    if (!targetUnit) return;
 
     const player = playerManager.getPlayer(this.playerId);
     if (!player) return;
+
+    const targetPosition = targetUnit.getPosition();
 
     const nextPlayerPrecisePosition = PrecisePositionVo.new(targetPosition.getX(), targetPosition.getZ());
     player.updateAction(player.getAction().updatePrecisePosition(nextPlayerPrecisePosition).updateTime(DateVo.now()));

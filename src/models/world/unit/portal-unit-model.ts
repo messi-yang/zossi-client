@@ -12,7 +12,7 @@ export class PortalUnitModel extends BaseUnitModel {
     position: PositionVo,
     direction: DirectionVo,
     dimension: DimensionVo,
-    private targetPosition: PositionVo | null
+    private targetUnitId: string | null
   ) {
     super(id, itemId, position, direction, dimension, null);
   }
@@ -23,8 +23,8 @@ export class PortalUnitModel extends BaseUnitModel {
     position: PositionVo,
     direction: DirectionVo,
     dimension: DimensionVo,
-    targetPosition: PositionVo | null
-  ): PortalUnitModel => new PortalUnitModel(id, itemId, position, direction, dimension, targetPosition);
+    targetUnitId: string | null
+  ): PortalUnitModel => new PortalUnitModel(id, itemId, position, direction, dimension, targetUnitId);
 
   static mockup(): PortalUnitModel {
     return new PortalUnitModel(
@@ -44,7 +44,7 @@ export class PortalUnitModel extends BaseUnitModel {
       this.getPosition(),
       this.getDirection(),
       this.getDimension(),
-      this.targetPosition
+      this.targetUnitId
     );
   }
 
@@ -52,11 +52,11 @@ export class PortalUnitModel extends BaseUnitModel {
     return UnitTypeEnum.Portal;
   }
 
-  public getTargetPosition(): PositionVo | null {
-    return this.targetPosition;
+  public getTargetUnitId(): string | null {
+    return this.targetUnitId;
   }
 
-  public updateTargetPosition(targetPosition: PositionVo | null) {
-    this.targetPosition = targetPosition;
+  public updateTargetUnitId(targetUnitId: string | null) {
+    this.targetUnitId = targetUnitId;
   }
 }

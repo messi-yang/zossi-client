@@ -26,11 +26,11 @@ export class RemovePortalUnitCommand extends BaseCommand {
 
     if (!(portalUnit instanceof PortalUnitModel)) return;
 
-    const targetPos = portalUnit.getTargetPosition();
-    if (targetPos) {
-      const targetPortalUnit = unitManager.getUnitByPos(targetPos);
+    const targetUnitId = portalUnit.getTargetUnitId();
+    if (targetUnitId) {
+      const targetPortalUnit = unitManager.getUnit(targetUnitId);
       if (targetPortalUnit && targetPortalUnit instanceof PortalUnitModel) {
-        targetPortalUnit.updateTargetPosition(null);
+        targetPortalUnit.updateTargetUnitId(null);
         unitManager.updateUnit(targetPortalUnit);
       }
     }
