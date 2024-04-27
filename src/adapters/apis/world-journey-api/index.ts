@@ -1,19 +1,19 @@
-import { CommandNameEnum, parseCommandDto, toCommandDto } from './commands';
-import type { PingCommandDto } from './commands';
+import { parseCommandDto, toCommandDto } from './commands';
 import { WorldModel } from '@/models/world/world/world-model';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
 import { WorldJourneyService } from '@/services/world-journey-service';
-import { DateVo } from '@/models/global/date-vo';
-import { Event, EventNameEnum, WorldEnteredEvent } from './events';
+import { ServerEvent, ServerEventNameEnum, WorldEnteredServerEvent } from './server-events';
 import { Command } from '@/services/world-journey-service/managers/command-manager/command';
 import { parseWorldDto } from '../dtos/world-dto';
 import { parseUnitDto } from '../dtos/unit-dto';
 import { parsePlayerDto } from '../dtos/player-dto';
-import { generateUuidV4 } from '@/utils/uuid';
+import { ClientEventNameEnum, CommandRequestedClientEvent, PingClientEvent } from './client-events';
 
-function parseWorldEnteredEvent(event: WorldEnteredEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
+function parseWorldEnteredServerEvent(
+  event: WorldEnteredServerEvent
+): [WorldModel, UnitModel[], string, PlayerModel[]] {
   return [
     parseWorldDto(event.world),
     event.units.map(parseUnitDto),
@@ -47,18 +47,20 @@ export class WorldJourneyApi {
 
     socket.onmessage = async ({ data }: any) => {
       const eventJsonString: string = await data.text();
-      const event: Event = JSON.parse(eventJsonString);
+      const event: ServerEvent = JSON.parse(eventJsonString);
 
       console.log(event);
-      if (event.name === EventNameEnum.WorldEntered) {
-        const [world, units, myPlayerId, players] = parseWorldEnteredEvent(event);
+      if (event.name === ServerEventNameEnum.WorldEntered) {
+        const [world, units, myPlayerId, players] = parseWorldEnteredServerEvent(event);
         const worldJourneyService = WorldJourneyService.new(world, players, myPlayerId, units);
         events.onWorldEntered(worldJourneyService);
-      } else if (event.name === EventNameEnum.CommandSucceeded) {
+      } else if (event.name === ServerEventNameEnum.CommandSucceeded) {
         const command = parseCommandDto(event.command);
         if (!command) return;
         events.onCommandSucceeded(command);
-      } else if (event.name === EventNameEnum.Errored) {
+      } else if (event.name === ServerEventNameEnum.CommandFailed) {
+        events.onErrored(event.errorMessage);
+      } else if (event.name === ServerEventNameEnum.Errored) {
         events.onErrored(event.message);
       }
     };
@@ -115,17 +117,21 @@ export class WorldJourneyApi {
   }
 
   public ping() {
-    const commandDto: PingCommandDto = {
-      id: generateUuidV4(),
-      timestamp: DateVo.now().getTimestamp(),
-      name: CommandNameEnum.Ping,
+    const clientEvent: PingClientEvent = {
+      name: ClientEventNameEnum.Ping,
     };
-    this.sendMessage(commandDto);
+    this.sendMessage(clientEvent);
   }
 
   public sendCommand(command: Command) {
     const commandDto = toCommandDto(command);
     if (!commandDto) return;
-    this.sendMessage(commandDto);
+
+    const clientEvent: CommandRequestedClientEvent = {
+      name: ClientEventNameEnum.CommandRequested,
+      command: commandDto,
+    };
+
+    this.sendMessage(clientEvent);
   }
 }
