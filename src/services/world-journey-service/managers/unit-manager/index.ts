@@ -189,8 +189,8 @@ export class UnitManager {
   }
 
   public addUnit(unit: UnitModel): boolean {
-    const currentUnit = this.getUnitByPos(unit.getPosition());
-    if (currentUnit) return false;
+    const unitAtPos = this.getUnitByPos(unit.getPosition());
+    if (unitAtPos) return false;
 
     this.addUnitToUnitMapById(unit);
     this.addUnitToUnitMapByPos(unit);
@@ -202,7 +202,7 @@ export class UnitManager {
   }
 
   public updateUnit(unit: UnitModel): boolean {
-    const currentUnit = this.getUnitByPos(unit.getPosition());
+    const currentUnit = this.getUnit(unit.getId());
     if (!currentUnit) return false;
 
     this.updateUnitInUnitMapById(unit);
