@@ -20,7 +20,16 @@ export class RemovePlayerCommand extends BaseCommand {
   }
 
   public execute({ playerManager }: CommandParams): void {
-    playerManager.removePlayer(this.playerId);
+    const currentPlayer = playerManager.getPlayer(this.playerId);
+    if (!currentPlayer) return;
+
+    const isPlayerRemoved = playerManager.removePlayer(this.playerId);
+
+    this.setUndoAction(() => {
+      if (isPlayerRemoved) {
+        playerManager.addPlayer(currentPlayer);
+      }
+    });
   }
 
   public getPlayerId() {

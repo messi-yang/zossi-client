@@ -13,6 +13,12 @@ export class SubtractPerspectiveDepthCommand extends BaseCommand {
   }
 
   public execute({ perspectiveManager }: CommandParams): void {
-    perspectiveManager.subtractPerspectiveDepth();
+    const isDepthChanged = perspectiveManager.subtractPerspectiveDepth();
+
+    this.setUndoAction(() => {
+      if (isDepthChanged) {
+        perspectiveManager.addPerspectiveDepth();
+      }
+    });
   }
 }

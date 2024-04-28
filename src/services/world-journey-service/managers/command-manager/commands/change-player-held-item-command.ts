@@ -33,7 +33,13 @@ export class ChangePlayerHeldItemCommand extends BaseCommand {
       itemManager.addPlaceholderItemId(this.itemId);
     }
 
-    playerManager.updatePlayer(clonedPlayer);
+    const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);
+
+    this.setUndoAction(() => {
+      if (isPlayerUpdated) {
+        playerManager.updatePlayer(player);
+      }
+    });
   }
 
   public getPlayerId() {

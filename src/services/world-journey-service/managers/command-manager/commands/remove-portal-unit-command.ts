@@ -27,15 +27,30 @@ export class RemovePortalUnitCommand extends BaseCommand {
     if (!(portalUnit instanceof PortalUnitModel)) return;
 
     const targetUnitId = portalUnit.getTargetUnitId();
+    let targetPortalUnit: PortalUnitModel | null = null;
+    let isTargetPortalUnitUpdated = false;
     if (targetUnitId) {
-      const targetPortalUnit = unitManager.getUnit(targetUnitId);
-      if (targetPortalUnit && targetPortalUnit instanceof PortalUnitModel) {
-        targetPortalUnit.updateTargetUnitId(null);
-        unitManager.updateUnit(targetPortalUnit);
+      const targetUnit = unitManager.getUnit(targetUnitId);
+      if (targetUnit) {
+        if (targetUnit instanceof PortalUnitModel) {
+          targetPortalUnit = targetUnit;
+          const clonedTargetPortalUnit = targetPortalUnit.clone();
+          clonedTargetPortalUnit.updateTargetUnitId(null);
+          isTargetPortalUnitUpdated = unitManager.updateUnit(clonedTargetPortalUnit);
+        }
       }
     }
 
-    unitManager.removeUnit(this.unitId);
+    const isUnitRemoved = unitManager.removeUnit(this.unitId);
+
+    this.setUndoAction(() => {
+      if (isUnitRemoved) {
+        unitManager.addUnit(portalUnit);
+      }
+      if (isTargetPortalUnitUpdated && targetPortalUnit) {
+        unitManager.updateUnit(targetPortalUnit);
+      }
+    });
   }
 
   public getUnitId() {

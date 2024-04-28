@@ -8,7 +8,7 @@ export type MyPlayerChangedHandler = (oldPlyaer: PlayerModel, player: PlayerMode
 export class PlayerManager {
   private myPlayerId: string;
 
-  private playerMap: Record<string, PlayerModel> = {};
+  private playerMap: Record<string, PlayerModel | undefined> = {};
 
   private playersMapByPos: Record<string, PlayerModel[] | undefined> = {};
 
@@ -48,15 +48,22 @@ export class PlayerManager {
   }
 
   public getPlayers(): PlayerModel[] {
-    return Object.values(this.playerMap);
+    const players: PlayerModel[] = [];
+    Object.values(this.playerMap).forEach((player) => {
+      if (player) players.push(player);
+    });
+    return players;
   }
 
   public getMyPlayer(): PlayerModel {
-    return this.playerMap[this.myPlayerId];
+    const myPlayer = this.playerMap[this.myPlayerId];
+    if (!myPlayer) throw new Error('My player will never be undefined');
+
+    return myPlayer;
   }
 
-  public getPlayer(playerId: string): PlayerModel {
-    return this.playerMap[playerId];
+  public getPlayer(playerId: string): PlayerModel | null {
+    return this.playerMap[playerId] ?? null;
   }
 
   private isMyPlayer(playerId: string): boolean {

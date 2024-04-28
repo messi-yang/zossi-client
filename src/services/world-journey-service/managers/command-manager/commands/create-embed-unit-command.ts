@@ -72,7 +72,13 @@ export class CreateEmbedUnitCommand extends BaseCommand {
       if (playersAtPos) return;
     }
 
-    unitManager.addUnit(newUnit);
+    const newUnitAdded = unitManager.addUnit(newUnit);
+
+    this.setUndoAction(() => {
+      if (newUnitAdded) {
+        unitManager.removeUnit(newUnit.getId());
+      }
+    });
   }
 
   public getUnitId() {

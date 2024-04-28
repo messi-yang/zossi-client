@@ -32,6 +32,7 @@ export class WorldJourneyApi {
     events: {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandSucceeded: (command: Command) => void;
+      onCommandFailed: (commandId: string, errorMessage: string) => void;
       onErrored: (message: string) => void;
       onDisconnect: () => void;
       onOpen: () => void;
@@ -59,7 +60,7 @@ export class WorldJourneyApi {
         if (!command) return;
         events.onCommandSucceeded(command);
       } else if (event.name === ServerEventNameEnum.CommandFailed) {
-        events.onErrored(event.errorMessage);
+        events.onCommandFailed(event.commandId, event.errorMessage);
       } else if (event.name === ServerEventNameEnum.Errored) {
         events.onErrored(event.message);
       }
@@ -92,6 +93,7 @@ export class WorldJourneyApi {
     events: {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandSucceeded: (command: Command) => void;
+      onCommandFailed: (commandId: string, errorMessage: string) => void;
       onErrored: (message: string) => void;
       onDisconnect: () => void;
       onOpen: () => void;

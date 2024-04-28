@@ -26,7 +26,13 @@ export class RotateUnitCommand extends BaseCommand {
     const clonedUnit = unit.clone();
     clonedUnit.rotate();
 
-    unitManager.updateUnit(clonedUnit);
+    const isUnitUpdated = unitManager.updateUnit(clonedUnit);
+
+    this.setUndoAction(() => {
+      if (isUnitUpdated) {
+        unitManager.updateUnit(unit);
+      }
+    });
   }
 
   public getUnitId() {

@@ -1,6 +1,7 @@
 import { ItemModel } from '@/models/world/item/item-model';
 
 export type PlaceholderItemIdsAddedHandler = (placeholderItemIds: string[]) => void;
+
 export type ItemAddedHandler = (item: ItemModel) => void;
 
 export class ItemManager {
@@ -47,6 +48,17 @@ export class ItemManager {
     return true;
   }
 
+  /**
+   * Remove the placeholder item id
+   * @returns isStateChanged
+   */
+  public removePlaceholderItemId(itemId: string): boolean {
+    if (!this.doesPlaceholderItemIdExist(itemId)) return false;
+
+    this.placeholderItemIds = this.placeholderItemIds.filter((id) => id !== itemId);
+    return true;
+  }
+
   public getItem(itemId: string): ItemModel | null {
     return this.itemMap[itemId] || null;
   }
@@ -61,13 +73,25 @@ export class ItemManager {
     const existingItem = this.getItem(itemId);
     if (existingItem) return false;
 
-    const doesPlaceholderItemIdExist = this.doesPlaceholderItemIdExist(itemId);
-    if (!doesPlaceholderItemIdExist) return false;
-
-    this.placeholderItemIds = this.placeholderItemIds.filter((id) => id !== itemId);
+    const isPlaceholderItemIdRemoved = this.removePlaceholderItemId(itemId);
+    if (!isPlaceholderItemIdRemoved) return false;
 
     this.itemMap[itemId] = item;
     this.publishItemAdded(item);
+
+    return true;
+  }
+
+  /**
+   * Remove the item
+   * @returns isStateChanged
+   */
+  public removeItem(itemId: string): boolean {
+    const item = this.getItem(itemId);
+    if (!item) return false;
+
+    delete this.itemMap[itemId];
+    this.placeholderItemIds.push(itemId);
 
     return true;
   }

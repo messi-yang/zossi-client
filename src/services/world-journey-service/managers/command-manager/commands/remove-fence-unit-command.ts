@@ -20,7 +20,16 @@ export class RemoveFenceUnitCommand extends BaseCommand {
   }
 
   public execute({ unitManager }: CommandParams): void {
-    unitManager.removeUnit(this.unitId);
+    const currentUnit = unitManager.getUnit(this.unitId);
+    if (!currentUnit) return;
+
+    const hasRemovedUnit = unitManager.removeUnit(this.unitId);
+
+    this.setUndoAction(() => {
+      if (hasRemovedUnit) {
+        unitManager.addUnit(currentUnit);
+      }
+    });
   }
 
   public getUnitId() {

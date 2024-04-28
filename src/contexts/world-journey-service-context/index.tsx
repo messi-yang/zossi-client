@@ -81,6 +81,11 @@ export function Provider({ children }: Props) {
   const itemApi = useMemo<ItemApi>(() => ItemApi.new(), []);
   const [items, setItems] = useState<ItemModel[] | null>([]);
   const [worldJourneyService, setWorldJourneyService] = useState<WorldJourneyService | null>(null);
+  useEffect(() => {
+    // @ts-expect-error
+    window.worldJourneyService = worldJourneyService;
+  }, [worldJourneyService]);
+
   const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.new(), []);
 
   const [embedCode, setEmbedCode] = useState<string | null>(null);
@@ -152,6 +157,11 @@ export function Provider({ children }: Props) {
         if (!newWorldJourneyService) return;
         newWorldJourneyService.executeCommand(command);
       },
+      onCommandFailed: (commandId, errorMessage) => {
+        if (!newWorldJourneyService) return;
+        newWorldJourneyService.handleFailedCommand(commandId);
+        notificationEventDispatcher.publishErrorTriggeredEvent(errorMessage);
+      },
       onErrored: (message) => {
         notificationEventDispatcher.publishErrorTriggeredEvent(message);
       },
@@ -175,16 +185,20 @@ export function Provider({ children }: Props) {
       if (!worldJourneyApi.current) return;
 
       const oldPlayerPos = oldPlayer.getPosition();
-      const playerPos = player.getPosition();
-      if (oldPlayerPos.isEqual(playerPos)) {
+      const newPlayerPos = player.getPosition();
+      if (oldPlayerPos.isEqual(newPlayerPos)) {
         return;
       }
 
-      const unitAtPlayerPos = worldJourneyService.getUnit(playerPos);
-      if (!unitAtPlayerPos) return;
+      const unitAtNewPlayerPos = worldJourneyService.getUnit(newPlayerPos);
+      if (!unitAtNewPlayerPos) return;
 
-      if (unitAtPlayerPos instanceof PortalUnitModel) {
-        const command = SendPlayerIntoPortalCommand.new(player.getId(), unitAtPlayerPos.getId());
+      if (unitAtNewPlayerPos instanceof PortalUnitModel) {
+        // To prevent infinite teleporting loop, we need to check if we just came from another portal
+        const unitAtOldPlayerPos = worldJourneyService.getUnit(oldPlayerPos);
+        if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
+
+        const command = SendPlayerIntoPortalCommand.new(player.getId(), unitAtNewPlayerPos.getId());
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       }

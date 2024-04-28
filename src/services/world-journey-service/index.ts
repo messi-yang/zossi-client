@@ -60,6 +60,16 @@ export class WorldJourneyService {
     return new WorldJourneyService(world, players, myPlayerId, units);
   }
 
+  public handleFailedCommand(commandId: string) {
+    this.commandManager.handleFailedCommand(commandId, {
+      world: this.world,
+      playerManager: this.playerManager,
+      unitManager: this.unitManager,
+      itemManager: this.itemManager,
+      perspectiveManager: this.perspectiveManager,
+    });
+  }
+
   public executeCommand(command: Command) {
     this.commandManager.executeCommand(command, {
       world: this.world,

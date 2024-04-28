@@ -21,7 +21,13 @@ export class AddItemCommand extends BaseCommand {
   }
 
   public execute({ itemManager }: CommandParams): void {
-    itemManager.addItem(this.item);
+    const isItemAdded = itemManager.addItem(this.item);
+
+    this.setUndoAction(() => {
+      if (isItemAdded) {
+        itemManager.removeItem(this.item.getId());
+      }
+    });
   }
 
   public getItem() {

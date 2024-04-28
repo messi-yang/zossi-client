@@ -21,12 +21,22 @@ export class AddPlayerCommand extends BaseCommand {
   }
 
   public execute({ playerManager, itemManager }: CommandParams): void {
-    playerManager.addPlayer(this.player);
+    const isPlayerAdded = playerManager.addPlayer(this.player);
 
     const playerHeldItemId = this.player.getHeldItemId();
+    let isPlaceholderItemIdAdded = false;
     if (playerHeldItemId) {
-      itemManager.addPlaceholderItemId(playerHeldItemId);
+      isPlaceholderItemIdAdded = itemManager.addPlaceholderItemId(playerHeldItemId);
     }
+
+    this.setUndoAction(() => {
+      if (isPlayerAdded) {
+        playerManager.removePlayer(this.player.getId());
+      }
+      if (playerHeldItemId && isPlaceholderItemIdAdded) {
+        itemManager.removePlaceholderItemId(playerHeldItemId);
+      }
+    });
   }
 
   public getPlayer() {
