@@ -1,8 +1,8 @@
 import { IconButton } from '@/components/buttons/icon-button';
 
 type ModalProps = {
-  width?: number;
-  height?: number;
+  width?: string | number;
+  height?: string | number;
   onCrossClick?: () => void;
   children: JSX.Element;
 };
@@ -14,6 +14,8 @@ export function Modal({ width, height, onCrossClick, children }: ModalProps) {
       style={{
         width,
         height,
+        maxWidth: 'calc(100vw - 40px)',
+        maxHeight: 'calc(100vh - 40px)',
       }}
     >
       {onCrossClick && (
