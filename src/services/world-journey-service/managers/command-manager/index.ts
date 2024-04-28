@@ -4,24 +4,35 @@ import { CommandParams } from './command-params';
 export class CommandManager {
   private executedCommands: Command[];
 
-  private executedCommandMap: Record<string, Command>;
+  private executedCommandMap: Record<string, Command | undefined>;
+
+  private failedCommandMap: Record<string, true | undefined>;
 
   constructor() {
     this.executedCommands = [];
     this.executedCommandMap = {};
+    this.failedCommandMap = {};
   }
 
   static new() {
     return new CommandManager();
   }
 
-  private getExecutedCommand(id: string): Command {
-    return this.executedCommandMap[id];
+  private getExecutedCommand(id: string): Command | null {
+    return this.executedCommandMap[id] ?? null;
   }
 
   private addExecutedCommand(command: Command) {
     this.executedCommands.push(command);
     this.executedCommandMap[command.getId()] = command;
+  }
+
+  private doesFailedCommandExist(id: string): boolean {
+    return this.failedCommandMap[id] ?? false;
+  }
+
+  private addFailedCommandId(commandId: string) {
+    this.failedCommandMap[commandId] = true;
   }
 
   private popExecutedCommand(): Command | null {
@@ -32,7 +43,9 @@ export class CommandManager {
     return command;
   }
 
-  public handleFailedCommand(commandId: string, params: CommandParams) {
+  public removeFailedCommand(commandId: string, params: CommandParams) {
+    this.addFailedCommandId(commandId);
+
     const executedCommand = this.getExecutedCommand(commandId);
     if (!executedCommand) return;
 
@@ -42,12 +55,16 @@ export class CommandManager {
       const lastExecutedCommand = this.popExecutedCommand();
       if (!lastExecutedCommand) break;
 
-      if (lastExecutedCommand.getId() !== commandId) {
+      const lastExecutedCommandId = lastExecutedCommand.getId();
+      const isLastExecutedCommandFailedCommand = lastExecutedCommandId !== commandId;
+
+      if (isLastExecutedCommandFailedCommand) {
         lastExecutedCommand.undo();
-        commandsToReExecute.push(lastExecutedCommand);
+        this.addFailedCommandId(lastExecutedCommandId);
+        break;
       } else {
         lastExecutedCommand.undo();
-        break;
+        commandsToReExecute.push(lastExecutedCommand);
       }
     }
 
@@ -61,6 +78,9 @@ export class CommandManager {
     const commandId = command.getId();
     const duplicatedCommand = this.getExecutedCommand(commandId);
     if (duplicatedCommand) return;
+
+    const hasCommandAlreadyFailed = this.doesFailedCommandExist(commandId);
+    if (hasCommandAlreadyFailed) return;
 
     command.execute(params);
     this.addExecutedCommand(command);

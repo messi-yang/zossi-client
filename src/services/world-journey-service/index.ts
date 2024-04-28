@@ -60,8 +60,8 @@ export class WorldJourneyService {
     return new WorldJourneyService(world, players, myPlayerId, units);
   }
 
-  public handleFailedCommand(commandId: string) {
-    this.commandManager.handleFailedCommand(commandId, {
+  public removeFailedCommand(commandId: string) {
+    this.commandManager.removeFailedCommand(commandId, {
       world: this.world,
       playerManager: this.playerManager,
       unitManager: this.unitManager,
