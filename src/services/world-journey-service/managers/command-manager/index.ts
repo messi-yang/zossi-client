@@ -2,30 +2,34 @@ import { Command } from './command';
 import { CommandParams } from './command-params';
 
 export class CommandManager {
-  private commandMap: Record<string, Command>;
+  private executedCommands: Command[];
+
+  private executedCommandMap: Record<string, Command>;
 
   constructor() {
-    this.commandMap = {};
+    this.executedCommands = [];
+    this.executedCommandMap = {};
   }
 
   static new() {
     return new CommandManager();
   }
 
-  public getCommand(id: string): Command {
-    return this.commandMap[id];
+  private getExecutedCommand(id: string): Command {
+    return this.executedCommandMap[id];
   }
 
-  public addCommand(command: Command) {
-    this.commandMap[command.getId()] = command;
+  private addExecutedCommand(command: Command) {
+    this.executedCommands.push(command);
+    this.executedCommandMap[command.getId()] = command;
   }
 
   public executeCommand(command: Command, params: CommandParams) {
     const commandId = command.getId();
-    const duplicatedCommand = this.getCommand(commandId);
+    const duplicatedCommand = this.getExecutedCommand(commandId);
     if (duplicatedCommand) return;
 
     command.execute(params);
-    this.addCommand(command);
+    this.addExecutedCommand(command);
   }
 }
