@@ -104,6 +104,10 @@ export class PlayerManager {
     }
   }
 
+  /**
+   * Add the player
+   * @returns isStateChanged
+   */
   public addPlayer(player: PlayerModel): boolean {
     if (this.getPlayer(player.getId())) return false;
 
@@ -115,6 +119,10 @@ export class PlayerManager {
     return true;
   }
 
+  /**
+   * Update the player
+   * @returns isStateChanged
+   */
   public updatePlayer(player: PlayerModel): boolean {
     const oldPlayer = this.getPlayer(player.getId());
     if (!oldPlayer) return false;
@@ -131,6 +139,10 @@ export class PlayerManager {
     return true;
   }
 
+  /**
+   * Remove the player
+   * @returns isStateChanged
+   */
   public removePlayer(playerId: string): boolean {
     const currentPlayer = this.getPlayer(playerId);
     if (!currentPlayer) return false;

@@ -18,16 +18,28 @@ export class PerspectiveManager {
     return new PerspectiveManager(depth, targetPrecisePosition);
   }
 
-  public addPerspectiveDepth() {
-    if (this.depth <= 10) return;
+  /**
+   * Add perspective depth
+   * @returns isStateChanged
+   */
+  public addPerspectiveDepth(): boolean {
+    if (this.depth <= 10) return false;
+
     this.depth -= 10;
     this.publishPerspectiveChanged();
+    return true;
   }
 
-  public subtractPerspectiveDepth() {
-    if (this.depth >= 200) return;
+  /**
+   * Subtract perspective depth
+   * @returns isStateChanged
+   */
+  public subtractPerspectiveDepth(): boolean {
+    if (this.depth >= 200) return false;
+
     this.depth += 10;
     this.publishPerspectiveChanged();
+    return true;
   }
 
   public updateTargetPrecisePosition(position: PrecisePositionVo) {

@@ -188,6 +188,10 @@ export class UnitManager {
     });
   }
 
+  /**
+   * Add the unit
+   * @returns isStateChanged
+   */
   public addUnit(unit: UnitModel): boolean {
     const unitAtPos = this.getUnitByPos(unit.getPosition());
     if (unitAtPos) return false;
@@ -201,6 +205,10 @@ export class UnitManager {
     return true;
   }
 
+  /**
+   * Update the unit
+   * @returns isStateChanged
+   */
   public updateUnit(unit: UnitModel): boolean {
     const currentUnit = this.getUnit(unit.getId());
     if (!currentUnit) return false;
@@ -217,6 +225,10 @@ export class UnitManager {
     return true;
   }
 
+  /**
+   * Remove the unit
+   * @returns isStateChanged
+   */
   public removeUnit(id: string): boolean {
     const currentUnit = this.getUnit(id);
     if (!currentUnit) return false;

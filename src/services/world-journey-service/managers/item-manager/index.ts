@@ -29,30 +29,42 @@ export class ItemManager {
     return this.placeholderItemIds;
   }
 
-  public addPlaceholderItemId(itemId: string) {
-    if (this.itemMap[itemId]) {
-      return;
+  private doesPlaceholderItemIdExist(itemId: string): boolean {
+    return this.placeholderItemIds.some((id) => itemId === id);
+  }
+
+  /**
+   * Add the placeholder item id
+   * @returns isStateChanged
+   */
+  public addPlaceholderItemId(itemId: string): boolean {
+    if (this.getItem(itemId)) {
+      return false;
     }
 
     this.placeholderItemIds.push(itemId);
     this.publishPlaceholderItemIdsAdded([itemId]);
-  }
-
-  public removePlaceholderItemId(itemId: string) {
-    this.placeholderItemIds = this.placeholderItemIds.filter((id) => id !== itemId);
+    return true;
   }
 
   public getItem(itemId: string): ItemModel | null {
     return this.itemMap[itemId] || null;
   }
 
+  /**
+   * Add the item
+   * @returns isStateChanged
+   */
   public addItem(item: ItemModel): boolean {
     const itemId = item.getId();
 
-    const existingItem = this.itemMap[itemId];
+    const existingItem = this.getItem(itemId);
     if (existingItem) return false;
 
-    this.removePlaceholderItemId(itemId);
+    const doesPlaceholderItemIdExist = this.doesPlaceholderItemIdExist(itemId);
+    if (!doesPlaceholderItemIdExist) return false;
+
+    this.placeholderItemIds = this.placeholderItemIds.filter((id) => id !== itemId);
 
     this.itemMap[itemId] = item;
     this.publishItemAdded(item);
