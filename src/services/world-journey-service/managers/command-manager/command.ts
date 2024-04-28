@@ -27,10 +27,6 @@ export abstract class BaseCommand implements Command {
 
   public abstract execute(params: CommandParams): void;
 
-  protected getEmptyUndoAction() {
-    return emptyUndoAction;
-  }
-
   protected setUndoAction(newUndoAction: () => void) {
     this.undoAction = newUndoAction;
   }
