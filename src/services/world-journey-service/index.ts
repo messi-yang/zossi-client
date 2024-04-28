@@ -70,6 +70,16 @@ export class WorldJourneyService {
     });
   }
 
+  public replayCommands(countOfCommands: number) {
+    this.commandManager.replayCommands(countOfCommands, {
+      world: this.world,
+      playerManager: this.playerManager,
+      unitManager: this.unitManager,
+      itemManager: this.itemManager,
+      perspectiveManager: this.perspectiveManager,
+    });
+  }
+
   public executeCommand(command: Command) {
     this.commandManager.executeCommand(command, {
       world: this.world,

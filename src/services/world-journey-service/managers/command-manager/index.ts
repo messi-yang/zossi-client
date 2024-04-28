@@ -74,6 +74,25 @@ export class CommandManager {
     }
   }
 
+  public async replayCommands(countOfCommands: number, params: CommandParams) {
+    const commandsToReExecute: Command[] = [];
+    let remainingCount = countOfCommands;
+    while (remainingCount > 0) {
+      remainingCount -= 1;
+      const commandToReExecute = this.popExecutedCommand();
+      if (!commandToReExecute) {
+        break;
+      }
+      commandToReExecute.undo();
+      commandsToReExecute.push(commandToReExecute);
+    }
+
+    for (let i = commandsToReExecute.length - 1; i >= 0; i -= 1) {
+      const commandToReExecute = commandsToReExecute[i];
+      this.executeCommand(commandToReExecute, params);
+    }
+  }
+
   public executeCommand(command: Command, params: CommandParams) {
     const commandId = command.getId();
     const duplicatedCommand = this.getExecutedCommand(commandId);
