@@ -56,7 +56,7 @@ export class CommandManager {
       if (!lastExecutedCommand) break;
 
       const lastExecutedCommandId = lastExecutedCommand.getId();
-      const isLastExecutedCommandFailedCommand = lastExecutedCommandId !== commandId;
+      const isLastExecutedCommandFailedCommand = lastExecutedCommandId === commandId;
 
       if (isLastExecutedCommandFailedCommand) {
         lastExecutedCommand.undo();
