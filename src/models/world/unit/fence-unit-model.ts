@@ -10,7 +10,7 @@ export class FenceUnitModel extends BaseUnitModel implements UnitModel {
     super(id, UnitTypeEnum.Fence, itemId, position, direction, dimension, null);
   }
 
-  static new = (
+  static create = (
     id: string,
     itemId: string,
     position: PositionVo,
@@ -18,13 +18,13 @@ export class FenceUnitModel extends BaseUnitModel implements UnitModel {
     dimension: DimensionVo
   ): FenceUnitModel => new FenceUnitModel(id, itemId, position, direction, dimension);
 
-  static mockup(): FenceUnitModel {
+  static createMock(): FenceUnitModel {
     return new FenceUnitModel(
       generateUuidV4(),
       generateUuidV4(),
-      PositionVo.new(0, 0),
+      PositionVo.create(0, 0),
       DirectionVo.newDown(),
-      DimensionVo.new(1, 1)
+      DimensionVo.create(1, 1)
     );
   }
 

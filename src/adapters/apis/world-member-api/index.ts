@@ -7,10 +7,10 @@ export class WorldMemberApi {
   private axios: Axios;
 
   constructor() {
-    this.axios = AxiosProvider.new(`${process.env.API_URL}/api/worlds`);
+    this.axios = AxiosProvider.create(`${process.env.API_URL}/api/worlds`);
   }
 
-  static new(): WorldMemberApi {
+  static create(): WorldMemberApi {
     return new WorldMemberApi();
   }
 

@@ -30,7 +30,7 @@ export class PlayerManager {
     });
   }
 
-  static new(players: PlayerModel[], myPlayerId: string) {
+  static create(players: PlayerModel[], myPlayerId: string) {
     return new PlayerManager(players, myPlayerId);
   }
 

@@ -18,7 +18,7 @@ export class PlayerModel {
     this.precisePosition = precisePosition;
   }
 
-  static new(
+  static create(
     id: string,
     name: string,
     heldItemId: string | null,
@@ -28,13 +28,18 @@ export class PlayerModel {
     return new PlayerModel(id, name, heldItemId, action, precisePosition);
   }
 
-  static mockup(): PlayerModel {
-    return PlayerModel.new(
+  static createMock(): PlayerModel {
+    return PlayerModel.create(
       generateUuidV4(),
       'Test Player',
       null,
-      PlayerActionVo.new(PlayerActionNameEnum.Stand, PrecisePositionVo.new(0, 0), DirectionVo.new(2), DateVo.now()),
-      PrecisePositionVo.new(0, 0)
+      PlayerActionVo.create(
+        PlayerActionNameEnum.Stand,
+        PrecisePositionVo.create(0, 0),
+        DirectionVo.create(2),
+        DateVo.now()
+      ),
+      PrecisePositionVo.create(0, 0)
     );
   }
 

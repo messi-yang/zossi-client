@@ -23,10 +23,10 @@ export function newPlayerActionDto(playerAction: PlayerActionVo): PlayerActionDt
 }
 
 export function parsePlayerActionDto(dto: PlayerActionDto): PlayerActionVo {
-  return PlayerActionVo.new(
+  return PlayerActionVo.create(
     dto.name,
-    PrecisePositionVo.new(dto.precisePosition.x, dto.precisePosition.z),
-    DirectionVo.new(dto.direction),
+    PrecisePositionVo.create(dto.precisePosition.x, dto.precisePosition.z),
+    DirectionVo.create(dto.direction),
     DateVo.fromTimestamp(dto.time)
   );
 }

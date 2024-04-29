@@ -5,12 +5,17 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class WorldMemberModel {
   constructor(private id: string, private worldId: string, private user: UserModel, private worldRole: WorldRoleVo) {}
 
-  static new(id: string, worldId: string, user: UserModel, worldRole: WorldRoleVo): WorldMemberModel {
+  static create(id: string, worldId: string, user: UserModel, worldRole: WorldRoleVo): WorldMemberModel {
     return new WorldMemberModel(id, worldId, user, worldRole);
   }
 
-  static mockup(): WorldMemberModel {
-    return new WorldMemberModel(generateUuidV4(), generateUuidV4(), UserModel.mockup(), WorldRoleVo.new('admin'));
+  static createMock(): WorldMemberModel {
+    return new WorldMemberModel(
+      generateUuidV4(),
+      generateUuidV4(),
+      UserModel.createMock(),
+      WorldRoleVo.create('admin')
+    );
   }
 
   public getId(): string {

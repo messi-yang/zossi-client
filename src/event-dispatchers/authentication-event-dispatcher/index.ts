@@ -5,7 +5,7 @@ export class AuthenticationEventDispatcher {
     this.window = global.window;
   }
 
-  static new(): AuthenticationEventDispatcher {
+  static create(): AuthenticationEventDispatcher {
     return new AuthenticationEventDispatcher();
   }
 

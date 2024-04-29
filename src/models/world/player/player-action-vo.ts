@@ -11,7 +11,7 @@ export class PlayerActionVo {
     private readonly time: DateVo
   ) {}
 
-  static new(
+  static create(
     name: PlayerActionNameEnum,
     precisePosition: PrecisePositionVo,
     direction: DirectionVo,

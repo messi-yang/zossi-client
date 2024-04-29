@@ -20,5 +20,5 @@ const Template: StoryFn<typeof ItemBox> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  item: ItemModel.mockup(),
+  item: ItemModel.createMock(),
 };

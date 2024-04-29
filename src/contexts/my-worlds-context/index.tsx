@@ -38,10 +38,10 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [worldApi] = useState<WorldApi>(() => WorldApi.new());
+  const [worldApi] = useState<WorldApi>(() => WorldApi.create());
   const initialContextValue = createInitialContextValue();
   const [myWorlds, setMyWorlds] = useState<WorldModel[] | null>(initialContextValue.myWorlds);
-  const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.new(), []);
+  const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.create(), []);
 
   const getMyWorlds = useCallback(async () => {
     const newMyWorlds = await worldApi.getMyWorlds();

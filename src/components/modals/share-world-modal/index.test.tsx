@@ -8,8 +8,8 @@ function renderShareWorldModal(): RenderResult {
   return render(
     <ShareWorldModal
       opened
-      world={WorldModel.mockup()}
-      worldMembes={[WorldMemberModel.mockup(), WorldMemberModel.mockup(), WorldMemberModel.mockup()]}
+      world={WorldModel.createMock()}
+      worldMembes={[WorldMemberModel.createMock(), WorldMemberModel.createMock(), WorldMemberModel.createMock()]}
     />
   );
 }

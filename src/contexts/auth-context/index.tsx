@@ -29,8 +29,8 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [authenticationEventDispatcher] = useState(() => AuthenticationEventDispatcher.new());
-  const [authApi] = useState<AuthApi>(() => AuthApi.new());
+  const [authenticationEventDispatcher] = useState(() => AuthenticationEventDispatcher.create());
+  const [authApi] = useState<AuthApi>(() => AuthApi.create());
   const [authSessionStorage] = useState(() => AuthSessionStorage.get());
   const router = useRouter();
 

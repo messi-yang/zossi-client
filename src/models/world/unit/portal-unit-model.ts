@@ -17,7 +17,7 @@ export class PortalUnitModel extends BaseUnitModel {
     super(id, UnitTypeEnum.Portal, itemId, position, direction, dimension, null);
   }
 
-  static new = (
+  static create = (
     id: string,
     itemId: string,
     position: PositionVo,
@@ -26,13 +26,13 @@ export class PortalUnitModel extends BaseUnitModel {
     targetUnitId: string | null
   ): PortalUnitModel => new PortalUnitModel(id, itemId, position, direction, dimension, targetUnitId);
 
-  static mockup(): PortalUnitModel {
+  static createMock(): PortalUnitModel {
     return new PortalUnitModel(
       generateUuidV4(),
       generateUuidV4(),
-      PositionVo.new(0, 0),
+      PositionVo.create(0, 0),
       DirectionVo.newDown(),
-      DimensionVo.new(1, 1),
+      DimensionVo.create(1, 1),
       null
     );
   }

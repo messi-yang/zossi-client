@@ -79,7 +79,7 @@ export abstract class BaseUnitModel implements UnitModel {
     const dimensionWidth = this.dimension.getWidth();
     const dimensionDepth = this.dimension.getDepth();
 
-    let occupiedBoundTo = PositionVo.new(0, 0);
+    let occupiedBoundTo = PositionVo.create(0, 0);
 
     if (this.direction.isDown()) {
       occupiedBoundTo = this.position.shift(dimensionWidth - 1, dimensionDepth - 1);
@@ -91,7 +91,7 @@ export abstract class BaseUnitModel implements UnitModel {
       occupiedBoundTo = this.position.shift(dimensionDepth - 1, dimensionWidth - 1);
     }
 
-    return BoundVo.new(this.position, occupiedBoundTo);
+    return BoundVo.create(this.position, occupiedBoundTo);
   }
 
   public getOccupiedPositions(): PositionVo[] {

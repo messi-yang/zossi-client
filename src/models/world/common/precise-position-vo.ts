@@ -10,7 +10,7 @@ export class PrecisePositionVo {
     this.z = Math.round(z * 100) / 100;
   }
 
-  static new = (x: number, z: number): PrecisePositionVo => new PrecisePositionVo(x, z);
+  static create = (x: number, z: number): PrecisePositionVo => new PrecisePositionVo(x, z);
 
   public isEqual(position: PrecisePositionVo): boolean {
     return this.x === position.getX() && this.z === position.getZ();
@@ -25,7 +25,7 @@ export class PrecisePositionVo {
   }
 
   public shift(x: number, z: number): PrecisePositionVo {
-    return PrecisePositionVo.new(this.x + x, this.z + z);
+    return PrecisePositionVo.create(this.x + x, this.z + z);
   }
 
   public shiftByDirection(direction: DirectionVo, distance: number): PrecisePositionVo {
@@ -43,7 +43,7 @@ export class PrecisePositionVo {
   }
 
   public toPosition(): PositionVo {
-    return PositionVo.new(this.x, this.z);
+    return PositionVo.create(this.x, this.z);
   }
 
   public toString(): string {

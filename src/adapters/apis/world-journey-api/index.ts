@@ -53,7 +53,7 @@ export class WorldJourneyApi {
       console.log(event);
       if (event.name === ServerEventNameEnum.WorldEntered) {
         const [world, units, myPlayerId, players] = parseWorldEnteredServerEvent(event);
-        const worldJourneyService = WorldJourneyService.new(world, players, myPlayerId, units);
+        const worldJourneyService = WorldJourneyService.create(world, players, myPlayerId, units);
         events.onWorldEntered(worldJourneyService);
       } else if (event.name === ServerEventNameEnum.CommandSucceeded) {
         const command = parseCommandDto(event.command);
@@ -88,7 +88,7 @@ export class WorldJourneyApi {
     window.sendCommand = this.sendCommand.bind(this);
   }
 
-  static new(
+  static create(
     worldId: string,
     events: {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;

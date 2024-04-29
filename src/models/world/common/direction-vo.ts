@@ -3,7 +3,7 @@ import { DirectionEnum } from './direction-enum';
 export class DirectionVo {
   constructor(private direction: DirectionEnum) {}
 
-  static new = (direction: DirectionEnum): DirectionVo => new DirectionVo(direction);
+  static create = (direction: DirectionEnum): DirectionVo => new DirectionVo(direction);
 
   static newDown(): DirectionVo {
     return new DirectionVo(DirectionEnum.Down);
@@ -46,7 +46,7 @@ export class DirectionVo {
   }
 
   public rotate(): DirectionVo {
-    return DirectionVo.new((this.direction + 1) % 4);
+    return DirectionVo.create((this.direction + 1) % 4);
   }
 
   public getOppositeDirection(): DirectionVo {

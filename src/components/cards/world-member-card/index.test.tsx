@@ -4,7 +4,7 @@ import { dataTestids } from './data-test-ids';
 import { WorldMemberCard } from '.';
 
 function renderWorldMemberCard(): RenderResult {
-  return render(<WorldMemberCard worldMember={WorldMemberModel.mockup()} />);
+  return render(<WorldMemberCard worldMember={WorldMemberModel.createMock()} />);
 }
 
 describe('WorldMemberCard', () => {

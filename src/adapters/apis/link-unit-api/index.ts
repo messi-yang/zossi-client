@@ -5,10 +5,10 @@ export class LinkUnitApi {
   private axios: Axios;
 
   constructor() {
-    this.axios = AxiosProvider.new(`${process.env.API_URL}/api/link-units`);
+    this.axios = AxiosProvider.create(`${process.env.API_URL}/api/link-units`);
   }
 
-  static new(): LinkUnitApi {
+  static create(): LinkUnitApi {
     return new LinkUnitApi();
   }
 

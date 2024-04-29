@@ -12,11 +12,11 @@ export class AddItemCommand extends BaseCommand {
     this.item = item;
   }
 
-  static new(item: ItemModel) {
+  static create(item: ItemModel) {
     return new AddItemCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, item);
   }
 
-  static load(id: string, timestamp: number, item: ItemModel) {
+  static createRemote(id: string, timestamp: number, item: ItemModel) {
     return new AddItemCommand(id, timestamp, true, item);
   }
 

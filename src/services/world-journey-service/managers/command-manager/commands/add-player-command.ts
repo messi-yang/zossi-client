@@ -12,11 +12,11 @@ export class AddPlayerCommand extends BaseCommand {
     this.player = player;
   }
 
-  static new(player: PlayerModel) {
+  static create(player: PlayerModel) {
     return new AddPlayerCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, player);
   }
 
-  static load(id: string, timestamp: number, player: PlayerModel) {
+  static createRemote(id: string, timestamp: number, player: PlayerModel) {
     return new AddPlayerCommand(id, timestamp, true, player);
   }
 

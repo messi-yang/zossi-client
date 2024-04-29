@@ -10,7 +10,7 @@ type WorldMemberDto = {
 };
 
 function parseWorldMemberDto(dto: WorldMemberDto): WorldMemberModel {
-  return WorldMemberModel.new(dto.id, dto.worldId, parseUserDto(dto.user), parseWorldRoleDto(dto.role));
+  return WorldMemberModel.create(dto.id, dto.worldId, parseUserDto(dto.user), parseWorldRoleDto(dto.role));
 }
 
 export type { WorldMemberDto };

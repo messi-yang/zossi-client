@@ -22,7 +22,6 @@
     "@typescript-eslint/default-param-last": "off",
     "arrow-body-style": "off",
     "no-param-reassign": "off",
-    "noUncheckedIndexedAccess": "off",
     "no-else-return": "off",
     "class-methods-use-this": "off"
   }

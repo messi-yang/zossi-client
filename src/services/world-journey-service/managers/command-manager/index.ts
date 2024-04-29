@@ -14,7 +14,7 @@ export class CommandManager {
     this.failedCommandMap = {};
   }
 
-  static new() {
+  static create() {
     return new CommandManager();
   }
 

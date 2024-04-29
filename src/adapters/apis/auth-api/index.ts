@@ -5,7 +5,7 @@ export class AuthApi {
     this.url = `${process.env.API_URL}/api/auth`;
   }
 
-  static new(): AuthApi {
+  static create(): AuthApi {
     return new AuthApi();
   }
 

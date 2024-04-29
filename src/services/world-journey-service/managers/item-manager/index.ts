@@ -22,7 +22,7 @@ export class ItemManager {
     this.itemMap = {};
   }
 
-  static new(placeholderItemIds: string[]) {
+  static create(placeholderItemIds: string[]) {
     return new ItemManager(placeholderItemIds);
   }
 

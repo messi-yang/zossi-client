@@ -8,10 +8,10 @@ export class UserModel {
     private friendlyName: string
   ) {}
 
-  static new = (id: string, emailAddress: string, username: string, friendlyName: string): UserModel =>
+  static create = (id: string, emailAddress: string, username: string, friendlyName: string): UserModel =>
     new UserModel(id, emailAddress, username, friendlyName);
 
-  static mockup = (): UserModel =>
+  static createMock = (): UserModel =>
     new UserModel(generateUuidV4(), 'example@gmail.com', 'my_username', 'My Friendly Name');
 
   public clone(): UserModel {

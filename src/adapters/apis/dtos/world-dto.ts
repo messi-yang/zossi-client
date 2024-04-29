@@ -11,7 +11,7 @@ type WorldDto = {
 };
 
 function parseWorldDto(dto: WorldDto): WorldModel {
-  return WorldModel.new(
+  return WorldModel.create(
     dto.id,
     dto.name,
     parseBoundDto(dto.bound),

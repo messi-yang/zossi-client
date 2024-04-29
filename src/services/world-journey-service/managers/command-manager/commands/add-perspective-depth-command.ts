@@ -4,11 +4,11 @@ import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
 export class AddPerspectiveDepthCommand extends BaseCommand {
-  static new() {
+  static create() {
     return new AddPerspectiveDepthCommand(generateUuidV4(), DateVo.now().getTimestamp(), false);
   }
 
-  static load(id: string, timestamp: number) {
+  static createRemote(id: string, timestamp: number) {
     return new AddPerspectiveDepthCommand(id, timestamp, true);
   }
 

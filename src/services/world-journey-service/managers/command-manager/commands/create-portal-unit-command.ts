@@ -20,7 +20,7 @@ export class CreatePortalUnitCommand extends BaseCommand {
     super(id, timestamp, isRemote);
   }
 
-  static new(itemId: string, position: PositionVo, direction: DirectionVo) {
+  static create(itemId: string, position: PositionVo, direction: DirectionVo) {
     return new CreatePortalUnitCommand(
       generateUuidV4(),
       DateVo.now().getTimestamp(),
@@ -32,7 +32,7 @@ export class CreatePortalUnitCommand extends BaseCommand {
     );
   }
 
-  static load(
+  static createRemote(
     id: string,
     timestamp: number,
     unitId: string,
@@ -49,7 +49,7 @@ export class CreatePortalUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Portal)) return;
 
-    const newUnit = PortalUnitModel.new(
+    const newUnit = PortalUnitModel.create(
       this.unitId,
       this.itemId,
       this.position,

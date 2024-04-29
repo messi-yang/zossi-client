@@ -13,7 +13,7 @@ type ItemDto = {
 };
 
 function parseItemDto(dto: ItemDto): ItemModel {
-  return ItemModel.new(
+  return ItemModel.create(
     dto.id,
     dto.name,
     parseDimensionDto(dto.dimension),

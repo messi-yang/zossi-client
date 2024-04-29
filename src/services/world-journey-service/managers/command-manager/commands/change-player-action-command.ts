@@ -15,11 +15,11 @@ export class ChangePlayerActionCommand extends BaseCommand {
     this.action = action;
   }
 
-  static new(playerId: string, action: PlayerActionVo) {
+  static create(playerId: string, action: PlayerActionVo) {
     return new ChangePlayerActionCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, action);
   }
 
-  static load(id: string, timestamp: number, playerId: string, action: PlayerActionVo) {
+  static createRemote(id: string, timestamp: number, playerId: string, action: PlayerActionVo) {
     return new ChangePlayerActionCommand(id, timestamp, true, playerId, action);
   }
 

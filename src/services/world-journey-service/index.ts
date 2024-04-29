@@ -31,18 +31,18 @@ export class WorldJourneyService {
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
     this.world = world;
 
-    this.unitManager = UnitManager.new(units);
+    this.unitManager = UnitManager.create(units);
 
-    this.playerManager = PlayerManager.new(players, myPlayerId);
+    this.playerManager = PlayerManager.create(players, myPlayerId);
 
-    this.perspectiveManager = PerspectiveManager.new(30, this.playerManager.getMyPlayer().getPrecisePosition());
+    this.perspectiveManager = PerspectiveManager.create(30, this.playerManager.getMyPlayer().getPrecisePosition());
 
     const appearingItemIdsInUnitManager = this.unitManager.getAppearingItemIds();
     const appearingItemIdsInPlayerManager = this.playerManager.getAppearingItemIds();
     const appearingItemIds = uniq([...appearingItemIdsInUnitManager, ...appearingItemIdsInPlayerManager]);
-    this.itemManager = ItemManager.new(appearingItemIds);
+    this.itemManager = ItemManager.create(appearingItemIds);
 
-    this.commandManager = CommandManager.new();
+    this.commandManager = CommandManager.create();
 
     this.calculatePlayerPositionsTicker();
     this.subscribeMyPlayerChanged((_, newMyPlayer) => {
@@ -56,7 +56,7 @@ export class WorldJourneyService {
     }
   }
 
-  static new(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
+  static create(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
     return new WorldJourneyService(world, players, myPlayerId, units);
   }
 

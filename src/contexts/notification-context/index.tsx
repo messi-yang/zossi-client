@@ -11,7 +11,7 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.new(), []);
+  const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.create(), []);
 
   useEffect(() => {
     return notificationEventDispatcher.subscribeErrorTriggeredEvent((message) => {

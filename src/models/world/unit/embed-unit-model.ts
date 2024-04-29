@@ -17,7 +17,7 @@ export class EmbedUnitModel extends BaseUnitModel implements UnitModel {
     super(id, UnitTypeEnum.Embed, itemId, position, direction, dimension, label);
   }
 
-  static new = (
+  static create = (
     id: string,
     itemId: string,
     position: PositionVo,
@@ -26,13 +26,13 @@ export class EmbedUnitModel extends BaseUnitModel implements UnitModel {
     label: string | null
   ): EmbedUnitModel => new EmbedUnitModel(id, itemId, position, direction, dimension, label);
 
-  static mockup(): EmbedUnitModel {
+  static createMock(): EmbedUnitModel {
     return new EmbedUnitModel(
       generateUuidV4(),
       generateUuidV4(),
-      PositionVo.new(0, 0),
+      PositionVo.create(0, 0),
       DirectionVo.newDown(),
-      DimensionVo.new(1, 1),
+      DimensionVo.create(1, 1),
       null
     );
   }

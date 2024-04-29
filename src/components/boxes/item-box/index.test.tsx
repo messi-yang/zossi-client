@@ -4,7 +4,7 @@ import { dataTestids } from './data-test-ids';
 import { ItemBox } from '.';
 
 function renderItemBox(): RenderResult {
-  return render(<ItemBox item={ItemModel.mockup()} />);
+  return render(<ItemBox item={ItemModel.createMock()} />);
 }
 
 describe('ItemBox', () => {

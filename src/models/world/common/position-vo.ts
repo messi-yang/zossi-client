@@ -7,7 +7,7 @@ export class PositionVo {
     this.z = Math.round(z);
   }
 
-  static new = (x: number, z: number): PositionVo => new PositionVo(x, z);
+  static create = (x: number, z: number): PositionVo => new PositionVo(x, z);
 
   public isEqual(position: PositionVo): boolean {
     return this.x === position.getX() && this.z === position.getZ();
@@ -22,23 +22,23 @@ export class PositionVo {
   }
 
   public getLeftPosition(): PositionVo {
-    return PositionVo.new(this.x - 1, this.z);
+    return PositionVo.create(this.x - 1, this.z);
   }
 
   public getTopPosition(): PositionVo {
-    return PositionVo.new(this.x, this.z - 1);
+    return PositionVo.create(this.x, this.z - 1);
   }
 
   public getRightPosition(): PositionVo {
-    return PositionVo.new(this.x + 1, this.z);
+    return PositionVo.create(this.x + 1, this.z);
   }
 
   public getBottomPosition(): PositionVo {
-    return PositionVo.new(this.x, this.z + 1);
+    return PositionVo.create(this.x, this.z + 1);
   }
 
   public shift(x: number, z: number): PositionVo {
-    return PositionVo.new(this.x + x, this.z + z);
+    return PositionVo.create(this.x + x, this.z + z);
   }
 
   public toString(): string {

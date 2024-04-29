@@ -20,5 +20,5 @@ const Template: StoryFn<typeof WorldMemberCard> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  worldMember: WorldMemberModel.mockup(),
+  worldMember: WorldMemberModel.createMock(),
 };

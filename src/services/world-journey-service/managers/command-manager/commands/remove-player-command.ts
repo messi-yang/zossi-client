@@ -11,11 +11,11 @@ export class RemovePlayerCommand extends BaseCommand {
     this.playerId = playerId;
   }
 
-  static new(playerId: string) {
+  static create(playerId: string) {
     return new RemovePlayerCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId);
   }
 
-  static load(id: string, timestamp: number, playerId: string) {
+  static createRemote(id: string, timestamp: number, playerId: string) {
     return new RemovePlayerCommand(id, timestamp, true, playerId);
   }
 

@@ -23,7 +23,7 @@ const Template: StoryFn<typeof SelectItemsBar> = function Template(args) {
   return <SelectItemsBar {...args} onSelect={handleItemSelect} />;
 };
 
-const items = [ItemModel.mockup(), ItemModel.mockup(), ItemModel.mockup()];
+const items = [ItemModel.createMock(), ItemModel.createMock(), ItemModel.createMock()];
 
 export const Primary = Template.bind({});
 Primary.args = {

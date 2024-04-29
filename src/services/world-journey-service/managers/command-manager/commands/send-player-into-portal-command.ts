@@ -10,11 +10,11 @@ export class SendPlayerIntoPortalCommand extends BaseCommand {
     super(id, timestamp, isRemote);
   }
 
-  static new(playerId: string, unitId: string) {
+  static create(playerId: string, unitId: string) {
     return new SendPlayerIntoPortalCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, unitId);
   }
 
-  static load(id: string, timestamp: number, playerId: string, unitId: string) {
+  static createRemote(id: string, timestamp: number, playerId: string, unitId: string) {
     return new SendPlayerIntoPortalCommand(id, timestamp, true, playerId, unitId);
   }
 
@@ -34,7 +34,7 @@ export class SendPlayerIntoPortalCommand extends BaseCommand {
     const targetPosition = targetUnit.getPosition();
 
     const clonedPlayer = currentPlayer.clone();
-    const nextPlayerPrecisePosition = PrecisePositionVo.new(targetPosition.getX(), targetPosition.getZ());
+    const nextPlayerPrecisePosition = PrecisePositionVo.create(targetPosition.getX(), targetPosition.getZ());
     clonedPlayer.updateAction(
       clonedPlayer.getAction().updatePrecisePosition(nextPlayerPrecisePosition).updateTime(DateVo.now())
     );

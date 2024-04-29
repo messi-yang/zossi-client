@@ -3,7 +3,7 @@ import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
 import { AuthenticationEventDispatcher } from '@/event-dispatchers/authentication-event-dispatcher';
 
 export class AxiosProvider {
-  static new(baseURL: string): Axios {
+  static create(baseURL: string): Axios {
     const newAxios = axios.create({
       baseURL,
     });
@@ -20,7 +20,7 @@ export class AxiosProvider {
           const authSessionStorage = AuthSessionStorage.get();
           authSessionStorage.removeAccessToken();
 
-          const authenticationEventDispatcher = AuthenticationEventDispatcher.new();
+          const authenticationEventDispatcher = AuthenticationEventDispatcher.create();
           authenticationEventDispatcher.publishUnauthenticatedEvent();
         }
         return Promise.reject(error);

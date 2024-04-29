@@ -7,10 +7,10 @@ export class ItemApi {
   private axios: Axios;
 
   constructor() {
-    this.axios = AxiosProvider.new(`${process.env.API_URL}/api/items`);
+    this.axios = AxiosProvider.create(`${process.env.API_URL}/api/items`);
   }
 
-  static new(): ItemApi {
+  static create(): ItemApi {
     return new ItemApi();
   }
 

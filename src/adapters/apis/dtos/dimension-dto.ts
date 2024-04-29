@@ -6,7 +6,7 @@ type DimensionDto = {
 };
 
 export function parseDimensionDto(dto: DimensionDto): DimensionVo {
-  return DimensionVo.new(dto.width, dto.depth);
+  return DimensionVo.create(dto.width, dto.depth);
 }
 
 export function newDimensionDto(dimension: DimensionVo): DimensionDto {

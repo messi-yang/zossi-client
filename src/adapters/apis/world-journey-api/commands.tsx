@@ -183,94 +183,94 @@ type RotateUnitCommandDto = {
 };
 
 function parseCreateStaticCommand(command: CreateStaticUnitCommandDto): CreateStaticUnitCommand {
-  return CreateStaticUnitCommand.load(
+  return CreateStaticUnitCommand.createRemote(
     command.id,
     command.timestamp,
     command.unitId,
     command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction)
+    PositionVo.create(command.position.x, command.position.z),
+    DirectionVo.create(command.direction)
   );
 }
 
 function parseRemoveStaticUnitCommand(command: RemoveStaticUnitCommandDto): RemoveStaticUnitCommand {
-  return RemoveStaticUnitCommand.load(command.id, command.timestamp, command.unitId);
+  return RemoveStaticUnitCommand.createRemote(command.id, command.timestamp, command.unitId);
 }
 
 function parseCreateFenceCommand(command: CreateFenceUnitCommandDto): CreateFenceUnitCommand {
-  return CreateFenceUnitCommand.load(
+  return CreateFenceUnitCommand.createRemote(
     command.id,
     command.timestamp,
     command.unitId,
     command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction)
+    PositionVo.create(command.position.x, command.position.z),
+    DirectionVo.create(command.direction)
   );
 }
 
 function parseRemoveFenceUnitCommand(command: RemoveFenceUnitCommandDto): RemoveFenceUnitCommand {
-  return RemoveFenceUnitCommand.load(command.id, command.timestamp, command.unitId);
+  return RemoveFenceUnitCommand.createRemote(command.id, command.timestamp, command.unitId);
 }
 
 function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): CreatePortalUnitCommand {
-  return CreatePortalUnitCommand.load(
+  return CreatePortalUnitCommand.createRemote(
     command.id,
     command.timestamp,
     command.unitId,
     command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction)
+    PositionVo.create(command.position.x, command.position.z),
+    DirectionVo.create(command.direction)
   );
 }
 
 function parseRemovePortalUnitCommand(command: RemovePortalUnitCommandDto): RemovePortalUnitCommand {
-  return RemovePortalUnitCommand.load(command.id, command.timestamp, command.unitId);
+  return RemovePortalUnitCommand.createRemote(command.id, command.timestamp, command.unitId);
 }
 
 function parseCreateLinkUnitCommand(command: CreateLinkUnitCommandDto): CreateLinkUnitCommand {
-  return CreateLinkUnitCommand.load(
+  return CreateLinkUnitCommand.createRemote(
     command.id,
     command.timestamp,
     command.unitId,
     command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction),
+    PositionVo.create(command.position.x, command.position.z),
+    DirectionVo.create(command.direction),
     command.label,
     command.url
   );
 }
 
 function parseRemoveLinkUnitCommand(command: RemoveLinkUnitCommandDto): RemoveLinkUnitCommand {
-  return RemoveLinkUnitCommand.load(command.id, command.timestamp, command.unitId);
+  return RemoveLinkUnitCommand.createRemote(command.id, command.timestamp, command.unitId);
 }
 
 function parseCreateEmbedUnitCommand(command: CreateEmbedUnitCommandDto): CreateEmbedUnitCommand {
-  return CreateEmbedUnitCommand.load(
+  return CreateEmbedUnitCommand.createRemote(
     command.id,
     command.timestamp,
     command.unitId,
     command.itemId,
-    PositionVo.new(command.position.x, command.position.z),
-    DirectionVo.new(command.direction),
+    PositionVo.create(command.position.x, command.position.z),
+    DirectionVo.create(command.direction),
     command.label,
     command.embedCode
   );
 }
 
 function parseRemoveEmbedUnitCommand(command: RemoveEmbedUnitCommandDto): RemoveEmbedUnitCommand {
-  return RemoveEmbedUnitCommand.load(command.id, command.timestamp, command.unitId);
+  return RemoveEmbedUnitCommand.createRemote(command.id, command.timestamp, command.unitId);
 }
 
 function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
-  return RotateUnitCommand.load(command.id, command.timestamp, command.unitId);
+  return RotateUnitCommand.createRemote(command.id, command.timestamp, command.unitId);
 }
 
 function parseAddPlayerAddPlayerCommand(command: AddPlayerCommandDto): AddPlayerCommand {
-  return AddPlayerCommand.load(command.id, command.timestamp, parsePlayerDto(command.player));
+  return AddPlayerCommand.createRemote(command.id, command.timestamp, parsePlayerDto(command.player));
 }
 
 function parseChangePlayerActionCommand(command: ChangePlayerActionCommandDto): ChangePlayerActionCommand {
-  return ChangePlayerActionCommand.load(
+  return ChangePlayerActionCommand.createRemote(
     command.id,
     command.timestamp,
     command.playerId,
@@ -279,15 +279,15 @@ function parseChangePlayerActionCommand(command: ChangePlayerActionCommandDto): 
 }
 
 function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDto): SendPlayerIntoPortalCommand {
-  return SendPlayerIntoPortalCommand.load(command.id, command.timestamp, command.playerId, command.unitId);
+  return SendPlayerIntoPortalCommand.createRemote(command.id, command.timestamp, command.playerId, command.unitId);
 }
 
 function parseChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
-  return ChangePlayerHeldItemCommand.load(command.id, command.timestamp, command.playerId, command.itemId);
+  return ChangePlayerHeldItemCommand.createRemote(command.id, command.timestamp, command.playerId, command.itemId);
 }
 
 function parseRemoveRemovePlayerCommand(command: RemovePlayerCommandDto): RemovePlayerCommand {
-  return RemovePlayerCommand.load(command.id, command.timestamp, command.playerId);
+  return RemovePlayerCommand.createRemote(command.id, command.timestamp, command.playerId);
 }
 
 export const parseCommandDto = (commandDto: CommandDto) => {

@@ -11,11 +11,11 @@ export class RemoveLinkUnitCommand extends BaseCommand {
     this.unitId = unitId;
   }
 
-  static new(unitId: string) {
+  static create(unitId: string) {
     return new RemoveLinkUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, unitId);
   }
 
-  static load(id: string, timestamp: number, unitId: string) {
+  static createRemote(id: string, timestamp: number, unitId: string) {
     return new RemoveLinkUnitCommand(id, timestamp, true, unitId);
   }
 

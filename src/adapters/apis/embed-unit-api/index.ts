@@ -5,10 +5,10 @@ export class EmbedUnitApi {
   private axios: Axios;
 
   constructor() {
-    this.axios = AxiosProvider.new(`${process.env.API_URL}/api/embed-units`);
+    this.axios = AxiosProvider.create(`${process.env.API_URL}/api/embed-units`);
   }
 
-  static new(): EmbedUnitApi {
+  static create(): EmbedUnitApi {
     return new EmbedUnitApi();
   }
 

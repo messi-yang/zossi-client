@@ -22,7 +22,7 @@ export class CreateEmbedUnitCommand extends BaseCommand {
     super(id, timestamp, isRemote);
   }
 
-  static new(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, embedCode: string) {
+  static create(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, embedCode: string) {
     return new CreateEmbedUnitCommand(
       generateUuidV4(),
       DateVo.now().getTimestamp(),
@@ -36,7 +36,7 @@ export class CreateEmbedUnitCommand extends BaseCommand {
     );
   }
 
-  static load(
+  static createRemote(
     id: string,
     timestamp: number,
     unitId: string,
@@ -55,7 +55,7 @@ export class CreateEmbedUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Embed)) return;
 
-    const newUnit = EmbedUnitModel.new(
+    const newUnit = EmbedUnitModel.create(
       this.unitId,
       this.itemId,
       this.position,

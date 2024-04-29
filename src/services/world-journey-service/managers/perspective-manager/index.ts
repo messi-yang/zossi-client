@@ -14,7 +14,7 @@ export class PerspectiveManager {
     this.targetPrecisePosition = targetPrecisePosition;
   }
 
-  static new(depth: number, targetPrecisePosition: PrecisePositionVo) {
+  static create(depth: number, targetPrecisePosition: PrecisePositionVo) {
     return new PerspectiveManager(depth, targetPrecisePosition);
   }
 

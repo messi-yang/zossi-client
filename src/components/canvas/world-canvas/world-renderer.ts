@@ -72,7 +72,7 @@ export class WorldRenderer {
     this.downloadPlayerModel();
   }
 
-  static new(worldBound: BoundVo) {
+  static create(worldBound: BoundVo) {
     return new WorldRenderer(worldBound);
   }
 
@@ -312,13 +312,13 @@ export class WorldRenderer {
       ];
       const sameAdjacentUnitCount = sameAdjacentUnitFlags.filter((flag) => flag).length;
       let modelIndex: 0 | 1 | 2 | 3 = 0;
-      let unitDirection = DirectionVo.new(0);
+      let unitDirection = DirectionVo.create(0);
       if (sameAdjacentUnitCount === 4) {
         modelIndex = 3;
-        unitDirection = DirectionVo.new(0);
+        unitDirection = DirectionVo.create(0);
       } else if (sameAdjacentUnitCount === 3) {
         modelIndex = 2;
-        unitDirection = DirectionVo.new((sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0) + 1);
+        unitDirection = DirectionVo.create((sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0) + 1);
       } else if (sameAdjacentUnitCount === 2) {
         if (
           sameAdjacentUnitFlags[0] === sameAdjacentUnitFlags[1] ||
@@ -326,21 +326,21 @@ export class WorldRenderer {
         ) {
           modelIndex = 1;
           if (sameAdjacentUnitFlags[0] && sameAdjacentUnitFlags[1]) {
-            unitDirection = DirectionVo.new(0);
+            unitDirection = DirectionVo.create(0);
           } else if (sameAdjacentUnitFlags[1] && sameAdjacentUnitFlags[2]) {
-            unitDirection = DirectionVo.new(1);
+            unitDirection = DirectionVo.create(1);
           } else if (sameAdjacentUnitFlags[2] && sameAdjacentUnitFlags[3]) {
-            unitDirection = DirectionVo.new(2);
+            unitDirection = DirectionVo.create(2);
           } else if (sameAdjacentUnitFlags[3] && sameAdjacentUnitFlags[0]) {
-            unitDirection = DirectionVo.new(3);
+            unitDirection = DirectionVo.create(3);
           }
         } else {
           modelIndex = 0;
-          unitDirection = DirectionVo.new(sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0);
+          unitDirection = DirectionVo.create(sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0);
         }
       } else if (sameAdjacentUnitCount === 1) {
         modelIndex = 0;
-        unitDirection = DirectionVo.new((sameAdjacentUnitFlags.findIndex((flag) => flag) || 0) + 1);
+        unitDirection = DirectionVo.create((sameAdjacentUnitFlags.findIndex((flag) => flag) || 0) + 1);
       } else {
         modelIndex = 0;
         unitDirection = unit.getDirection();

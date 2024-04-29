@@ -52,20 +52,27 @@ interface EmbedUnitDto extends UnitDtoBase {
 type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | EmbedUnitDto;
 
 function parseUnitDto(unitDto: UnitDto): UnitModel {
-  const position = PositionVo.new(unitDto.position.x, unitDto.position.z);
-  const direction = DirectionVo.new(unitDto.direction);
-  const dimension = DimensionVo.new(unitDto.dimension.width, unitDto.dimension.depth);
+  const position = PositionVo.create(unitDto.position.x, unitDto.position.z);
+  const direction = DirectionVo.create(unitDto.direction);
+  const dimension = DimensionVo.create(unitDto.dimension.width, unitDto.dimension.depth);
 
   if (unitDto.type === UnitTypeEnum.Static) {
-    return StaticUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension);
+    return StaticUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension);
   } else if (unitDto.type === UnitTypeEnum.Fence) {
-    return FenceUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension);
+    return FenceUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension);
   } else if (unitDto.type === UnitTypeEnum.Portal) {
-    return PortalUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.info.target_unit_id);
+    return PortalUnitModel.create(
+      unitDto.id,
+      unitDto.itemId,
+      position,
+      direction,
+      dimension,
+      unitDto.info.target_unit_id
+    );
   } else if (unitDto.type === UnitTypeEnum.Link) {
-    return LinkUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
+    return LinkUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
   } else {
-    return EmbedUnitModel.new(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
+    return EmbedUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
   }
 }
 

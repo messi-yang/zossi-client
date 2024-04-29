@@ -12,14 +12,14 @@ export class WorldModel {
     private updatedAt: DateVo
   ) {}
 
-  static new = (id: string, name: string, bound: BoundVo, createdAt: DateVo, updatedAt: DateVo): WorldModel =>
+  static create = (id: string, name: string, bound: BoundVo, createdAt: DateVo, updatedAt: DateVo): WorldModel =>
     new WorldModel(id, name, bound, createdAt, updatedAt);
 
-  static mockup = (): WorldModel =>
+  static createMock = (): WorldModel =>
     new WorldModel(
       generateUuidV4(),
       'Hello World',
-      BoundVo.new(PositionVo.new(-10, -10), PositionVo.new(10, 10)),
+      BoundVo.create(PositionVo.create(-10, -10), PositionVo.create(10, 10)),
       DateVo.now(),
       DateVo.now()
     );

@@ -17,7 +17,7 @@ export class LinkUnitModel extends BaseUnitModel implements UnitModel {
     super(id, UnitTypeEnum.Link, itemId, position, direction, dimension, label);
   }
 
-  static new = (
+  static create = (
     id: string,
     itemId: string,
     position: PositionVo,
@@ -26,13 +26,13 @@ export class LinkUnitModel extends BaseUnitModel implements UnitModel {
     label: string | null
   ): LinkUnitModel => new LinkUnitModel(id, itemId, position, direction, dimension, label);
 
-  static mockup(): LinkUnitModel {
+  static createMock(): LinkUnitModel {
     return new LinkUnitModel(
       generateUuidV4(),
       generateUuidV4(),
-      PositionVo.new(0, 0),
+      PositionVo.create(0, 0),
       DirectionVo.newDown(),
-      DimensionVo.new(1, 1),
+      DimensionVo.create(1, 1),
       null
     );
   }

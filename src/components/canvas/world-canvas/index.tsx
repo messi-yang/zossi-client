@@ -16,7 +16,7 @@ type Props = {
 export function WorldCanvas({ worldJourneyService }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const wrapperDomRect = useDomRect(wrapperRef);
-  const worldRenderer = useMemo(() => WorldRenderer.new(worldJourneyService.getWorldBound()), [worldJourneyService]);
+  const worldRenderer = useMemo(() => WorldRenderer.create(worldJourneyService.getWorldBound()), [worldJourneyService]);
   useEffect(() => {
     if (!wrapperRef.current) return () => {};
 

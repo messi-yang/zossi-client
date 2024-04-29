@@ -26,7 +26,7 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [userApi] = useState<UserApi>(() => UserApi.new());
+  const [userApi] = useState<UserApi>(() => UserApi.create());
   const [user, setUser] = useState<UserModel | null>(null);
   const [isUpdatingMyUser, setIsUpdatingMyUser] = useState(false);
   const [authSessionStorage] = useState(() => AuthSessionStorage.get());

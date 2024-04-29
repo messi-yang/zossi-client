@@ -4,7 +4,7 @@ import { PrecisePositionVo } from './precise-position-vo';
 export class BoundVo {
   constructor(private from: PositionVo, private to: PositionVo) {}
 
-  static new = (from: PositionVo, to: PositionVo): BoundVo => new BoundVo(from, to);
+  static create = (from: PositionVo, to: PositionVo): BoundVo => new BoundVo(from, to);
 
   public isEqual(bound: BoundVo): Boolean {
     return this.from.isEqual(bound.getFrom()) && this.to.isEqual(bound.getTo());
@@ -27,7 +27,7 @@ export class BoundVo {
   }
 
   public getCenterPrecisePosition(): PrecisePositionVo {
-    return PrecisePositionVo.new((this.to.getX() + this.from.getX()) / 2, (this.to.getZ() + this.from.getZ()) / 2);
+    return PrecisePositionVo.create((this.to.getX() + this.from.getX()) / 2, (this.to.getZ() + this.from.getZ()) / 2);
   }
 
   public doesContainPosition(position: PositionVo): boolean {
@@ -42,7 +42,7 @@ export class BoundVo {
   public iterate(cb: (position: PositionVo) => void): void {
     for (let x = this.from.getX(); x <= this.to.getX(); x += 1) {
       for (let z = this.from.getZ(); z <= this.to.getZ(); z += 1) {
-        cb(PositionVo.new(x, z));
+        cb(PositionVo.create(x, z));
       }
     }
   }

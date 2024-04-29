@@ -40,7 +40,7 @@ export class UnitManager {
     });
   }
 
-  static new(units: UnitModel[]): UnitManager {
+  static create(units: UnitModel[]): UnitManager {
     return new UnitManager(units);
   }
 

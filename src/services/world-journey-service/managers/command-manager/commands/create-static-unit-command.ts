@@ -20,7 +20,7 @@ export class CreateStaticUnitCommand extends BaseCommand {
     super(id, timestamp, isRemote);
   }
 
-  static new(itemId: string, position: PositionVo, direction: DirectionVo) {
+  static create(itemId: string, position: PositionVo, direction: DirectionVo) {
     return new CreateStaticUnitCommand(
       generateUuidV4(),
       DateVo.now().getTimestamp(),
@@ -32,7 +32,7 @@ export class CreateStaticUnitCommand extends BaseCommand {
     );
   }
 
-  static load(
+  static createRemote(
     id: string,
     timestamp: number,
     unitId: string,
@@ -49,7 +49,13 @@ export class CreateStaticUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Static)) return;
 
-    const newUnit = StaticUnitModel.new(this.unitId, this.itemId, this.position, this.direction, item.getDimension());
+    const newUnit = StaticUnitModel.create(
+      this.unitId,
+      this.itemId,
+      this.position,
+      this.direction,
+      item.getDimension()
+    );
 
     const occupiedPositions = newUnit.getOccupiedPositions();
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {

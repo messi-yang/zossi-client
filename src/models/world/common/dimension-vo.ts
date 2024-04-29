@@ -1,7 +1,7 @@
 export class DimensionVo {
   constructor(private width: number, private depth: number) {}
 
-  static new = (width: number, depth: number): DimensionVo => {
+  static create = (width: number, depth: number): DimensionVo => {
     return new DimensionVo(width, depth);
   };
 

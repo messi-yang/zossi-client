@@ -76,9 +76,9 @@ type Props = {
 };
 
 export function Provider({ children }: Props) {
-  const linkUnitApi = useMemo(() => LinkUnitApi.new(), []);
-  const embedUnitApi = useMemo(() => EmbedUnitApi.new(), []);
-  const itemApi = useMemo<ItemApi>(() => ItemApi.new(), []);
+  const linkUnitApi = useMemo(() => LinkUnitApi.create(), []);
+  const embedUnitApi = useMemo(() => EmbedUnitApi.create(), []);
+  const itemApi = useMemo<ItemApi>(() => ItemApi.create(), []);
   const [items, setItems] = useState<ItemModel[] | null>([]);
   const [worldJourneyService, setWorldJourneyService] = useState<WorldJourneyService | null>(null);
   useEffect(() => {
@@ -86,7 +86,7 @@ export function Provider({ children }: Props) {
     window.worldJourneyService = worldJourneyService;
   }, [worldJourneyService]);
 
-  const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.new(), []);
+  const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.create(), []);
 
   const [embedCode, setEmbedCode] = useState<string | null>(null);
   const cleanEmbedCode = useCallback(() => {
@@ -99,7 +99,7 @@ export function Provider({ children }: Props) {
     worldJourneyService.subscribePlaceholderItemIdsAdded((placeholderItemIds) => {
       itemApi.getItemsOfIds(placeholderItemIds).then((_items) => {
         _items.forEach((item) => {
-          worldJourneyService.executeCommand(AddItemCommand.new(item));
+          worldJourneyService.executeCommand(AddItemCommand.create(item));
         });
       });
     });
@@ -116,7 +116,7 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService || !items) return;
     items.forEach((item) => {
-      worldJourneyService.executeCommand(AddItemCommand.new(item));
+      worldJourneyService.executeCommand(AddItemCommand.create(item));
     });
   }, [worldJourneyService, items]);
 
@@ -148,7 +148,7 @@ export function Provider({ children }: Props) {
     }
 
     let newWorldJourneyService: WorldJourneyService | null = null;
-    const newWorldJourneyApi = WorldJourneyApi.new(WorldId, {
+    const newWorldJourneyApi = WorldJourneyApi.create(WorldId, {
       onWorldEntered: (_worldJourneyService) => {
         newWorldJourneyService = _worldJourneyService;
         setWorldJourneyService(_worldJourneyService);
@@ -198,7 +198,7 @@ export function Provider({ children }: Props) {
         const unitAtOldPlayerPos = worldJourneyService.getUnit(oldPlayerPos);
         if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
 
-        const command = SendPlayerIntoPortalCommand.new(player.getId(), unitAtNewPlayerPos.getId());
+        const command = SendPlayerIntoPortalCommand.create(player.getId(), unitAtNewPlayerPos.getId());
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       }
@@ -208,13 +208,13 @@ export function Provider({ children }: Props) {
   const addPerspectiveDepth = useCallback(() => {
     if (!worldJourneyService) return;
 
-    worldJourneyService.executeCommand(AddPerspectiveDepthCommand.new());
+    worldJourneyService.executeCommand(AddPerspectiveDepthCommand.create());
   }, [worldJourneyService]);
 
   const subtractPerspectiveDepth = useCallback(() => {
     if (!worldJourneyService) return;
 
-    worldJourneyService.executeCommand(SubtractPerspectiveDepthCommand.new());
+    worldJourneyService.executeCommand(SubtractPerspectiveDepthCommand.create());
   }, [worldJourneyService]);
 
   const makePlayerStand = useCallback(() => {
@@ -226,7 +226,7 @@ export function Provider({ children }: Props) {
     const playerPrecisePosition = myPlayer.getPrecisePosition();
     const playerDirection = worldJourneyService.getMyPlayer().getDirection();
     const playerAction = PlayerActionVo.newStand(playerPrecisePosition, playerDirection);
-    const command = ChangePlayerActionCommand.new(myPlayer.getId(), playerAction);
+    const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
     worldJourneyService.executeCommand(command);
     worldJourneyApi.current.sendCommand(command);
   }, [worldJourneyService]);
@@ -240,7 +240,7 @@ export function Provider({ children }: Props) {
       const myPlayer = worldJourneyService.getMyPlayer();
       const playerPrecisePosition = myPlayer.getPrecisePosition();
       const playerAction = PlayerActionVo.newWalk(playerPrecisePosition, direction);
-      const command = ChangePlayerActionCommand.new(myPlayer.getId(), playerAction);
+      const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -251,7 +251,7 @@ export function Provider({ children }: Props) {
     (item: ItemModel) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = ChangePlayerHeldItemCommand.new(worldJourneyService.getMyPlayer().getId(), item.getId());
+      const command = ChangePlayerHeldItemCommand.create(worldJourneyService.getMyPlayer().getId(), item.getId());
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -262,7 +262,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreateStaticUnitCommand.new(itemId, position, direction);
+      const command = CreateStaticUnitCommand.create(itemId, position, direction);
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -273,7 +273,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreateFenceUnitCommand.new(itemId, position, direction);
+      const command = CreateFenceUnitCommand.create(itemId, position, direction);
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -284,7 +284,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreatePortalUnitCommand.new(itemId, position, direction);
+      const command = CreatePortalUnitCommand.create(itemId, position, direction);
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -295,7 +295,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, url: string) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreateLinkUnitCommand.new(itemId, position, direction, label, url);
+      const command = CreateLinkUnitCommand.create(itemId, position, direction, label, url);
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -306,7 +306,7 @@ export function Provider({ children }: Props) {
     (itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, inputEmbedCode: string) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreateEmbedUnitCommand.new(itemId, position, direction, label, inputEmbedCode);
+      const command = CreateEmbedUnitCommand.create(itemId, position, direction, label, inputEmbedCode);
       worldJourneyService.executeCommand(command);
       worldJourneyApi.current.sendCommand(command);
     },
@@ -378,35 +378,35 @@ export function Provider({ children }: Props) {
       static: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemoveStaticUnitCommand.new(unitId);
+        const command = RemoveStaticUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
       fence: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemoveFenceUnitCommand.new(unitId);
+        const command = RemoveFenceUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
       portal: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemovePortalUnitCommand.new(unitId);
+        const command = RemovePortalUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
       link: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemoveLinkUnitCommand.new(unitId);
+        const command = RemoveLinkUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
       embed: () => {
         if (!worldJourneyApi.current) return;
 
-        const command = RemoveEmbedUnitCommand.new(unitId);
+        const command = RemoveEmbedUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
         worldJourneyApi.current.sendCommand(command);
       },
@@ -421,7 +421,7 @@ export function Provider({ children }: Props) {
     const unitAtPos = worldJourneyService.getUnit(unitPos);
     if (!unitAtPos) return;
 
-    const command = RotateUnitCommand.new(unitAtPos.getId());
+    const command = RotateUnitCommand.create(unitAtPos.getId());
     worldJourneyService.executeCommand(command);
     worldJourneyApi.current.sendCommand(command);
   }, [worldJourneyService]);

@@ -12,12 +12,12 @@ type PlayerDto = {
 };
 
 function parsePlayerDto(playerDto: PlayerDto): PlayerModel {
-  return PlayerModel.new(
+  return PlayerModel.create(
     playerDto.id,
     playerDto.name,
     playerDto.heldItemId,
     parsePlayerActionDto(playerDto.action),
-    PrecisePositionVo.new(playerDto.action.precisePosition.x, playerDto.action.precisePosition.z)
+    PrecisePositionVo.create(playerDto.action.precisePosition.x, playerDto.action.precisePosition.z)
   );
 }
 

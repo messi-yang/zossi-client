@@ -13,7 +13,7 @@ export class ItemModel {
     private compatibleUnitType: UnitTypeEnum
   ) {}
 
-  static new = (
+  static create = (
     id: string,
     name: string,
     dimension: DimensionVo,
@@ -23,11 +23,11 @@ export class ItemModel {
     compatibleUnitType: UnitTypeEnum
   ) => new ItemModel(id, name, dimension, traversable, thumbnailSrc, modelSources, compatibleUnitType);
 
-  static mockup(): ItemModel {
-    return ItemModel.new(
+  static createMock(): ItemModel {
+    return ItemModel.create(
       generateUuidV4(),
       'stone',
-      DimensionVo.new(1, 1),
+      DimensionVo.create(1, 1),
       true,
       '/placeholder-item.png',
       ['characters/car.gltf'],

@@ -1,7 +1,7 @@
 export class NotificationEventDispatcher {
   constructor(private window: Window) {}
 
-  static new(): NotificationEventDispatcher {
+  static create(): NotificationEventDispatcher {
     return new NotificationEventDispatcher(global.window);
   }
 

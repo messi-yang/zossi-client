@@ -18,6 +18,6 @@ const Template: StoryFn<typeof ShareWorldModal> = function Template(args) {
 export const Primary = Template.bind({});
 Primary.args = {
   opened: true,
-  world: WorldModel.mockup(),
-  worldMembes: [WorldMemberModel.mockup(), WorldMemberModel.mockup(), WorldMemberModel.mockup()],
+  world: WorldModel.createMock(),
+  worldMembes: [WorldMemberModel.createMock(), WorldMemberModel.createMock(), WorldMemberModel.createMock()],
 };

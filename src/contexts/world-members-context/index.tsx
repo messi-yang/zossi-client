@@ -21,7 +21,7 @@ type Props = {
 };
 
 function Provider({ children }: Props) {
-  const [worldMemberApi] = useState<WorldMemberApi>(() => WorldMemberApi.new());
+  const [worldMemberApi] = useState<WorldMemberApi>(() => WorldMemberApi.create());
   const [worldMembers, setWorldMembers] = useState<WorldMemberModel[] | null>(null);
 
   const getWorldMembers = useCallback(async (worldId: string) => {

@@ -22,7 +22,7 @@ export class CreateLinkUnitCommand extends BaseCommand {
     super(id, timestamp, isRemote);
   }
 
-  static new(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, url: string) {
+  static create(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, url: string) {
     return new CreateLinkUnitCommand(
       generateUuidV4(),
       DateVo.now().getTimestamp(),
@@ -36,7 +36,7 @@ export class CreateLinkUnitCommand extends BaseCommand {
     );
   }
 
-  static load(
+  static createRemote(
     id: string,
     timestamp: number,
     unitId: string,
@@ -55,7 +55,7 @@ export class CreateLinkUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Link)) return;
 
-    const newUnit = LinkUnitModel.new(
+    const newUnit = LinkUnitModel.create(
       this.unitId,
       this.itemId,
       this.position,

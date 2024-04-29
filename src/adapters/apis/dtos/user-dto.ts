@@ -8,7 +8,7 @@ type UserDto = {
 };
 
 function parseUserDto(dto: UserDto): UserModel {
-  return UserModel.new(dto.id, dto.emailAddress, dto.username, dto.friendlyName);
+  return UserModel.create(dto.id, dto.emailAddress, dto.username, dto.friendlyName);
 }
 
 export type { UserDto };
