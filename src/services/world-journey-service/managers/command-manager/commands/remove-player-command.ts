@@ -6,17 +6,17 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class RemovePlayerCommand extends BaseCommand {
   private playerId: string;
 
-  constructor(id: string, timestamp: number, playerId: string) {
-    super(id, timestamp);
+  constructor(id: string, timestamp: number, isRemote: boolean, playerId: string) {
+    super(id, timestamp, isRemote);
     this.playerId = playerId;
   }
 
   static new(playerId: string) {
-    return new RemovePlayerCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId);
+    return new RemovePlayerCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId);
   }
 
   static load(id: string, timestamp: number, playerId: string) {
-    return new RemovePlayerCommand(id, timestamp, playerId);
+    return new RemovePlayerCommand(id, timestamp, true, playerId);
   }
 
   public execute({ playerManager }: CommandParams): void {

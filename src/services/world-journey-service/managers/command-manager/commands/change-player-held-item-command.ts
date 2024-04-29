@@ -8,18 +8,18 @@ export class ChangePlayerHeldItemCommand extends BaseCommand {
 
   private itemId: string;
 
-  constructor(id: string, timestamp: number, playerId: string, itemId: string) {
-    super(id, timestamp);
+  constructor(id: string, timestamp: number, isRemote: boolean, playerId: string, itemId: string) {
+    super(id, timestamp, isRemote);
     this.playerId = playerId;
     this.itemId = itemId;
   }
 
   static new(playerId: string, itemId: string) {
-    return new ChangePlayerHeldItemCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, itemId);
+    return new ChangePlayerHeldItemCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, itemId);
   }
 
   static load(id: string, timestamp: number, playerId: string, itemId: string) {
-    return new ChangePlayerHeldItemCommand(id, timestamp, playerId, itemId);
+    return new ChangePlayerHeldItemCommand(id, timestamp, true, playerId, itemId);
   }
 
   public execute({ playerManager, itemManager }: CommandParams): void {

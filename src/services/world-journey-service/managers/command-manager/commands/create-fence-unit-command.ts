@@ -11,18 +11,20 @@ export class CreateFenceUnitCommand extends BaseCommand {
   constructor(
     id: string,
     timestamp: number,
+    isRemote: boolean,
     private unitId: string,
     private itemId: string,
     private position: PositionVo,
     private direction: DirectionVo
   ) {
-    super(id, timestamp);
+    super(id, timestamp, isRemote);
   }
 
   static new(itemId: string, position: PositionVo, direction: DirectionVo) {
     return new CreateFenceUnitCommand(
       generateUuidV4(),
       DateVo.now().getTimestamp(),
+      false,
       generateUuidV4(),
       itemId,
       position,
@@ -38,7 +40,7 @@ export class CreateFenceUnitCommand extends BaseCommand {
     position: PositionVo,
     direction: DirectionVo
   ) {
-    return new CreateFenceUnitCommand(id, timestamp, unitId, itemId, position, direction);
+    return new CreateFenceUnitCommand(id, timestamp, true, unitId, itemId, position, direction);
   }
 
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {

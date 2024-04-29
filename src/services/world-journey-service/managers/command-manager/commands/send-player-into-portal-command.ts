@@ -6,16 +6,16 @@ import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
 export class SendPlayerIntoPortalCommand extends BaseCommand {
-  constructor(id: string, timestamp: number, private playerId: string, private unitId: string) {
-    super(id, timestamp);
+  constructor(id: string, timestamp: number, isRemote: boolean, private playerId: string, private unitId: string) {
+    super(id, timestamp, isRemote);
   }
 
   static new(playerId: string, unitId: string) {
-    return new SendPlayerIntoPortalCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, unitId);
+    return new SendPlayerIntoPortalCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, unitId);
   }
 
   static load(id: string, timestamp: number, playerId: string, unitId: string) {
-    return new SendPlayerIntoPortalCommand(id, timestamp, playerId, unitId);
+    return new SendPlayerIntoPortalCommand(id, timestamp, true, playerId, unitId);
   }
 
   public execute({ unitManager, playerManager }: CommandParams): void {

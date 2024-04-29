@@ -7,17 +7,17 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class AddItemCommand extends BaseCommand {
   private item: ItemModel;
 
-  constructor(id: string, timestamp: number, item: ItemModel) {
-    super(id, timestamp);
+  constructor(id: string, timestamp: number, isRemote: boolean, item: ItemModel) {
+    super(id, timestamp, isRemote);
     this.item = item;
   }
 
   static new(item: ItemModel) {
-    return new AddItemCommand(generateUuidV4(), DateVo.now().getTimestamp(), item);
+    return new AddItemCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, item);
   }
 
   static load(id: string, timestamp: number, item: ItemModel) {
-    return new AddItemCommand(id, timestamp, item);
+    return new AddItemCommand(id, timestamp, true, item);
   }
 
   public execute({ itemManager }: CommandParams): void {

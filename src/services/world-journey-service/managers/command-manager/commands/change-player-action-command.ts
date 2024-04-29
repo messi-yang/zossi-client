@@ -9,18 +9,18 @@ export class ChangePlayerActionCommand extends BaseCommand {
 
   private action: PlayerActionVo;
 
-  constructor(id: string, timestamp: number, playerId: string, action: PlayerActionVo) {
-    super(id, timestamp);
+  constructor(id: string, timestamp: number, isRemote: boolean, playerId: string, action: PlayerActionVo) {
+    super(id, timestamp, isRemote);
     this.playerId = playerId;
     this.action = action;
   }
 
   static new(playerId: string, action: PlayerActionVo) {
-    return new ChangePlayerActionCommand(generateUuidV4(), DateVo.now().getTimestamp(), playerId, action);
+    return new ChangePlayerActionCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, action);
   }
 
   static load(id: string, timestamp: number, playerId: string, action: PlayerActionVo) {
-    return new ChangePlayerActionCommand(id, timestamp, playerId, action);
+    return new ChangePlayerActionCommand(id, timestamp, true, playerId, action);
   }
 
   public execute({ playerManager }: CommandParams): void {

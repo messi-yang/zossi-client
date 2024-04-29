@@ -6,17 +6,17 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class RemoveFenceUnitCommand extends BaseCommand {
   private unitId: string;
 
-  constructor(id: string, timestamp: number, unitId: string) {
-    super(id, timestamp);
+  constructor(id: string, timestamp: number, isRemote: boolean, unitId: string) {
+    super(id, timestamp, isRemote);
     this.unitId = unitId;
   }
 
   static new(unitId: string) {
-    return new RemoveFenceUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), unitId);
+    return new RemoveFenceUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, unitId);
   }
 
   static load(id: string, timestamp: number, unitId: string) {
-    return new RemoveFenceUnitCommand(id, timestamp, unitId);
+    return new RemoveFenceUnitCommand(id, timestamp, true, unitId);
   }
 
   public execute({ unitManager }: CommandParams): void {

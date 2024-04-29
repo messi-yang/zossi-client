@@ -5,11 +5,11 @@ import { generateUuidV4 } from '@/utils/uuid';
 
 export class SubtractPerspectiveDepthCommand extends BaseCommand {
   static new() {
-    return new SubtractPerspectiveDepthCommand(generateUuidV4(), DateVo.now().getTimestamp());
+    return new SubtractPerspectiveDepthCommand(generateUuidV4(), DateVo.now().getTimestamp(), false);
   }
 
   static load(id: string, timestamp: number) {
-    return new SubtractPerspectiveDepthCommand(id, timestamp);
+    return new SubtractPerspectiveDepthCommand(id, timestamp, true);
   }
 
   public execute({ perspectiveManager }: CommandParams): void {

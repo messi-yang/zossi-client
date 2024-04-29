@@ -11,18 +11,20 @@ export class CreatePortalUnitCommand extends BaseCommand {
   constructor(
     id: string,
     timestamp: number,
+    isRemote: boolean,
     private unitId: string,
     private itemId: string,
     private position: PositionVo,
     private direction: DirectionVo
   ) {
-    super(id, timestamp);
+    super(id, timestamp, isRemote);
   }
 
   static new(itemId: string, position: PositionVo, direction: DirectionVo) {
     return new CreatePortalUnitCommand(
       generateUuidV4(),
       DateVo.now().getTimestamp(),
+      false,
       generateUuidV4(),
       itemId,
       position,
@@ -38,7 +40,7 @@ export class CreatePortalUnitCommand extends BaseCommand {
     position: PositionVo,
     direction: DirectionVo
   ) {
-    return new CreatePortalUnitCommand(id, timestamp, unitId, itemId, position, direction);
+    return new CreatePortalUnitCommand(id, timestamp, true, unitId, itemId, position, direction);
   }
 
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
@@ -67,6 +69,8 @@ export class CreatePortalUnitCommand extends BaseCommand {
     }
 
     const portalsWithoutTarget = unitManager.getPortalUnits().filter((unit) => !unit.getTargetUnitId());
+    // const portalWithoutTarget = portalsWithoutTarget[0];
+
     const topLeftMostPortalWithoutTarget = portalsWithoutTarget
       .sort((unitA, unitB) => {
         const unitPosA = unitA.getPosition();

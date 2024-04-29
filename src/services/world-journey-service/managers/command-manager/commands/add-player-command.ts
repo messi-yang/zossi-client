@@ -7,17 +7,17 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class AddPlayerCommand extends BaseCommand {
   private player: PlayerModel;
 
-  constructor(id: string, timestamp: number, player: PlayerModel) {
-    super(id, timestamp);
+  constructor(id: string, timestamp: number, isRemote: boolean, player: PlayerModel) {
+    super(id, timestamp, isRemote);
     this.player = player;
   }
 
   static new(player: PlayerModel) {
-    return new AddPlayerCommand(generateUuidV4(), DateVo.now().getTimestamp(), player);
+    return new AddPlayerCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, player);
   }
 
   static load(id: string, timestamp: number, player: PlayerModel) {
-    return new AddPlayerCommand(id, timestamp, player);
+    return new AddPlayerCommand(id, timestamp, true, player);
   }
 
   public execute({ playerManager, itemManager }: CommandParams): void {

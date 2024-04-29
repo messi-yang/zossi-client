@@ -11,6 +11,7 @@ export class CreateEmbedUnitCommand extends BaseCommand {
   constructor(
     id: string,
     timestamp: number,
+    isRemote: boolean,
     private unitId: string,
     private itemId: string,
     private position: PositionVo,
@@ -18,13 +19,14 @@ export class CreateEmbedUnitCommand extends BaseCommand {
     private label: string | null,
     private embedCode: string
   ) {
-    super(id, timestamp);
+    super(id, timestamp, isRemote);
   }
 
   static new(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, embedCode: string) {
     return new CreateEmbedUnitCommand(
       generateUuidV4(),
       DateVo.now().getTimestamp(),
+      false,
       generateUuidV4(),
       itemId,
       position,
@@ -44,7 +46,7 @@ export class CreateEmbedUnitCommand extends BaseCommand {
     label: string | null,
     embedCode: string
   ) {
-    return new CreateEmbedUnitCommand(id, timestamp, unitId, itemId, position, direction, label, embedCode);
+    return new CreateEmbedUnitCommand(id, timestamp, true, unitId, itemId, position, direction, label, embedCode);
   }
 
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {

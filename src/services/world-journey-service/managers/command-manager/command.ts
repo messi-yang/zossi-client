@@ -2,10 +2,20 @@ import { CommandParams } from './command-params';
 
 export interface Command {
   getId(): string;
+  /**
+   * Get the command execution timestamp
+   */
   getTimestamp(): number;
+  /**
+   * Check if the command was from local or remote
+   */
+  getIsRemote(): boolean;
+  /**
+   * Execute the command
+   */
   execute(params: CommandParams): void;
   /**
-   * Undo the command after execution
+   * Undo the executed command
    */
   undo(): void;
 }
@@ -13,9 +23,9 @@ export interface Command {
 const emptyUndoAction = () => {};
 
 export abstract class BaseCommand implements Command {
-  private undoAction: () => void = emptyUndoAction;
+  protected undoAction: () => void = emptyUndoAction;
 
-  constructor(private id: string, private timestamp: number) {}
+  constructor(protected id: string, protected timestamp: number, protected isRemote: boolean) {}
 
   public getId() {
     return this.id;
@@ -23,6 +33,10 @@ export abstract class BaseCommand implements Command {
 
   public getTimestamp() {
     return this.timestamp;
+  }
+
+  public getIsRemote() {
+    return this.isRemote;
   }
 
   public abstract execute(params: CommandParams): void;
