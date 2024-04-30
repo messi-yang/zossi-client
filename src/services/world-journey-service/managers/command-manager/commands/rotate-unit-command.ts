@@ -19,6 +19,8 @@ export class RotateUnitCommand extends BaseCommand {
     return new RotateUnitCommand(id, timestamp, true, unitId);
   }
 
+  public getIsReplayable = () => true;
+
   public execute({ unitManager }: CommandParams): void {
     const unit = unitManager.getUnit(this.unitId);
     if (!unit) return;

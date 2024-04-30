@@ -11,6 +11,10 @@ export interface Command {
    */
   getIsRemote(): boolean;
   /**
+   * Is the command replayable while replaying commands?
+   */
+  getIsReplayable(): boolean;
+  /**
    * Execute the command
    */
   execute(params: CommandParams): void;
@@ -38,6 +42,8 @@ export abstract class BaseCommand implements Command {
   public getIsRemote() {
     return this.isRemote;
   }
+
+  public abstract getIsReplayable(): boolean;
 
   public abstract execute(params: CommandParams): void;
 

@@ -23,6 +23,8 @@
     "arrow-body-style": "off",
     "no-param-reassign": "off",
     "no-else-return": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "no-continue": "off",
+    "no-await-in-loop": "off"
   }
 }

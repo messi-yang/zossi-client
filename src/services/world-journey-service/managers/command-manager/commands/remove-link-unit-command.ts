@@ -7,7 +7,7 @@ export class RemoveLinkUnitCommand extends BaseCommand {
   private unitId: string;
 
   constructor(id: string, timestamp: number, isRemote: boolean, unitId: string) {
-    super(id, timestamp, false);
+    super(id, timestamp, isRemote);
     this.unitId = unitId;
   }
 
@@ -18,6 +18,8 @@ export class RemoveLinkUnitCommand extends BaseCommand {
   static createRemote(id: string, timestamp: number, unitId: string) {
     return new RemoveLinkUnitCommand(id, timestamp, true, unitId);
   }
+
+  public getIsReplayable = () => true;
 
   public execute({ unitManager }: CommandParams): void {
     const currentUnit = unitManager.getUnit(this.unitId);

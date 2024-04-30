@@ -22,6 +22,8 @@ export class ChangePlayerHeldItemCommand extends BaseCommand {
     return new ChangePlayerHeldItemCommand(id, timestamp, true, playerId, itemId);
   }
 
+  public getIsReplayable = () => false;
+
   public execute({ playerManager, itemManager }: CommandParams): void {
     const player = playerManager.getPlayer(this.playerId);
     if (!player) return;

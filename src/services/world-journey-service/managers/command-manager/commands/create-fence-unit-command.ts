@@ -43,6 +43,8 @@ export class CreateFenceUnitCommand extends BaseCommand {
     return new CreateFenceUnitCommand(id, timestamp, true, unitId, itemId, position, direction);
   }
 
+  public getIsReplayable = () => true;
+
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
     const item = itemManager.getItem(this.itemId);
     if (!item) return;

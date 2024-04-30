@@ -19,6 +19,8 @@ export class RemoveFenceUnitCommand extends BaseCommand {
     return new RemoveFenceUnitCommand(id, timestamp, true, unitId);
   }
 
+  public getIsReplayable = () => true;
+
   public execute({ unitManager }: CommandParams): void {
     const currentUnit = unitManager.getUnit(this.unitId);
     if (!currentUnit) return;

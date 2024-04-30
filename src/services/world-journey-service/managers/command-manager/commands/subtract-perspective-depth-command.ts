@@ -12,6 +12,8 @@ export class SubtractPerspectiveDepthCommand extends BaseCommand {
     return new SubtractPerspectiveDepthCommand(id, timestamp, true);
   }
 
+  public getIsReplayable = () => false;
+
   public execute({ perspectiveManager }: CommandParams): void {
     const isDepthChanged = perspectiveManager.subtractPerspectiveDepth();
 

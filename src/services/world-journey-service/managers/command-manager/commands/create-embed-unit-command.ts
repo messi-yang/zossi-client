@@ -49,6 +49,8 @@ export class CreateEmbedUnitCommand extends BaseCommand {
     return new CreateEmbedUnitCommand(id, timestamp, true, unitId, itemId, position, direction, label, embedCode);
   }
 
+  public getIsReplayable = () => true;
+
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
     const item = itemManager.getItem(this.itemId);
     if (!item) return;

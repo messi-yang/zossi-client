@@ -20,6 +20,8 @@ export class AddItemCommand extends BaseCommand {
     return new AddItemCommand(id, timestamp, true, item);
   }
 
+  public getIsReplayable = () => false;
+
   public execute({ itemManager }: CommandParams): void {
     const isItemAdded = itemManager.addItem(this.item);
 

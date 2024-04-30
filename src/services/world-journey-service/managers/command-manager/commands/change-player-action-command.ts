@@ -23,6 +23,8 @@ export class ChangePlayerActionCommand extends BaseCommand {
     return new ChangePlayerActionCommand(id, timestamp, true, playerId, action);
   }
 
+  public getIsReplayable = () => false;
+
   public execute({ playerManager }: CommandParams): void {
     const player = playerManager.getPlayer(this.playerId);
     if (!player) return;

@@ -1,3 +1,4 @@
+import { sleep } from '@/utils/general';
 import { Command } from './command';
 import { CommandParams } from './command-params';
 
@@ -78,18 +79,26 @@ export class CommandManager {
     const commandsToReExecute: Command[] = [];
     let remainingCount = countOfCommands;
     while (remainingCount > 0) {
-      remainingCount -= 1;
       const commandToReExecute = this.popExecutedCommand();
       if (!commandToReExecute) {
         break;
       }
+
+      if (!commandToReExecute.getIsReplayable()) {
+        continue;
+      }
+
+      remainingCount -= 1;
       commandToReExecute.undo();
       commandsToReExecute.push(commandToReExecute);
+
+      await sleep(200);
     }
 
     for (let i = commandsToReExecute.length - 1; i >= 0; i -= 1) {
       const commandToReExecute = commandsToReExecute[i];
       this.executeCommand(commandToReExecute, params);
+      await sleep(200);
     }
   }
 
