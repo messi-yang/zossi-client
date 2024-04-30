@@ -37,7 +37,7 @@ type ContextValue = {
   worldJourneyService: WorldJourneyService | null;
   connectionStatus: ConnectionStatus;
   items: ItemModel[] | null;
-  enterWorld: (WorldId: string) => void;
+  enterWorld: (worldId: string) => void;
   addPerspectiveDepth: () => void;
   subtractPerspectiveDepth: () => void;
   makePlayerStand: () => void;
@@ -141,14 +141,14 @@ export function Provider({ children }: Props) {
     setConnectionStatus('WAITING');
   }, []);
 
-  const enterWorld = useCallback((WorldId: string) => {
+  const enterWorld = useCallback((worldId: string) => {
     if (worldJourneyApi.current) {
       leaveWorld();
       return;
     }
 
     let newWorldJourneyService: WorldJourneyService | null = null;
-    const newWorldJourneyApi = WorldJourneyApi.create(WorldId, {
+    const newWorldJourneyApi = WorldJourneyApi.create(worldId, {
       onWorldEntered: (_worldJourneyService) => {
         newWorldJourneyService = _worldJourneyService;
         setWorldJourneyService(_worldJourneyService);
