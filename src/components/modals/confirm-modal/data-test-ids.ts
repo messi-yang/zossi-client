@@ -1,5 +1,5 @@
-import { generateUuidV4 } from '@/utils/uuid';
+import { generateDataTestId } from '@/utils/unit-test';
 
 export const dataTestids = {
-  root: generateUuidV4(),
+  root: generateDataTestId(),
 };

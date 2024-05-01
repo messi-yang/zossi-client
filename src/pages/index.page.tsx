@@ -13,12 +13,6 @@ const Page: NextPage = function Page() {
           </Link>
         </div>
       </div>
-      {/* <div className="sm:hidden">
-        <Image src="/assets/images/logos/big-logo.png" alt="big logo" width={203} height={150} />
-      </div>
-      <div className="hidden sm:inline-block">
-        <Image src="/assets/images/logos/big-logo.png" alt="big logo" width={406} height={231} />
-      </div> */}
       <div className="mt-8 sm:mt-20 flex flex-col items-center">
         <div className="mt-4">
           <Link href="/dashboard/worlds">

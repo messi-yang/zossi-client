@@ -38,7 +38,7 @@ export function ItemBox({ item, active, onClick }: Props) {
       tabIndex={0}
       role="button"
     >
-      <Image src={item.getThumbnailSrc()} alt={item.getName()} fill />
+      <Image src={item.getThumbnailSrc()} priority alt={item.getName()} fill sizes="(min-width: 0) 100vw" />
     </div>
   );
 }
