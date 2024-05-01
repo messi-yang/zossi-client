@@ -50,11 +50,16 @@ export class WorldJourneyApi {
       const eventJsonString: string = await data.text();
       const event: ServerEvent = JSON.parse(eventJsonString);
 
+      console.log(event.name);
       console.log(event);
       if (event.name === ServerEventNameEnum.WorldEntered) {
         const [world, units, myPlayerId, players] = parseWorldEnteredServerEvent(event);
         const worldJourneyService = WorldJourneyService.create(world, players, myPlayerId, units);
         events.onWorldEntered(worldJourneyService);
+      } else if (event.name === ServerEventNameEnum.PlayerJoined) {
+        console.log('PlayerJoined');
+      } else if (event.name === ServerEventNameEnum.PlayerLeft) {
+        console.log('PlayerLeft');
       } else if (event.name === ServerEventNameEnum.CommandSucceeded) {
         const command = parseCommandDto(event.command);
         if (!command) return;
@@ -108,7 +113,6 @@ export class WorldJourneyApi {
   }
 
   private async sendMessage(msg: object) {
-    console.log(msg);
     const jsonString = JSON.stringify(msg);
     const jsonBlob = new Blob([jsonString]);
 
@@ -134,6 +138,8 @@ export class WorldJourneyApi {
       command: commandDto,
     };
 
+    console.log(commandDto.name);
+    console.log(commandDto);
     this.sendMessage(clientEvent);
   }
 }
