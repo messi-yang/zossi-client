@@ -9,7 +9,14 @@ import { Command } from '@/services/world-journey-service/managers/command-manag
 import { parseWorldDto } from '../dtos/world-dto';
 import { parseUnitDto } from '../dtos/unit-dto';
 import { parsePlayerDto } from '../dtos/player-dto';
-import { ClientEventNameEnum, CommandRequestedClientEvent, PingClientEvent } from './client-events';
+import {
+  ClientEventNameEnum,
+  CommandRequestedClientEvent,
+  P2pAnswerSentClientEvent,
+  P2pOfferSentClientEvent,
+  PingClientEvent,
+} from './client-events';
+import { P2pConnection } from './p2p-connection';
 
 function parseWorldEnteredServerEvent(
   event: WorldEnteredServerEvent
@@ -26,6 +33,8 @@ export class WorldJourneyApi {
   private socket: WebSocket;
 
   private disconnectedByUser: boolean = false;
+
+  private p2pConnectionMap = new Map<string, P2pConnection>();
 
   constructor(
     worldId: string,
@@ -57,7 +66,48 @@ export class WorldJourneyApi {
         const worldJourneyService = WorldJourneyService.create(world, players, myPlayerId, units);
         events.onWorldEntered(worldJourneyService);
       } else if (event.name === ServerEventNameEnum.PlayerJoined) {
-        console.log('PlayerJoined');
+        const newP2pConnection = P2pConnection.create({
+          onMessage: (msg) => {
+            console.log(msg);
+          },
+        });
+        const [offer, iceCandidates] = await newP2pConnection.createOffer();
+        if (!offer || iceCandidates.length === 0) return;
+
+        this.p2pConnectionMap.set(event.player.id, newP2pConnection);
+
+        const clientEvent: P2pOfferSentClientEvent = {
+          name: ClientEventNameEnum.P2pOfferSent,
+          peerPlayerId: event.player.id,
+          iceCandidates,
+          offer,
+        };
+
+        this.sendMessage(clientEvent);
+      } else if (event.name === ServerEventNameEnum.P2pOfferReceived) {
+        const newP2pConnection = P2pConnection.create({
+          onMessage: (msg) => {
+            console.log(msg);
+          },
+        });
+        const [answer, iceCandidates] = await newP2pConnection.createAnswer(event.offer, event.iceCandidates);
+        if (!answer || iceCandidates.length === 0) return;
+
+        this.p2pConnectionMap.set(event.peerPlayerId, newP2pConnection);
+
+        const clientEvent: P2pAnswerSentClientEvent = {
+          name: ClientEventNameEnum.P2pAnswerSent,
+          peerPlayerId: event.peerPlayerId,
+          iceCandidates,
+          answer,
+        };
+
+        this.sendMessage(clientEvent);
+      } else if (event.name === ServerEventNameEnum.P2pAnswerReceived) {
+        const p2pConnection = this.p2pConnectionMap.get(event.peerPlayerId);
+        if (!p2pConnection) return;
+
+        p2pConnection.acceptAnswer(event.answer, event.iceCandidates);
       } else if (event.name === ServerEventNameEnum.PlayerLeft) {
         console.log('PlayerLeft');
       } else if (event.name === ServerEventNameEnum.CommandSucceeded) {
@@ -116,6 +166,7 @@ export class WorldJourneyApi {
     const jsonString = JSON.stringify(msg);
     const jsonBlob = new Blob([jsonString]);
 
+    console.log(msg);
     if (this.socket.readyState !== this.socket.OPEN) {
       return;
     }
@@ -138,8 +189,8 @@ export class WorldJourneyApi {
       command: commandDto,
     };
 
-    console.log(commandDto.name);
-    console.log(commandDto);
+    // console.log(commandDto.name);
+    // console.log(commandDto);
     this.sendMessage(clientEvent);
   }
 }
