@@ -1,29 +1,30 @@
+type OnMessage = (msg: string) => void;
+
 export class P2pConnection {
   constructor(
     private p2pConn: RTCPeerConnection,
     private iceCandidates: RTCIceCandidate[],
     private dataChannel: RTCDataChannel | null,
     private isDataChannelReady: boolean,
-    private onMessage: (msg: string) => void
+    private onMessage: OnMessage
   ) {}
 
-  static create(options: { onMessage: (msg: string) => void }) {
+  static create(options: { onMessage: OnMessage }) {
     return new P2pConnection(new RTCPeerConnection(), [], null, false, options.onMessage);
   }
 
   public async createOffer(): Promise<[RTCSessionDescription | null, RTCIceCandidate[]]> {
     await new Promise((resolve) => {
       const dataChannel = this.p2pConn.createDataChannel('dataChannel');
-      dataChannel.onmessage = (evt: MessageEvent<string>) => {
+      dataChannel.addEventListener('message', (evt: MessageEvent<string>) => {
         this.onMessage(evt.data);
-      };
-      dataChannel.onopen = () => {
-        this.dataChannel?.send('Offer!');
+      });
+      dataChannel.addEventListener('open', () => {
         this.isDataChannelReady = true;
-      };
-      dataChannel.onclose = () => {
+      });
+      dataChannel.addEventListener('close', () => {
         this.isDataChannelReady = false;
-      };
+      });
       this.dataChannel = dataChannel;
 
       this.p2pConn.onicecandidate = (e) => {
@@ -53,19 +54,18 @@ export class P2pConnection {
     remoteIceCandidates: RTCIceCandidate[]
   ): Promise<[RTCSessionDescription | null, RTCIceCandidate[]]> {
     this.p2pConn.setRemoteDescription(offer);
-    this.p2pConn.ondatachannel = (evt: RTCDataChannelEvent) => {
-      this.dataChannel = evt.channel;
-      this.dataChannel.onmessage = (msgEvt: MessageEvent<string>) => {
-        this.onMessage(msgEvt.data);
-      };
-      this.dataChannel.onopen = () => {
-        this.dataChannel?.send('ANSWER!');
+    this.p2pConn.addEventListener('datachannel', (dataChannelEvent) => {
+      this.dataChannel = dataChannelEvent.channel;
+      this.dataChannel.addEventListener('message', (evt) => {
+        this.onMessage(evt.data);
+      });
+      this.dataChannel.addEventListener('open', () => {
         this.isDataChannelReady = true;
-      };
-      this.dataChannel.onclose = () => {
+      });
+      this.dataChannel.addEventListener('close', () => {
         this.isDataChannelReady = false;
-      };
-    };
+      });
+    });
 
     remoteIceCandidates.forEach((remoteIceCandidate) => {
       this.p2pConn.addIceCandidate(remoteIceCandidate);
@@ -95,13 +95,15 @@ export class P2pConnection {
     return this.iceCandidates;
   }
 
-  public getIsDataChannelReady(): boolean {
-    return this.isDataChannelReady;
-  }
-
-  public sendMessage(msg: string): void {
-    if (!this.dataChannel) return;
+  /**
+   * Send message to remote peer
+   * @returns succeeded
+   */
+  public sendMessage(msg: string): boolean {
+    if (!this.dataChannel) return false;
+    if (this.dataChannel?.readyState !== 'open') return false;
 
     this.dataChannel.send(msg);
+    return true;
   }
 }

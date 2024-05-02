@@ -3,18 +3,18 @@ import { UnitDto } from '../dtos/unit-dto';
 import { WorldDto } from '../dtos/world-dto';
 import { CommandDto } from './commands';
 
-enum ServerEventNameEnum {
+export enum ServerEventNameEnum {
   WorldEntered = 'WORLD_ENTERED',
   PlayerJoined = 'PLAYER_JOINED',
   PlayerLeft = 'PLAYER_LEFT',
-  CommandSucceeded = 'COMMAND_SUCCEEDED',
+  CommandReceived = 'COMMAND_RECEIVED',
   CommandFailed = 'COMMAND_FAILED',
   P2pOfferReceived = 'P2P_OFFER_RECEIVED',
   P2pAnswerReceived = 'P2P_ANSWER_RECEIVED',
   Errored = 'ERRORED',
 }
 
-type WorldEnteredServerEvent = {
+export type WorldEnteredServerEvent = {
   name: ServerEventNameEnum.WorldEntered;
   world: WorldDto;
   units: UnitDto[];
@@ -22,65 +22,52 @@ type WorldEnteredServerEvent = {
   players: PlayerDto[];
 };
 
-type PlayerJoinedServerEvent = {
+export type PlayerJoinedServerEvent = {
   name: ServerEventNameEnum.PlayerJoined;
   player: PlayerDto;
 };
 
-type PlayerLeftServerEvent = {
+export type PlayerLeftServerEvent = {
   name: ServerEventNameEnum.PlayerLeft;
   playerId: string;
 };
 
-type CommandSucceededServerEvent = {
-  name: ServerEventNameEnum.CommandSucceeded;
+export type CommandReceivedServerEvent = {
+  name: ServerEventNameEnum.CommandReceived;
   command: CommandDto;
 };
 
-type CommandFailedServerEvent = {
+export type CommandFailedServerEvent = {
   name: ServerEventNameEnum.CommandFailed;
   commandId: string;
   errorMessage: string;
 };
 
-type P2pOfferReceivedEvent = {
+export type P2pOfferReceivedServerEvent = {
   name: ServerEventNameEnum.P2pOfferReceived;
   peerPlayerId: string;
   iceCandidates: RTCIceCandidate[];
   offer: RTCSessionDescription;
 };
 
-type P2pAnswerReceivedEvent = {
+export type P2pAnswerReceivedServerEvent = {
   name: ServerEventNameEnum.P2pAnswerReceived;
   peerPlayerId: string;
   iceCandidates: RTCIceCandidate[];
   answer: RTCSessionDescription;
 };
 
-type ErroredServerEvent = {
+export type ErroredServerEvent = {
   name: ServerEventNameEnum.Errored;
   message: string;
 };
 
-type ServerEvent =
+export type ServerEvent =
   | WorldEnteredServerEvent
   | PlayerJoinedServerEvent
   | PlayerLeftServerEvent
-  | CommandSucceededServerEvent
+  | CommandReceivedServerEvent
   | CommandFailedServerEvent
-  | P2pOfferReceivedEvent
-  | P2pAnswerReceivedEvent
+  | P2pOfferReceivedServerEvent
+  | P2pAnswerReceivedServerEvent
   | ErroredServerEvent;
-
-export { ServerEventNameEnum };
-export type {
-  ServerEvent,
-  WorldEnteredServerEvent,
-  PlayerJoinedServerEvent,
-  PlayerLeftServerEvent,
-  CommandSucceededServerEvent,
-  CommandFailedServerEvent,
-  P2pOfferReceivedEvent,
-  P2pAnswerReceivedEvent,
-  ErroredServerEvent,
-};

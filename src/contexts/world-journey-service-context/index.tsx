@@ -153,7 +153,7 @@ export function Provider({ children }: Props) {
         newWorldJourneyService = _worldJourneyService;
         setWorldJourneyService(_worldJourneyService);
       },
-      onCommandSucceeded: (command) => {
+      onCommandReceived: (command) => {
         if (!newWorldJourneyService) return;
         newWorldJourneyService.executeCommand(command);
       },
