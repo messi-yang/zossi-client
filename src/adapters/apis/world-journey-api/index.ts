@@ -65,6 +65,9 @@ export class WorldJourneyApi {
         events.onCommandReceived(command);
       }
     };
+    const handleP2pClose = (peerPlayerId: string) => {
+      this.p2pConnectionMap.delete(peerPlayerId);
+    };
 
     socket.onmessage = async ({ data }: any) => {
       const eventJsonString: string = await data.text();
@@ -79,6 +82,9 @@ export class WorldJourneyApi {
       } else if (event.name === ServerEventNameEnum.PlayerJoined) {
         const newP2pConnection = P2pConnection.create({
           onMessage: handleP2pMessage,
+          onClose: () => {
+            handleP2pClose(event.player.id);
+          },
         });
         const [offer, iceCandidates] = await newP2pConnection.createOffer();
         if (!offer || iceCandidates.length === 0) return;
@@ -96,6 +102,9 @@ export class WorldJourneyApi {
       } else if (event.name === ServerEventNameEnum.P2pOfferReceived) {
         const newP2pConnection = P2pConnection.create({
           onMessage: handleP2pMessage,
+          onClose: () => {
+            handleP2pClose(event.peerPlayerId);
+          },
         });
         const [answer, iceCandidates] = await newP2pConnection.createAnswer(event.offer, event.iceCandidates);
         if (!answer || iceCandidates.length === 0) return;

@@ -1,16 +1,17 @@
 type OnMessage = (msg: string) => void;
+type OnClose = () => void;
 
 export class P2pConnection {
   constructor(
     private p2pConn: RTCPeerConnection,
     private iceCandidates: RTCIceCandidate[],
     private dataChannel: RTCDataChannel | null,
-    private isDataChannelReady: boolean,
-    private onMessage: OnMessage
+    private onMessage: OnMessage,
+    private onClose: OnClose
   ) {}
 
-  static create(options: { onMessage: OnMessage }) {
-    return new P2pConnection(new RTCPeerConnection(), [], null, false, options.onMessage);
+  static create(options: { onMessage: OnMessage; onClose: OnClose }) {
+    return new P2pConnection(new RTCPeerConnection(), [], null, options.onMessage, options.onClose);
   }
 
   public async createOffer(): Promise<[RTCSessionDescription | null, RTCIceCandidate[]]> {
@@ -19,11 +20,9 @@ export class P2pConnection {
       dataChannel.addEventListener('message', (evt: MessageEvent<string>) => {
         this.onMessage(evt.data);
       });
-      dataChannel.addEventListener('open', () => {
-        this.isDataChannelReady = true;
-      });
+      dataChannel.addEventListener('open', () => {});
       dataChannel.addEventListener('close', () => {
-        this.isDataChannelReady = false;
+        this.onClose();
       });
       this.dataChannel = dataChannel;
 
@@ -59,11 +58,9 @@ export class P2pConnection {
       this.dataChannel.addEventListener('message', (evt) => {
         this.onMessage(evt.data);
       });
-      this.dataChannel.addEventListener('open', () => {
-        this.isDataChannelReady = true;
-      });
+      this.dataChannel.addEventListener('open', () => {});
       this.dataChannel.addEventListener('close', () => {
-        this.isDataChannelReady = false;
+        this.onClose();
       });
     });
 
