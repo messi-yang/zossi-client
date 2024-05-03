@@ -22,7 +22,6 @@ import { CreateEmbedUnitCommand } from '@/services/world-journey-service/manager
 import { RemoveEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-embed-unit-command';
 
 enum CommandNameEnum {
-  Ping = 'PING',
   AddPlayer = 'ADD_PLAYER',
   RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',
@@ -41,12 +40,6 @@ enum CommandNameEnum {
   RemoveEmbedUnit = 'REMOVE_EMBED_UNIT',
   RotateUnit = 'ROTATE_UNIT',
 }
-
-export type PingCommandDto = {
-  id: string;
-  timestamp: number;
-  name: CommandNameEnum.Ping;
-};
 
 type AddPlayerCommandDto = {
   id: string;
@@ -469,7 +462,6 @@ export const toCommandDto = (command: Command) => {
 export { CommandNameEnum };
 
 export type CommandDto =
-  | PingCommandDto
   | AddPlayerCommandDto
   | ChangePlayerActionCommandDto
   | SendPlayerIntoPortalCommandDto
