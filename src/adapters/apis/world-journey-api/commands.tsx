@@ -8,10 +8,7 @@ import { RemovePortalUnitCommand } from '@/services/world-journey-service/manage
 import { RotateUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/rotate-unit-command';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
-import { AddPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-player-command';
-import { RemovePlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-player-command';
 import { Command } from '@/services/world-journey-service/managers/command-manager/command';
-import { PlayerDto, parsePlayerDto } from '../dtos/player-dto';
 import { PlayerActionDto, newPlayerActionDto, parsePlayerActionDto } from '../dtos/player-action-dto';
 import { PositionDto, newPositionDto } from '../dtos/position-dto';
 import { CreateFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-fence-unit-command';
@@ -22,8 +19,6 @@ import { CreateEmbedUnitCommand } from '@/services/world-journey-service/manager
 import { RemoveEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-embed-unit-command';
 
 enum CommandNameEnum {
-  AddPlayer = 'ADD_PLAYER',
-  RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',
   ChangePlayerAction = 'CHANGE_PLAYER_ACTION',
   SendPlayerIntoPortal = 'SEND_PLAYER_INTO_PORTAL',
@@ -41,13 +36,6 @@ enum CommandNameEnum {
   RotateUnit = 'ROTATE_UNIT',
 }
 
-type AddPlayerCommandDto = {
-  id: string;
-  timestamp: number;
-  name: CommandNameEnum.AddPlayer;
-  player: PlayerDto;
-};
-
 type ChangePlayerActionCommandDto = {
   id: string;
   timestamp: number;
@@ -62,13 +50,6 @@ type SendPlayerIntoPortalCommandDto = {
   name: CommandNameEnum.SendPlayerIntoPortal;
   playerId: string;
   unitId: string;
-};
-
-type RemovePlayerCommandDto = {
-  id: string;
-  timestamp: number;
-  name: CommandNameEnum.RemovePlayer;
-  playerId: string;
 };
 
 type ChangePlayerHeldItemCommandDto = {
@@ -258,10 +239,6 @@ function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitComman
   return RotateUnitCommand.createRemote(command.id, command.timestamp, command.unitId);
 }
 
-function parseAddPlayerAddPlayerCommand(command: AddPlayerCommandDto): AddPlayerCommand {
-  return AddPlayerCommand.createRemote(command.id, command.timestamp, parsePlayerDto(command.player));
-}
-
 function parseChangePlayerActionCommand(command: ChangePlayerActionCommandDto): ChangePlayerActionCommand {
   return ChangePlayerActionCommand.createRemote(
     command.id,
@@ -277,10 +254,6 @@ function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDt
 
 function parseChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
   return ChangePlayerHeldItemCommand.createRemote(command.id, command.timestamp, command.playerId, command.itemId);
-}
-
-function parseRemoveRemovePlayerCommand(command: RemovePlayerCommandDto): RemovePlayerCommand {
-  return RemovePlayerCommand.createRemote(command.id, command.timestamp, command.playerId);
 }
 
 export const parseCommandDto = (commandDto: CommandDto) => {
@@ -306,16 +279,12 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseRemoveEmbedUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RotateUnit) {
     return parseRotateUnitCommand(commandDto);
-  } else if (commandDto.name === CommandNameEnum.AddPlayer) {
-    return parseAddPlayerAddPlayerCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerAction) {
     return parseChangePlayerActionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
     return parseSendPlayerIntoPortalCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerHeldItem) {
     return parseChangePlayerHeldItemCommand(commandDto);
-  } else if (commandDto.name === CommandNameEnum.RemovePlayer) {
-    return parseRemoveRemovePlayerCommand(commandDto);
   }
   return null;
 };
@@ -462,10 +431,8 @@ export const toCommandDto = (command: Command) => {
 export { CommandNameEnum };
 
 export type CommandDto =
-  | AddPlayerCommandDto
   | ChangePlayerActionCommandDto
   | SendPlayerIntoPortalCommandDto
-  | RemovePlayerCommandDto
   | ChangePlayerHeldItemCommandDto
   | CreateStaticUnitCommandDto
   | RemoveStaticUnitCommandDto

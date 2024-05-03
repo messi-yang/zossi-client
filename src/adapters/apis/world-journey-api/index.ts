@@ -20,6 +20,8 @@ import {
 } from './client-events';
 import { P2pConnection } from './p2p-connection';
 import { CommandSentP2pEvent, P2pEvent, P2pEventNameEnum } from './p2p-events';
+import { AddPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-player-command';
+import { RemovePlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-player-command';
 
 function parseWorldEnteredServerEvent(
   event: WorldEnteredServerEvent
@@ -82,6 +84,10 @@ export class WorldJourneyApi {
         events.onWorldEntered(worldJourneyService);
         this.worldJourneyService = worldJourneyService;
       } else if (event.name === ServerEventNameEnum.PlayerJoined) {
+        if (!this.worldJourneyService) return;
+
+        this.worldJourneyService.executeCommand(AddPlayerCommand.create(parsePlayerDto(event.player)));
+
         const newP2pConnection = P2pConnection.create({
           onMessage: handleP2pMessage,
           onClose: () => {
@@ -127,7 +133,9 @@ export class WorldJourneyApi {
 
         p2pConnection.acceptAnswer(event.answer, event.iceCandidates);
       } else if (event.name === ServerEventNameEnum.PlayerLeft) {
-        console.log('PlayerLeft');
+        if (!this.worldJourneyService) return;
+
+        this.worldJourneyService.executeCommand(RemovePlayerCommand.create(event.playerId));
       } else if (event.name === ServerEventNameEnum.CommandReceived) {
         const command = parseCommandDto(event.command);
         if (!command) return;
