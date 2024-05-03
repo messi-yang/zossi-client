@@ -10,6 +10,7 @@ import { parseWorldDto } from '../dtos/world-dto';
 import { parseUnitDto } from '../dtos/unit-dto';
 import { parsePlayerDto } from '../dtos/player-dto';
 import {
+  ClientEvent,
   ClientEventNameEnum,
   CommandRequestedClientEvent,
   CommandSentClientEvent,
@@ -59,8 +60,7 @@ export class WorldJourneyApi {
 
     let pingServerInterval: NodeJS.Timer | null = null;
 
-    const handleP2pMessage = (msg: string) => {
-      const p2pEvent = JSON.parse(msg) as P2pEvent;
+    const handleP2pMessage = (p2pEvent: P2pEvent) => {
       if (p2pEvent.name === P2pEventNameEnum.CommandSent) {
         const command = parseCommandDto(p2pEvent.command);
         if (!command) return;
@@ -180,13 +180,14 @@ export class WorldJourneyApi {
     this.socket.close();
   }
 
-  private async sendMessage(msg: object) {
-    const jsonString = JSON.stringify(msg);
+  private async sendMessage(clientEvent: ClientEvent) {
+    const jsonString = JSON.stringify(clientEvent);
     const jsonBlob = new Blob([jsonString]);
 
     if (this.socket.readyState !== this.socket.OPEN) {
       return;
     }
+    console.log('Send via Websocket', clientEvent.name, clientEvent);
     this.socket.send(jsonBlob);
   }
 
@@ -202,8 +203,6 @@ export class WorldJourneyApi {
 
     const commandDto = toCommandDto(command);
     if (!commandDto) return;
-
-    console.log(commandDto.name, commandDto);
 
     const clientEvent: CommandRequestedClientEvent = {
       name: ClientEventNameEnum.CommandRequested,
@@ -230,7 +229,7 @@ export class WorldJourneyApi {
         name: P2pEventNameEnum.CommandSent,
         command: commandDto,
       };
-      const succeeded = p2pConnection.sendMessage(JSON.stringify(p2pEvent));
+      const succeeded = p2pConnection.sendMessage(p2pEvent);
       if (!succeeded) {
         this.sendMessage(commandSentClientEvent);
       }

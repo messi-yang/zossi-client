@@ -1,4 +1,6 @@
-type OnMessage = (msg: string) => void;
+import { P2pEvent } from './p2p-events';
+
+type OnMessage = (p2pEvent: P2pEvent) => void;
 type OnClose = () => void;
 
 export class P2pConnection {
@@ -18,7 +20,9 @@ export class P2pConnection {
     await new Promise((resolve) => {
       const dataChannel = this.p2pConn.createDataChannel('dataChannel');
       dataChannel.addEventListener('message', (evt: MessageEvent<string>) => {
-        this.onMessage(evt.data);
+        const p2pEvent = JSON.parse(evt.data) as P2pEvent;
+        console.log('Receive via P2P', p2pEvent.name, p2pEvent);
+        this.onMessage(p2pEvent);
       });
       dataChannel.addEventListener('open', () => {});
       dataChannel.addEventListener('close', () => {
@@ -56,7 +60,9 @@ export class P2pConnection {
     this.p2pConn.addEventListener('datachannel', (dataChannelEvent) => {
       this.dataChannel = dataChannelEvent.channel;
       this.dataChannel.addEventListener('message', (evt) => {
-        this.onMessage(evt.data);
+        const p2pEvent = JSON.parse(evt.data) as P2pEvent;
+        console.log('Receive via P2P', p2pEvent.name, p2pEvent);
+        this.onMessage(p2pEvent);
       });
       this.dataChannel.addEventListener('open', () => {});
       this.dataChannel.addEventListener('close', () => {
@@ -96,11 +102,12 @@ export class P2pConnection {
    * Send message to remote peer
    * @returns succeeded
    */
-  public sendMessage(msg: string): boolean {
+  public sendMessage(p2pEvent: P2pEvent): boolean {
     if (!this.dataChannel) return false;
     if (this.dataChannel?.readyState !== 'open') return false;
 
-    this.dataChannel.send(msg);
+    console.log('Send via P2P', p2pEvent.name, p2pEvent);
+    this.dataChannel.send(JSON.stringify(p2pEvent));
     return true;
   }
 }

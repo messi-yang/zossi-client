@@ -37,4 +37,9 @@ export type P2pAnswerSentClientEvent = {
   answer: object;
 };
 
-export type ClientEvent = CommandRequestedClientEvent | P2pOfferSentClientEvent | P2pAnswerSentClientEvent;
+export type ClientEvent =
+  | PingClientEvent
+  | CommandRequestedClientEvent
+  | CommandSentClientEvent
+  | P2pOfferSentClientEvent
+  | P2pAnswerSentClientEvent;
