@@ -157,10 +157,9 @@ export function Provider({ children }: Props) {
         if (!newWorldJourneyService) return;
         newWorldJourneyService.executeCommand(command);
       },
-      onCommandFailed: (commandId, errorMessage) => {
+      onCommandFailed: (commandId) => {
         if (!newWorldJourneyService) return;
         newWorldJourneyService.removeFailedCommand(commandId);
-        notificationEventDispatcher.publishErrorTriggeredEvent(errorMessage);
       },
       onErrored: (message) => {
         notificationEventDispatcher.publishErrorTriggeredEvent(message);

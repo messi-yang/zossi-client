@@ -40,7 +40,6 @@ export type CommandReceivedServerEvent = {
 export type CommandFailedServerEvent = {
   name: ServerEventNameEnum.CommandFailed;
   commandId: string;
-  errorMessage: string;
 };
 
 export type P2pOfferReceivedServerEvent = {
