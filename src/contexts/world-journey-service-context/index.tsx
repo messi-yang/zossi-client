@@ -227,6 +227,8 @@ export function Provider({ children }: Props) {
     }
 
     const myPlayer = worldJourneyService.getMyPlayer();
+    if (myPlayer.getAction().isStand()) return;
+
     const playerPrecisePosition = myPlayer.getPrecisePosition();
     const playerDirection = worldJourneyService.getMyPlayer().getDirection();
     const playerAction = PlayerActionVo.newStand(playerPrecisePosition, playerDirection);
