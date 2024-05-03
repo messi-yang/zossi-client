@@ -62,6 +62,14 @@ export class PlayerManager {
     return myPlayer;
   }
 
+  public getOtherPlayers(): PlayerModel[] {
+    const players: PlayerModel[] = [];
+    Object.values(this.playerMap).forEach((player) => {
+      if (player) players.push(player);
+    });
+    return players.filter((p) => p.getId() !== this.myPlayerId);
+  }
+
   public getPlayer(playerId: string): PlayerModel | null {
     return this.playerMap[playerId] ?? null;
   }

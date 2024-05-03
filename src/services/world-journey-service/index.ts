@@ -113,6 +113,10 @@ export class WorldJourneyService {
     return this.playerManager.getPlayers();
   }
 
+  public getOtherPlayers(): PlayerModel[] {
+    return this.playerManager.getOtherPlayers();
+  }
+
   public doesPosHavePlayers(pos: PositionVo): boolean {
     return !!this.playerManager.getPlayersAtPos(pos);
   }

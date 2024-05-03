@@ -38,6 +38,8 @@ export class WorldJourneyApi {
 
   private p2pConnectionMap = new Map<string, P2pConnection>();
 
+  private worldJourneyService: WorldJourneyService | null = null;
+
   constructor(
     worldId: string,
     events: {
@@ -73,12 +75,12 @@ export class WorldJourneyApi {
       const eventJsonString: string = await data.text();
       const event: ServerEvent = JSON.parse(eventJsonString);
 
-      console.log(event.name);
-      console.log(event);
+      console.log(event.name, event);
       if (event.name === ServerEventNameEnum.WorldEntered) {
         const [world, units, myPlayerId, players] = parseWorldEnteredServerEvent(event);
         const worldJourneyService = WorldJourneyService.create(world, players, myPlayerId, units);
         events.onWorldEntered(worldJourneyService);
+        this.worldJourneyService = worldJourneyService;
       } else if (event.name === ServerEventNameEnum.PlayerJoined) {
         const newP2pConnection = P2pConnection.create({
           onMessage: handleP2pMessage,
@@ -196,11 +198,12 @@ export class WorldJourneyApi {
   }
 
   public sendCommand(command: Command) {
+    if (!this.worldJourneyService) return;
+
     const commandDto = toCommandDto(command);
     if (!commandDto) return;
 
-    console.log(commandDto.name);
-    console.log(commandDto);
+    console.log(commandDto.name, commandDto);
 
     const clientEvent: CommandRequestedClientEvent = {
       name: ClientEventNameEnum.CommandRequested,
@@ -208,18 +211,27 @@ export class WorldJourneyApi {
     };
     this.sendMessage(clientEvent);
 
-    this.p2pConnectionMap.forEach((p2pConnection, peerPlayerId) => {
+    this.worldJourneyService.getOtherPlayers().forEach((otherPlayer) => {
+      const otherPlayerId = otherPlayer.getId();
+      const p2pConnection = this.p2pConnectionMap.get(otherPlayerId);
+
+      const commandSentClientEvent: CommandSentClientEvent = {
+        name: ClientEventNameEnum.CommandSent,
+        peerPlayerId: otherPlayerId,
+        command: commandDto,
+      };
+
+      if (!p2pConnection) {
+        this.sendMessage(commandSentClientEvent);
+        return;
+      }
+
       const p2pEvent: CommandSentP2pEvent = {
         name: P2pEventNameEnum.CommandSent,
         command: commandDto,
       };
       const succeeded = p2pConnection.sendMessage(JSON.stringify(p2pEvent));
       if (!succeeded) {
-        const commandSentClientEvent: CommandSentClientEvent = {
-          name: ClientEventNameEnum.CommandSent,
-          peerPlayerId,
-          command: commandDto,
-        };
         this.sendMessage(commandSentClientEvent);
       }
     });
