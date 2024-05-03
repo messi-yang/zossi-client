@@ -12,6 +12,8 @@ import { PerspectiveManager, PerspectiveChangedHandler } from './managers/perspe
 import { ItemAddedHandler, ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandExecutedHandler, CommandManager } from './managers/command-manager';
+import { PlayerActionVo } from '@/models/world/player/player-action-vo';
+import { ChangePlayerActionCommand } from './managers/command-manager/commands/change-player-action-command';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -141,31 +143,55 @@ export class WorldJourneyService {
   }
 
   private calculatePlayerPositions() {
-    this.playerManager.getPlayers().forEach((player) => {
-      const playerAction = player.getAction();
-      if (playerAction.isStand()) return;
-
-      if (playerAction.isWalk()) {
-        const playerDirection = player.getDirection();
-        const playerPrecisePosition = player.getPrecisePosition();
-        const playerForwardPos = player.getFowardPosition(0.5);
-        const unitAtPos = this.unitManager.getUnitByPos(playerForwardPos);
-        if (unitAtPos) {
-          const item = this.itemManager.getItem(unitAtPos.getItemId());
-          if (!item) return;
-          if (!item.getTraversable()) return;
-        }
-
-        const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.25);
-        if (!this.world.getBound().doesContainPosition(nextPlayerPrecisePosition.toPosition())) {
-          return;
-        }
-
-        const clonedPlayer = player.clone();
-        clonedPlayer.updatePrecisePosition(nextPlayerPrecisePosition);
-        this.playerManager.updatePlayer(clonedPlayer);
+    const myPlayer = this.playerManager.getMyPlayer();
+    const myPlayerAction = myPlayer.getAction();
+    if (myPlayerAction.isStand()) {
+      // TODO - some logic here?
+    } else if (myPlayerAction.isWalk()) {
+      const myPlayerDirection = myPlayer.getDirection();
+      const myPlayerPrecisePosition = myPlayer.getPrecisePosition();
+      const myPlayerForwardPos = myPlayer.getFowardPosition(0.5);
+      const unitAtPos = this.unitManager.getUnitByPos(myPlayerForwardPos);
+      if (unitAtPos) {
+        const item = this.itemManager.getItem(unitAtPos.getItemId());
+        if (!item) return;
+        if (!item.getTraversable()) return;
       }
-    });
+
+      const nextMyPlayerPrecisePosition = myPlayerPrecisePosition.shiftByDirection(myPlayerDirection, 0.25);
+      if (!this.world.getBound().doesContainPosition(nextMyPlayerPrecisePosition.toPosition())) {
+        return;
+      }
+
+      const newMyPlayerAction = PlayerActionVo.newWalk(nextMyPlayerPrecisePosition, myPlayerDirection);
+      this.executeCommand(ChangePlayerActionCommand.create(myPlayer.getId(), newMyPlayerAction));
+    }
+
+    // this.playerManager.getPlayers().forEach((player) => {
+    //   const playerAction = player.getAction();
+    //   if (playerAction.isStand()) return;
+
+    //   if (playerAction.isWalk()) {
+    //     const playerDirection = player.getDirection();
+    //     const playerPrecisePosition = player.getPrecisePosition();
+    //     const playerForwardPos = player.getFowardPosition(0.5);
+    //     const unitAtPos = this.unitManager.getUnitByPos(playerForwardPos);
+    //     if (unitAtPos) {
+    //       const item = this.itemManager.getItem(unitAtPos.getItemId());
+    //       if (!item) return;
+    //       if (!item.getTraversable()) return;
+    //     }
+
+    //     const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.25);
+    //     if (!this.world.getBound().doesContainPosition(nextPlayerPrecisePosition.toPosition())) {
+    //       return;
+    //     }
+
+    //     const clonedPlayer = player.clone();
+    //     clonedPlayer.updatePrecisePosition(nextPlayerPrecisePosition);
+    //     this.playerManager.updatePlayer(clonedPlayer);
+    //   }
+    // });
   }
 
   private calculatePlayerPositionsTicker() {
