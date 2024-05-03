@@ -43,6 +43,8 @@ export class CreatePortalUnitCommand extends BaseCommand {
     return new CreatePortalUnitCommand(id, timestamp, true, unitId, itemId, position, direction);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => true;
 
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {

@@ -2,12 +2,16 @@ import { sleep } from '@/utils/general';
 import { Command } from './command';
 import { CommandParams } from './command-params';
 
+export type CommandExecutedHandler = (command: Command) => void;
+
 export class CommandManager {
   private executedCommands: Command[];
 
   private executedCommandMap: Record<string, Command | undefined>;
 
   private failedCommandMap: Record<string, true | undefined>;
+
+  private commandExecutedHandlers: CommandExecutedHandler[] = [];
 
   constructor() {
     this.executedCommands = [];
@@ -112,5 +116,20 @@ export class CommandManager {
 
     command.execute(params);
     this.addExecutedCommand(command);
+    this.publishCommandExecuted(command);
+  }
+
+  public subscribeCommandExecuted(handler: CommandExecutedHandler): () => void {
+    this.commandExecutedHandlers.push(handler);
+
+    return () => {
+      this.commandExecutedHandlers = this.commandExecutedHandlers.filter((hdl) => hdl !== handler);
+    };
+  }
+
+  private publishCommandExecuted(command: Command) {
+    this.commandExecutedHandlers.forEach((hdl) => {
+      hdl(command);
+    });
   }
 }

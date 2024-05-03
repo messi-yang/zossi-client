@@ -19,6 +19,8 @@ export class RemoveEmbedUnitCommand extends BaseCommand {
     return new RemoveEmbedUnitCommand(id, timestamp, true, unitId);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => true;
 
   public execute({ unitManager }: CommandParams): void {

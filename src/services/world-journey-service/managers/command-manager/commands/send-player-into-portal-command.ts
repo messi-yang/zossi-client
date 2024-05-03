@@ -18,6 +18,8 @@ export class SendPlayerIntoPortalCommand extends BaseCommand {
     return new SendPlayerIntoPortalCommand(id, timestamp, true, playerId, unitId);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => true;
 
   public execute({ unitManager, playerManager }: CommandParams): void {

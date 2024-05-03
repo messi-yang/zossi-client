@@ -11,7 +11,7 @@ import { MyPlayerChangedHandler, PlayerManager, PlayersChangedHandler } from './
 import { PerspectiveManager, PerspectiveChangedHandler } from './managers/perspective-manager';
 import { ItemAddedHandler, ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
-import { CommandManager } from './managers/command-manager';
+import { CommandExecutedHandler, CommandManager } from './managers/command-manager';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -199,6 +199,10 @@ export class WorldJourneyService {
 
   public subscribeItemAdded(handler: ItemAddedHandler): () => void {
     return this.itemManager.subscribeItemAdded(handler);
+  }
+
+  public subscribeCommandExecuted(handler: CommandExecutedHandler): () => void {
+    return this.commandManager.subscribeCommandExecuted(handler);
   }
 
   public subscribeUnitsChanged(handler: UnitsChangedHandler): () => void {

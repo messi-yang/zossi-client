@@ -20,6 +20,8 @@ export class RemovePortalUnitCommand extends BaseCommand {
     return new RemovePortalUnitCommand(id, timestamp, true, unitId);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => true;
 
   public execute({ unitManager }: CommandParams): void {

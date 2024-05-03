@@ -94,9 +94,9 @@ export function Provider({ children }: Props) {
   }, []);
 
   useEffect(() => {
-    if (!worldJourneyService) return;
+    if (!worldJourneyService) return () => {};
 
-    worldJourneyService.subscribePlaceholderItemIdsAdded((placeholderItemIds) => {
+    return worldJourneyService.subscribePlaceholderItemIdsAdded((placeholderItemIds) => {
       itemApi.getItemsOfIds(placeholderItemIds).then((_items) => {
         _items.forEach((item) => {
           worldJourneyService.executeCommand(AddItemCommand.create(item));
@@ -123,16 +123,11 @@ export function Provider({ children }: Props) {
   const worldJourneyApi = useRef<WorldJourneyApi | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('WAITING');
 
-  useEffect(
-    function destroyWorldJourneyService() {
-      return () => {
-        if (worldJourneyService) {
-          worldJourneyService.destroy();
-        }
-      };
-    },
-    [worldJourneyService]
-  );
+  useEffect(() => {
+    return () => {
+      worldJourneyService?.destroy();
+    };
+  }, [worldJourneyService]);
 
   const leaveWorld = useCallback(() => {
     worldJourneyApi.current?.disconnect();
@@ -178,9 +173,9 @@ export function Provider({ children }: Props) {
   }, []);
 
   useEffect(() => {
-    if (!worldJourneyService) return;
+    if (!worldJourneyService) return () => {};
 
-    worldJourneyService.subscribeMyPlayerChanged((oldPlayer, player) => {
+    return worldJourneyService.subscribeMyPlayerChanged((oldPlayer, player) => {
       if (!worldJourneyApi.current) return;
 
       const oldPlayerPos = oldPlayer.getPosition();
@@ -199,10 +194,20 @@ export function Provider({ children }: Props) {
 
         const command = SendPlayerIntoPortalCommand.create(player.getId(), unitAtNewPlayerPos.getId());
         worldJourneyService.executeCommand(command);
-        worldJourneyApi.current.sendCommand(command);
       }
     });
   }, [worldJourneyService]);
+
+  useEffect(() => {
+    if (!worldJourneyService) return () => {};
+
+    return worldJourneyService.subscribeCommandExecuted((command) => {
+      if (!worldJourneyApi.current || command.getIsRemote()) {
+        return;
+      }
+      worldJourneyApi.current.sendCommand(command);
+    });
+  }, [worldJourneyApi, worldJourneyService]);
 
   const addPerspectiveDepth = useCallback(() => {
     if (!worldJourneyService) return;
@@ -227,7 +232,6 @@ export function Provider({ children }: Props) {
     const playerAction = PlayerActionVo.newStand(playerPrecisePosition, playerDirection);
     const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
     worldJourneyService.executeCommand(command);
-    worldJourneyApi.current.sendCommand(command);
   }, [worldJourneyService]);
 
   const makePlayerWalk = useCallback(
@@ -241,7 +245,6 @@ export function Provider({ children }: Props) {
       const playerAction = PlayerActionVo.newWalk(playerPrecisePosition, direction);
       const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
       worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourneyService]
   );
@@ -252,7 +255,6 @@ export function Provider({ children }: Props) {
 
       const command = ChangePlayerHeldItemCommand.create(worldJourneyService.getMyPlayer().getId(), item.getId());
       worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourneyService]
   );
@@ -263,7 +265,6 @@ export function Provider({ children }: Props) {
 
       const command = CreateStaticUnitCommand.create(itemId, position, direction);
       worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourneyService]
   );
@@ -274,7 +275,6 @@ export function Provider({ children }: Props) {
 
       const command = CreateFenceUnitCommand.create(itemId, position, direction);
       worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourneyService]
   );
@@ -285,7 +285,6 @@ export function Provider({ children }: Props) {
 
       const command = CreatePortalUnitCommand.create(itemId, position, direction);
       worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourneyService]
   );
@@ -296,7 +295,6 @@ export function Provider({ children }: Props) {
 
       const command = CreateLinkUnitCommand.create(itemId, position, direction, label, url);
       worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourneyService]
   );
@@ -307,7 +305,6 @@ export function Provider({ children }: Props) {
 
       const command = CreateEmbedUnitCommand.create(itemId, position, direction, label, inputEmbedCode);
       worldJourneyService.executeCommand(command);
-      worldJourneyApi.current.sendCommand(command);
     },
     [worldJourneyService]
   );
@@ -379,35 +376,30 @@ export function Provider({ children }: Props) {
 
         const command = RemoveStaticUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
-        worldJourneyApi.current.sendCommand(command);
       },
       fence: () => {
         if (!worldJourneyApi.current) return;
 
         const command = RemoveFenceUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
-        worldJourneyApi.current.sendCommand(command);
       },
       portal: () => {
         if (!worldJourneyApi.current) return;
 
         const command = RemovePortalUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
-        worldJourneyApi.current.sendCommand(command);
       },
       link: () => {
         if (!worldJourneyApi.current) return;
 
         const command = RemoveLinkUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
-        worldJourneyApi.current.sendCommand(command);
       },
       embed: () => {
         if (!worldJourneyApi.current) return;
 
         const command = RemoveEmbedUnitCommand.create(unitId);
         worldJourneyService.executeCommand(command);
-        worldJourneyApi.current.sendCommand(command);
       },
     });
   }, [worldJourneyService]);
@@ -422,7 +414,6 @@ export function Provider({ children }: Props) {
 
     const command = RotateUnitCommand.create(unitAtPos.getId());
     worldJourneyService.executeCommand(command);
-    worldJourneyApi.current.sendCommand(command);
   }, [worldJourneyService]);
 
   const context = {

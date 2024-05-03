@@ -49,6 +49,8 @@ export class CreateLinkUnitCommand extends BaseCommand {
     return new CreateLinkUnitCommand(id, timestamp, true, unitId, itemId, position, direction, label, url);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => true;
 
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {

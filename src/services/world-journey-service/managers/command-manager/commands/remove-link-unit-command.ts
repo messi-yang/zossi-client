@@ -19,6 +19,8 @@ export class RemoveLinkUnitCommand extends BaseCommand {
     return new RemoveLinkUnitCommand(id, timestamp, true, unitId);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => true;
 
   public execute({ unitManager }: CommandParams): void {

@@ -12,6 +12,8 @@ export class AddPerspectiveDepthCommand extends BaseCommand {
     return new AddPerspectiveDepthCommand(id, timestamp, true);
   }
 
+  public getIsClientOnly = () => true;
+
   public getIsReplayable = () => false;
 
   public execute({ perspectiveManager }: CommandParams): void {

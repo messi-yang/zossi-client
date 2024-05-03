@@ -19,6 +19,8 @@ export class RemovePlayerCommand extends BaseCommand {
     return new RemovePlayerCommand(id, timestamp, true, playerId);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => false;
 
   public execute({ playerManager }: CommandParams): void {

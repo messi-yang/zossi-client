@@ -19,6 +19,8 @@ export class RotateUnitCommand extends BaseCommand {
     return new RotateUnitCommand(id, timestamp, true, unitId);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => true;
 
   public execute({ unitManager }: CommandParams): void {

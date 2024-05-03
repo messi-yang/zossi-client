@@ -20,6 +20,8 @@ export class AddPlayerCommand extends BaseCommand {
     return new AddPlayerCommand(id, timestamp, true, player);
   }
 
+  public getIsClientOnly = () => false;
+
   public getIsReplayable = () => false;
 
   public execute({ playerManager, itemManager }: CommandParams): void {

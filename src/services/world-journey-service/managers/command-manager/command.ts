@@ -11,6 +11,10 @@ export interface Command {
    */
   getIsRemote(): boolean;
   /**
+   * Check if the command only executes on client
+   */
+  getIsClientOnly(): boolean;
+  /**
    * Is the command replayable while replaying commands?
    */
   getIsReplayable(): boolean;
@@ -42,6 +46,8 @@ export abstract class BaseCommand implements Command {
   public getIsRemote() {
     return this.isRemote;
   }
+
+  public abstract getIsClientOnly(): boolean;
 
   public abstract getIsReplayable(): boolean;
 
