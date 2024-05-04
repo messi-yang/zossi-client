@@ -18,7 +18,7 @@ export class SendPlayerIntoPortalCommand extends BaseCommand {
     return new SendPlayerIntoPortalCommand(id, timestamp, true, playerId, unitId);
   }
 
-  public getIsClientOnly = () => false;
+  public getIsClientOnly = () => true;
 
   public getIsReplayable = () => true;
 
