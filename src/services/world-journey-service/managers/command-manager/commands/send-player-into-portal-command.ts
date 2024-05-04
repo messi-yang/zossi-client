@@ -20,7 +20,7 @@ export class SendPlayerIntoPortalCommand extends BaseCommand {
 
   public getIsClientOnly = () => true;
 
-  public getIsReplayable = () => true;
+  public getIsReplayable = () => false;
 
   public execute({ unitManager, playerManager }: CommandParams): void {
     const portalUnit = unitManager.getUnit(this.unitId);
@@ -40,6 +40,7 @@ export class SendPlayerIntoPortalCommand extends BaseCommand {
     const clonedPlayer = currentPlayer.clone();
     const nextPlayerPrecisePosition = PrecisePositionVo.create(targetPosition.getX(), targetPosition.getZ());
     clonedPlayer.updatePrecisePosition(nextPlayerPrecisePosition);
+
     const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);
 
     this.setUndoAction(() => {

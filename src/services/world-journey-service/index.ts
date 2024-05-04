@@ -12,7 +12,6 @@ import { PerspectiveManager, PerspectiveChangedHandler } from './managers/perspe
 import { ItemAddedHandler, ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandExecutedHandler, CommandManager } from './managers/command-manager';
-import { ChangePlayerActionCommand } from './managers/command-manager/commands/change-player-action-command';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
 
 export class WorldJourneyService {
@@ -155,7 +154,7 @@ export class WorldJourneyService {
     const myPlayerAction = myPlayer.getAction();
     if (myPlayerAction.isStand()) {
       if (this.calculatePlayerPositionTickCount % 10 === 0) {
-        this.executeCommand(ChangePlayerActionCommand.create(myPlayer.getId(), myPlayer.getAction()));
+        this.executeCommand(ChangePlayerPrecisePositionCommand.create(myPlayer.getId(), myPlayer.getPrecisePosition()));
       }
     } else if (myPlayerAction.isWalk()) {
       const myPlayerDirection = myPlayer.getDirection();
