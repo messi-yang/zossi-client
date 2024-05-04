@@ -212,11 +212,15 @@ export class WorldJourneyApi {
     const commandDto = toCommandDto(command);
     if (!commandDto) return;
 
-    const clientEvent: CommandRequestedClientEvent = {
-      name: ClientEventNameEnum.CommandRequested,
-      command: commandDto,
-    };
-    this.sendMessage(clientEvent);
+    const isClientOnly = command.getIsClientOnly();
+
+    if (!isClientOnly) {
+      const clientEvent: CommandRequestedClientEvent = {
+        name: ClientEventNameEnum.CommandRequested,
+        command: commandDto,
+      };
+      this.sendMessage(clientEvent);
+    }
 
     this.worldJourneyService.getOtherPlayers().forEach((otherPlayer) => {
       const otherPlayerId = otherPlayer.getId();
