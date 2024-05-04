@@ -30,6 +30,10 @@ export class WorldJourneyService {
 
   private animateId: number | null = null;
 
+  private calculatePlayerPositionTickFps;
+
+  private calculatePlayerPositionTickCount;
+
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, units: UnitModel[]) {
     this.world = world;
 
@@ -46,7 +50,9 @@ export class WorldJourneyService {
 
     this.commandManager = CommandManager.create();
 
-    this.calculatePlayerPositionsTicker();
+    this.calculatePlayerPositionTickFps = 24;
+    this.calculatePlayerPositionTickCount = 0;
+    this.calculatePlayerPositionTicker();
     this.subscribeMyPlayerChanged((_, newMyPlayer) => {
       this.perspectiveManager.updateTargetPrecisePosition(newMyPlayer.getPrecisePosition());
     });
@@ -142,11 +148,15 @@ export class WorldJourneyService {
     return this.itemManager.getItem(itemId);
   }
 
-  private calculatePlayerPositions() {
+  private calculatePlayerPosition() {
+    this.calculatePlayerPositionTickCount += 1;
+
     const myPlayer = this.playerManager.getMyPlayer();
     const myPlayerAction = myPlayer.getAction();
     if (myPlayerAction.isStand()) {
-      // TODO - some logic here?
+      if (this.calculatePlayerPositionTickCount % 10 === 0) {
+        this.executeCommand(ChangePlayerActionCommand.create(myPlayer.getId(), myPlayer.getAction()));
+      }
     } else if (myPlayerAction.isWalk()) {
       const myPlayerDirection = myPlayer.getDirection();
       const myPlayerPrecisePosition = myPlayer.getPrecisePosition();
@@ -158,7 +168,10 @@ export class WorldJourneyService {
         if (!item.getTraversable()) return;
       }
 
-      const nextMyPlayerPrecisePosition = myPlayerPrecisePosition.shiftByDirection(myPlayerDirection, 0.25);
+      const nextMyPlayerPrecisePosition = myPlayerPrecisePosition.shiftByDirection(
+        myPlayerDirection,
+        5 / this.calculatePlayerPositionTickFps
+      );
       if (!this.world.getBound().doesContainPosition(nextMyPlayerPrecisePosition.toPosition())) {
         return;
       }
@@ -166,44 +179,17 @@ export class WorldJourneyService {
       const newMyPlayerAction = PlayerActionVo.newWalk(nextMyPlayerPrecisePosition, myPlayerDirection);
       this.executeCommand(ChangePlayerActionCommand.create(myPlayer.getId(), newMyPlayerAction));
     }
-
-    // this.playerManager.getPlayers().forEach((player) => {
-    //   const playerAction = player.getAction();
-    //   if (playerAction.isStand()) return;
-
-    //   if (playerAction.isWalk()) {
-    //     const playerDirection = player.getDirection();
-    //     const playerPrecisePosition = player.getPrecisePosition();
-    //     const playerForwardPos = player.getFowardPosition(0.5);
-    //     const unitAtPos = this.unitManager.getUnitByPos(playerForwardPos);
-    //     if (unitAtPos) {
-    //       const item = this.itemManager.getItem(unitAtPos.getItemId());
-    //       if (!item) return;
-    //       if (!item.getTraversable()) return;
-    //     }
-
-    //     const nextPlayerPrecisePosition = playerPrecisePosition.shiftByDirection(playerDirection, 0.25);
-    //     if (!this.world.getBound().doesContainPosition(nextPlayerPrecisePosition.toPosition())) {
-    //       return;
-    //     }
-
-    //     const clonedPlayer = player.clone();
-    //     clonedPlayer.updatePrecisePosition(nextPlayerPrecisePosition);
-    //     this.playerManager.updatePlayer(clonedPlayer);
-    //   }
-    // });
   }
 
-  private calculatePlayerPositionsTicker() {
-    const maxFPS = 24;
-    const frameDelay = 1000 / maxFPS;
+  private calculatePlayerPositionTicker() {
+    const frameDelay = 1000 / this.calculatePlayerPositionTickFps;
     let lastFrameTime = 0;
 
     const animate = () => {
       const currentTime = performance.now();
       const elapsed = currentTime - lastFrameTime;
       if (elapsed > frameDelay) {
-        this.calculatePlayerPositions();
+        this.calculatePlayerPosition();
         lastFrameTime = currentTime - (elapsed % frameDelay);
       }
       this.animateId = requestAnimationFrame(animate);
