@@ -1,7 +1,6 @@
 import { DirectionVo } from '../common/direction-vo';
 import { PlayerActionVo } from './player-action-vo';
 import { PlayerActionNameEnum } from './player-action-name-enum';
-import { DateVo } from '@/models/global/date-vo';
 import { PrecisePositionVo } from '../common/precise-position-vo';
 import { PositionVo } from '../common/position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
@@ -33,12 +32,7 @@ export class PlayerModel {
       generateUuidV4(),
       'Test Player',
       null,
-      PlayerActionVo.create(
-        PlayerActionNameEnum.Stand,
-        PrecisePositionVo.create(0, 0),
-        DirectionVo.create(2),
-        DateVo.now()
-      ),
+      PlayerActionVo.create(PlayerActionNameEnum.Stand, DirectionVo.create(2)),
       PrecisePositionVo.create(0, 0)
     );
   }

@@ -17,10 +17,14 @@ import { CreateLinkUnitCommand } from '@/services/world-journey-service/managers
 import { RemoveLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-link-unit-command';
 import { CreateEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-embed-unit-command';
 import { RemoveEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-embed-unit-command';
+import { PrecisePositionDto, newPrecisePositionDto } from '../dtos/precise-position-dto';
+import { ChangePlayerPrecisePositionCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-precise-position-command';
+import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
 enum CommandNameEnum {
   MovePlayer = 'MOVE_PLAYER',
   ChangePlayerAction = 'CHANGE_PLAYER_ACTION',
+  ChangePlayerPrecisePosition = 'CHANGE_PLAYER_PRECISE_POSITION',
   SendPlayerIntoPortal = 'SEND_PLAYER_INTO_PORTAL',
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
@@ -42,6 +46,14 @@ type ChangePlayerActionCommandDto = {
   name: CommandNameEnum.ChangePlayerAction;
   playerId: string;
   action: PlayerActionDto;
+};
+
+type ChangePlayerPrecisePositionCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.ChangePlayerPrecisePosition;
+  playerId: string;
+  precisePosition: PrecisePositionDto;
 };
 
 type SendPlayerIntoPortalCommandDto = {
@@ -248,6 +260,17 @@ function parseChangePlayerActionCommand(command: ChangePlayerActionCommandDto): 
   );
 }
 
+function parseChangePlayerPrecisePositionCommand(
+  command: ChangePlayerPrecisePositionCommandDto
+): ChangePlayerPrecisePositionCommand {
+  return ChangePlayerPrecisePositionCommand.createRemote(
+    command.id,
+    command.timestamp,
+    command.playerId,
+    PrecisePositionVo.create(command.precisePosition.x, command.precisePosition.z)
+  );
+}
+
 function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDto): SendPlayerIntoPortalCommand {
   return SendPlayerIntoPortalCommand.createRemote(command.id, command.timestamp, command.playerId, command.unitId);
 }
@@ -281,6 +304,8 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseRotateUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerAction) {
     return parseChangePlayerActionCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.ChangePlayerPrecisePosition) {
+    return parseChangePlayerPrecisePositionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
     return parseSendPlayerIntoPortalCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerHeldItem) {
@@ -406,6 +431,15 @@ export const toCommandDto = (command: Command) => {
       action: newPlayerActionDto(command.getAction()),
     };
     return commandDto;
+  } else if (command instanceof ChangePlayerPrecisePositionCommand) {
+    const commandDto: ChangePlayerPrecisePositionCommandDto = {
+      id: command.getId(),
+      timestamp: command.getTimestamp(),
+      name: CommandNameEnum.ChangePlayerPrecisePosition,
+      playerId: command.getPlayerId(),
+      precisePosition: newPrecisePositionDto(command.getPrecisePosition()),
+    };
+    return commandDto;
   } else if (command instanceof SendPlayerIntoPortalCommand) {
     const commandDto: SendPlayerIntoPortalCommandDto = {
       id: command.getId(),
@@ -432,6 +466,7 @@ export { CommandNameEnum };
 
 export type CommandDto =
   | ChangePlayerActionCommandDto
+  | ChangePlayerPrecisePositionCommandDto
   | SendPlayerIntoPortalCommandDto
   | ChangePlayerHeldItemCommandDto
   | CreateStaticUnitCommandDto

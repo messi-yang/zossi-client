@@ -12,8 +12,8 @@ import { PerspectiveManager, PerspectiveChangedHandler } from './managers/perspe
 import { ItemAddedHandler, ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandExecutedHandler, CommandManager } from './managers/command-manager';
-import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { ChangePlayerActionCommand } from './managers/command-manager/commands/change-player-action-command';
+import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -176,8 +176,7 @@ export class WorldJourneyService {
         return;
       }
 
-      const newMyPlayerAction = PlayerActionVo.newWalk(nextMyPlayerPrecisePosition, myPlayerDirection);
-      this.executeCommand(ChangePlayerActionCommand.create(myPlayer.getId(), newMyPlayerAction));
+      this.executeCommand(ChangePlayerPrecisePositionCommand.create(myPlayer.getId(), nextMyPlayerPrecisePosition));
     }
   }
 

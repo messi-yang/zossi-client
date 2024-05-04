@@ -33,7 +33,6 @@ export class ChangePlayerActionCommand extends BaseCommand {
 
     const clonedPlayer = player.clone();
     clonedPlayer.updateAction(this.action);
-    clonedPlayer.updatePrecisePosition(this.action.getPrecisePosition());
     const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);
 
     this.setUndoAction(() => {

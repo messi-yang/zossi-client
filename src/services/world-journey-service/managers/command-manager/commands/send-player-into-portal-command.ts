@@ -39,9 +39,6 @@ export class SendPlayerIntoPortalCommand extends BaseCommand {
 
     const clonedPlayer = currentPlayer.clone();
     const nextPlayerPrecisePosition = PrecisePositionVo.create(targetPosition.getX(), targetPosition.getZ());
-    clonedPlayer.updateAction(
-      clonedPlayer.getAction().updatePrecisePosition(nextPlayerPrecisePosition).updateTime(DateVo.now())
-    );
     clonedPlayer.updatePrecisePosition(nextPlayerPrecisePosition);
     const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);
 

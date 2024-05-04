@@ -229,9 +229,8 @@ export function Provider({ children }: Props) {
     const myPlayer = worldJourneyService.getMyPlayer();
     if (myPlayer.getAction().isStand()) return;
 
-    const playerPrecisePosition = myPlayer.getPrecisePosition();
     const playerDirection = worldJourneyService.getMyPlayer().getDirection();
-    const playerAction = PlayerActionVo.newStand(playerPrecisePosition, playerDirection);
+    const playerAction = PlayerActionVo.newStand(playerDirection);
     const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
     worldJourneyService.executeCommand(command);
   }, [worldJourneyService]);
@@ -243,8 +242,7 @@ export function Provider({ children }: Props) {
       }
 
       const myPlayer = worldJourneyService.getMyPlayer();
-      const playerPrecisePosition = myPlayer.getPrecisePosition();
-      const playerAction = PlayerActionVo.newWalk(playerPrecisePosition, direction);
+      const playerAction = PlayerActionVo.newWalk(direction);
       const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
       worldJourneyService.executeCommand(command);
     },

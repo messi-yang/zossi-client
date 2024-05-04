@@ -17,7 +17,7 @@ function parsePlayerDto(playerDto: PlayerDto): PlayerModel {
     playerDto.name,
     playerDto.heldItemId,
     parsePlayerActionDto(playerDto.action),
-    PrecisePositionVo.create(playerDto.action.precisePosition.x, playerDto.action.precisePosition.z)
+    PrecisePositionVo.create(playerDto.precisePosition.x, playerDto.precisePosition.z)
   );
 }
 

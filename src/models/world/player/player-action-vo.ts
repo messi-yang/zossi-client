@@ -1,31 +1,19 @@
-import { DateVo } from '@/models/global/date-vo';
 import { PlayerActionNameEnum } from './player-action-name-enum';
 import { DirectionVo } from '../common/direction-vo';
-import { PrecisePositionVo } from '../common/precise-position-vo';
 
 export class PlayerActionVo {
-  constructor(
-    private readonly name: PlayerActionNameEnum,
-    private readonly precisePosition: PrecisePositionVo,
-    private readonly direction: DirectionVo,
-    private readonly time: DateVo
-  ) {}
+  constructor(private readonly name: PlayerActionNameEnum, private readonly direction: DirectionVo) {}
 
-  static create(
-    name: PlayerActionNameEnum,
-    precisePosition: PrecisePositionVo,
-    direction: DirectionVo,
-    time: DateVo
-  ): PlayerActionVo {
-    return new PlayerActionVo(name, precisePosition, direction, time);
+  static create(name: PlayerActionNameEnum, direction: DirectionVo): PlayerActionVo {
+    return new PlayerActionVo(name, direction);
   }
 
-  static newWalk(precisePosition: PrecisePositionVo, direction: DirectionVo) {
-    return new PlayerActionVo(PlayerActionNameEnum.Walk, precisePosition, direction, DateVo.now());
+  static newWalk(direction: DirectionVo) {
+    return new PlayerActionVo(PlayerActionNameEnum.Walk, direction);
   }
 
-  static newStand(precisePosition: PrecisePositionVo, direction: DirectionVo) {
-    return new PlayerActionVo(PlayerActionNameEnum.Stand, precisePosition, direction, DateVo.now());
+  static newStand(direction: DirectionVo) {
+    return new PlayerActionVo(PlayerActionNameEnum.Stand, direction);
   }
 
   public isWalk() {
@@ -40,23 +28,7 @@ export class PlayerActionVo {
     return this.name;
   }
 
-  public getPrecisePosition(): PrecisePositionVo {
-    return this.precisePosition;
-  }
-
-  public updatePrecisePosition(precisePosition: PrecisePositionVo): PlayerActionVo {
-    return new PlayerActionVo(this.name, precisePosition, this.direction, this.time);
-  }
-
   public getDirection(): DirectionVo {
     return this.direction;
-  }
-
-  public getTime(): DateVo {
-    return this.time;
-  }
-
-  public updateTime(time: DateVo): PlayerActionVo {
-    return new PlayerActionVo(this.name, this.precisePosition, this.direction, time);
   }
 }
