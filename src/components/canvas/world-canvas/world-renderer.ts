@@ -22,7 +22,6 @@ const CHARACTER_MODEL_SRC = '/characters/car.gltf';
 
 type ItemModelsDownloadedEventSubscriber = (itemId: string) => void;
 type DefaultFontDownloadedEventSubscriber = () => void;
-type PlayerModelDownloadedEventSubscriber = () => void;
 
 export class WorldRenderer {
   private readonly scene: THREE.Scene;
@@ -47,11 +46,9 @@ export class WorldRenderer {
 
   private baseModelInstancesCleaner: () => void = () => {};
 
+  private playerInstancesMap: Map<string, [character: THREE.Group, name: THREE.Mesh]> = new Map();
+
   private playerModel: THREE.Group | null = null;
-
-  private playerModelDownloadedEventSubscribers: PlayerModelDownloadedEventSubscriber[] = [];
-
-  private playerModelInstancesCleaner: () => void = () => {};
 
   constructor(worldBound: BoundVo) {
     this.scene = this.createScene();
@@ -137,10 +134,6 @@ export class WorldRenderer {
 
   private async downloadPlayerModel() {
     this.playerModel = await this.downloadModel(CHARACTER_MODEL_SRC);
-
-    this.playerModelDownloadedEventSubscribers.forEach((sub) => {
-      sub();
-    });
   }
 
   public subscribeItemModelsDownloadedEvent(subscriber: ItemModelsDownloadedEventSubscriber): () => void {
@@ -156,14 +149,6 @@ export class WorldRenderer {
 
     return () => {
       this.defaultFontDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
-    };
-  }
-
-  public subscribePlayerModelDownloadedEvent(subscriber: PlayerModelDownloadedEventSubscriber): () => void {
-    this.playerModelDownloadedEventSubscribers.push(subscriber);
-
-    return () => {
-      this.playerModelDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
     };
   }
 
@@ -475,55 +460,47 @@ export class WorldRenderer {
     }
   }
 
-  public updatePlayers(players: PlayerModel[]): void {
-    if (!this.playerModel) return;
-
-    this.playerModelInstancesCleaner();
-    const playerInstanceStates = players.map((player) => ({
-      x: player.getPrecisePosition().getX(),
-      y: 0,
-      z: player.getPrecisePosition().getZ(),
-      rotate: (player.getDirection().toNumber() * Math.PI) / 2,
-    }));
-
-    const removeInstancesFromScene = createInstancesInScene(this.scene, this.playerModel, playerInstanceStates);
-
-    this.playerModelInstancesCleaner = removeInstancesFromScene;
-  }
-
-  public updatePlayerNames(players: PlayerModel[]): void {
+  public updatePlayer(player: PlayerModel): void {
     const font = this.fontMap[DEFAULT_FONT_SRC];
     if (!font) return;
 
-    const playerIds = players.map((p) => p.getId());
-    players.forEach((player) => {
-      const playerId = player.getId();
-      const existingPlayerNameMesh = this.existingPlayerNameFontMeshesMap[playerId];
-      if (existingPlayerNameMesh) {
-        existingPlayerNameMesh.position.set(
-          player.getPrecisePosition().getX(),
-          1.5,
-          player.getPrecisePosition().getZ()
-        );
-        existingPlayerNameMesh.rotation.set(-Math.PI / 6, 0, 0);
-      } else {
-        const playerNameMesh = createTextMesh(
-          font,
-          player.getName(),
-          player.getPosition().getX(),
-          1.5,
-          player.getPosition().getZ()
-        );
-        this.scene.add(playerNameMesh);
-        this.existingPlayerNameFontMeshesMap[playerId] = playerNameMesh;
-      }
-    });
-    const unusedPlayerNameMeshes = Object.entries(this.existingPlayerNameFontMeshesMap)
-      .filter(([playerId]) => !playerIds.includes(playerId))
-      .map(([, playerNameMesh]) => playerNameMesh);
+    if (!this.playerModel) return;
 
-    unusedPlayerNameMeshes.forEach((unusedPlayerNameMesh) => {
-      this.scene.remove(unusedPlayerNameMesh);
-    });
+    const playerId = player.getId();
+
+    const playerInstances = this.playerInstancesMap.get(playerId);
+    if (playerInstances) {
+      const [playerCharacterInstance, playerNameInstance] = playerInstances;
+      playerCharacterInstance.position.set(player.getPrecisePosition().getX(), 0, player.getPrecisePosition().getZ());
+      playerCharacterInstance.rotation.set(0, (player.getDirection().toNumber() * Math.PI) / 2, 0);
+
+      playerNameInstance.position.set(player.getPrecisePosition().getX(), 1.5, player.getPrecisePosition().getZ());
+    } else {
+      const newPlayerInstance = this.playerModel.clone();
+      newPlayerInstance.position.set(player.getPrecisePosition().getX(), 0, player.getPrecisePosition().getZ());
+      newPlayerInstance.rotation.set(0, (player.getDirection().toNumber() * Math.PI) / 2, 0);
+      this.scene.add(newPlayerInstance);
+
+      const newPlayerNameInstance = createTextMesh(
+        font,
+        player.getName(),
+        player.getPrecisePosition().getX(),
+        1.5,
+        player.getPrecisePosition().getZ()
+      );
+      this.scene.add(newPlayerNameInstance);
+
+      this.playerInstancesMap.set(playerId, [newPlayerInstance, newPlayerNameInstance]);
+    }
+  }
+
+  public removePlayer(player: PlayerModel): void {
+    const playerId = player.getId();
+    const playerInstances = this.playerInstancesMap.get(playerId);
+    if (!playerInstances) return;
+
+    const [playerCharacterInstance, playerNameInstance] = playerInstances;
+    this.scene.remove(playerCharacterInstance);
+    this.scene.remove(playerNameInstance);
   }
 }

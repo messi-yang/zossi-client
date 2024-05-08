@@ -1,6 +1,5 @@
 import { useEffect, useRef, useMemo, useCallback } from 'react';
 
-import { PlayerModel } from '@/models/world/player/player-model';
 import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { dataTestids } from './data-test-ids';
@@ -84,6 +83,24 @@ export function WorldCanvas({ worldJourneyService }: Props) {
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
+    return worldJourneyService.subscribe('PLAYER_ADDED', (player) => {
+      console.log('PLAYER_ADDED!', player);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    return worldJourneyService.subscribe('PLAYER_REMOVED', (player) => {
+      worldRenderer.removePlayer(player);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    return worldJourneyService.subscribe('PLAYER_UPDATED', ([, newPlayer]) => {
+      worldRenderer.updatePlayer(newPlayer);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
     return worldJourneyService.subscribeUnitsChanged((itemId, units) => {
       const item = worldJourneyService.getItem(itemId);
       if (!item) return;
@@ -100,31 +117,12 @@ export function WorldCanvas({ worldJourneyService }: Props) {
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
-    return worldRenderer.subscribePlayerModelDownloadedEvent(() => {
-      worldRenderer.updatePlayers(worldJourneyService.getPlayers());
-    });
-  }, [worldRenderer, worldJourneyService]);
-
-  useEffect(() => {
     return worldRenderer.subscribeDefaultFontDownloadedEvent(() => {
       Object.entries(worldJourneyService.getAllUnitsByItemId()).forEach(([itemId, units]) => {
         const item = worldJourneyService.getItem(itemId);
         if (!item) return;
         worldRenderer.updateUnitsOfItem(item, units, getUnit);
       });
-    });
-  }, [worldRenderer, worldJourneyService]);
-
-  useEffect(() => {
-    return worldRenderer.subscribeDefaultFontDownloadedEvent(() => {
-      worldRenderer.updatePlayerNames(worldJourneyService.getPlayers());
-    });
-  }, [worldRenderer, worldJourneyService]);
-
-  useEffect(() => {
-    return worldJourneyService.subscribePlayersChanged((_, players: PlayerModel[]) => {
-      worldRenderer.updatePlayers(players);
-      worldRenderer.updatePlayerNames(players);
     });
   }, [worldRenderer, worldJourneyService]);
 

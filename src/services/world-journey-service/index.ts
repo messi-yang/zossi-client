@@ -7,12 +7,13 @@ import { WorldModel } from '@/models/world/world/world-model';
 import { PositionVo } from '@/models/world/common/position-vo';
 
 import { UnitManager, UnitsChangedHandler } from './managers/unit-manager';
-import { MyPlayerChangedHandler, PlayerManager, PlayersChangedHandler } from './managers/player-manager';
+import { PlayerManager } from './managers/player-manager';
 import { PerspectiveManager, PerspectiveChangedHandler } from './managers/perspective-manager';
 import { ItemAddedHandler, ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandExecutedHandler, CommandManager } from './managers/command-manager';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
+import { EventHandlerSubscriber } from './managers/common/event-handler';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -52,7 +53,10 @@ export class WorldJourneyService {
     this.calculatePlayerPositionTickFps = 24;
     this.calculatePlayerPositionTickCount = 0;
     this.calculatePlayerPositionTicker();
-    this.subscribeMyPlayerChanged((_, newMyPlayer) => {
+
+    this.subscribe('PLAYER_UPDATED', ([, newMyPlayer]) => {
+      if (!this.isMyPlayer(newMyPlayer)) return;
+
       this.perspectiveManager.updateTargetPrecisePosition(newMyPlayer.getPrecisePosition());
     });
   }
@@ -110,6 +114,10 @@ export class WorldJourneyService {
     if (!myPlayerHeldItemId) return null;
 
     return this.getItem(myPlayerHeldItemId) || null;
+  }
+
+  public isMyPlayer(player: PlayerModel): boolean {
+    return player.getId() === this.playerManager.getMyPlayerId();
   }
 
   public getMyPlayer(): PlayerModel {
@@ -199,14 +207,6 @@ export class WorldJourneyService {
     return this.perspectiveManager.subscribePerspectiveChanged(handler);
   }
 
-  public subscribePlayersChanged(handler: PlayersChangedHandler): () => void {
-    return this.playerManager.subscribePlayersChanged(handler);
-  }
-
-  public subscribeMyPlayerChanged(handler: MyPlayerChangedHandler): () => void {
-    return this.playerManager.subscribeMyPlayerChanged(handler);
-  }
-
   public subscribeItemAdded(handler: ItemAddedHandler): () => void {
     return this.itemManager.subscribeItemAdded(handler);
   }
@@ -227,5 +227,25 @@ export class WorldJourneyService {
     return this.itemManager.subscribePlaceholderItemIdsAdded((itemIds: string[]) => {
       handler(itemIds);
     });
+  }
+
+  subscribe(eventName: 'PLAYER_ADDED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
+  subscribe(eventName: 'PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
+  subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
+  public subscribe(
+    eventName: 'PLAYER_ADDED' | 'PLAYER_UPDATED' | 'PLAYER_REMOVED',
+    subscriber: EventHandlerSubscriber<PlayerModel> | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
+  ): () => void {
+    if (eventName === 'PLAYER_ADDED') {
+      return this.playerManager.subscribePlayerAddedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
+    } else if (eventName === 'PLAYER_UPDATED') {
+      return this.playerManager.subscribePlayerUpdatedEvent(
+        subscriber as EventHandlerSubscriber<[PlayerModel, PlayerModel]>
+      );
+    } else if (eventName === 'PLAYER_REMOVED') {
+      return this.playerManager.subscribePlayerRemovedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
+    } else {
+      return () => {};
+    }
   }
 }

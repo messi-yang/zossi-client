@@ -175,11 +175,12 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribeMyPlayerChanged((oldPlayer, player) => {
+    return worldJourneyService.subscribe('PLAYER_UPDATED', ([oldPlayer, newPlayer]) => {
       if (!worldJourneyApi.current) return;
+      if (!worldJourneyService.isMyPlayer(newPlayer)) return;
 
       const oldPlayerPos = oldPlayer.getPosition();
-      const newPlayerPos = player.getPosition();
+      const newPlayerPos = newPlayer.getPosition();
       if (oldPlayerPos.isEqual(newPlayerPos)) {
         return;
       }
@@ -192,7 +193,7 @@ export function Provider({ children }: Props) {
         const unitAtOldPlayerPos = worldJourneyService.getUnit(oldPlayerPos);
         if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
 
-        const command = SendPlayerIntoPortalCommand.create(player.getId(), unitAtNewPlayerPos.getId());
+        const command = SendPlayerIntoPortalCommand.create(newPlayer.getId(), unitAtNewPlayerPos.getId());
         worldJourneyService.executeCommand(command);
       }
     });

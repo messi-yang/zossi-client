@@ -71,7 +71,9 @@ const Page: NextPage = function Page() {
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribeMyPlayerChanged((_, player) => {
+    return worldJourneyService.subscribe('PLAYER_UPDATED', ([, player]) => {
+      if (!worldJourneyService.isMyPlayer(player)) return;
+
       setMyPlayerHeldItemId(player.getHeldItemId());
       setMyPlayerPosText(player.getPosition().toText());
     });

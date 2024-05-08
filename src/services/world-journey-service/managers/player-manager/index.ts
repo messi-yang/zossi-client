@@ -1,10 +1,10 @@
 import { uniq } from 'lodash';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { PositionVo } from '@/models/world/common/position-vo';
+import { EventHandler, EventHandlerSubscriber } from '@/services/world-journey-service/managers/common/event-handler';
 
 export type PlayersChangedHandler = (oldPlayers: PlayerModel[], newPlayers: PlayerModel[]) => void;
-export type MyPlayerChangedHandler = (oldPlyaer: PlayerModel, player: PlayerModel) => void;
-
+export type PlayerUpdatedEventListener = (oldPlyaer: PlayerModel, player: PlayerModel) => void;
 export class PlayerManager {
   private myPlayerId: string;
 
@@ -12,9 +12,11 @@ export class PlayerManager {
 
   private playersMapByPos: Record<string, PlayerModel[] | undefined> = {};
 
-  private playersChangedHandlers: PlayersChangedHandler[] = [];
+  private playerAddedEventHandler = EventHandler.create<PlayerModel>();
 
-  private myPlayerChangedHandlers: MyPlayerChangedHandler[] = [];
+  private playerUpdatedEventHandler = EventHandler.create<[oldPlayer: PlayerModel, newPlayer: PlayerModel]>();
+
+  private playerRemovedEventHandler = EventHandler.create<PlayerModel>();
 
   constructor(players: PlayerModel[], myPlayerId: string) {
     this.myPlayerId = myPlayerId;
@@ -55,6 +57,10 @@ export class PlayerManager {
     return players;
   }
 
+  public getMyPlayerId(): string {
+    return this.myPlayerId;
+  }
+
   public getMyPlayer(): PlayerModel {
     const myPlayer = this.playerMap[this.myPlayerId];
     if (!myPlayer) throw new Error('My player will never be undefined');
@@ -72,10 +78,6 @@ export class PlayerManager {
 
   public getPlayer(playerId: string): PlayerModel | null {
     return this.playerMap[playerId] ?? null;
-  }
-
-  private isMyPlayer(playerId: string): boolean {
-    return playerId === this.myPlayerId;
   }
 
   private addPlayerInPlayerMap(player: PlayerModel) {
@@ -129,7 +131,7 @@ export class PlayerManager {
     this.addPlayerInPlayerMap(player);
     this.addPlayerToPlayerMapByPos(player);
 
-    this.publishPlayersChanged(this.getPlayers());
+    this.publishPlayerAddedEvent(player);
 
     return true;
   }
@@ -145,11 +147,7 @@ export class PlayerManager {
     this.updatePlayerInPlayerMap(player);
     this.updatePlayerInPlayerMapByPos(oldPlayer, player);
 
-    this.publishPlayersChanged(this.getPlayers());
-
-    if (this.isMyPlayer(player.getId())) {
-      this.publishMyPlayerChanged(oldPlayer, this.getMyPlayer());
-    }
+    this.publishPlayerUpdatedEvent(oldPlayer, player);
 
     return true;
   }
@@ -165,7 +163,7 @@ export class PlayerManager {
     this.removePlayerFromPlayerMapByPos(currentPlayer);
     this.removePlayerFromPlayerMap(playerId);
 
-    this.publishPlayersChanged(this.getPlayers());
+    this.publishPlayerRemovedEvent(currentPlayer);
 
     return true;
   }
@@ -174,33 +172,27 @@ export class PlayerManager {
     return this.playersMapByPos[pos.toString()] || null;
   }
 
-  public subscribePlayersChanged(handler: PlayersChangedHandler): () => void {
-    this.playersChangedHandlers.push(handler);
-    handler([], this.getPlayers());
-
-    return () => {
-      this.playersChangedHandlers = this.playersChangedHandlers.filter((hdl) => hdl !== handler);
-    };
+  private publishPlayerAddedEvent(player: PlayerModel) {
+    this.playerAddedEventHandler.publish(player);
   }
 
-  private publishPlayersChanged(players: PlayerModel[]) {
-    this.playersChangedHandlers.forEach((hdl) => {
-      hdl(this.getPlayers(), players);
-    });
+  public subscribePlayerAddedEvent(subscriber: EventHandlerSubscriber<PlayerModel>) {
+    return this.playerAddedEventHandler.subscribe(subscriber);
   }
 
-  public subscribeMyPlayerChanged(handler: MyPlayerChangedHandler): () => void {
-    this.myPlayerChangedHandlers.push(handler);
-    handler(this.getMyPlayer(), this.getMyPlayer());
-
-    return () => {
-      this.myPlayerChangedHandlers = this.myPlayerChangedHandlers.filter((hdl) => hdl !== handler);
-    };
+  private publishPlayerUpdatedEvent(oldPlayer: PlayerModel, newPlayer: PlayerModel) {
+    this.playerUpdatedEventHandler.publish([oldPlayer, newPlayer]);
   }
 
-  private publishMyPlayerChanged(oldPlayer: PlayerModel, player: PlayerModel) {
-    this.myPlayerChangedHandlers.forEach((hdl) => {
-      hdl(oldPlayer, player);
-    });
+  public subscribePlayerUpdatedEvent(subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>) {
+    return this.playerUpdatedEventHandler.subscribe(subscriber);
+  }
+
+  private publishPlayerRemovedEvent(player: PlayerModel) {
+    this.playerRemovedEventHandler.publish(player);
+  }
+
+  public subscribePlayerRemovedEvent(subscriber: EventHandlerSubscriber<PlayerModel>) {
+    return this.playerRemovedEventHandler.subscribe(subscriber);
   }
 }
