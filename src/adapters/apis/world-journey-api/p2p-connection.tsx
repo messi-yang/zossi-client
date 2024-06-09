@@ -21,7 +21,7 @@ export class P2pConnection {
       const dataChannel = this.p2pConn.createDataChannel('dataChannel');
       dataChannel.addEventListener('message', (evt: MessageEvent<string>) => {
         const p2pEvent = JSON.parse(evt.data) as P2pEvent;
-        console.log('Receive via P2P', p2pEvent.name, p2pEvent);
+        // console.log('Receive via P2P', p2pEvent.name, p2pEvent);
         this.onMessage(p2pEvent);
       });
       dataChannel.addEventListener('open', () => {});
@@ -61,7 +61,7 @@ export class P2pConnection {
       this.dataChannel = dataChannelEvent.channel;
       this.dataChannel.addEventListener('message', (evt) => {
         const p2pEvent = JSON.parse(evt.data) as P2pEvent;
-        console.log('Receive via P2P', p2pEvent.name, p2pEvent);
+        // console.log('Receive via P2P', p2pEvent.name, p2pEvent);s
         this.onMessage(p2pEvent);
       });
       this.dataChannel.addEventListener('open', () => {});
@@ -106,7 +106,7 @@ export class P2pConnection {
     if (!this.dataChannel) return false;
     if (this.dataChannel?.readyState !== 'open') return false;
 
-    console.log('Send via P2P', p2pEvent.name, p2pEvent);
+    // console.log('Send via P2P', p2pEvent.name, p2pEvent);
     this.dataChannel.send(JSON.stringify(p2pEvent));
     return true;
   }

@@ -82,7 +82,7 @@ export function WorldCanvas({ worldJourneyService }: Props) {
 
   useEffect(() => {
     return worldJourneyService.subscribe('PLAYER_ADDED', (player) => {
-      console.log('PLAYER_ADDED!', player);
+      worldRenderer.updatePlayer(player);
     });
   }, [worldJourneyService, worldRenderer]);
 

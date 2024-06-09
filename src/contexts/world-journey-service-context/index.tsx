@@ -208,7 +208,7 @@ export function Provider({ children }: Props) {
       }
       worldJourneyApi.current.sendCommand(command);
     });
-  }, [worldJourneyApi, worldJourneyService]);
+  }, [worldJourneyService]);
 
   const addPerspectiveDepth = useCallback(() => {
     if (!worldJourneyService) return;

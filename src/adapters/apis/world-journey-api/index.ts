@@ -77,7 +77,7 @@ export class WorldJourneyApi {
       const eventJsonString: string = await data.text();
       const event: ServerEvent = JSON.parse(eventJsonString);
 
-      console.log(event.name, event);
+      // console.log(event.name, event);
       if (event.name === ServerEventNameEnum.WorldEntered) {
         const [world, units, myPlayerId, players] = parseWorldEnteredServerEvent(event);
         const worldJourneyService = WorldJourneyService.create(world, players, myPlayerId, units);
@@ -195,7 +195,7 @@ export class WorldJourneyApi {
     if (this.socket.readyState !== this.socket.OPEN) {
       return;
     }
-    console.log('Send via Websocket', clientEvent.name, clientEvent);
+    // console.log('Send via Websocket', clientEvent.name, clientEvent);
     this.socket.send(jsonBlob);
   }
 

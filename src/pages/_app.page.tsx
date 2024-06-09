@@ -6,19 +6,22 @@ import { WorldJourneyServiceProvider } from '@/contexts/world-journey-service-co
 import { MyWorldsProvider } from '@/contexts/my-worlds-context';
 import { WorldMembersProvider } from '@/contexts/world-members-context';
 import { NotificationProvider } from '@/contexts/notification-context';
+import { WorldJourneyServiceLoadTestProvider } from '@/contexts/world-journey-load-test-context';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <NotificationProvider>
       <UserProvider>
         <AuthProvider>
-          <WorldJourneyServiceProvider>
-            <MyWorldsProvider>
-              <WorldMembersProvider>
-                <Component {...pageProps} />
-              </WorldMembersProvider>
-            </MyWorldsProvider>
-          </WorldJourneyServiceProvider>
+          <WorldJourneyServiceLoadTestProvider>
+            <WorldJourneyServiceProvider>
+              <MyWorldsProvider>
+                <WorldMembersProvider>
+                  <Component {...pageProps} />
+                </WorldMembersProvider>
+              </MyWorldsProvider>
+            </WorldJourneyServiceProvider>
+          </WorldJourneyServiceLoadTestProvider>
         </AuthProvider>
       </UserProvider>
     </NotificationProvider>

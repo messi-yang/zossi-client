@@ -16,6 +16,7 @@ import { Button } from '@/components/buttons/button';
 import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item/item-model';
 import { EmbedModal } from '@/components/modals/embed-modal';
+import { WorldJourneyServiceLoadTestContext } from '@/contexts/world-journey-load-test-context';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -36,6 +37,24 @@ const Page: NextPage = function Page() {
 
     getWorldMembers(worldId);
   }, [isSingedIn, worldId, getWorldMembers]);
+
+  const { startLoadTest, endLoadTest } = useContext(WorldJourneyServiceLoadTestContext);
+  useEffect(() => {
+    // @ts-expect-error
+    window.startLoadTest = () => {
+      // @ts-expect-error
+      startLoadTest(worldId);
+    };
+    // @ts-expect-error
+    window.endLoadTest = endLoadTest;
+
+    return () => {
+      // @ts-expect-error
+      delete window.startLoadTest;
+      // @ts-expect-error
+      delete window.endLoadTest;
+    };
+  }, [worldId, startLoadTest, endLoadTest]);
 
   const mapContainerRef = useRef<HTMLElement | null>(null);
   const {
