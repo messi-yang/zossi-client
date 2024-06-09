@@ -1,27 +1,27 @@
-import { useState, RefObject, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
-export function useDomRect(ref: RefObject<HTMLElement>): DOMRect | null {
+export function useDomRect(dom: HTMLElement | null): DOMRect | null {
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
     let resizeObserver: ResizeObserver;
-    if (ref.current && ResizeObserver) {
-      setRect(ref.current.getBoundingClientRect());
+    if (dom && ResizeObserver) {
+      setRect(dom.getBoundingClientRect());
 
       resizeObserver = new ResizeObserver((entries) => {
         const refCurrentElement = entries[0].target;
         setRect(refCurrentElement.getBoundingClientRect());
       });
-      resizeObserver.observe(ref.current);
+      resizeObserver.observe(dom);
     }
 
     return () => {
-      if (resizeObserver && ref.current) {
-        resizeObserver.unobserve(ref.current);
+      if (resizeObserver && dom) {
+        resizeObserver.unobserve(dom);
       }
     };
-  }, [ref.current]);
+  }, [dom]);
 
   return rect;
 }

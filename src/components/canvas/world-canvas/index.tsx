@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 
 import { useDomRect } from '@/hooks/use-dom-rect';
 
@@ -13,25 +13,23 @@ type Props = {
 };
 
 export function WorldCanvas({ worldJourneyService }: Props) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const wrapperDomRect = useDomRect(wrapperRef);
+  const [wrapperDom, setWrapperDom] = useState<HTMLDivElement | null>(null);
+  const wrapperDomRect = useDomRect(wrapperDom);
   const worldRenderer = useMemo(() => WorldRenderer.create(worldJourneyService.getWorldBound()), [worldJourneyService]);
   useEffect(() => {
-    if (!wrapperRef.current) return () => {};
+    if (!wrapperDom) return () => {};
 
-    worldRenderer.mount(wrapperRef.current);
+    worldRenderer.mount(wrapperDom);
 
     return () => {
-      if (!wrapperRef.current) return;
+      if (!wrapperDom) return;
 
-      worldRenderer.destroy(wrapperRef.current);
+      worldRenderer.destroy(wrapperDom);
     };
-  }, [worldRenderer, wrapperRef.current]);
+  }, [worldRenderer, wrapperDom]);
 
   useEffect(() => {
-    if (!wrapperDomRect) return;
-
-    worldRenderer.updateCanvasSize(wrapperDomRect.width, wrapperDomRect.height);
+    worldRenderer.updateCanvasSize(wrapperDomRect?.width || 0, wrapperDomRect?.height || 0);
   }, [wrapperDomRect, worldRenderer]);
 
   useEffect(() => {
@@ -126,5 +124,13 @@ export function WorldCanvas({ worldJourneyService }: Props) {
     });
   }, [worldRenderer, worldJourneyService]);
 
-  return <div data-testid={dataTestids.root} ref={wrapperRef} className="relative w-full h-full flex" />;
+  return (
+    <div
+      data-testid={dataTestids.root}
+      ref={(ref) => {
+        setWrapperDom(ref);
+      }}
+      className="relative w-full h-full flex"
+    />
+  );
 }

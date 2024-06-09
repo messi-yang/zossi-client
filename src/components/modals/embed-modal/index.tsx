@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { BaseModal } from '@/components/modals/base-modal';
 import { dataTestids } from './data-test-ids';
+import { useDomRect } from '@/hooks/use-dom-rect';
 
 type Props = {
   opened: boolean;
@@ -9,7 +10,11 @@ type Props = {
 };
 
 export function EmbedModal({ opened, embedCode, onClose }: Props) {
+  const documentBodyDomRect = useDomRect(document.body);
+
   const [iframeWidth, iframeHeight] = useMemo(() => {
+    const bodyWidth = (documentBodyDomRect?.width || 0) * 0.8;
+
     let width = '';
     let height = '';
 
@@ -20,7 +25,7 @@ export function EmbedModal({ opened, embedCode, onClose }: Props) {
 
     const iframeWidthString = iframeElement.getAttribute('width');
     if (iframeWidthString === null) {
-      width = '500px';
+      width = `${bodyWidth}px`;
     } else if (/^\d+$/.test(iframeWidthString || '')) {
       width = `${iframeWidthString}px`;
     } else {
@@ -29,7 +34,7 @@ export function EmbedModal({ opened, embedCode, onClose }: Props) {
 
     const iframeHeightString = iframeElement.getAttribute('height');
     if (iframeHeightString === null) {
-      height = '500px';
+      height = `${bodyWidth}px`;
     } else if (/^\d+$/.test(iframeHeightString || '')) {
       height = `${iframeHeightString}px`;
     } else {
@@ -37,7 +42,7 @@ export function EmbedModal({ opened, embedCode, onClose }: Props) {
     }
 
     return [width, height];
-  }, [embedCode]);
+  }, [embedCode, documentBodyDomRect]);
 
   const embedCodeWithSize = useMemo(() => {
     const tempDiv = document.createElement('div');

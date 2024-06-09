@@ -1,9 +1,7 @@
-import { createRef, MutableRefObject } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { useDomRect } from './index';
 
-function createElementRef(): MutableRefObject<HTMLDivElement | null> {
-  const ref: MutableRefObject<HTMLDivElement | null> = createRef();
+function createDivElement(): HTMLDivElement {
   const div = document.createElement('div');
   jest.spyOn(div, 'getBoundingClientRect').mockImplementation(
     (): DOMRect => ({
@@ -19,15 +17,13 @@ function createElementRef(): MutableRefObject<HTMLDivElement | null> {
     })
   );
 
-  ref.current = div;
-
-  return ref;
+  return div;
 }
 
 describe('useDomRect', () => {
   it('Should return document rect with desired values', () => {
-    const elementRef = createElementRef();
-    const { result, rerender } = renderHook(() => useDomRect(elementRef));
+    const divElement = createDivElement();
+    const { result, rerender } = renderHook(() => useDomRect(divElement));
     rerender();
     if (!result.current) {
       expect(true).toBeFalsy();
