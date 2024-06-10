@@ -3,7 +3,19 @@ import { P2pEvent } from './p2p-events';
 type OnMessage = (p2pEvent: P2pEvent) => void;
 type OnClose = () => void;
 
-export class P2pConnection {
+export interface P2pConnection {
+  createOffer(): Promise<[RTCSessionDescription | null, RTCIceCandidate[]]>;
+  acceptAnswer(answer: RTCSessionDescription, remoteIceCandidates: RTCIceCandidate[]): Promise<void>;
+  createAnswer(
+    offer: RTCSessionDescription,
+    remoteIceCandidates: RTCIceCandidate[]
+  ): Promise<[RTCSessionDescription | null, RTCIceCandidate[]]>;
+  getLocalDescription(): RTCSessionDescription | null;
+  getIceCandidates(): RTCIceCandidate[];
+  sendMessage(p2pEvent: P2pEvent): boolean;
+}
+
+class P2pConnectionImpl implements P2pConnection {
   constructor(
     private p2pConn: RTCPeerConnection,
     private iceCandidates: RTCIceCandidate[],
@@ -11,10 +23,6 @@ export class P2pConnection {
     private onMessage: OnMessage,
     private onClose: OnClose
   ) {}
-
-  static create(options: { onMessage: OnMessage; onClose: OnClose }) {
-    return new P2pConnection(new RTCPeerConnection(), [], null, options.onMessage, options.onClose);
-  }
 
   public async createOffer(): Promise<[RTCSessionDescription | null, RTCIceCandidate[]]> {
     await new Promise((resolve) => {
@@ -111,3 +119,7 @@ export class P2pConnection {
     return true;
   }
 }
+
+export const createP2pConnection = (options: { onMessage: OnMessage; onClose: OnClose }): P2pConnection => {
+  return new P2pConnectionImpl(new RTCPeerConnection(), [], null, options.onMessage, options.onClose);
+};

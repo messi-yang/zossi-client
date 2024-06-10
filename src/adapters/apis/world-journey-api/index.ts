@@ -18,7 +18,7 @@ import {
   P2pOfferSentClientEvent,
   PingClientEvent,
 } from './client-events';
-import { P2pConnection } from './p2p-connection';
+import { P2pConnection, createP2pConnection } from './p2p-connection';
 import { CommandSentP2pEvent, P2pEvent, P2pEventNameEnum } from './p2p-events';
 import { AddPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-player-command';
 import { RemovePlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-player-command';
@@ -88,7 +88,7 @@ export class WorldJourneyApi {
 
         this.worldJourneyService.executeCommand(AddPlayerCommand.create(parsePlayerDto(event.player)));
 
-        const newP2pConnection = P2pConnection.create({
+        const newP2pConnection = createP2pConnection({
           onMessage: handleP2pMessage,
           onClose: () => {
             handleP2pClose(event.player.id);
@@ -108,7 +108,7 @@ export class WorldJourneyApi {
 
         this.sendMessage(clientEvent);
       } else if (event.name === ServerEventNameEnum.P2pOfferReceived) {
-        const newP2pConnection = P2pConnection.create({
+        const newP2pConnection = createP2pConnection({
           onMessage: handleP2pMessage,
           onClose: () => {
             handleP2pClose(event.peerPlayerId);
