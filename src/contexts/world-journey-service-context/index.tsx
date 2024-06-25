@@ -30,6 +30,10 @@ import { CreateEmbedUnitCommand } from '@/services/world-journey-service/manager
 import { RemoveEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-embed-unit-command';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EmbedUnitApi } from '@/adapters/apis/embed-unit-api';
+import { BoundVo } from '@/models/world/common/bound-vo';
+import { sleep } from '@/utils/general';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
+import { MazeVo } from '@/models/global/maze-vo';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -45,7 +49,9 @@ type ContextValue = {
   changePlayerHeldItem: (item: ItemModel) => void;
   engageUnit: () => void;
   createUnit: () => void;
-  removeUnit: () => void;
+  buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
+  removeFowardUnit: () => void;
+  removeUnitsInBound: (bound: BoundVo) => void;
   rotateUnit: () => void;
   leaveWorld: () => void;
   embedCode: string | null;
@@ -64,7 +70,9 @@ const Context = createContext<ContextValue>({
   changePlayerHeldItem: () => {},
   engageUnit: () => {},
   createUnit: () => {},
-  removeUnit: () => {},
+  buildMaze: () => {},
+  removeFowardUnit: () => {},
+  removeUnitsInBound: () => {},
   rotateUnit: () => {},
   leaveWorld: () => {},
   embedCode: null,
@@ -361,49 +369,81 @@ export function Provider({ children }: Props) {
     }
   }, [worldJourneyService]);
 
-  const removeUnit = useCallback(() => {
+  const buildMaze = useCallback(
+    (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => {
+      if (!worldJourneyService) return;
+
+      const maze = MazeVo.create(dimension.getWidth(), dimension.getDepth());
+      maze.iterateSync(async (pos, isWall) => {
+        if (isWall) {
+          createFenceUnit(item.getId(), origin.shift(pos.getX(), pos.getZ()), DirectionVo.newDown());
+          await sleep(10);
+        }
+      });
+    },
+    [worldJourneyService, createFenceUnit]
+  );
+
+  const removeUnit = useCallback(
+    (pos: PositionVo) => {
+      if (!worldJourneyService) return;
+      const unitAtPos = worldJourneyService.getUnit(pos);
+      if (!unitAtPos) return;
+
+      const unitId = unitAtPos.getId();
+
+      dipatchUnitType(unitAtPos.getType(), {
+        static: () => {
+          if (!worldJourneyApi.current) return;
+
+          const command = RemoveStaticUnitCommand.create(unitId);
+          worldJourneyService.executeCommand(command);
+        },
+        fence: () => {
+          if (!worldJourneyApi.current) return;
+
+          const command = RemoveFenceUnitCommand.create(unitId);
+          worldJourneyService.executeCommand(command);
+        },
+        portal: () => {
+          if (!worldJourneyApi.current) return;
+
+          const command = RemovePortalUnitCommand.create(unitId);
+          worldJourneyService.executeCommand(command);
+        },
+        link: () => {
+          if (!worldJourneyApi.current) return;
+
+          const command = RemoveLinkUnitCommand.create(unitId);
+          worldJourneyService.executeCommand(command);
+        },
+        embed: () => {
+          if (!worldJourneyApi.current) return;
+
+          const command = RemoveEmbedUnitCommand.create(unitId);
+          worldJourneyService.executeCommand(command);
+        },
+      });
+    },
+    [worldJourneyService]
+  );
+
+  const removeFowardUnit = useCallback(() => {
     if (!worldJourneyService) return;
-
     const myPlayer = worldJourneyService.getMyPlayer();
-    const unitPos = myPlayer.getFowardPosition(1);
-    const unitAtPos = worldJourneyService.getUnit(unitPos);
-    if (!unitAtPos) return;
 
-    const unitId = unitAtPos.getId();
+    removeUnit(myPlayer.getFowardPosition(1));
+  }, [removeUnit, worldJourneyService]);
 
-    dipatchUnitType(unitAtPos.getType(), {
-      static: () => {
-        if (!worldJourneyApi.current) return;
-
-        const command = RemoveStaticUnitCommand.create(unitId);
-        worldJourneyService.executeCommand(command);
-      },
-      fence: () => {
-        if (!worldJourneyApi.current) return;
-
-        const command = RemoveFenceUnitCommand.create(unitId);
-        worldJourneyService.executeCommand(command);
-      },
-      portal: () => {
-        if (!worldJourneyApi.current) return;
-
-        const command = RemovePortalUnitCommand.create(unitId);
-        worldJourneyService.executeCommand(command);
-      },
-      link: () => {
-        if (!worldJourneyApi.current) return;
-
-        const command = RemoveLinkUnitCommand.create(unitId);
-        worldJourneyService.executeCommand(command);
-      },
-      embed: () => {
-        if (!worldJourneyApi.current) return;
-
-        const command = RemoveEmbedUnitCommand.create(unitId);
-        worldJourneyService.executeCommand(command);
-      },
-    });
-  }, [worldJourneyService]);
+  const removeUnitsInBound = useCallback(
+    (bound: BoundVo) => {
+      bound.iterateSync(async (position) => {
+        await sleep(10);
+        removeUnit(position);
+      });
+    },
+    [worldJourneyService, removeUnit]
+  );
 
   const rotateUnit = useCallback(() => {
     if (!worldJourneyService || !worldJourneyApi.current) return;
@@ -430,7 +470,9 @@ export function Provider({ children }: Props) {
     changePlayerHeldItem,
     engageUnit,
     createUnit,
-    removeUnit,
+    buildMaze,
+    removeFowardUnit,
+    removeUnitsInBound,
     rotateUnit,
     embedCode,
     cleanEmbedCode,

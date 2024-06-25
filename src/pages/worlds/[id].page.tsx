@@ -8,7 +8,7 @@ import { WorldJourneyServiceContext } from '@/contexts/world-journey-service-con
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { WorldCanvas } from '@/components/canvas/world-canvas';
 import { MessageModal } from '@/components/modals/message-modal';
-import { SelectItemsBar } from '@/components/bars/select-items-bar';
+import { ItemSelect } from '@/components/selects/item-select';
 import { Text } from '@/components/texts/text';
 import { AuthContext } from '@/contexts/auth-context';
 import { WorldMembersContext } from '@/contexts/world-members-context';
@@ -17,6 +17,11 @@ import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item/item-model';
 import { EmbedModal } from '@/components/modals/embed-modal';
 import { WorldJourneyServiceLoadTestContext } from '@/contexts/world-journey-load-test-context';
+import { RemoveUnitsModal } from '@/components/modals/remove-units-modal';
+import { PositionVo } from '@/models/world/common/position-vo';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
+import { BoundVo } from '@/models/world/common/bound-vo';
+import { BuildMazeModal } from '@/components/modals/build-maze-modal';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -70,7 +75,9 @@ const Page: NextPage = function Page() {
     changePlayerHeldItem,
     engageUnit,
     createUnit,
-    removeUnit,
+    buildMaze,
+    removeFowardUnit,
+    removeUnitsInBound,
     rotateUnit,
     embedCode,
     cleanEmbedCode,
@@ -145,9 +152,9 @@ const Page: NextPage = function Page() {
   const handleRemoveUnitPressedKeysChange = useCallback(
     (keys: string[]) => {
       if (keys.length === 0) return;
-      removeUnit();
+      removeFowardUnit();
     },
-    [removeUnit]
+    [removeFowardUnit]
   );
   useHotKeys(['KeyO'], { onPressedKeysChange: handleRemoveUnitPressedKeysChange });
 
@@ -235,6 +242,36 @@ const Page: NextPage = function Page() {
     }
   }, [enterWorld, worldId]);
 
+  const [isRemoveUnitsModalVisible, setIsRemoveUnitsModalVisible] = useState(false);
+  const handleRemoveUnitsClick = useCallback(() => {
+    setIsRemoveUnitsModalVisible(true);
+  }, []);
+
+  const handleRemoveUnitsConfirm = useCallback(
+    (origin: PositionVo, dimension: DimensionVo) => {
+      const from = origin;
+      const to = from.shift(dimension.getWidth(), dimension.getDepth());
+
+      const bound = BoundVo.create(from, to);
+      removeUnitsInBound(bound);
+      setIsRemoveUnitsModalVisible(false);
+    },
+    [removeUnitsInBound]
+  );
+
+  const [isBuildMazeModalVisible, setIsBuildMazeModalVisible] = useState(false);
+  const handleBuildMazeClick = useCallback(() => {
+    setIsBuildMazeModalVisible(true);
+  }, []);
+
+  const handleBuildMazeConfirm = useCallback(
+    (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => {
+      buildMaze(item, origin, dimension);
+      setIsBuildMazeModalVisible(false);
+    },
+    [buildMaze]
+  );
+
   return (
     <main className="relative w-full h-screen">
       {embedCode && <EmbedModal opened embedCode={embedCode} onClose={cleanEmbedCode} />}
@@ -252,14 +289,33 @@ const Page: NextPage = function Page() {
           onClose={handleShareWorldModalClose}
         />
       )}
-      <div className="absolute top-2 right-3 z-10 flex items-center">
+      {items && (
+        <BuildMazeModal
+          opened={isBuildMazeModalVisible}
+          items={items}
+          onComfirm={handleBuildMazeConfirm}
+          onCancel={() => {
+            setIsBuildMazeModalVisible(false);
+          }}
+        />
+      )}
+      <RemoveUnitsModal
+        opened={isRemoveUnitsModalVisible}
+        onComfirm={handleRemoveUnitsConfirm}
+        onCancel={() => {
+          setIsRemoveUnitsModalVisible(false);
+        }}
+      />
+      <div className="absolute top-2 right-3 z-10 flex items-center gap-2">
+        <Button text="Build Maze" onClick={handleBuildMazeClick} />
+        <Button text="Remove Units" onClick={handleRemoveUnitsClick} />
         <Button text="Share" onClick={handleShareClick} />
-        <div className="ml-3 w-24 flex justify-center">
+        <div className="w-24 flex justify-center">
           <Text size="text-xl">{myPlayerPosText}</Text>
         </div>
       </div>
-      <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
-        <SelectItemsBar items={items} selectedItemId={myPlayerHeldItemId} onSelect={handleItemSelect} />
+      <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 w-screen">
+        <ItemSelect items={items} selectedItemId={myPlayerHeldItemId} onSelect={handleItemSelect} />
       </section>
       <section
         className="absolute top-2 left-2 z-10 bg-black p-2 rounded-lg"

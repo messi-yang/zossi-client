@@ -1,16 +1,16 @@
 import { render, RenderResult, screen } from '@testing-library/react';
-import { ItemModel } from '@/models/world/item/item-model';
 import { dataTestids } from './data-test-ids';
-import { SelectItemsBar } from '.';
+import { PositionInput } from '.';
+import { PositionVo } from '@/models/world/common/position-vo';
 
-function renderSelectItemsBar(): RenderResult {
-  return render(<SelectItemsBar selectedItemId={null} items={[ItemModel.createMock()]} />);
+function renderPositionInput(): RenderResult {
+  return render(<PositionInput value={PositionVo.create(0, 0)} onInput={() => {}} />);
 }
 
-describe('SelectItemsBar', () => {
+describe('PositionInput', () => {
   it('Should render component successfully.', () => {
     try {
-      renderSelectItemsBar();
+      renderPositionInput();
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

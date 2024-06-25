@@ -3,15 +3,15 @@ import { StoryFn, Meta } from '@storybook/react';
 import { useArgs } from '@storybook/client-api';
 import { ItemModel } from '@/models/world/item/item-model';
 
-import { SelectItemsBar } from '.';
+import { ItemSelect } from '.';
 
 export default {
-  title: 'Bar/SelectItemsBar',
-  component: SelectItemsBar,
+  title: 'Select/ItemSelect',
+  component: ItemSelect,
   argTypes: {},
-} as Meta<typeof SelectItemsBar>;
+} as Meta<typeof ItemSelect>;
 
-const Template: StoryFn<typeof SelectItemsBar> = function Template(args) {
+const Template: StoryFn<typeof ItemSelect> = function Template(args) {
   const [, updateArgs] = useArgs();
 
   const handleItemSelect = (item: ItemModel) => {
@@ -20,7 +20,7 @@ const Template: StoryFn<typeof SelectItemsBar> = function Template(args) {
     });
   };
 
-  return <SelectItemsBar {...args} onSelect={handleItemSelect} />;
+  return <ItemSelect {...args} onSelect={handleItemSelect} />;
 };
 
 const items = [ItemModel.createMock(), ItemModel.createMock(), ItemModel.createMock()];

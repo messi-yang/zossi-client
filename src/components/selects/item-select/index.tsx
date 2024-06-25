@@ -9,7 +9,7 @@ type Props = {
   onSelect?: (item: ItemModel) => void;
 };
 
-export function SelectItemsBar({ selectedItemId, items, onSelect = () => {} }: Props) {
+export function ItemSelect({ selectedItemId, items, onSelect = () => {} }: Props) {
   const handleItemSelect = (item: ItemModel) => {
     onSelect(item);
   };
@@ -17,9 +17,9 @@ export function SelectItemsBar({ selectedItemId, items, onSelect = () => {} }: P
   const selectedItem = items?.find((item) => item.getId() === selectedItemId) || null;
 
   return (
-    <section data-testid={dataTestids.root} className="w-[1000px] grid grid-cols-12 gap-2">
+    <section data-testid={dataTestids.root} className="flex flex-wrap gap-2">
       {(items || []).map((item) => (
-        <div key={item.getId()} className={classnames('aspect-square')}>
+        <div key={item.getId()} className={classnames('aspect-square', 'w-16')}>
           <ItemBox item={item} active={selectedItem?.getId() === item.getId()} onClick={() => handleItemSelect(item)} />
         </div>
       ))}

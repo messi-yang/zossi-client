@@ -1,5 +1,12 @@
 export class DimensionVo {
-  constructor(private width: number, private depth: number) {}
+  constructor(private width: number, private depth: number) {
+    if (width < 1) {
+      this.width = 1;
+    }
+    if (depth < 1) {
+      this.depth = 1;
+    }
+  }
 
   static create = (width: number, depth: number): DimensionVo => {
     return new DimensionVo(width, depth);
