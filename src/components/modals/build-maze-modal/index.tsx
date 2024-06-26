@@ -24,13 +24,37 @@ export function BuildMazeModal({ opened, items, onComfirm = () => {}, onCancel }
   const availableItems = useMemo(() => items.filter((i) => i.getCompatibleUnitType() === UnitTypeEnum.Fence), [items]);
 
   const [origin, setOrigin] = useState(PositionVo.create(1, 1));
-  const [dimension, setDimension] = useState(DimensionVo.create(1, 1));
+  const [dimension, setDimension] = useState(DimensionVo.create(3, 3));
 
   useEffect(() => {
     setItem(null);
     setOrigin(PositionVo.create(1, 1));
     setDimension(DimensionVo.create(3, 3));
   }, [opened]);
+
+  const handleDimensionChange = useCallback(
+    (newDimension: DimensionVo) => {
+      const width = dimension.getWidth();
+      let newWidth = newDimension.getWidth();
+      const depth = dimension.getDepth();
+      let newDepth = newDimension.getDepth();
+
+      if (newWidth > width) {
+        newWidth = newWidth % 2 === 0 ? newWidth + 1 : newWidth;
+      } else {
+        newWidth = newWidth % 2 === 0 ? newWidth - 1 : newWidth;
+      }
+
+      if (newDepth > depth) {
+        newDepth = newDepth % 2 === 0 ? newDepth + 1 : newDepth;
+      } else {
+        newDepth = newDepth % 2 === 0 ? newDepth - 1 : newDepth;
+      }
+
+      setDimension(DimensionVo.create(newWidth < 3 ? 3 : newWidth, newDepth < 3 ? 3 : newDepth));
+    },
+    [dimension]
+  );
 
   const handleConfirm = useCallback(() => {
     if (!item) return;
@@ -52,16 +76,7 @@ export function BuildMazeModal({ opened, items, onComfirm = () => {}, onCancel }
           <PositionInput value={origin} onInput={setOrigin} />
         </Field>
         <Field label="Dimension">
-          <DimensionInput
-            value={dimension}
-            onInput={(newDimension) => {
-              const width = newDimension.getWidth();
-              const depth = newDimension.getDepth();
-              setDimension(
-                DimensionVo.create(width % 2 === 0 ? width + 1 : width, depth % 2 === 0 ? depth + 1 : depth)
-              );
-            }}
-          />
+          <DimensionInput value={dimension} onInput={handleDimensionChange} />
         </Field>
         <Button text="Confirm" onClick={handleConfirm} />
       </section>

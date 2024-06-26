@@ -289,7 +289,7 @@ const Page: NextPage = function Page() {
           onClose={handleShareWorldModalClose}
         />
       )}
-      {items && (
+      {items && worldJourneyService && (
         <BuildMazeModal
           opened={isBuildMazeModalVisible}
           items={items}
@@ -327,9 +327,7 @@ const Page: NextPage = function Page() {
         <Image src="/assets/images/logos/small-logo.png" alt="small logo" width={28} height={28} />
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
-        <section className="w-full h-full">
-          {worldJourneyService && <WorldCanvas worldJourneyService={worldJourneyService} />}
-        </section>
+        <section className="w-full h-full">{worldJourneyService && <WorldCanvas worldJourneyService={worldJourneyService} />}</section>
       </section>
     </main>
   );
