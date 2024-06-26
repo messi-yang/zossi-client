@@ -109,6 +109,14 @@ export class WorldJourneyService {
     });
   }
 
+  public addPerspectiveDepth() {
+    this.perspectiveManager.addPerspectiveDepth();
+  }
+
+  public subtractPerspectiveDepth() {
+    this.perspectiveManager.subtractPerspectiveDepth();
+  }
+
   public getWorld(): WorldModel {
     return this.world;
   }

@@ -9,8 +9,6 @@ import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { AddItemCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-item-command';
 import { SendPlayerIntoPortalCommand } from '@/services/world-journey-service/managers/command-manager/commands/send-player-into-portal-command';
-import { AddPerspectiveDepthCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-perspective-depth-command';
-import { SubtractPerspectiveDepthCommand } from '@/services/world-journey-service/managers/command-manager/commands/subtract-perspective-depth-command';
 import { ChangePlayerActionCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-action-command';
 import { CreateStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-static-unit-command';
 import { ChangePlayerHeldItemCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-held-item-command';
@@ -221,13 +219,13 @@ export function Provider({ children }: Props) {
   const addPerspectiveDepth = useCallback(() => {
     if (!worldJourneyService) return;
 
-    worldJourneyService.executeCommand(AddPerspectiveDepthCommand.create());
+    worldJourneyService.addPerspectiveDepth();
   }, [worldJourneyService]);
 
   const subtractPerspectiveDepth = useCallback(() => {
     if (!worldJourneyService) return;
 
-    worldJourneyService.executeCommand(SubtractPerspectiveDepthCommand.create());
+    worldJourneyService.subtractPerspectiveDepth();
   }, [worldJourneyService]);
 
   const makePlayerStand = useCallback(() => {
