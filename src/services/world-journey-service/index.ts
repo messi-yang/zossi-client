@@ -218,10 +218,7 @@ export class WorldJourneyService {
   ): () => void;
   subscribe(eventName: 'ITEM_ADDED', subscriber: EventHandlerSubscriber<ItemModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_ITEM_IDS_ADDED', subscriber: EventHandlerSubscriber<string[]>): () => void;
-  subscribe(
-    eventName: 'UNITS_CHANGED',
-    subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
-  ): () => void;
+  subscribe(eventName: 'UNITS_CHANGED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
   subscribe(eventName: 'PLAYER_ADDED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
@@ -246,8 +243,7 @@ export class WorldJourneyService {
   ): () => void {
     if (eventName === 'COMMAND_EXECUTED') {
       return this.commandManager.subscribeCommandExecuted(subscriber as EventHandlerSubscriber<Command>);
-    }
-    if (eventName === 'PERSPECTIVE_CHANGED') {
+    } else if (eventName === 'PERSPECTIVE_CHANGED') {
       return this.perspectiveManager.subscribePerspectiveChanged(
         subscriber as EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
       );
@@ -256,15 +252,11 @@ export class WorldJourneyService {
     } else if (eventName === 'PLACEHOLDER_ITEM_IDS_ADDED') {
       return this.itemManager.subscribePlaceholderItemIdsAdded(subscriber as EventHandlerSubscriber<string[]>);
     } else if (eventName === 'UNITS_CHANGED') {
-      return this.unitManager.subscribeUnitsChangedEvent(
-        subscriber as EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
-      );
+      return this.unitManager.subscribeUnitsChangedEvent(subscriber as EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>);
     } else if (eventName === 'PLAYER_ADDED') {
       return this.playerManager.subscribePlayerAddedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
     } else if (eventName === 'PLAYER_UPDATED') {
-      return this.playerManager.subscribePlayerUpdatedEvent(
-        subscriber as EventHandlerSubscriber<[PlayerModel, PlayerModel]>
-      );
+      return this.playerManager.subscribePlayerUpdatedEvent(subscriber as EventHandlerSubscriber<[PlayerModel, PlayerModel]>);
     } else if (eventName === 'PLAYER_REMOVED') {
       return this.playerManager.subscribePlayerRemovedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
     } else {

@@ -22,16 +22,11 @@ import { P2pConnection, createP2pConnection } from './p2p-connection';
 import { CommandSentP2pEvent, P2pEvent, P2pEventNameEnum } from './p2p-events';
 import { AddPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-player-command';
 import { RemovePlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-player-command';
+import { generateUuidV4 } from '@/utils/uuid';
+import { DateVo } from '@/models/global/date-vo';
 
-function parseWorldEnteredServerEvent(
-  event: WorldEnteredServerEvent
-): [WorldModel, UnitModel[], string, PlayerModel[]] {
-  return [
-    parseWorldDto(event.world),
-    event.units.map(parseUnitDto),
-    event.myPlayerId,
-    event.players.map(parsePlayerDto),
-  ];
+function parseWorldEnteredServerEvent(event: WorldEnteredServerEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
+  return [parseWorldDto(event.world), event.units.map(parseUnitDto), event.myPlayerId, event.players.map(parsePlayerDto)];
 }
 
 export class WorldJourneyApi {
@@ -86,7 +81,9 @@ export class WorldJourneyApi {
       } else if (event.name === ServerEventNameEnum.PlayerJoined) {
         if (!this.worldJourneyService) return;
 
-        this.worldJourneyService.executeCommand(AddPlayerCommand.create(parsePlayerDto(event.player)));
+        this.worldJourneyService.executeCommand(
+          AddPlayerCommand.createRemote(generateUuidV4(), DateVo.now().getTimestamp(), parsePlayerDto(event.player))
+        );
 
         const newP2pConnection = createP2pConnection({
           onMessage: handleP2pMessage,
@@ -135,7 +132,9 @@ export class WorldJourneyApi {
       } else if (event.name === ServerEventNameEnum.PlayerLeft) {
         if (!this.worldJourneyService) return;
 
-        this.worldJourneyService.executeCommand(RemovePlayerCommand.create(event.playerId));
+        this.worldJourneyService.executeCommand(
+          RemovePlayerCommand.createRemote(generateUuidV4(), DateVo.now().getTimestamp(), event.playerId)
+        );
       } else if (event.name === ServerEventNameEnum.CommandReceived) {
         const command = parseCommandDto(event.command);
         if (!command) return;

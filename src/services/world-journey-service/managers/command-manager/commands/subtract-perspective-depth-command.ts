@@ -8,10 +8,6 @@ export class SubtractPerspectiveDepthCommand extends BaseCommand {
     return new SubtractPerspectiveDepthCommand(generateUuidV4(), DateVo.now().getTimestamp(), false);
   }
 
-  static createRemote(id: string, timestamp: number) {
-    return new SubtractPerspectiveDepthCommand(id, timestamp, true);
-  }
-
   public getIsClientOnly = () => true;
 
   public getIsReplayable = () => false;

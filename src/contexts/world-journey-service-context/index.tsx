@@ -478,9 +478,7 @@ export function Provider({ children }: Props) {
     cleanEmbedCode,
   };
 
-  return (
-    <Context.Provider value={useMemo<ContextValue>(() => context, Object.values(context))}>{children}</Context.Provider>
-  );
+  return <Context.Provider value={useMemo<ContextValue>(() => context, Object.values(context))}>{children}</Context.Provider>;
 }
 
 export { Provider as WorldJourneyServiceProvider, Context as WorldJourneyServiceContext };

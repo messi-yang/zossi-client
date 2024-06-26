@@ -1,7 +1,5 @@
 import { BaseCommand } from '../command';
 import { CommandParams } from '../command-params';
-import { DateVo } from '@/models/global/date-vo';
-import { generateUuidV4 } from '@/utils/uuid';
 
 export class RemovePlayerCommand extends BaseCommand {
   private playerId: string;
@@ -11,17 +9,13 @@ export class RemovePlayerCommand extends BaseCommand {
     this.playerId = playerId;
   }
 
-  static create(playerId: string) {
-    return new RemovePlayerCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId);
-  }
-
   static createRemote(id: string, timestamp: number, playerId: string) {
     return new RemovePlayerCommand(id, timestamp, true, playerId);
   }
 
-  public getIsClientOnly = () => false;
+  public getIsClientOnly = () => true;
 
-  public getIsReplayable = () => false;
+  public getIsReplayable = () => true;
 
   public execute({ playerManager }: CommandParams): void {
     const currentPlayer = playerManager.getPlayer(this.playerId);
