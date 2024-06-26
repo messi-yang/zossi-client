@@ -8,8 +8,7 @@ import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { dispatchUnit } from '@/models/world/unit/utils';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
-
-export type UnitsChangedHandler = (itemId: string, units: UnitModel[]) => void;
+import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
 
 export class UnitManager {
   private unitMapById: Record<string, UnitModel | undefined>;
@@ -18,6 +17,8 @@ export class UnitManager {
 
   private unitMapByItemId: Record<string, UnitModel[] | undefined>;
 
+  private unitsChangedEventHandler = EventHandler.create<[itemId: string, units: UnitModel[]]>();
+
   private unitMapByType: {
     [UnitTypeEnum.Static]: StaticUnitModel[];
     [UnitTypeEnum.Fence]: FenceUnitModel[];
@@ -25,8 +26,6 @@ export class UnitManager {
     [UnitTypeEnum.Link]: LinkUnitModel[];
     [UnitTypeEnum.Embed]: EmbedUnitModel[];
   } = { static: [], fence: [], portal: [], link: [], embed: [] };
-
-  private unitsChangedHandler: UnitsChangedHandler[] = [];
 
   constructor(units: UnitModel[]) {
     this.unitMapById = {};
@@ -201,7 +200,7 @@ export class UnitManager {
     this.addUnitToUnitMapByItemId(unit);
     this.addUnitToUnitMapByType(unit);
 
-    this.publishUnitsChanged(unit.getItemId());
+    this.publishUnitsChangedEvent(unit.getItemId());
     return true;
   }
 
@@ -220,7 +219,7 @@ export class UnitManager {
 
     const itemIds = [currentUnit.getItemId(), unit.getItemId()];
     uniq(itemIds).forEach((itemId) => {
-      this.publishUnitsChanged(itemId);
+      this.publishUnitsChangedEvent(itemId);
     });
     return true;
   }
@@ -238,25 +237,21 @@ export class UnitManager {
     this.removeUnitFromUnitMapByItemId(currentUnit);
     this.removeUnitFromUnitMapByType(currentUnit);
 
-    this.publishUnitsChanged(currentUnit.getItemId());
+    this.publishUnitsChangedEvent(currentUnit.getItemId());
     return true;
   }
 
-  public subscribeUnitsChanged(handler: UnitsChangedHandler): () => void {
-    this.unitsChangedHandler.push(handler);
-
+  public subscribeUnitsChangedEvent(
+    subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
+  ): () => void {
     this.getAppearingItemIds().forEach((itemId) => {
-      handler(itemId, this.getUnitsByItemId(itemId));
+      subscriber([itemId, this.getUnitsByItemId(itemId)]);
     });
 
-    return () => {
-      this.unitsChangedHandler = this.unitsChangedHandler.filter((hdl) => hdl !== handler);
-    };
+    return this.unitsChangedEventHandler.subscribe(subscriber);
   }
 
-  private publishUnitsChanged(itemId: string) {
-    this.unitsChangedHandler.forEach((hdl) => {
-      hdl(itemId, this.getUnitsByItemId(itemId));
-    });
+  private publishUnitsChangedEvent(itemId: string) {
+    this.unitsChangedEventHandler.publish([itemId, this.getUnitsByItemId(itemId)]);
   }
 }

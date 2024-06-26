@@ -1,8 +1,7 @@
 import { sleep } from '@/utils/general';
 import { Command } from './command';
 import { CommandParams } from './command-params';
-
-export type CommandExecutedHandler = (command: Command) => void;
+import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
 
 export class CommandManager {
   private executedCommands: Command[];
@@ -11,7 +10,7 @@ export class CommandManager {
 
   private failedCommandMap: Record<string, true | undefined>;
 
-  private commandExecutedHandlers: CommandExecutedHandler[] = [];
+  private commandExecutedEventHandler = EventHandler.create<Command>();
 
   constructor() {
     this.executedCommands = [];
@@ -119,17 +118,11 @@ export class CommandManager {
     this.publishCommandExecuted(command);
   }
 
-  public subscribeCommandExecuted(handler: CommandExecutedHandler): () => void {
-    this.commandExecutedHandlers.push(handler);
-
-    return () => {
-      this.commandExecutedHandlers = this.commandExecutedHandlers.filter((hdl) => hdl !== handler);
-    };
+  public subscribeCommandExecuted(subscriber: EventHandlerSubscriber<Command>): () => void {
+    return this.commandExecutedEventHandler.subscribe(subscriber);
   }
 
   private publishCommandExecuted(command: Command) {
-    this.commandExecutedHandlers.forEach((hdl) => {
-      hdl(command);
-    });
+    this.commandExecutedEventHandler.publish(command);
   }
 }

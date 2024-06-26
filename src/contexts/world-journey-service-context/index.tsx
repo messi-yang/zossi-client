@@ -104,7 +104,7 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribePlaceholderItemIdsAdded((placeholderItemIds) => {
+    return worldJourneyService.subscribe('PLACEHOLDER_ITEM_IDS_ADDED', (placeholderItemIds) => {
       itemApi.getItemsOfIds(placeholderItemIds).then((_items) => {
         _items.forEach((item) => {
           worldJourneyService.executeCommand(AddItemCommand.create(item));
@@ -210,7 +210,7 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribeCommandExecuted((command) => {
+    return worldJourneyService.subscribe('COMMAND_EXECUTED', (command) => {
       if (!worldJourneyApi.current || command.getIsRemote()) {
         return;
       }

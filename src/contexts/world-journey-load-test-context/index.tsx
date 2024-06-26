@@ -26,7 +26,7 @@ export function Provider({ children }: Props) {
     if (!worldJourneyPairs) return () => {};
 
     const unsubscribers = worldJourneyPairs.map(([worldJourneyApi, worldJourneyService]) => {
-      return worldJourneyService.subscribeCommandExecuted((command) => {
+      return worldJourneyService.subscribe('COMMAND_EXECUTED', (command) => {
         worldJourneyApi.sendCommand(command);
       });
     });

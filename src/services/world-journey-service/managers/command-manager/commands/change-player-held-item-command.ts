@@ -26,16 +26,13 @@ export class ChangePlayerHeldItemCommand extends BaseCommand {
 
   public getIsReplayable = () => false;
 
-  public execute({ playerManager, itemManager }: CommandParams): void {
+  public execute({ playerManager }: CommandParams): void {
     const player = playerManager.getPlayer(this.playerId);
     if (!player) return;
 
     const clonedPlayer = player.clone();
 
     clonedPlayer.changeHeldItemId(this.itemId);
-    if (this.itemId) {
-      itemManager.addPlaceholderItemId(this.itemId);
-    }
 
     const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);
 

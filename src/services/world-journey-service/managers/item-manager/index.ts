@@ -1,8 +1,5 @@
 import { ItemModel } from '@/models/world/item/item-model';
-
-export type PlaceholderItemIdsAddedHandler = (placeholderItemIds: string[]) => void;
-
-export type ItemAddedHandler = (item: ItemModel) => void;
+import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
 
 export class ItemManager {
   /**
@@ -13,9 +10,9 @@ export class ItemManager {
 
   private itemMap: Record<string, ItemModel | undefined>;
 
-  private placeholderItemIdsAddedHandlers: PlaceholderItemIdsAddedHandler[] = [];
+  private itemAddedEventHandler = EventHandler.create<ItemModel>();
 
-  private itemAddedHandlers: ItemAddedHandler[] = [];
+  private placeholderItemIdsAddedEventHandler = EventHandler.create<string[]>();
 
   constructor(placeholderItemIds: string[]) {
     this.placeholderItemIds = placeholderItemIds;
@@ -52,7 +49,7 @@ export class ItemManager {
    * Remove the placeholder item id
    * @returns isStateChanged
    */
-  public removePlaceholderItemId(itemId: string): boolean {
+  private removePlaceholderItemId(itemId: string): boolean {
     if (!this.doesPlaceholderItemIdExist(itemId)) return false;
 
     this.placeholderItemIds = this.placeholderItemIds.filter((id) => id !== itemId);
@@ -96,39 +93,27 @@ export class ItemManager {
     return true;
   }
 
-  public subscribePlaceholderItemIdsAdded(handler: PlaceholderItemIdsAddedHandler): () => void {
-    handler(this.getPlaceholderItemIds());
+  public subscribePlaceholderItemIdsAdded(subscriber: EventHandlerSubscriber<string[]>): () => void {
+    subscriber(this.getPlaceholderItemIds());
 
-    this.placeholderItemIdsAddedHandlers.push(handler);
-
-    return () => {
-      this.placeholderItemIdsAddedHandlers = this.placeholderItemIdsAddedHandlers.filter((hdl) => hdl !== handler);
-    };
+    return this.placeholderItemIdsAddedEventHandler.subscribe(subscriber);
   }
 
   private publishPlaceholderItemIdsAdded(placeholderItemIds: string[]) {
-    this.placeholderItemIdsAddedHandlers.forEach((hdl) => {
-      hdl(placeholderItemIds);
-    });
+    this.placeholderItemIdsAddedEventHandler.publish(placeholderItemIds);
   }
 
-  public subscribeItemAdded(handler: ItemAddedHandler): () => void {
+  public subscribeItemAdded(subscriber: EventHandlerSubscriber<ItemModel>): () => void {
     Object.values(this.itemMap).forEach((item) => {
       if (item) {
-        handler(item);
+        subscriber(item);
       }
     });
 
-    this.itemAddedHandlers.push(handler);
-
-    return () => {
-      this.itemAddedHandlers = this.itemAddedHandlers.filter((hdl) => hdl !== handler);
-    };
+    return this.itemAddedEventHandler.subscribe(subscriber);
   }
 
   private publishItemAdded(item: ItemModel) {
-    this.itemAddedHandlers.forEach((hdl) => {
-      hdl(item);
-    });
+    this.itemAddedEventHandler.publish(item);
   }
 }

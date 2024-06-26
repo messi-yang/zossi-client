@@ -4,7 +4,6 @@ import { useDomRect } from '@/hooks/use-dom-rect';
 
 import { dataTestids } from './data-test-ids';
 import { WorldJourneyService } from '@/services/world-journey-service';
-import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { WorldRenderer } from './world-renderer';
 import { PositionVo } from '@/models/world/common/position-vo';
 
@@ -75,7 +74,7 @@ export function WorldCanvas({ worldJourneyService }: Props) {
   }, [worldJourneyService, worldRenderer, getUnit]);
 
   useEffect(() => {
-    return worldJourneyService.subscribeItemAdded((item) => {
+    return worldJourneyService.subscribe('ITEM_ADDED', (item) => {
       worldRenderer.downloadItemModels(item);
     });
   }, [worldJourneyService, worldRenderer]);
@@ -99,7 +98,7 @@ export function WorldCanvas({ worldJourneyService }: Props) {
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
-    return worldJourneyService.subscribeUnitsChanged((itemId, units) => {
+    return worldJourneyService.subscribe('UNITS_CHANGED', ([itemId, units]) => {
       const item = worldJourneyService.getItem(itemId);
       if (!item) return;
       worldRenderer.updateUnitsOfItem(item, units, getUnit);
@@ -107,11 +106,9 @@ export function WorldCanvas({ worldJourneyService }: Props) {
   }, [worldJourneyService, worldRenderer, getUnit]);
 
   useEffect(() => {
-    return worldJourneyService.subscribePerspectiveChanged(
-      (perspectiveDepth: number, targetPrecisePos: PrecisePositionVo) => {
-        worldRenderer.updateCameraPosition(perspectiveDepth, targetPrecisePos);
-      }
-    );
+    return worldJourneyService.subscribe('PERSPECTIVE_CHANGED', ([perspectiveDepth, targetPrecisePos]) => {
+      worldRenderer.updateCameraPosition(perspectiveDepth, targetPrecisePos);
+    });
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {

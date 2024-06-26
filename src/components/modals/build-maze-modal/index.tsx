@@ -29,7 +29,7 @@ export function BuildMazeModal({ opened, items, onComfirm = () => {}, onCancel }
   useEffect(() => {
     setItem(null);
     setOrigin(PositionVo.create(1, 1));
-    setDimension(DimensionVo.create(1, 1));
+    setDimension(DimensionVo.create(3, 3));
   }, [opened]);
 
   const handleConfirm = useCallback(() => {

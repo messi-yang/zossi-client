@@ -24,21 +24,12 @@ export class AddPlayerCommand extends BaseCommand {
 
   public getIsReplayable = () => false;
 
-  public execute({ playerManager, itemManager }: CommandParams): void {
+  public execute({ playerManager }: CommandParams): void {
     const isPlayerAdded = playerManager.addPlayer(this.player);
-
-    const playerHeldItemId = this.player.getHeldItemId();
-    let isPlaceholderItemIdAdded = false;
-    if (playerHeldItemId) {
-      isPlaceholderItemIdAdded = itemManager.addPlaceholderItemId(playerHeldItemId);
-    }
 
     this.setUndoAction(() => {
       if (isPlayerAdded) {
         playerManager.removePlayer(this.player.getId());
-      }
-      if (playerHeldItemId && isPlaceholderItemIdAdded) {
-        itemManager.removePlaceholderItemId(playerHeldItemId);
       }
     });
   }

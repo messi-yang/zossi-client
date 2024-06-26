@@ -6,14 +6,15 @@ import { UnitModel } from '@/models/world/unit/unit-model';
 import { WorldModel } from '@/models/world/world/world-model';
 import { PositionVo } from '@/models/world/common/position-vo';
 
-import { UnitManager, UnitsChangedHandler } from './managers/unit-manager';
+import { UnitManager } from './managers/unit-manager';
 import { PlayerManager } from './managers/player-manager';
-import { PerspectiveManager, PerspectiveChangedHandler } from './managers/perspective-manager';
-import { ItemAddedHandler, ItemManager, PlaceholderItemIdsAddedHandler } from './managers/item-manager';
+import { PerspectiveManager } from './managers/perspective-manager';
+import { ItemManager } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
-import { CommandExecutedHandler, CommandManager } from './managers/command-manager';
+import { CommandManager } from './managers/command-manager';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
 import { EventHandlerSubscriber } from './managers/common/event-handler';
+import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -54,10 +55,17 @@ export class WorldJourneyService {
     this.calculatePlayerPositionTickCount = 0;
     this.calculatePlayerPositionTicker();
 
-    this.subscribe('PLAYER_UPDATED', ([, newMyPlayer]) => {
-      if (!this.isMyPlayer(newMyPlayer)) return;
+    this.subscribe('UNITS_CHANGED', ([itemId]) => {
+      this.itemManager.addPlaceholderItemId(itemId);
+    });
 
-      this.perspectiveManager.updateTargetPrecisePosition(newMyPlayer.getPrecisePosition());
+    this.subscribe('PLAYER_UPDATED', ([, newPlayer]) => {
+      const playerHeldItemId = newPlayer.getHeldItemId();
+      if (playerHeldItemId) this.itemManager.addPlaceholderItemId(playerHeldItemId);
+
+      if (this.isMyPlayer(newPlayer)) {
+        this.perspectiveManager.updateTargetPrecisePosition(newPlayer.getPrecisePosition());
+      }
     });
   }
 
@@ -203,40 +211,55 @@ export class WorldJourneyService {
     animate();
   }
 
-  public subscribePerspectiveChanged(handler: PerspectiveChangedHandler): () => void {
-    return this.perspectiveManager.subscribePerspectiveChanged(handler);
-  }
-
-  public subscribeItemAdded(handler: ItemAddedHandler): () => void {
-    return this.itemManager.subscribeItemAdded(handler);
-  }
-
-  public subscribeCommandExecuted(handler: CommandExecutedHandler): () => void {
-    return this.commandManager.subscribeCommandExecuted(handler);
-  }
-
-  public subscribeUnitsChanged(handler: UnitsChangedHandler): () => void {
-    const unitsChangedUnsubscriber = this.unitManager.subscribeUnitsChanged(handler);
-
-    return () => {
-      unitsChangedUnsubscriber();
-    };
-  }
-
-  public subscribePlaceholderItemIdsAdded(handler: PlaceholderItemIdsAddedHandler): () => void {
-    return this.itemManager.subscribePlaceholderItemIdsAdded((itemIds: string[]) => {
-      handler(itemIds);
-    });
-  }
-
+  subscribe(eventName: 'COMMAND_EXECUTED', subscriber: EventHandlerSubscriber<Command>): () => void;
+  subscribe(
+    eventName: 'PERSPECTIVE_CHANGED',
+    subscriber: EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
+  ): () => void;
+  subscribe(eventName: 'ITEM_ADDED', subscriber: EventHandlerSubscriber<ItemModel>): () => void;
+  subscribe(eventName: 'PLACEHOLDER_ITEM_IDS_ADDED', subscriber: EventHandlerSubscriber<string[]>): () => void;
+  subscribe(
+    eventName: 'UNITS_CHANGED',
+    subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
+  ): () => void;
   subscribe(eventName: 'PLAYER_ADDED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   public subscribe(
-    eventName: 'PLAYER_ADDED' | 'PLAYER_UPDATED' | 'PLAYER_REMOVED',
-    subscriber: EventHandlerSubscriber<PlayerModel> | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
+    eventName:
+      | 'COMMAND_EXECUTED'
+      | 'PERSPECTIVE_CHANGED'
+      | 'ITEM_ADDED'
+      | 'PLACEHOLDER_ITEM_IDS_ADDED'
+      | 'UNITS_CHANGED'
+      | 'PLAYER_ADDED'
+      | 'PLAYER_UPDATED'
+      | 'PLAYER_REMOVED',
+    subscriber:
+      | EventHandlerSubscriber<Command>
+      | EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
+      | EventHandlerSubscriber<ItemModel>
+      | EventHandlerSubscriber<string[]>
+      | EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
+      | EventHandlerSubscriber<PlayerModel>
+      | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
   ): () => void {
-    if (eventName === 'PLAYER_ADDED') {
+    if (eventName === 'COMMAND_EXECUTED') {
+      return this.commandManager.subscribeCommandExecuted(subscriber as EventHandlerSubscriber<Command>);
+    }
+    if (eventName === 'PERSPECTIVE_CHANGED') {
+      return this.perspectiveManager.subscribePerspectiveChanged(
+        subscriber as EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
+      );
+    } else if (eventName === 'ITEM_ADDED') {
+      return this.itemManager.subscribeItemAdded(subscriber as EventHandlerSubscriber<ItemModel>);
+    } else if (eventName === 'PLACEHOLDER_ITEM_IDS_ADDED') {
+      return this.itemManager.subscribePlaceholderItemIdsAdded(subscriber as EventHandlerSubscriber<string[]>);
+    } else if (eventName === 'UNITS_CHANGED') {
+      return this.unitManager.subscribeUnitsChangedEvent(
+        subscriber as EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
+      );
+    } else if (eventName === 'PLAYER_ADDED') {
       return this.playerManager.subscribePlayerAddedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
     } else if (eventName === 'PLAYER_UPDATED') {
       return this.playerManager.subscribePlayerUpdatedEvent(
