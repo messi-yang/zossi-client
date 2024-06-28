@@ -89,8 +89,8 @@ export class WorldJourneyService {
     });
   }
 
-  public replayCommands(countOfCommands: number) {
-    this.commandManager.replayCommands(countOfCommands, {
+  public replayCommands(miliseconds: number) {
+    this.commandManager.replayCommands(miliseconds, {
       world: this.world,
       playerManager: this.playerManager,
       unitManager: this.unitManager,

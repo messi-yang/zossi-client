@@ -1,21 +1,20 @@
+import { DateVo } from '@/models/global/date-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 
 export class RemovePlayerCommand extends Command {
   private playerId: string;
 
-  constructor(id: string, timestamp: number, isRemote: boolean, playerId: string) {
-    super(id, timestamp, isRemote);
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string) {
+    super(id, createdAt, isRemote);
     this.playerId = playerId;
   }
 
-  static createRemote(id: string, timestamp: number, playerId: string) {
-    return new RemovePlayerCommand(id, timestamp, true, playerId);
+  static createRemote(id: string, createdAt: DateVo, playerId: string) {
+    return new RemovePlayerCommand(id, createdAt, true, playerId);
   }
 
   public getIsClientOnly = () => true;
-
-  public getIsReplayable = () => true;
 
   public execute({ playerManager }: CommandParams): void {
     const currentPlayer = playerManager.getPlayer(this.playerId);

@@ -10,7 +10,7 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class CreateEmbedUnitCommand extends Command {
   constructor(
     id: string,
-    timestamp: number,
+    createdAt: DateVo,
     isRemote: boolean,
     private unitId: string,
     private itemId: string,
@@ -19,13 +19,13 @@ export class CreateEmbedUnitCommand extends Command {
     private label: string | null,
     private embedCode: string
   ) {
-    super(id, timestamp, isRemote);
+    super(id, createdAt, isRemote);
   }
 
   static create(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, embedCode: string) {
     return new CreateEmbedUnitCommand(
       generateUuidV4(),
-      DateVo.now().getTimestamp(),
+      DateVo.now(),
       false,
       generateUuidV4(),
       itemId,
@@ -38,7 +38,7 @@ export class CreateEmbedUnitCommand extends Command {
 
   static createRemote(
     id: string,
-    timestamp: number,
+    createdAt: DateVo,
     unitId: string,
     itemId: string,
     position: PositionVo,
@@ -46,12 +46,10 @@ export class CreateEmbedUnitCommand extends Command {
     label: string | null,
     embedCode: string
   ) {
-    return new CreateEmbedUnitCommand(id, timestamp, true, unitId, itemId, position, direction, label, embedCode);
+    return new CreateEmbedUnitCommand(id, createdAt, true, unitId, itemId, position, direction, label, embedCode);
   }
 
   public getIsClientOnly = () => false;
-
-  public getIsReplayable = () => true;
 
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
     const item = itemManager.getItem(this.itemId);

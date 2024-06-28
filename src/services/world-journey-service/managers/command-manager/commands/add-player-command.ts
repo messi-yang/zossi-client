@@ -1,3 +1,4 @@
+import { DateVo } from '@/models/global/date-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { PlayerModel } from '@/models/world/player/player-model';
@@ -5,18 +6,16 @@ import { PlayerModel } from '@/models/world/player/player-model';
 export class AddPlayerCommand extends Command {
   private player: PlayerModel;
 
-  constructor(id: string, timestamp: number, isRemote: boolean, player: PlayerModel) {
-    super(id, timestamp, isRemote);
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, player: PlayerModel) {
+    super(id, createdAt, isRemote);
     this.player = player;
   }
 
-  static createRemote(id: string, timestamp: number, player: PlayerModel) {
-    return new AddPlayerCommand(id, timestamp, true, player);
+  static createRemote(id: string, createdAt: DateVo, player: PlayerModel) {
+    return new AddPlayerCommand(id, createdAt, true, player);
   }
 
   public getIsClientOnly = () => true;
-
-  public getIsReplayable = () => true;
 
   public execute({ playerManager }: CommandParams): void {
     const isPlayerAdded = playerManager.addPlayer(this.player);

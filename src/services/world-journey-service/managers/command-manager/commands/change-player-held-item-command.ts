@@ -8,23 +8,21 @@ export class ChangePlayerHeldItemCommand extends Command {
 
   private itemId: string;
 
-  constructor(id: string, timestamp: number, isRemote: boolean, playerId: string, itemId: string) {
-    super(id, timestamp, isRemote);
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string, itemId: string) {
+    super(id, createdAt, isRemote);
     this.playerId = playerId;
     this.itemId = itemId;
   }
 
   static create(playerId: string, itemId: string) {
-    return new ChangePlayerHeldItemCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, itemId);
+    return new ChangePlayerHeldItemCommand(generateUuidV4(), DateVo.now(), false, playerId, itemId);
   }
 
-  static createRemote(id: string, timestamp: number, playerId: string, itemId: string) {
-    return new ChangePlayerHeldItemCommand(id, timestamp, true, playerId, itemId);
+  static createRemote(id: string, createdAt: DateVo, playerId: string, itemId: string) {
+    return new ChangePlayerHeldItemCommand(id, createdAt, true, playerId, itemId);
   }
 
   public getIsClientOnly = () => true;
-
-  public getIsReplayable = () => false;
 
   public execute({ playerManager }: CommandParams): void {
     const player = playerManager.getPlayer(this.playerId);

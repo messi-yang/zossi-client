@@ -7,22 +7,20 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class RemovePortalUnitCommand extends Command {
   private unitId: string;
 
-  constructor(id: string, timestamp: number, isRemote: boolean, unitId: string) {
-    super(id, timestamp, isRemote);
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, unitId: string) {
+    super(id, createdAt, isRemote);
     this.unitId = unitId;
   }
 
   static create(unitId: string) {
-    return new RemovePortalUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, unitId);
+    return new RemovePortalUnitCommand(generateUuidV4(), DateVo.now(), false, unitId);
   }
 
-  static createRemote(id: string, timestamp: number, unitId: string) {
-    return new RemovePortalUnitCommand(id, timestamp, true, unitId);
+  static createRemote(id: string, createdAt: DateVo, unitId: string) {
+    return new RemovePortalUnitCommand(id, createdAt, true, unitId);
   }
 
   public getIsClientOnly = () => false;
-
-  public getIsReplayable = () => true;
 
   public execute({ unitManager }: CommandParams): void {
     const portalUnit = unitManager.getUnit(this.unitId);

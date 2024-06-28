@@ -7,22 +7,20 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class AddItemCommand extends Command {
   private item: ItemModel;
 
-  constructor(id: string, timestamp: number, isRemote: boolean, item: ItemModel) {
-    super(id, timestamp, isRemote);
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, item: ItemModel) {
+    super(id, createdAt, isRemote);
     this.item = item;
   }
 
   static create(item: ItemModel) {
-    return new AddItemCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, item);
+    return new AddItemCommand(generateUuidV4(), DateVo.now(), false, item);
   }
 
-  static createRemote(id: string, timestamp: number, item: ItemModel) {
-    return new AddItemCommand(id, timestamp, true, item);
+  static createRemote(id: string, createdAt: DateVo, item: ItemModel) {
+    return new AddItemCommand(id, createdAt, true, item);
   }
 
   public getIsClientOnly = () => true;
-
-  public getIsReplayable = () => false;
 
   public execute({ itemManager }: CommandParams): void {
     const isItemAdded = itemManager.addItem(this.item);

@@ -6,22 +6,20 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class RemoveFenceUnitCommand extends Command {
   private unitId: string;
 
-  constructor(id: string, timestamp: number, isRemote: boolean, unitId: string) {
-    super(id, timestamp, isRemote);
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, unitId: string) {
+    super(id, createdAt, isRemote);
     this.unitId = unitId;
   }
 
   static create(unitId: string) {
-    return new RemoveFenceUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, unitId);
+    return new RemoveFenceUnitCommand(generateUuidV4(), DateVo.now(), false, unitId);
   }
 
-  static createRemote(id: string, timestamp: number, unitId: string) {
-    return new RemoveFenceUnitCommand(id, timestamp, true, unitId);
+  static createRemote(id: string, createdAt: DateVo, unitId: string) {
+    return new RemoveFenceUnitCommand(id, createdAt, true, unitId);
   }
 
   public getIsClientOnly = () => false;
-
-  public getIsReplayable = () => true;
 
   public execute({ unitManager }: CommandParams): void {
     const currentUnit = unitManager.getUnit(this.unitId);

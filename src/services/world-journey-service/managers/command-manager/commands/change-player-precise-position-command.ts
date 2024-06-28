@@ -9,23 +9,21 @@ export class ChangePlayerPrecisePositionCommand extends Command {
 
   private precisePosition: PrecisePositionVo;
 
-  constructor(id: string, timestamp: number, isRemote: boolean, playerId: string, precisePosition: PrecisePositionVo) {
-    super(id, timestamp, isRemote);
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string, precisePosition: PrecisePositionVo) {
+    super(id, createdAt, isRemote);
     this.playerId = playerId;
     this.precisePosition = precisePosition;
   }
 
   static create(playerId: string, precisePosition: PrecisePositionVo) {
-    return new ChangePlayerPrecisePositionCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, precisePosition);
+    return new ChangePlayerPrecisePositionCommand(generateUuidV4(), DateVo.now(), false, playerId, precisePosition);
   }
 
-  static createRemote(id: string, timestamp: number, playerId: string, precisePosition: PrecisePositionVo) {
-    return new ChangePlayerPrecisePositionCommand(id, timestamp, true, playerId, precisePosition);
+  static createRemote(id: string, createdAt: DateVo, playerId: string, precisePosition: PrecisePositionVo) {
+    return new ChangePlayerPrecisePositionCommand(id, createdAt, true, playerId, precisePosition);
   }
 
   public getIsClientOnly = () => true;
-
-  public getIsReplayable = () => false;
 
   public execute({ playerManager }: CommandParams): void {
     const player = playerManager.getPlayer(this.playerId);

@@ -9,23 +9,21 @@ export class ChangePlayerActionCommand extends Command {
 
   private action: PlayerActionVo;
 
-  constructor(id: string, timestamp: number, isRemote: boolean, playerId: string, action: PlayerActionVo) {
-    super(id, timestamp, isRemote);
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string, action: PlayerActionVo) {
+    super(id, createdAt, isRemote);
     this.playerId = playerId;
     this.action = action;
   }
 
   static create(playerId: string, action: PlayerActionVo) {
-    return new ChangePlayerActionCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, action);
+    return new ChangePlayerActionCommand(generateUuidV4(), DateVo.now(), false, playerId, action);
   }
 
-  static createRemote(id: string, timestamp: number, playerId: string, action: PlayerActionVo) {
-    return new ChangePlayerActionCommand(id, timestamp, true, playerId, action);
+  static createRemote(id: string, createdAt: DateVo, playerId: string, action: PlayerActionVo) {
+    return new ChangePlayerActionCommand(id, createdAt, true, playerId, action);
   }
 
   public getIsClientOnly = () => true;
-
-  public getIsReplayable = () => false;
 
   public execute({ playerManager }: CommandParams): void {
     const player = playerManager.getPlayer(this.playerId);

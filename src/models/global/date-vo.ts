@@ -31,6 +31,12 @@ export class DateVo {
     return Math.floor(timeDiffInMilliseconds / 1000);
   }
 
+  public getMilisecondsAgo() {
+    const timeDiffInMilliseconds = new Date().getTime() - this.date.getTime();
+
+    return Math.floor(timeDiffInMilliseconds);
+  }
+
   public getMinutesAgo() {
     const timeDiffInMilliseconds = new Date().getTime() - this.date.getTime();
 
@@ -47,5 +53,11 @@ export class DateVo {
     const timeDiffInMilliseconds = new Date().getTime() - this.date.getTime();
 
     return Math.floor(timeDiffInMilliseconds / (1000 * 60 * 60 * 24));
+  }
+
+  public isBetween(dateA: DateVo, dateB: DateVo) {
+    const timestamp = this.getTimestamp();
+
+    return timestamp >= dateA.getTimestamp() && timestamp <= dateB.getTimestamp();
   }
 }

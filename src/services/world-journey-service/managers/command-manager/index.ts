@@ -2,6 +2,7 @@ import { sleep } from '@/utils/general';
 import { Command } from './command';
 import { CommandParams } from './command-params';
 import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
+import { DateVo } from '@/models/global/date-vo';
 
 export class CommandManager {
   private executedCommands: Command[];
@@ -11,6 +12,8 @@ export class CommandManager {
   private failedCommandMap: Record<string, true | undefined>;
 
   private commandExecutedEventHandler = EventHandler.create<Command>();
+
+  private isReplayingExecutedCommands = false;
 
   constructor() {
     this.executedCommands = [];
@@ -78,34 +81,45 @@ export class CommandManager {
     }
   }
 
-  public async replayCommands(countOfCommands: number, params: CommandParams) {
+  /**
+   * Replay all commands after x miliseconds ago.
+   */
+  public async replayCommands(miliseconds: number, params: CommandParams) {
+    this.isReplayingExecutedCommands = true;
+
+    const now = DateVo.now();
+    const milisecondsAgo = DateVo.fromTimestamp(now.getTimestamp() - miliseconds);
+
     const commandsToReExecute: Command[] = [];
-    let remainingCount = countOfCommands;
-    while (remainingCount > 0) {
-      const commandToReExecute = this.popExecutedCommand();
-      if (!commandToReExecute) {
-        break;
-      }
+    let command: Command | null = this.popExecutedCommand();
+    let lastCommandCreatedTimestamp = now.getTimestamp();
+    while (command && command.isCreatedBetween(milisecondsAgo, now)) {
+      await sleep(lastCommandCreatedTimestamp - command.getCreatedAtTimestamp());
+      lastCommandCreatedTimestamp = command.getCreatedAtTimestamp();
 
-      if (!commandToReExecute.getIsReplayable()) {
-        continue;
-      }
+      command.undo();
+      commandsToReExecute.push(command);
 
-      remainingCount -= 1;
-      commandToReExecute.undo();
-      commandsToReExecute.push(commandToReExecute);
-
-      await sleep(200);
+      command = this.popExecutedCommand();
     }
 
+    this.isReplayingExecutedCommands = false;
+
+    lastCommandCreatedTimestamp = now.getTimestamp();
     for (let i = commandsToReExecute.length - 1; i >= 0; i -= 1) {
       const commandToReExecute = commandsToReExecute[i];
+      await sleep(commandToReExecute.getCreatedAtTimestamp() - lastCommandCreatedTimestamp);
+      lastCommandCreatedTimestamp = commandToReExecute.getCreatedAtTimestamp();
+
       this.executeCommand(commandToReExecute, params);
-      await sleep(200);
     }
   }
 
   public executeCommand(command: Command, params: CommandParams) {
+    if (this.isReplayingExecutedCommands) {
+      return;
+    }
+
     const commandId = command.getId();
     const duplicatedCommand = this.getExecutedCommand(commandId);
     if (duplicatedCommand) return;

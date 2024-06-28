@@ -82,7 +82,7 @@ export class WorldJourneyApi {
         if (!this.worldJourneyService) return;
 
         this.worldJourneyService.executeCommand(
-          AddPlayerCommand.createRemote(generateUuidV4(), DateVo.now().getTimestamp(), parsePlayerDto(event.player))
+          AddPlayerCommand.createRemote(generateUuidV4(), DateVo.now(), parsePlayerDto(event.player))
         );
 
         const newP2pConnection = createP2pConnection({
@@ -132,9 +132,7 @@ export class WorldJourneyApi {
       } else if (event.name === ServerEventNameEnum.PlayerLeft) {
         if (!this.worldJourneyService) return;
 
-        this.worldJourneyService.executeCommand(
-          RemovePlayerCommand.createRemote(generateUuidV4(), DateVo.now().getTimestamp(), event.playerId)
-        );
+        this.worldJourneyService.executeCommand(RemovePlayerCommand.createRemote(generateUuidV4(), DateVo.now(), event.playerId));
       } else if (event.name === ServerEventNameEnum.CommandReceived) {
         const command = parseCommandDto(event.command);
         if (!command) return;
