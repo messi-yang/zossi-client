@@ -241,9 +241,7 @@ export class UnitManager {
     return true;
   }
 
-  public subscribeUnitsChangedEvent(
-    subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
-  ): () => void {
+  public subscribeUnitsChangedEvent(subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void {
     this.getAppearingItemIds().forEach((itemId) => {
       subscriber([itemId, this.getUnitsByItemId(itemId)]);
     });

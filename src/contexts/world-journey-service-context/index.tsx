@@ -382,11 +382,14 @@ export function Provider({ children }: Props) {
     [worldJourneyService, createFenceUnit]
   );
 
+  /**
+   * If a unit is removed, return true
+   */
   const removeUnit = useCallback(
-    (pos: PositionVo) => {
-      if (!worldJourneyService) return;
+    (pos: PositionVo): boolean => {
+      if (!worldJourneyService) return false;
       const unitAtPos = worldJourneyService.getUnit(pos);
-      if (!unitAtPos) return;
+      if (!unitAtPos) return false;
 
       const unitId = unitAtPos.getId();
 
@@ -422,6 +425,8 @@ export function Provider({ children }: Props) {
           worldJourneyService.executeCommand(command);
         },
       });
+
+      return true;
     },
     [worldJourneyService]
   );
@@ -436,8 +441,8 @@ export function Provider({ children }: Props) {
   const removeUnitsInBound = useCallback(
     (bound: BoundVo) => {
       bound.iterateSync(async (position) => {
-        await sleep(10);
-        removeUnit(position);
+        const removed = removeUnit(position);
+        if (removed) await sleep(10);
       });
     },
     [worldJourneyService, removeUnit]
