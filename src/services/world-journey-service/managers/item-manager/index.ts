@@ -74,7 +74,7 @@ export class ItemManager {
     if (!isPlaceholderItemIdRemoved) return false;
 
     this.itemMap[itemId] = item;
-    this.publishItemAdded(item);
+    this.publishItemAddedEvent(item);
 
     return true;
   }
@@ -93,7 +93,7 @@ export class ItemManager {
     return true;
   }
 
-  public subscribePlaceholderItemIdsAdded(subscriber: EventHandlerSubscriber<string[]>): () => void {
+  public subscribePlaceholderItemIdsAddedEvent(subscriber: EventHandlerSubscriber<string[]>): () => void {
     subscriber(this.getPlaceholderItemIds());
 
     return this.placeholderItemIdsAddedEventHandler.subscribe(subscriber);
@@ -103,7 +103,7 @@ export class ItemManager {
     this.placeholderItemIdsAddedEventHandler.publish(placeholderItemIds);
   }
 
-  public subscribeItemAdded(subscriber: EventHandlerSubscriber<ItemModel>): () => void {
+  public subscribeItemAddedEvent(subscriber: EventHandlerSubscriber<ItemModel>): () => void {
     Object.values(this.itemMap).forEach((item) => {
       if (item) {
         subscriber(item);
@@ -113,7 +113,7 @@ export class ItemManager {
     return this.itemAddedEventHandler.subscribe(subscriber);
   }
 
-  private publishItemAdded(item: ItemModel) {
+  private publishItemAddedEvent(item: ItemModel) {
     this.itemAddedEventHandler.publish(item);
   }
 }

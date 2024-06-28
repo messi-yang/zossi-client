@@ -115,14 +115,14 @@ export class CommandManager {
 
     command.execute(params);
     this.addExecutedCommand(command);
-    this.publishCommandExecuted(command);
+    this.publishCommandExecutedEvent(command);
   }
 
-  public subscribeCommandExecuted(subscriber: EventHandlerSubscriber<Command>): () => void {
+  public subscribeCommandExecutedEvent(subscriber: EventHandlerSubscriber<Command>): () => void {
     return this.commandExecutedEventHandler.subscribe(subscriber);
   }
 
-  private publishCommandExecuted(command: Command) {
+  private publishCommandExecutedEvent(command: Command) {
     this.commandExecutedEventHandler.publish(command);
   }
 }

@@ -250,15 +250,15 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
   ): () => void {
     if (eventName === 'COMMAND_EXECUTED') {
-      return this.commandManager.subscribeCommandExecuted(subscriber as EventHandlerSubscriber<Command>);
+      return this.commandManager.subscribeCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
     } else if (eventName === 'PERSPECTIVE_CHANGED') {
-      return this.perspectiveManager.subscribePerspectiveChanged(
+      return this.perspectiveManager.subscribePerspectiveChangedEvent(
         subscriber as EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
       );
     } else if (eventName === 'ITEM_ADDED') {
-      return this.itemManager.subscribeItemAdded(subscriber as EventHandlerSubscriber<ItemModel>);
+      return this.itemManager.subscribeItemAddedEvent(subscriber as EventHandlerSubscriber<ItemModel>);
     } else if (eventName === 'PLACEHOLDER_ITEM_IDS_ADDED') {
-      return this.itemManager.subscribePlaceholderItemIdsAdded(subscriber as EventHandlerSubscriber<string[]>);
+      return this.itemManager.subscribePlaceholderItemIdsAddedEvent(subscriber as EventHandlerSubscriber<string[]>);
     } else if (eventName === 'UNITS_CHANGED') {
       return this.unitManager.subscribeUnitsChangedEvent(subscriber as EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>);
     } else if (eventName === 'PLAYER_ADDED') {

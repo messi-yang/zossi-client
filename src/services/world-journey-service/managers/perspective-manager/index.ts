@@ -8,8 +8,7 @@ export class PerspectiveManager {
 
   private targetPrecisePosition: PrecisePositionVo;
 
-  private perspectiveChangedHandler =
-    EventHandler.create<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>();
+  private perspectiveChangedHandler = EventHandler.create<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>();
 
   constructor(depth: number, targetPrecisePosition: PrecisePositionVo) {
     this.depth = depth;
@@ -28,7 +27,7 @@ export class PerspectiveManager {
     if (this.depth <= 10) return false;
 
     this.depth -= 10;
-    this.publishPerspectiveChanged();
+    this.publishPerspectiveChangedEvent();
     return true;
   }
 
@@ -40,16 +39,16 @@ export class PerspectiveManager {
     if (this.depth >= 200) return false;
 
     this.depth += 10;
-    this.publishPerspectiveChanged();
+    this.publishPerspectiveChangedEvent();
     return true;
   }
 
   public updateTargetPrecisePosition(position: PrecisePositionVo) {
     this.targetPrecisePosition = position;
-    this.publishPerspectiveChanged();
+    this.publishPerspectiveChangedEvent();
   }
 
-  public subscribePerspectiveChanged(
+  public subscribePerspectiveChangedEvent(
     subscriber: EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
   ): () => void {
     subscriber([this.depth, this.targetPrecisePosition]);
@@ -57,7 +56,7 @@ export class PerspectiveManager {
     return this.perspectiveChangedHandler.subscribe(subscriber);
   }
 
-  private publishPerspectiveChanged() {
+  private publishPerspectiveChangedEvent() {
     this.perspectiveChangedHandler.publish([this.depth, this.targetPrecisePosition]);
   }
 }
