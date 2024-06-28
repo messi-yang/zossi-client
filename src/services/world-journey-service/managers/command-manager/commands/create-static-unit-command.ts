@@ -1,5 +1,5 @@
 import { DirectionVo } from '@/models/world/common/direction-vo';
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
@@ -7,7 +7,7 @@ import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class CreateStaticUnitCommand extends BaseCommand {
+export class CreateStaticUnitCommand extends Command {
   constructor(
     id: string,
     timestamp: number,
@@ -21,25 +21,10 @@ export class CreateStaticUnitCommand extends BaseCommand {
   }
 
   static create(itemId: string, position: PositionVo, direction: DirectionVo) {
-    return new CreateStaticUnitCommand(
-      generateUuidV4(),
-      DateVo.now().getTimestamp(),
-      false,
-      generateUuidV4(),
-      itemId,
-      position,
-      direction
-    );
+    return new CreateStaticUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, generateUuidV4(), itemId, position, direction);
   }
 
-  static createRemote(
-    id: string,
-    timestamp: number,
-    unitId: string,
-    itemId: string,
-    position: PositionVo,
-    direction: DirectionVo
-  ) {
+  static createRemote(id: string, timestamp: number, unitId: string, itemId: string, position: PositionVo, direction: DirectionVo) {
     return new CreateStaticUnitCommand(id, timestamp, true, unitId, itemId, position, direction);
   }
 
@@ -53,13 +38,7 @@ export class CreateStaticUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Static)) return;
 
-    const newUnit = StaticUnitModel.create(
-      this.unitId,
-      this.itemId,
-      this.position,
-      this.direction,
-      item.getDimension()
-    );
+    const newUnit = StaticUnitModel.create(this.unitId, this.itemId, this.position, this.direction, item.getDimension());
 
     const occupiedPositions = newUnit.getOccupiedPositions();
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {

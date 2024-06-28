@@ -1,7 +1,7 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 
-export class RemovePlayerCommand extends BaseCommand {
+export class RemovePlayerCommand extends Command {
   private playerId: string;
 
   constructor(id: string, timestamp: number, isRemote: boolean, playerId: string) {

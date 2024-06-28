@@ -1,5 +1,5 @@
 import { DirectionVo } from '@/models/world/common/direction-vo';
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
@@ -7,7 +7,7 @@ import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class CreateEmbedUnitCommand extends BaseCommand {
+export class CreateEmbedUnitCommand extends Command {
   constructor(
     id: string,
     timestamp: number,
@@ -59,14 +59,7 @@ export class CreateEmbedUnitCommand extends BaseCommand {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Embed)) return;
 
-    const newUnit = EmbedUnitModel.create(
-      this.unitId,
-      this.itemId,
-      this.position,
-      this.direction,
-      item.getDimension(),
-      this.label
-    );
+    const newUnit = EmbedUnitModel.create(this.unitId, this.itemId, this.position, this.direction, item.getDimension(), this.label);
 
     const occupiedPositions = newUnit.getOccupiedPositions();
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {

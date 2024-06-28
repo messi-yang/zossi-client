@@ -1,9 +1,9 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class RotateUnitCommand extends BaseCommand {
+export class RotateUnitCommand extends Command {
   private unitId: string;
 
   constructor(id: string, timestamp: number, isRemote: boolean, unitId: string) {

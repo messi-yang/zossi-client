@@ -1,10 +1,10 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class ChangePlayerPrecisePositionCommand extends BaseCommand {
+export class ChangePlayerPrecisePositionCommand extends Command {
   private playerId: string;
 
   private precisePosition: PrecisePositionVo;
@@ -16,13 +16,7 @@ export class ChangePlayerPrecisePositionCommand extends BaseCommand {
   }
 
   static create(playerId: string, precisePosition: PrecisePositionVo) {
-    return new ChangePlayerPrecisePositionCommand(
-      generateUuidV4(),
-      DateVo.now().getTimestamp(),
-      false,
-      playerId,
-      precisePosition
-    );
+    return new ChangePlayerPrecisePositionCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, playerId, precisePosition);
   }
 
   static createRemote(id: string, timestamp: number, playerId: string, precisePosition: PrecisePositionVo) {

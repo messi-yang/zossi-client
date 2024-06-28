@@ -1,4 +1,4 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
@@ -7,7 +7,7 @@ import { generateUuidV4 } from '@/utils/uuid';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
 
-export class CreateFenceUnitCommand extends BaseCommand {
+export class CreateFenceUnitCommand extends Command {
   constructor(
     id: string,
     timestamp: number,
@@ -21,25 +21,10 @@ export class CreateFenceUnitCommand extends BaseCommand {
   }
 
   static create(itemId: string, position: PositionVo, direction: DirectionVo) {
-    return new CreateFenceUnitCommand(
-      generateUuidV4(),
-      DateVo.now().getTimestamp(),
-      false,
-      generateUuidV4(),
-      itemId,
-      position,
-      direction
-    );
+    return new CreateFenceUnitCommand(generateUuidV4(), DateVo.now().getTimestamp(), false, generateUuidV4(), itemId, position, direction);
   }
 
-  static createRemote(
-    id: string,
-    timestamp: number,
-    unitId: string,
-    itemId: string,
-    position: PositionVo,
-    direction: DirectionVo
-  ) {
+  static createRemote(id: string, timestamp: number, unitId: string, itemId: string, position: PositionVo, direction: DirectionVo) {
     return new CreateFenceUnitCommand(id, timestamp, true, unitId, itemId, position, direction);
   }
 

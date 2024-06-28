@@ -1,10 +1,10 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class ChangePlayerActionCommand extends BaseCommand {
+export class ChangePlayerActionCommand extends Command {
   private playerId: string;
 
   private action: PlayerActionVo;

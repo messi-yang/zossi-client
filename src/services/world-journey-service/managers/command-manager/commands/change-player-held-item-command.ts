@@ -1,9 +1,9 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class ChangePlayerHeldItemCommand extends BaseCommand {
+export class ChangePlayerHeldItemCommand extends Command {
   private playerId: string;
 
   private itemId: string;

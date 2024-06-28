@@ -1,10 +1,10 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { ItemModel } from '@/models/world/item/item-model';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class AddItemCommand extends BaseCommand {
+export class AddItemCommand extends Command {
   private item: ItemModel;
 
   constructor(id: string, timestamp: number, isRemote: boolean, item: ItemModel) {

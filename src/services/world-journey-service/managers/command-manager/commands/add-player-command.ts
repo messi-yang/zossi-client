@@ -1,8 +1,8 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { PlayerModel } from '@/models/world/player/player-model';
 
-export class AddPlayerCommand extends BaseCommand {
+export class AddPlayerCommand extends Command {
   private player: PlayerModel;
 
   constructor(id: string, timestamp: number, isRemote: boolean, player: PlayerModel) {

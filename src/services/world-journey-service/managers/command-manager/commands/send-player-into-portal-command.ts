@@ -1,11 +1,11 @@
-import { BaseCommand } from '../command';
+import { Command } from '../command';
 import { DateVo } from '@/models/global/date-vo';
 import { CommandParams } from '../command-params';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
-export class SendPlayerIntoPortalCommand extends BaseCommand {
+export class SendPlayerIntoPortalCommand extends Command {
   constructor(id: string, timestamp: number, isRemote: boolean, private playerId: string, private unitId: string) {
     super(id, timestamp, isRemote);
   }
