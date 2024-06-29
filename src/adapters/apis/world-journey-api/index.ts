@@ -81,7 +81,7 @@ export class WorldJourneyApi {
       } else if (event.name === ServerEventNameEnum.PlayerJoined) {
         if (!this.worldJourneyService) return;
 
-        this.worldJourneyService.executeCommand(
+        this.worldJourneyService.executeRemoteCommand(
           AddPlayerCommand.createRemote(generateUuidV4(), DateVo.now(), parsePlayerDto(event.player))
         );
 
@@ -132,7 +132,7 @@ export class WorldJourneyApi {
       } else if (event.name === ServerEventNameEnum.PlayerLeft) {
         if (!this.worldJourneyService) return;
 
-        this.worldJourneyService.executeCommand(RemovePlayerCommand.createRemote(generateUuidV4(), DateVo.now(), event.playerId));
+        this.worldJourneyService.executeRemoteCommand(RemovePlayerCommand.createRemote(generateUuidV4(), DateVo.now(), event.playerId));
       } else if (event.name === ServerEventNameEnum.CommandReceived) {
         const command = parseCommandDto(event.command);
         if (!command) return;

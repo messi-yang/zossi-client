@@ -26,7 +26,7 @@ export function Provider({ children }: Props) {
     if (!worldJourneyPairs) return () => {};
 
     const unsubscribers = worldJourneyPairs.map(([worldJourneyApi, worldJourneyService]) => {
-      return worldJourneyService.subscribe('COMMAND_EXECUTED', (command) => {
+      return worldJourneyService.subscribe('LOCAL_COMMAND_EXECUTED', (command) => {
         worldJourneyApi.sendCommand(command);
       });
     });
@@ -38,7 +38,7 @@ export function Provider({ children }: Props) {
         const myPlayer = worldJourneyService.getMyPlayer();
         const playerAction = PlayerActionVo.newWalk(randomDirection);
         const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
-        worldJourneyService.executeCommand(command);
+        worldJourneyService.executeLocalCommand(command);
       }, 200);
     });
 
@@ -95,9 +95,7 @@ export function Provider({ children }: Props) {
     endLoadTest,
   };
 
-  return (
-    <Context.Provider value={useMemo<ContextValue>(() => context, Object.values(context))}>{children}</Context.Provider>
-  );
+  return <Context.Provider value={useMemo<ContextValue>(() => context, Object.values(context))}>{children}</Context.Provider>;
 }
 
 export { Provider as WorldJourneyServiceLoadTestProvider, Context as WorldJourneyServiceLoadTestContext };

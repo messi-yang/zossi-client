@@ -99,8 +99,18 @@ export class WorldJourneyService {
     });
   }
 
-  public executeCommand(command: Command) {
-    this.commandManager.executeCommand(command, {
+  public executeRemoteCommand(command: Command) {
+    this.commandManager.executeRemoteCommand(command, {
+      world: this.world,
+      playerManager: this.playerManager,
+      unitManager: this.unitManager,
+      itemManager: this.itemManager,
+      perspectiveManager: this.perspectiveManager,
+    });
+  }
+
+  public executeLocalCommand(command: Command) {
+    this.commandManager.executeLocalCommand(command, {
       world: this.world,
       playerManager: this.playerManager,
       unitManager: this.unitManager,
@@ -178,7 +188,7 @@ export class WorldJourneyService {
     const myPlayerAction = myPlayer.getAction();
     if (myPlayerAction.isStand()) {
       if (this.calculatePlayerPositionTickCount % 10 === 0) {
-        this.executeCommand(ChangePlayerPrecisePositionCommand.create(myPlayer.getId(), myPlayer.getPrecisePosition()));
+        this.executeLocalCommand(ChangePlayerPrecisePositionCommand.create(myPlayer.getId(), myPlayer.getPrecisePosition()));
       }
     } else if (myPlayerAction.isWalk()) {
       const myPlayerDirection = myPlayer.getDirection();
@@ -199,7 +209,7 @@ export class WorldJourneyService {
         return;
       }
 
-      this.executeCommand(ChangePlayerPrecisePositionCommand.create(myPlayer.getId(), nextMyPlayerPrecisePosition));
+      this.executeLocalCommand(ChangePlayerPrecisePositionCommand.create(myPlayer.getId(), nextMyPlayerPrecisePosition));
     }
   }
 
@@ -219,7 +229,7 @@ export class WorldJourneyService {
     animate();
   }
 
-  subscribe(eventName: 'COMMAND_EXECUTED', subscriber: EventHandlerSubscriber<Command>): () => void;
+  subscribe(eventName: 'LOCAL_COMMAND_EXECUTED', subscriber: EventHandlerSubscriber<Command>): () => void;
   subscribe(
     eventName: 'PERSPECTIVE_CHANGED',
     subscriber: EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
@@ -232,7 +242,7 @@ export class WorldJourneyService {
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   public subscribe(
     eventName:
-      | 'COMMAND_EXECUTED'
+      | 'LOCAL_COMMAND_EXECUTED'
       | 'PERSPECTIVE_CHANGED'
       | 'ITEM_ADDED'
       | 'PLACEHOLDER_ITEM_IDS_ADDED'
@@ -249,8 +259,8 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<PlayerModel>
       | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
   ): () => void {
-    if (eventName === 'COMMAND_EXECUTED') {
-      return this.commandManager.subscribeCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
+    if (eventName === 'LOCAL_COMMAND_EXECUTED') {
+      return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
     } else if (eventName === 'PERSPECTIVE_CHANGED') {
       return this.perspectiveManager.subscribePerspectiveChangedEvent(
         subscriber as EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>

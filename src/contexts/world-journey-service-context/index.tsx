@@ -105,7 +105,7 @@ export function Provider({ children }: Props) {
     return worldJourneyService.subscribe('PLACEHOLDER_ITEM_IDS_ADDED', (placeholderItemIds) => {
       itemApi.getItemsOfIds(placeholderItemIds).then((_items) => {
         _items.forEach((item) => {
-          worldJourneyService.executeCommand(AddItemCommand.create(item));
+          worldJourneyService.executeLocalCommand(AddItemCommand.create(item));
         });
       });
     });
@@ -122,7 +122,7 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService || !items) return;
     items.forEach((item) => {
-      worldJourneyService.executeCommand(AddItemCommand.create(item));
+      worldJourneyService.executeLocalCommand(AddItemCommand.create(item));
     });
   }, [worldJourneyService, items]);
 
@@ -156,7 +156,7 @@ export function Provider({ children }: Props) {
       },
       onCommandReceived: (command) => {
         if (!newWorldJourneyService) return;
-        newWorldJourneyService.executeCommand(command);
+        newWorldJourneyService.executeRemoteCommand(command);
       },
       onCommandFailed: (commandId) => {
         if (!newWorldJourneyService) return;
@@ -200,7 +200,7 @@ export function Provider({ children }: Props) {
         if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
 
         const command = SendPlayerIntoPortalCommand.create(newPlayer.getId(), unitAtNewPlayerPos.getId());
-        worldJourneyService.executeCommand(command);
+        worldJourneyService.executeLocalCommand(command);
       }
     });
   }, [worldJourneyService]);
@@ -208,10 +208,9 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribe('COMMAND_EXECUTED', (command) => {
-      if (!worldJourneyApi.current || command.getIsRemote()) {
-        return;
-      }
+    return worldJourneyService.subscribe('LOCAL_COMMAND_EXECUTED', (command) => {
+      if (!worldJourneyApi.current) return;
+
       worldJourneyApi.current.sendCommand(command);
     });
   }, [worldJourneyService]);
@@ -239,7 +238,7 @@ export function Provider({ children }: Props) {
     const playerDirection = worldJourneyService.getMyPlayer().getDirection();
     const playerAction = PlayerActionVo.newStand(playerDirection);
     const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
-    worldJourneyService.executeCommand(command);
+    worldJourneyService.executeLocalCommand(command);
   }, [worldJourneyService]);
 
   const makePlayerWalk = useCallback(
@@ -251,7 +250,7 @@ export function Provider({ children }: Props) {
       const myPlayer = worldJourneyService.getMyPlayer();
       const playerAction = PlayerActionVo.newWalk(direction);
       const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
-      worldJourneyService.executeCommand(command);
+      worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
@@ -261,7 +260,7 @@ export function Provider({ children }: Props) {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
       const command = ChangePlayerHeldItemCommand.create(worldJourneyService.getMyPlayer().getId(), item.getId());
-      worldJourneyService.executeCommand(command);
+      worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
@@ -271,7 +270,7 @@ export function Provider({ children }: Props) {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
       const command = CreateStaticUnitCommand.create(itemId, position, direction);
-      worldJourneyService.executeCommand(command);
+      worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
@@ -281,7 +280,7 @@ export function Provider({ children }: Props) {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
       const command = CreateFenceUnitCommand.create(itemId, position, direction);
-      worldJourneyService.executeCommand(command);
+      worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
@@ -291,7 +290,7 @@ export function Provider({ children }: Props) {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
       const command = CreatePortalUnitCommand.create(itemId, position, direction);
-      worldJourneyService.executeCommand(command);
+      worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
@@ -301,7 +300,7 @@ export function Provider({ children }: Props) {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
       const command = CreateLinkUnitCommand.create(itemId, position, direction, label, url);
-      worldJourneyService.executeCommand(command);
+      worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
@@ -311,7 +310,7 @@ export function Provider({ children }: Props) {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
       const command = CreateEmbedUnitCommand.create(itemId, position, direction, label, inputEmbedCode);
-      worldJourneyService.executeCommand(command);
+      worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
@@ -398,31 +397,31 @@ export function Provider({ children }: Props) {
           if (!worldJourneyApi.current) return;
 
           const command = RemoveStaticUnitCommand.create(unitId);
-          worldJourneyService.executeCommand(command);
+          worldJourneyService.executeLocalCommand(command);
         },
         fence: () => {
           if (!worldJourneyApi.current) return;
 
           const command = RemoveFenceUnitCommand.create(unitId);
-          worldJourneyService.executeCommand(command);
+          worldJourneyService.executeLocalCommand(command);
         },
         portal: () => {
           if (!worldJourneyApi.current) return;
 
           const command = RemovePortalUnitCommand.create(unitId);
-          worldJourneyService.executeCommand(command);
+          worldJourneyService.executeLocalCommand(command);
         },
         link: () => {
           if (!worldJourneyApi.current) return;
 
           const command = RemoveLinkUnitCommand.create(unitId);
-          worldJourneyService.executeCommand(command);
+          worldJourneyService.executeLocalCommand(command);
         },
         embed: () => {
           if (!worldJourneyApi.current) return;
 
           const command = RemoveEmbedUnitCommand.create(unitId);
-          worldJourneyService.executeCommand(command);
+          worldJourneyService.executeLocalCommand(command);
         },
       });
 
@@ -457,7 +456,7 @@ export function Provider({ children }: Props) {
     if (!unitAtPos) return;
 
     const command = RotateUnitCommand.create(unitAtPos.getId());
-    worldJourneyService.executeCommand(command);
+    worldJourneyService.executeLocalCommand(command);
   }, [worldJourneyService]);
 
   const context = {

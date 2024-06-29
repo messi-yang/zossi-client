@@ -20,6 +20,10 @@ export abstract class Command {
     return this.createdAt.isBetween(dateA, dateB);
   }
 
+  public getIsLocal() {
+    return !this.isRemote;
+  }
+
   public getIsRemote() {
     return this.isRemote;
   }

@@ -13,12 +13,15 @@ export class CommandManager {
 
   private commandExecutedEventHandler = EventHandler.create<Command>();
 
-  private isReplayingExecutedCommands = false;
+  private isBufferingNewCommands = false;
+
+  private bufferedCommands: Command[];
 
   constructor() {
     this.executedCommands = [];
     this.executedCommandMap = {};
     this.failedCommandMap = {};
+    this.bufferedCommands = [];
   }
 
   static create() {
@@ -82,10 +85,25 @@ export class CommandManager {
   }
 
   /**
+   * New local commands will be disallowed and new remote commands will be buffered
+   */
+  private startBufferingNewCommands() {
+    this.isBufferingNewCommands = true;
+  }
+
+  private stopBufferingNewCommands(params: CommandParams) {
+    console.log(this.bufferedCommands);
+    this.bufferedCommands.forEach((command) => {
+      this.executeCommand(command, params);
+    });
+    this.isBufferingNewCommands = false;
+  }
+
+  /**
    * Replay all commands after x miliseconds ago.
    */
   public async replayCommands(miliseconds: number, params: CommandParams) {
-    this.isReplayingExecutedCommands = true;
+    this.startBufferingNewCommands();
 
     const now = DateVo.now();
     const milisecondsAgo = DateVo.fromTimestamp(now.getTimestamp() - miliseconds);
@@ -103,8 +121,6 @@ export class CommandManager {
       command = this.popExecutedCommand();
     }
 
-    this.isReplayingExecutedCommands = false;
-
     lastCommandCreatedTimestamp = now.getTimestamp();
     for (let i = commandsToReExecute.length - 1; i >= 0; i -= 1) {
       const commandToReExecute = commandsToReExecute[i];
@@ -113,30 +129,45 @@ export class CommandManager {
 
       this.executeCommand(commandToReExecute, params);
     }
+
+    this.stopBufferingNewCommands(params);
   }
 
-  public executeCommand(command: Command, params: CommandParams) {
-    if (this.isReplayingExecutedCommands) {
+  public executeRemoteCommand(command: Command, params: CommandParams) {
+    if (this.isBufferingNewCommands) {
+      this.bufferedCommands.push(command);
       return;
     }
 
+    this.executeCommand(command, params);
+  }
+
+  public executeLocalCommand(command: Command, params: CommandParams) {
+    if (this.isBufferingNewCommands) return;
+
+    const isExecuted = this.executeCommand(command, params);
+    if (isExecuted) this.publishLocalCommandExecutedEvent(command);
+  }
+
+  private executeCommand(command: Command, params: CommandParams): boolean {
     const commandId = command.getId();
     const duplicatedCommand = this.getExecutedCommand(commandId);
-    if (duplicatedCommand) return;
+    if (duplicatedCommand) return false;
 
     const hasCommandAlreadyFailed = this.doesFailedCommandExist(commandId);
-    if (hasCommandAlreadyFailed) return;
+    if (hasCommandAlreadyFailed) return false;
 
     command.execute(params);
     this.addExecutedCommand(command);
-    this.publishCommandExecutedEvent(command);
+
+    return true;
   }
 
-  public subscribeCommandExecutedEvent(subscriber: EventHandlerSubscriber<Command>): () => void {
+  public subscribeLocalCommandExecutedEvent(subscriber: EventHandlerSubscriber<Command>): () => void {
     return this.commandExecutedEventHandler.subscribe(subscriber);
   }
 
-  private publishCommandExecutedEvent(command: Command) {
+  private publishLocalCommandExecutedEvent(command: Command) {
     this.commandExecutedEventHandler.publish(command);
   }
 }
