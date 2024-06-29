@@ -22,6 +22,7 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { BuildMazeModal } from '@/components/modals/build-maze-modal';
+import { ReplayCommandsModal } from '@/components/modals/replay-commands-modal';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -76,6 +77,7 @@ const Page: NextPage = function Page() {
     engageUnit,
     createUnit,
     buildMaze,
+    replayCommands,
     removeFowardUnit,
     removeUnitsInBound,
     rotateUnit,
@@ -247,6 +249,19 @@ const Page: NextPage = function Page() {
     setIsRemoveUnitsModalVisible(true);
   }, []);
 
+  const [isReplayCommandsModalVisible, setIsReplayCommandsModalVisible] = useState(false);
+  const handleReplayClick = useCallback(() => {
+    setIsReplayCommandsModalVisible(true);
+  }, []);
+
+  const handleReplayConfirm = useCallback(
+    (duration: number, speed: number) => {
+      replayCommands(duration, speed);
+      setIsReplayCommandsModalVisible(false);
+    },
+    [replayCommands]
+  );
+
   const handleRemoveUnitsConfirm = useCallback(
     (origin: PositionVo, dimension: DimensionVo) => {
       const from = origin;
@@ -299,6 +314,13 @@ const Page: NextPage = function Page() {
           }}
         />
       )}
+      <ReplayCommandsModal
+        opened={isReplayCommandsModalVisible}
+        onComfirm={handleReplayConfirm}
+        onCancel={() => {
+          setIsReplayCommandsModalVisible(false);
+        }}
+      />
       <RemoveUnitsModal
         opened={isRemoveUnitsModalVisible}
         onComfirm={handleRemoveUnitsConfirm}
@@ -307,6 +329,7 @@ const Page: NextPage = function Page() {
         }}
       />
       <div className="absolute top-2 right-3 z-10 flex items-center gap-2">
+        <Button text="Replay" onClick={handleReplayClick} />
         <Button text="Build Maze" onClick={handleBuildMazeClick} />
         <Button text="Remove Units" onClick={handleRemoveUnitsClick} />
         <Button text="Share" onClick={handleShareClick} />

@@ -92,7 +92,6 @@ export class CommandManager {
   }
 
   private stopBufferingNewCommands(params: CommandParams) {
-    console.log(this.bufferedCommands);
     this.bufferedCommands.forEach((command) => {
       this.executeCommand(command, params);
     });
@@ -100,19 +99,22 @@ export class CommandManager {
   }
 
   /**
-   * Replay all commands after x miliseconds ago.
+   * Replays commands executed within the specified duration.
+   * @param duration miliseconds
+   * @param speed 1 means normal speed
+   * @param params
    */
-  public async replayCommands(miliseconds: number, params: CommandParams) {
+  public async replayCommands(duration: number, speed: number, params: CommandParams) {
     this.startBufferingNewCommands();
 
     const now = DateVo.now();
-    const milisecondsAgo = DateVo.fromTimestamp(now.getTimestamp() - miliseconds);
+    const milisecondsAgo = DateVo.fromTimestamp(now.getTimestamp() - duration);
 
     const commandsToReExecute: Command[] = [];
     let command: Command | null = this.popExecutedCommand();
     let lastCommandCreatedTimestamp = now.getTimestamp();
     while (command && command.isCreatedBetween(milisecondsAgo, now)) {
-      await sleep(lastCommandCreatedTimestamp - command.getCreatedAtTimestamp());
+      await sleep((lastCommandCreatedTimestamp - command.getCreatedAtTimestamp()) / speed);
       lastCommandCreatedTimestamp = command.getCreatedAtTimestamp();
 
       command.undo();
@@ -124,7 +126,7 @@ export class CommandManager {
     lastCommandCreatedTimestamp = now.getTimestamp();
     for (let i = commandsToReExecute.length - 1; i >= 0; i -= 1) {
       const commandToReExecute = commandsToReExecute[i];
-      await sleep(commandToReExecute.getCreatedAtTimestamp() - lastCommandCreatedTimestamp);
+      await sleep((commandToReExecute.getCreatedAtTimestamp() - lastCommandCreatedTimestamp) / speed);
       lastCommandCreatedTimestamp = commandToReExecute.getCreatedAtTimestamp();
 
       this.executeCommand(commandToReExecute, params);

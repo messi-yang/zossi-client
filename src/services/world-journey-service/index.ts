@@ -89,8 +89,13 @@ export class WorldJourneyService {
     });
   }
 
-  public replayCommands(miliseconds: number) {
-    this.commandManager.replayCommands(miliseconds, {
+  /**
+   * Replays commands executed within the specified duration.
+   * @param duration miliseconds
+   * @param speed 1 is normal speed
+   */
+  public replayCommands(duration: number, speed: number) {
+    this.commandManager.replayCommands(duration, speed, {
       world: this.world,
       playerManager: this.playerManager,
       unitManager: this.unitManager,

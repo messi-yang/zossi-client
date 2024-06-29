@@ -48,6 +48,7 @@ type ContextValue = {
   engageUnit: () => void;
   createUnit: () => void;
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
+  replayCommands: (duration: number, speed: number) => void;
   removeFowardUnit: () => void;
   removeUnitsInBound: (bound: BoundVo) => void;
   rotateUnit: () => void;
@@ -69,6 +70,7 @@ const Context = createContext<ContextValue>({
   engageUnit: () => {},
   createUnit: () => {},
   buildMaze: () => {},
+  replayCommands: () => {},
   removeFowardUnit: () => {},
   removeUnitsInBound: () => {},
   rotateUnit: () => {},
@@ -381,6 +383,15 @@ export function Provider({ children }: Props) {
     [worldJourneyService, createFenceUnit]
   );
 
+  const replayCommands = useCallback(
+    (duration: number, speed: number) => {
+      if (!worldJourneyService) return;
+
+      worldJourneyService.replayCommands(duration, speed);
+    },
+    [worldJourneyService]
+  );
+
   /**
    * If a unit is removed, return true
    */
@@ -473,6 +484,7 @@ export function Provider({ children }: Props) {
     engageUnit,
     createUnit,
     buildMaze,
+    replayCommands,
     removeFowardUnit,
     removeUnitsInBound,
     rotateUnit,
