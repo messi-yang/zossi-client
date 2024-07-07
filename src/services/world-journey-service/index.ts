@@ -1,4 +1,3 @@
-import { uniq } from 'lodash';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { ItemModel } from '@/models/world/item/item-model';
 import { PlayerModel } from '@/models/world/player/player-model';
@@ -44,25 +43,15 @@ export class WorldJourneyService {
 
     this.perspectiveManager = PerspectiveManager.create(30, this.playerManager.getMyPlayer().getPrecisePosition());
 
-    const appearingItemIdsInUnitManager = this.unitManager.getAppearingItemIds();
-    const appearingItemIdsInPlayerManager = this.playerManager.getAppearingItemIds();
-    const appearingItemIds = uniq([...appearingItemIdsInUnitManager, ...appearingItemIdsInPlayerManager]);
-    this.itemManager = ItemManager.create(appearingItemIds);
+    this.itemManager = ItemManager.create();
 
-    this.commandManager = CommandManager.create();
+    this.commandManager = CommandManager.create(world, this.playerManager, this.unitManager, this.itemManager, this.perspectiveManager);
 
     this.calculatePlayerPositionTickFps = 24;
     this.calculatePlayerPositionTickCount = 0;
     this.calculatePlayerPositionTicker();
 
-    this.subscribe('UNITS_CHANGED', ([itemId]) => {
-      this.itemManager.addPlaceholderItemId(itemId);
-    });
-
     this.subscribe('PLAYER_UPDATED', ([, newPlayer]) => {
-      const playerHeldItemId = newPlayer.getHeldItemId();
-      if (playerHeldItemId) this.itemManager.addPlaceholderItemId(playerHeldItemId);
-
       if (this.isMyPlayer(newPlayer)) {
         this.perspectiveManager.updateTargetPrecisePosition(newPlayer.getPrecisePosition());
       }
@@ -80,13 +69,7 @@ export class WorldJourneyService {
   }
 
   public removeFailedCommand(commandId: string) {
-    this.commandManager.removeFailedCommand(commandId, {
-      world: this.world,
-      playerManager: this.playerManager,
-      unitManager: this.unitManager,
-      itemManager: this.itemManager,
-      perspectiveManager: this.perspectiveManager,
-    });
+    this.commandManager.removeFailedCommand(commandId);
   }
 
   /**
@@ -95,33 +78,15 @@ export class WorldJourneyService {
    * @param speed 1 is normal speed
    */
   public replayCommands(duration: number, speed: number) {
-    this.commandManager.replayCommands(duration, speed, {
-      world: this.world,
-      playerManager: this.playerManager,
-      unitManager: this.unitManager,
-      itemManager: this.itemManager,
-      perspectiveManager: this.perspectiveManager,
-    });
+    this.commandManager.replayCommands(duration, speed);
   }
 
   public executeRemoteCommand(command: Command) {
-    this.commandManager.executeRemoteCommand(command, {
-      world: this.world,
-      playerManager: this.playerManager,
-      unitManager: this.unitManager,
-      itemManager: this.itemManager,
-      perspectiveManager: this.perspectiveManager,
-    });
+    this.commandManager.executeRemoteCommand(command);
   }
 
   public executeLocalCommand(command: Command) {
-    this.commandManager.executeLocalCommand(command, {
-      world: this.world,
-      playerManager: this.playerManager,
-      unitManager: this.unitManager,
-      itemManager: this.itemManager,
-      perspectiveManager: this.perspectiveManager,
-    });
+    this.commandManager.executeLocalCommand(command);
   }
 
   public addPerspectiveDepth() {
@@ -180,6 +145,13 @@ export class WorldJourneyService {
    */
   public getAllUnitsByItemId() {
     return this.unitManager.getAllUnitsByItemId();
+  }
+
+  /**
+   * Load item
+   */
+  public loadItem(item: ItemModel) {
+    this.itemManager.loadItem(item);
   }
 
   public getItem(itemId: string): ItemModel | null {

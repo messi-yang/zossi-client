@@ -43,10 +43,6 @@ export class UnitManager {
     return new UnitManager(units);
   }
 
-  public getAppearingItemIds(): string[] {
-    return Object.keys(this.unitMapByItemId);
-  }
-
   public getUnit(id: string): UnitModel | null {
     return this.unitMapById[id] || null;
   }
@@ -242,10 +238,6 @@ export class UnitManager {
   }
 
   public subscribeUnitsChangedEvent(subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void {
-    this.getAppearingItemIds().forEach((itemId) => {
-      subscriber([itemId, this.getUnitsByItemId(itemId)]);
-    });
-
     return this.unitsChangedEventHandler.subscribe(subscriber);
   }
 

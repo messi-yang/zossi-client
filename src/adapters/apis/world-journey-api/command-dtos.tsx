@@ -411,7 +411,6 @@ export const toCommandDto = (sourceCommand: Command) => {
       playerId: command.getPlayerId(),
       itemId: command.getItemId(),
     }),
-    [CommandNameEnum.AddItem]: () => null,
     [CommandNameEnum.AddPlayer]: () => null,
     [CommandNameEnum.RemovePlayer]: () => null,
   });

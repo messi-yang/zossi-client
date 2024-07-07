@@ -25,15 +25,26 @@ export abstract class Command {
     return this.createdAt.isBetween(dateA, dateB);
   }
 
+  /**
+   * If the command is initially executed in local?
+   */
   public getIsLocal() {
     return !this.isRemote;
   }
 
+  /**
+   * If the command is initially executed from remote?
+   */
   public getIsRemote() {
     return this.isRemote;
   }
 
   public abstract getIsClientOnly(): boolean;
+
+  /**
+   * Get required item id for executing this command
+   */
+  public abstract getRequiredItemId(): string | null;
 
   public abstract execute(params: CommandParams): void;
 

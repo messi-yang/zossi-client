@@ -8,8 +8,7 @@ export class MazeVo {
   private grid: boolean[][];
 
   constructor(width: number, depth: number) {
-    if (width < 0 || width % 2 !== 1 || depth < 0 || depth % 2 !== 1)
-      throw Error(`Width ${width} or depth ${depth} is not valid`);
+    if (width < 0 || width % 2 !== 1 || depth < 0 || depth % 2 !== 1) throw Error(`Width ${width} or depth ${depth} is not valid`);
     this.width = width;
     this.depth = depth;
     this.grid = this.initializeGrid();
@@ -22,9 +21,9 @@ export class MazeVo {
 
   private initializeGrid(): boolean[][] {
     const grid = [];
-    for (let y = 0; y < this.depth; y += 1) {
+    for (let x = 0; x < this.width; x += 1) {
       const row = [];
-      for (let x = 0; x < this.width; x += 1) {
+      for (let z = 0; z < this.depth; z += 1) {
         row.push(true);
       }
       grid.push(row);
@@ -34,9 +33,9 @@ export class MazeVo {
 
   private initializeVisited(): boolean[][] {
     const visited = [];
-    for (let y = 0; y < this.depth; y += 1) {
+    for (let x = 0; x < this.width; x += 1) {
       const row = [];
-      for (let x = 0; x < this.width; x += 1) {
+      for (let z = 0; z < this.depth; z += 1) {
         row.push(false);
       }
       visited.push(row);
@@ -44,39 +43,39 @@ export class MazeVo {
     return visited;
   }
 
-  private generateMaze(x: number, y: number): void {
+  private generateMaze(x: number, z: number): void {
     const directions = [
-      { dx: 0, dy: -1 },
-      { dx: 1, dy: 0 },
-      { dx: 0, dy: 1 },
-      { dx: -1, dy: 0 },
+      { dx: 0, dz: -1 },
+      { dx: 1, dz: 0 },
+      { dx: 0, dz: 1 },
+      { dx: -1, dz: 0 },
     ];
 
     const visited = this.initializeVisited();
-    const stack: { x: number; y: number }[] = [];
-    this.grid[y][x] = false;
-    stack.push({ x, y });
+    const stack: { x: number; z: number }[] = [];
+    this.grid[z][x] = false;
+    stack.push({ x, z });
 
     while (stack.length > 0) {
       const current = stack[stack.length - 1];
       const availableDirections = directions.filter((d) => {
         const nx = current.x + d.dx * 2;
-        const ny = current.y + d.dy * 2;
-        return nx >= 0 && ny >= 0 && nx < this.width && ny < this.depth && !visited[ny][nx];
+        const nz = current.z + d.dz * 2;
+        return nx >= 0 && nz >= 0 && nx < this.width && nz < this.depth && !visited[nx][nz];
       });
 
       if (availableDirections.length > 0) {
-        const { dx, dy } = availableDirections[Math.floor(Math.random() * availableDirections.length)];
+        const { dx, dz } = availableDirections[Math.floor(Math.random() * availableDirections.length)];
         const nx = current.x + dx;
-        const ny = current.y + dy;
+        const nz = current.z + dz;
         const nx2 = current.x + dx * 2;
-        const ny2 = current.y + dy * 2;
+        const nz2 = current.z + dz * 2;
 
-        this.grid[ny][nx] = false;
-        this.grid[ny2][nx2] = false;
-        visited[ny2][nx2] = true;
+        this.grid[nx][nz] = false;
+        this.grid[nx2][nz2] = false;
+        visited[nx2][nz2] = true;
 
-        stack.push({ x: nx2, y: ny2 });
+        stack.push({ x: nx2, z: nz2 });
       } else {
         stack.pop();
       }

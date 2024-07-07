@@ -31,6 +31,8 @@ export class CreatePortalUnitCommand extends Command {
 
   public getIsClientOnly = () => false;
 
+  public getRequiredItemId = () => this.itemId;
+
   public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
     const item = itemManager.getItem(this.itemId);
     if (!item) return;

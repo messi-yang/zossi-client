@@ -18,6 +18,8 @@ export class AddPlayerCommand extends Command {
 
   public getIsClientOnly = () => true;
 
+  public getRequiredItemId = () => null;
+
   public execute({ playerManager }: CommandParams): void {
     const isPlayerAdded = playerManager.addPlayer(this.player);
 

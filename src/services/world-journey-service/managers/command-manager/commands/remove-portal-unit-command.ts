@@ -23,6 +23,8 @@ export class RemovePortalUnitCommand extends Command {
 
   public getIsClientOnly = () => false;
 
+  public getRequiredItemId = () => null;
+
   public execute({ unitManager }: CommandParams): void {
     const portalUnit = unitManager.getUnit(this.unitId);
     if (!portalUnit) return;

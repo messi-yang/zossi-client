@@ -21,6 +21,8 @@ export class SendPlayerIntoPortalCommand extends Command {
 
   public getIsClientOnly = () => true;
 
+  public getRequiredItemId = () => null;
+
   public execute({ unitManager, playerManager }: CommandParams): void {
     const portalUnit = unitManager.getUnit(this.unitId);
     if (!portalUnit || !(portalUnit instanceof PortalUnitModel)) return;

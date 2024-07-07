@@ -22,6 +22,8 @@ export class RemoveEmbedUnitCommand extends Command {
 
   public getIsClientOnly = () => false;
 
+  public getRequiredItemId = () => null;
+
   public execute({ unitManager }: CommandParams): void {
     const currentUnit = unitManager.getUnit(this.unitId);
     if (!currentUnit) return;

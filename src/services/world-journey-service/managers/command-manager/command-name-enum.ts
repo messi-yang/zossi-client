@@ -1,5 +1,4 @@
 export enum CommandNameEnum {
-  AddItem = 'ADD_ITEM',
   AddPlayer = 'ADD_PLAYER',
   RemovePlayer = 'REMOVE_PLAYER',
   MovePlayer = 'MOVE_PLAYER',

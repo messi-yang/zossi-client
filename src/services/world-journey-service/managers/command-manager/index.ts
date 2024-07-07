@@ -1,31 +1,45 @@
 import { sleep } from '@/utils/general';
 import { Command } from './command';
-import { CommandParams } from './command-params';
 import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
 import { DateVo } from '@/models/global/date-vo';
+import { WorldModel } from '@/models/world/world/world-model';
+import { PlayerManager } from '../player-manager';
+import { UnitManager } from '../unit-manager';
+import { ItemManager } from '../item-manager';
+import { PerspectiveManager } from '../perspective-manager';
 
 export class CommandManager {
-  private executedCommands: Command[];
-
-  private executedCommandMap: Record<string, Command | undefined>;
-
-  private failedCommandMap: Record<string, true | undefined>;
-
-  private commandExecutedEventHandler = EventHandler.create<Command>();
-
-  private isBufferingNewCommands = false;
-
-  private bufferedCommands: Command[];
-
-  constructor() {
-    this.executedCommands = [];
-    this.executedCommandMap = {};
-    this.failedCommandMap = {};
-    this.bufferedCommands = [];
+  constructor(
+    private world: WorldModel,
+    private playerManager: PlayerManager,
+    private unitManager: UnitManager,
+    private itemManager: ItemManager,
+    private perspectiveManager: PerspectiveManager,
+    private executedCommands: Command[] = [],
+    private executedCommandMap: Record<string, Command | undefined> = {},
+    private failedCommandMap: Record<string, true | undefined> = {},
+    private isReplayingCommands = false,
+    private bufferedCommandsFromReplaying: Command[] = [],
+    private commandExecutedEventHandler: EventHandler<Command> = EventHandler.create<Command>(),
+    /**
+     * Some commands require item to be loaded prior to execution, so we buffer them when those items
+     * are not loaded yet when getting executed.
+     */
+    private bufferedCommandsByRequiredItem: Map<string, Command[]> = new Map()
+  ) {
+    this.itemManager.subscribeItemAddedEvent((item) => {
+      this.executeBufferedCommandsOfRequiredItem(item.getId());
+    });
   }
 
-  static create() {
-    return new CommandManager();
+  static create(
+    world: WorldModel,
+    playerManager: PlayerManager,
+    unitManager: UnitManager,
+    itemManager: ItemManager,
+    perspectiveManager: PerspectiveManager
+  ) {
+    return new CommandManager(world, playerManager, unitManager, itemManager, perspectiveManager);
   }
 
   private getExecutedCommand(id: string): Command | null {
@@ -53,7 +67,7 @@ export class CommandManager {
     return command;
   }
 
-  public removeFailedCommand(commandId: string, params: CommandParams) {
+  public removeFailedCommand(commandId: string) {
     this.addFailedCommandId(commandId);
 
     const executedCommand = this.getExecutedCommand(commandId);
@@ -80,32 +94,17 @@ export class CommandManager {
 
     for (let i = commandsToReExecute.length - 1; i >= 0; i -= 1) {
       const commandToReExecute = commandsToReExecute[i];
-      this.executeCommand(commandToReExecute, params);
+      this.executeCommand(commandToReExecute);
     }
-  }
-
-  /**
-   * New local commands will be disallowed and new remote commands will be buffered
-   */
-  private startBufferingNewCommands() {
-    this.isBufferingNewCommands = true;
-  }
-
-  private stopBufferingNewCommands(params: CommandParams) {
-    this.bufferedCommands.forEach((command) => {
-      this.executeCommand(command, params);
-    });
-    this.isBufferingNewCommands = false;
   }
 
   /**
    * Replays commands executed within the specified duration.
    * @param duration miliseconds
    * @param speed 1 means normal speed
-   * @param params
    */
-  public async replayCommands(duration: number, speed: number, params: CommandParams) {
-    this.startBufferingNewCommands();
+  public async replayCommands(duration: number, speed: number) {
+    this.isReplayingCommands = true;
 
     const now = DateVo.now();
     const milisecondsAgo = DateVo.fromTimestamp(now.getTimestamp() - duration);
@@ -129,40 +128,74 @@ export class CommandManager {
       await sleep((commandToReExecute.getCreatedAtTimestamp() - lastCommandCreatedTimestamp) / speed);
       lastCommandCreatedTimestamp = commandToReExecute.getCreatedAtTimestamp();
 
-      this.executeCommand(commandToReExecute, params);
+      this.executeCommand(commandToReExecute);
     }
 
-    this.stopBufferingNewCommands(params);
+    this.bufferedCommandsFromReplaying.forEach((_command) => {
+      this.executeCommand(_command);
+    });
+    this.isReplayingCommands = false;
   }
 
-  public executeRemoteCommand(command: Command, params: CommandParams) {
-    if (this.isBufferingNewCommands) {
-      this.bufferedCommands.push(command);
+  public executeRemoteCommand(command: Command) {
+    if (this.isReplayingCommands) {
+      this.bufferedCommandsFromReplaying.push(command);
       return;
     }
-
-    this.executeCommand(command, params);
+    this.executeCommand(command);
   }
 
-  public executeLocalCommand(command: Command, params: CommandParams) {
-    if (this.isBufferingNewCommands) return;
-
-    const isExecuted = this.executeCommand(command, params);
-    if (isExecuted) this.publishLocalCommandExecutedEvent(command);
+  public executeLocalCommand(command: Command) {
+    if (this.isReplayingCommands) return;
+    if (this.executeCommand(command)) {
+      this.publishLocalCommandExecutedEvent(command);
+    }
   }
 
-  private executeCommand(command: Command, params: CommandParams): boolean {
+  private executeCommand(command: Command): boolean {
     const commandId = command.getId();
+
+    // If it's already executed, do nothing
     const duplicatedCommand = this.getExecutedCommand(commandId);
     if (duplicatedCommand) return false;
 
+    // If it failed before, do nothing
     const hasCommandAlreadyFailed = this.doesFailedCommandExist(commandId);
     if (hasCommandAlreadyFailed) return false;
 
-    command.execute(params);
+    const requiredItemId = command.getRequiredItemId();
+    if (requiredItemId) {
+      const requiredItem = this.itemManager.getItem(requiredItemId);
+      // If required item is not yet loaded
+      if (!requiredItem) {
+        this.itemManager.addPlaceholderItemId(requiredItemId);
+        const bufferedCommands = this.bufferedCommandsByRequiredItem.get(requiredItemId);
+        this.bufferedCommandsByRequiredItem.set(requiredItemId, bufferedCommands ? [...bufferedCommands, command] : [command]);
+        return false;
+      }
+    }
+
+    command.execute({
+      world: this.world,
+      playerManager: this.playerManager,
+      itemManager: this.itemManager,
+      perspectiveManager: this.perspectiveManager,
+      unitManager: this.unitManager,
+    });
     this.addExecutedCommand(command);
 
     return true;
+  }
+
+  private executeBufferedCommandsOfRequiredItem(itemId: string): void {
+    const bufferedCommands = this.bufferedCommandsByRequiredItem.get(itemId);
+    if (!bufferedCommands) return;
+
+    bufferedCommands.forEach((command) => {
+      this.executeCommand(command);
+    });
+
+    this.bufferedCommandsByRequiredItem.delete(itemId);
   }
 
   public subscribeLocalCommandExecutedEvent(subscriber: EventHandlerSubscriber<Command>): () => void {

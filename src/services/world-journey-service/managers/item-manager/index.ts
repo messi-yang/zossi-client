@@ -3,8 +3,7 @@ import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
 
 export class ItemManager {
   /**
-   * Placeholder item ids that stores the references to the coming items.
-   * Once the items are added to the storage, the corresponding placeholder item ids will be erased.
+   * Placeholder item means the item that is required by the client but missing.
    */
   private placeholderItemIds: string[];
 
@@ -14,26 +13,21 @@ export class ItemManager {
 
   private placeholderItemIdsAddedEventHandler = EventHandler.create<string[]>();
 
-  constructor(placeholderItemIds: string[]) {
-    this.placeholderItemIds = placeholderItemIds;
+  constructor() {
+    this.placeholderItemIds = [];
     this.itemMap = {};
   }
 
-  static create(placeholderItemIds: string[]) {
-    return new ItemManager(placeholderItemIds);
+  static create() {
+    return new ItemManager();
   }
 
   private getPlaceholderItemIds(): string[] {
     return this.placeholderItemIds;
   }
 
-  private doesPlaceholderItemIdExist(itemId: string): boolean {
-    return this.placeholderItemIds.some((id) => itemId === id);
-  }
-
   /**
-   * Add the placeholder item id
-   * @returns isStateChanged
+   * Add placeholder item id to let the manager know we are missing this item.
    */
   public addPlaceholderItemId(itemId: string): boolean {
     if (this.getItem(itemId)) {
@@ -47,13 +41,9 @@ export class ItemManager {
 
   /**
    * Remove the placeholder item id
-   * @returns isStateChanged
    */
-  private removePlaceholderItemId(itemId: string): boolean {
-    if (!this.doesPlaceholderItemIdExist(itemId)) return false;
-
+  private removePlaceholderItemId(itemId: string): void {
     this.placeholderItemIds = this.placeholderItemIds.filter((id) => id !== itemId);
-    return true;
   }
 
   public getItem(itemId: string): ItemModel | null {
@@ -61,22 +51,17 @@ export class ItemManager {
   }
 
   /**
-   * Add the item
-   * @returns isStateChanged
+   * Load item
    */
-  public addItem(item: ItemModel): boolean {
+  public loadItem(item: ItemModel): void {
     const itemId = item.getId();
 
     const existingItem = this.getItem(itemId);
-    if (existingItem) return false;
+    if (existingItem) return;
 
-    const isPlaceholderItemIdRemoved = this.removePlaceholderItemId(itemId);
-    if (!isPlaceholderItemIdRemoved) return false;
-
+    this.removePlaceholderItemId(itemId);
     this.itemMap[itemId] = item;
     this.publishItemAddedEvent(item);
-
-    return true;
   }
 
   /**
@@ -94,7 +79,10 @@ export class ItemManager {
   }
 
   public subscribePlaceholderItemIdsAddedEvent(subscriber: EventHandlerSubscriber<string[]>): () => void {
-    subscriber(this.getPlaceholderItemIds());
+    const placeholderItemIds = this.getPlaceholderItemIds();
+    if (placeholderItemIds.length > 0) {
+      subscriber(placeholderItemIds);
+    }
 
     return this.placeholderItemIdsAddedEventHandler.subscribe(subscriber);
   }

@@ -17,6 +17,8 @@ export class RemovePlayerCommand extends Command {
 
   public getIsClientOnly = () => true;
 
+  public getRequiredItemId = () => null;
+
   public execute({ playerManager }: CommandParams): void {
     const currentPlayer = playerManager.getPlayer(this.playerId);
     if (!currentPlayer) return;

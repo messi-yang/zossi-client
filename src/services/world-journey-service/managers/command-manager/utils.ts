@@ -1,6 +1,5 @@
 import { Command } from './command';
 import { CommandNameEnum } from './command-name-enum';
-import { AddItemCommand } from './commands/add-item-command';
 import { AddPlayerCommand } from './commands/add-player-command';
 import { ChangePlayerActionCommand } from './commands/change-player-action-command';
 import { ChangePlayerHeldItemCommand } from './commands/change-player-held-item-command';
@@ -25,7 +24,6 @@ import { SendPlayerIntoPortalCommand } from './commands/send-player-into-portal-
 export const dispatchCommand = <T>(
   command: Command,
   mapper: {
-    [CommandNameEnum.AddItem]: (_unit: AddItemCommand) => T;
     [CommandNameEnum.AddPlayer]: (_unit: AddPlayerCommand) => T;
     [CommandNameEnum.ChangePlayerAction]: (_unit: ChangePlayerActionCommand) => T;
     [CommandNameEnum.ChangePlayerHeldItem]: (_unit: ChangePlayerHeldItemCommand) => T;
@@ -45,9 +43,7 @@ export const dispatchCommand = <T>(
     [CommandNameEnum.SendPlayerIntoPortal]: (_unit: SendPlayerIntoPortalCommand) => T;
   }
 ): T => {
-  if (command instanceof AddItemCommand) {
-    return mapper[CommandNameEnum.AddItem](command);
-  } else if (command instanceof AddPlayerCommand) {
+  if (command instanceof AddPlayerCommand) {
     return mapper[CommandNameEnum.AddPlayer](command);
   } else if (command instanceof ChangePlayerActionCommand) {
     return mapper[CommandNameEnum.ChangePlayerAction](command);

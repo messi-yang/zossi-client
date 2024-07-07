@@ -7,7 +7,6 @@ import { WorldJourneyService } from '@/services/world-journey-service';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
-import { AddItemCommand } from '@/services/world-journey-service/managers/command-manager/commands/add-item-command';
 import { SendPlayerIntoPortalCommand } from '@/services/world-journey-service/managers/command-manager/commands/send-player-into-portal-command';
 import { ChangePlayerActionCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-action-command';
 import { CreateStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-static-unit-command';
@@ -107,7 +106,7 @@ export function Provider({ children }: Props) {
     return worldJourneyService.subscribe('PLACEHOLDER_ITEM_IDS_ADDED', (placeholderItemIds) => {
       itemApi.getItemsOfIds(placeholderItemIds).then((_items) => {
         _items.forEach((item) => {
-          worldJourneyService.executeLocalCommand(AddItemCommand.create(item));
+          worldJourneyService.loadItem(item);
         });
       });
     });
@@ -124,7 +123,7 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService || !items) return;
     items.forEach((item) => {
-      worldJourneyService.executeLocalCommand(AddItemCommand.create(item));
+      worldJourneyService.loadItem(item);
     });
   }, [worldJourneyService, items]);
 

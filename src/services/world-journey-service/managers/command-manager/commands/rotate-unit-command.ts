@@ -22,6 +22,8 @@ export class RotateUnitCommand extends Command {
 
   public getIsClientOnly = () => false;
 
+  public getRequiredItemId = () => null;
+
   public execute({ unitManager }: CommandParams): void {
     const unit = unitManager.getUnit(this.unitId);
     if (!unit) return;

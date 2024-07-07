@@ -25,6 +25,8 @@ export class ChangePlayerHeldItemCommand extends Command {
 
   public getIsClientOnly = () => true;
 
+  public getRequiredItemId = () => this.itemId;
+
   public execute({ playerManager }: CommandParams): void {
     const player = playerManager.getPlayer(this.playerId);
     if (!player) return;

@@ -1,4 +1,3 @@
-import { uniq } from 'lodash';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { EventHandler, EventHandlerSubscriber } from '@/services/world-journey-service/managers/common/event-handler';
@@ -34,19 +33,6 @@ export class PlayerManager {
 
   static create(players: PlayerModel[], myPlayerId: string) {
     return new PlayerManager(players, myPlayerId);
-  }
-
-  public getAppearingItemIds(): string[] {
-    const itemIds: string[] = [];
-
-    this.getPlayers().forEach((p) => {
-      const heldItemId = p.getHeldItemId();
-      if (heldItemId) {
-        itemIds.push(heldItemId);
-      }
-    });
-
-    return uniq(itemIds);
   }
 
   public getPlayers(): PlayerModel[] {
