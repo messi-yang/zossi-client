@@ -1,4 +1,4 @@
-import { CommandDto } from './commands';
+import { CommandDto } from './command-dtos';
 
 export enum ClientEventNameEnum {
   Ping = 'PING',

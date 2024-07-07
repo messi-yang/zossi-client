@@ -1,4 +1,5 @@
 import { Command } from '../command';
+import { CommandNameEnum } from '../command-name-enum';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
@@ -7,7 +8,7 @@ export class RemoveStaticUnitCommand extends Command {
   private unitId: string;
 
   constructor(id: string, createdAt: DateVo, isRemote: boolean, unitId: string) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.RemoveStaticUnit, id, createdAt, isRemote);
     this.unitId = unitId;
   }
 

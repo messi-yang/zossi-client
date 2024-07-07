@@ -3,12 +3,13 @@ import { CommandParams } from '../command-params';
 import { ItemModel } from '@/models/world/item/item-model';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class AddItemCommand extends Command {
   private item: ItemModel;
 
   constructor(id: string, createdAt: DateVo, isRemote: boolean, item: ItemModel) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.AddItem, id, createdAt, isRemote);
     this.item = item;
   }
 

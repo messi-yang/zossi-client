@@ -2,12 +2,13 @@ import { DateVo } from '@/models/global/date-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { PlayerModel } from '@/models/world/player/player-model';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class AddPlayerCommand extends Command {
   private player: PlayerModel;
 
   constructor(id: string, createdAt: DateVo, isRemote: boolean, player: PlayerModel) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.AddPlayer, id, createdAt, isRemote);
     this.player = player;
   }
 

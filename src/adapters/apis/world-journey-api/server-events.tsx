@@ -1,7 +1,7 @@
 import { PlayerDto } from '../dtos/player-dto';
 import { UnitDto } from '../dtos/unit-dto';
 import { WorldDto } from '../dtos/world-dto';
-import { CommandDto } from './commands';
+import { CommandDto } from './command-dtos';
 
 export enum ServerEventNameEnum {
   WorldEntered = 'WORLD_ENTERED',

@@ -3,6 +3,7 @@ import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { generateUuidV4 } from '@/utils/uuid';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class ChangePlayerActionCommand extends Command {
   private playerId: string;
@@ -10,7 +11,7 @@ export class ChangePlayerActionCommand extends Command {
   private action: PlayerActionVo;
 
   constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string, action: PlayerActionVo) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.ChangePlayerAction, id, createdAt, isRemote);
     this.playerId = playerId;
     this.action = action;
   }

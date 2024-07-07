@@ -6,6 +6,7 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class CreateStaticUnitCommand extends Command {
   constructor(
@@ -17,7 +18,7 @@ export class CreateStaticUnitCommand extends Command {
     private position: PositionVo,
     private direction: DirectionVo
   ) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.CreateStaticUnit, id, createdAt, isRemote);
   }
 
   static create(itemId: string, position: PositionVo, direction: DirectionVo) {

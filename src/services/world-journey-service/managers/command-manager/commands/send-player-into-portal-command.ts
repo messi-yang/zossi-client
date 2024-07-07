@@ -4,10 +4,11 @@ import { CommandParams } from '../command-params';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class SendPlayerIntoPortalCommand extends Command {
   constructor(id: string, createdAt: DateVo, isRemote: boolean, private playerId: string, private unitId: string) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.SendPlayerIntoPortal, id, createdAt, isRemote);
   }
 
   static create(playerId: string, unitId: string) {

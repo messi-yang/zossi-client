@@ -3,6 +3,7 @@ import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class ChangePlayerPrecisePositionCommand extends Command {
   private playerId: string;
@@ -10,7 +11,7 @@ export class ChangePlayerPrecisePositionCommand extends Command {
   private precisePosition: PrecisePositionVo;
 
   constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string, precisePosition: PrecisePositionVo) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.ChangePlayerPrecisePosition, id, createdAt, isRemote);
     this.playerId = playerId;
     this.precisePosition = precisePosition;
   }

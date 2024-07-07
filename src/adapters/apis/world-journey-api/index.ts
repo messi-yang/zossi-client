@@ -1,4 +1,4 @@
-import { parseCommandDto, toCommandDto } from './commands';
+import { parseCommandDto, toCommandDto } from './command-dtos';
 import { WorldModel } from '@/models/world/world/world-model';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { UnitModel } from '@/models/world/unit/unit-model';

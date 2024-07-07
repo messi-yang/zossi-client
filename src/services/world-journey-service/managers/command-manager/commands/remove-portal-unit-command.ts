@@ -3,12 +3,13 @@ import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { generateUuidV4 } from '@/utils/uuid';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class RemovePortalUnitCommand extends Command {
   private unitId: string;
 
   constructor(id: string, createdAt: DateVo, isRemote: boolean, unitId: string) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.RemovePortalUnit, id, createdAt, isRemote);
     this.unitId = unitId;
   }
 

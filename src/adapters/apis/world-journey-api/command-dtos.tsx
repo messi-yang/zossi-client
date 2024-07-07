@@ -21,25 +21,8 @@ import { PrecisePositionDto, newPrecisePositionDto } from '../dtos/precise-posit
 import { ChangePlayerPrecisePositionCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-precise-position-command';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { DateVo } from '@/models/global/date-vo';
-
-enum CommandNameEnum {
-  MovePlayer = 'MOVE_PLAYER',
-  ChangePlayerAction = 'CHANGE_PLAYER_ACTION',
-  ChangePlayerPrecisePosition = 'CHANGE_PLAYER_PRECISE_POSITION',
-  SendPlayerIntoPortal = 'SEND_PLAYER_INTO_PORTAL',
-  ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
-  CreateStaticUnit = 'CREATE_STATIC_UNIT',
-  RemoveStaticUnit = 'REMOVE_STATIC_UNIT',
-  CreateFenceUnit = 'CREATE_FENCE_UNIT',
-  RemoveFenceUnit = 'REMOVE_FENCE_UNIT',
-  CreatePortalUnit = 'CREATE_PORTAL_UNIT',
-  RemovePortalUnit = 'REMOVE_PORTAL_UNIT',
-  CreateLinkUnit = 'CREATE_LINK_UNIT',
-  RemoveLinkUnit = 'REMOVE_LINK_UNIT',
-  CreateEmbedUnit = 'CREATE_EMBED_UNIT',
-  RemoveEmbedUnit = 'REMOVE_EMBED_UNIT',
-  RotateUnit = 'ROTATE_UNIT',
-}
+import { CommandNameEnum } from '@/services/world-journey-service/managers/command-manager/command-name-enum';
+import { dispatchCommand } from '@/services/world-journey-service/managers/command-manager/utils';
 
 type ChangePlayerActionCommandDto = {
   id: string;
@@ -313,9 +296,9 @@ export const parseCommandDto = (commandDto: CommandDto) => {
   return null;
 };
 
-export const toCommandDto = (command: Command) => {
-  if (command instanceof CreateStaticUnitCommand) {
-    const commandDto: CreateStaticUnitCommandDto = {
+export const toCommandDto = (sourceCommand: Command) => {
+  return dispatchCommand<CommandDto | null>(sourceCommand, {
+    [CommandNameEnum.CreateStaticUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreateStaticUnit,
@@ -323,18 +306,14 @@ export const toCommandDto = (command: Command) => {
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
-    };
-    return commandDto;
-  } else if (command instanceof RemoveStaticUnitCommand) {
-    const commandDto: RemoveStaticUnitCommandDto = {
+    }),
+    [CommandNameEnum.RemoveStaticUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemoveStaticUnit,
       unitId: command.getUnitId(),
-    };
-    return commandDto;
-  } else if (command instanceof CreateFenceUnitCommand) {
-    const commandDto: CreateFenceUnitCommandDto = {
+    }),
+    [CommandNameEnum.CreateFenceUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreateFenceUnit,
@@ -342,18 +321,14 @@ export const toCommandDto = (command: Command) => {
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
-    };
-    return commandDto;
-  } else if (command instanceof RemoveFenceUnitCommand) {
-    const commandDto: RemoveFenceUnitCommandDto = {
+    }),
+    [CommandNameEnum.RemoveFenceUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemoveFenceUnit,
       unitId: command.getUnitId(),
-    };
-    return commandDto;
-  } else if (command instanceof CreatePortalUnitCommand) {
-    const commandDto: CreatePortalUnitCommandDto = {
+    }),
+    [CommandNameEnum.CreatePortalUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreatePortalUnit,
@@ -361,18 +336,14 @@ export const toCommandDto = (command: Command) => {
       itemId: command.getItemId(),
       position: newPositionDto(command.getPosition()),
       direction: command.getDirection().toNumber(),
-    };
-    return commandDto;
-  } else if (command instanceof RemovePortalUnitCommand) {
-    const commandDto: RemovePortalUnitCommandDto = {
+    }),
+    [CommandNameEnum.RemovePortalUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemovePortalUnit,
       unitId: command.getUnitId(),
-    };
-    return commandDto;
-  } else if (command instanceof CreateLinkUnitCommand) {
-    const commandDto: CreateLinkUnitCommandDto = {
+    }),
+    [CommandNameEnum.CreateLinkUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreateLinkUnit,
@@ -382,18 +353,14 @@ export const toCommandDto = (command: Command) => {
       direction: command.getDirection().toNumber(),
       label: command.getLabel(),
       url: command.getUrl(),
-    };
-    return commandDto;
-  } else if (command instanceof RemoveLinkUnitCommand) {
-    const commandDto: RemoveLinkUnitCommandDto = {
+    }),
+    [CommandNameEnum.RemoveLinkUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemoveLinkUnit,
       unitId: command.getUnitId(),
-    };
-    return commandDto;
-  } else if (command instanceof CreateEmbedUnitCommand) {
-    const commandDto: CreateEmbedUnitCommandDto = {
+    }),
+    [CommandNameEnum.CreateEmbedUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreateEmbedUnit,
@@ -403,62 +370,51 @@ export const toCommandDto = (command: Command) => {
       direction: command.getDirection().toNumber(),
       label: command.getLabel(),
       embedCode: command.getEmbedCode(),
-    };
-    return commandDto;
-  } else if (command instanceof RemoveEmbedUnitCommand) {
-    const commandDto: RemoveEmbedUnitCommandDto = {
+    }),
+    [CommandNameEnum.RemoveEmbedUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemoveEmbedUnit,
       unitId: command.getUnitId(),
-    };
-    return commandDto;
-  } else if (command instanceof RotateUnitCommand) {
-    const commandDto: RotateUnitCommandDto = {
+    }),
+    [CommandNameEnum.RotateUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RotateUnit,
       unitId: command.getUnitId(),
-    };
-    return commandDto;
-  } else if (command instanceof ChangePlayerActionCommand) {
-    const commandDto: ChangePlayerActionCommandDto = {
+    }),
+    [CommandNameEnum.ChangePlayerAction]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.ChangePlayerAction,
       playerId: command.getPlayerId(),
       action: newPlayerActionDto(command.getAction()),
-    };
-    return commandDto;
-  } else if (command instanceof ChangePlayerPrecisePositionCommand) {
-    const commandDto: ChangePlayerPrecisePositionCommandDto = {
+    }),
+    [CommandNameEnum.ChangePlayerPrecisePosition]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.ChangePlayerPrecisePosition,
       playerId: command.getPlayerId(),
       precisePosition: newPrecisePositionDto(command.getPrecisePosition()),
-    };
-    return commandDto;
-  } else if (command instanceof SendPlayerIntoPortalCommand) {
-    const commandDto: SendPlayerIntoPortalCommandDto = {
+    }),
+    [CommandNameEnum.SendPlayerIntoPortal]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.SendPlayerIntoPortal,
       playerId: command.getPlayerId(),
       unitId: command.getUnitId(),
-    };
-    return commandDto;
-  } else if (command instanceof ChangePlayerHeldItemCommand) {
-    const commandDto: ChangePlayerHeldItemCommandDto = {
+    }),
+    [CommandNameEnum.ChangePlayerHeldItem]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.ChangePlayerHeldItem,
       playerId: command.getPlayerId(),
       itemId: command.getItemId(),
-    };
-    return commandDto;
-  }
-  return null;
+    }),
+    [CommandNameEnum.AddItem]: () => null,
+    [CommandNameEnum.AddPlayer]: () => null,
+    [CommandNameEnum.RemovePlayer]: () => null,
+  });
 };
 
 export { CommandNameEnum };

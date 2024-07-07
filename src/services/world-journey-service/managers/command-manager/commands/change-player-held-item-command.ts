@@ -1,4 +1,5 @@
 import { Command } from '../command';
+import { CommandNameEnum } from '../command-name-enum';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
@@ -9,7 +10,7 @@ export class ChangePlayerHeldItemCommand extends Command {
   private itemId: string;
 
   constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string, itemId: string) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.ChangePlayerHeldItem, id, createdAt, isRemote);
     this.playerId = playerId;
     this.itemId = itemId;
   }

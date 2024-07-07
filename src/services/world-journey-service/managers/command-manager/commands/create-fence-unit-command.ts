@@ -6,6 +6,7 @@ import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { generateUuidV4 } from '@/utils/uuid';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class CreateFenceUnitCommand extends Command {
   constructor(
@@ -17,7 +18,7 @@ export class CreateFenceUnitCommand extends Command {
     private position: PositionVo,
     private direction: DirectionVo
   ) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.CreateFenceUnit, id, createdAt, isRemote);
   }
 
   static create(itemId: string, position: PositionVo, direction: DirectionVo) {

@@ -6,6 +6,7 @@ import { generateUuidV4 } from '@/utils/uuid';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class CreateLinkUnitCommand extends Command {
   constructor(
@@ -19,7 +20,7 @@ export class CreateLinkUnitCommand extends Command {
     private label: string | null,
     private url: string
   ) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.CreateLinkUnit, id, createdAt, isRemote);
   }
 
   static create(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, url: string) {

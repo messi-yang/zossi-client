@@ -1,12 +1,13 @@
 import { DateVo } from '@/models/global/date-vo';
 import { Command } from '../command';
 import { CommandParams } from '../command-params';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class RemovePlayerCommand extends Command {
   private playerId: string;
 
   constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.RemovePlayer, id, createdAt, isRemote);
     this.playerId = playerId;
   }
 

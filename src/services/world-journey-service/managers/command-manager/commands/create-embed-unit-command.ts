@@ -6,6 +6,7 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
+import { CommandNameEnum } from '../command-name-enum';
 
 export class CreateEmbedUnitCommand extends Command {
   constructor(
@@ -19,7 +20,7 @@ export class CreateEmbedUnitCommand extends Command {
     private label: string | null,
     private embedCode: string
   ) {
-    super(id, createdAt, isRemote);
+    super(CommandNameEnum.CreateEmbedUnit, id, createdAt, isRemote);
   }
 
   static create(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, embedCode: string) {
