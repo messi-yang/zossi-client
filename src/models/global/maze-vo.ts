@@ -12,7 +12,7 @@ export class MazeVo {
     this.width = width;
     this.depth = depth;
     this.grid = this.initializeGrid();
-    this.generateMaze(1, 1);
+    this.generateMaze();
   }
 
   static create(width: number, depth: number): MazeVo {
@@ -43,7 +43,7 @@ export class MazeVo {
     return visited;
   }
 
-  private generateMaze(x: number, z: number): void {
+  private generateMaze(): void {
     const directions = [
       { dx: 0, dz: -1 },
       { dx: 1, dz: 0 },
@@ -53,8 +53,9 @@ export class MazeVo {
 
     const visited = this.initializeVisited();
     const stack: { x: number; z: number }[] = [];
-    this.grid[z][x] = false;
-    stack.push({ x, z });
+    this.grid[1][1] = false;
+    stack.push({ x: 1, z: 1 });
+    visited[1][1] = true;
 
     while (stack.length > 0) {
       const current = stack[stack.length - 1];
@@ -80,6 +81,9 @@ export class MazeVo {
         stack.pop();
       }
     }
+
+    this.grid[0][1] = false;
+    this.grid[this.width - 1][this.depth - 2] = false;
   }
 
   public async iterateSync(cb: (pos: PositionVo, isWall: boolean) => Promise<void>): Promise<void> {

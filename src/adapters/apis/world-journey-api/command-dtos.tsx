@@ -83,6 +83,8 @@ type CreateFenceUnitCommandDto = {
   direction: number;
 };
 
+// Hello
+
 type RemoveFenceUnitCommandDto = {
   id: string;
   timestamp: number;

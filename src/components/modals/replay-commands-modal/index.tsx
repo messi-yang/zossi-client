@@ -14,7 +14,7 @@ type Props = {
 
 export function ReplayCommandsModal({ opened, onComfirm = () => {}, onCancel }: Props) {
   const [durationInSecond, setDurationInSecond] = useState(10);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(5);
 
   const handleConfirm = useCallback(() => {
     onComfirm(durationInSecond * 1000, speed);
@@ -32,7 +32,7 @@ export function ReplayCommandsModal({ opened, onComfirm = () => {}, onCancel }: 
             value={durationInSecond}
             step={1}
             onInput={(val) => {
-              if (val < 1 || val > 30) return;
+              if (val < 10 || val > 30) return;
               setDurationInSecond(val);
             }}
           />
@@ -42,7 +42,7 @@ export function ReplayCommandsModal({ opened, onComfirm = () => {}, onCancel }: 
             value={speed}
             step={1}
             onInput={(val) => {
-              if (val < 1 || val > 10) return;
+              if (val < 5 || val > 30) return;
               setSpeed(val);
             }}
           />

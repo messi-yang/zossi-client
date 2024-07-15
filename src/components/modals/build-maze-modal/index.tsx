@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { BaseModal } from '@/components/modals/base-modal';
 import { Button } from '@/components/buttons/button';
 import { dataTestids } from './data-test-ids';
@@ -25,12 +25,6 @@ export function BuildMazeModal({ opened, items, onComfirm = () => {}, onCancel }
 
   const [origin, setOrigin] = useState(PositionVo.create(1, 1));
   const [dimension, setDimension] = useState(DimensionVo.create(3, 3));
-
-  useEffect(() => {
-    setItem(null);
-    setOrigin(PositionVo.create(1, 1));
-    setDimension(DimensionVo.create(3, 3));
-  }, [opened]);
 
   const handleDimensionChange = useCallback(
     (newDimension: DimensionVo) => {
