@@ -18,7 +18,7 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
 const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
-const CHARACTER_MODEL_SRC = '/characters/car.gltf';
+const CHARACTER_MODEL_SRC = '/characters/a-chiong.gltf';
 
 type ItemModelsDownloadedEventSubscriber = (itemId: string) => void;
 type DefaultFontDownloadedEventSubscriber = () => void;
@@ -243,10 +243,7 @@ export class WorldRenderer {
       grid.add(new THREE.Line(geometry, material));
     }
     for (let z = 0; z <= boundheight; z += 1) {
-      const points: THREE.Vector3[] = [
-        new THREE.Vector3(offsetX, 0, z + offsetZ),
-        new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ),
-      ];
+      const points: THREE.Vector3[] = [new THREE.Vector3(offsetX, 0, z + offsetZ), new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ)];
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       grid.add(new THREE.Line(geometry, material));
     }
@@ -305,10 +302,7 @@ export class WorldRenderer {
         modelIndex = 2;
         unitDirection = DirectionVo.create((sameAdjacentUnitFlags.findIndex((flag) => !flag) || 0) + 1);
       } else if (sameAdjacentUnitCount === 2) {
-        if (
-          sameAdjacentUnitFlags[0] === sameAdjacentUnitFlags[1] ||
-          sameAdjacentUnitFlags[1] === sameAdjacentUnitFlags[2]
-        ) {
+        if (sameAdjacentUnitFlags[0] === sameAdjacentUnitFlags[1] || sameAdjacentUnitFlags[1] === sameAdjacentUnitFlags[2]) {
           modelIndex = 1;
           if (sameAdjacentUnitFlags[0] && sameAdjacentUnitFlags[1]) {
             unitDirection = DirectionVo.create(0);

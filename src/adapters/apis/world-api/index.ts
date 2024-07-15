@@ -36,7 +36,12 @@ export class WorldApi {
     return parseWorldDto(data);
   }
 
-  async deleteWorld(worldId: string): Promise<void> {
-    await this.axios.delete(`/${worldId}`);
+  async deleteWorld(worldId: string): Promise<Error | null> {
+    try {
+      await this.axios.delete(`/${worldId}`);
+      return null;
+    } catch (e: any) {
+      return e;
+    }
   }
 }

@@ -65,11 +65,7 @@ const Page: NextPage = function Page() {
       }
     >
       <main className="flex gap-5 flex-col">
-        <CreateWorldModal
-          opened={isCreateWorldModalOpened}
-          onConfirm={handleCreateWorldConfirm}
-          onCancel={handleCreateWorldCancel}
-        />
+        <CreateWorldModal opened={isCreateWorldModalOpened} onConfirm={handleCreateWorldConfirm} onCancel={handleCreateWorldCancel} />
         <ConfirmModal
           opened={isConfirmingWorldDeletion}
           message={`Are you sure you want to delete world "${worldToDelete?.getName()}?"`}

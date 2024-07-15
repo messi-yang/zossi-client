@@ -71,41 +71,33 @@ function Provider({ children }: Props) {
         prev[worldId] = true;
         return prev;
       });
-      try {
-        await worldApi.deleteWorld(worldId);
-        setMyWorlds((prev) => {
-          if (!prev) return null;
-          return prev.filter((world) => world.getId() !== worldId);
-        });
-      } catch (e: any) {
-        notificationEventDispatcher.publishErrorTriggeredEvent(e.message);
-      } finally {
-        setDeleteWorldStatusMap((prev) => {
-          delete prev[worldId];
-          return prev;
-        });
+
+      const error = await worldApi.deleteWorld(worldId);
+      if (error) {
+        notificationEventDispatcher.publishErrorTriggeredEvent(error.message);
       }
+
+      setDeleteWorldStatusMap((prev) => {
+        delete prev[worldId];
+        return prev;
+      });
     },
-    [worldApi]
+    [notificationEventDispatcher, worldApi]
   );
 
-  return (
-    <Context.Provider
-      value={useMemo<ContextValue>(
-        () => ({
-          myWorlds,
-          getMyWorlds,
-          isCreatingWorld,
-          createWorld,
-          deleteWorldStatusMap,
-          deleteWorld,
-        }),
-        [myWorlds, getMyWorlds, isCreatingWorld, createWorld, deleteWorldStatusMap, deleteWorld]
-      )}
-    >
-      {children}
-    </Context.Provider>
+  const contextValue = useMemo<ContextValue>(
+    () => ({
+      myWorlds,
+      getMyWorlds,
+      isCreatingWorld,
+      createWorld,
+      deleteWorldStatusMap,
+      deleteWorld,
+    }),
+    [myWorlds, getMyWorlds, isCreatingWorld, createWorld, deleteWorldStatusMap, deleteWorld]
   );
+
+  return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 }
 
 export { Provider as MyWorldsProvider, Context as MyWorldsContext };
