@@ -6,11 +6,11 @@ import { ItemModel } from '@/models/world/item/item-model';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
-import { BoundVo } from '@/models/world/common/bound-vo';
 import { PlayerModel } from '@/models/world/player/player-model';
 import { InstanceState, createInstancesInScene, createTextMesh } from './tjs-utils';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
+import { BlockVo } from '@/models/world/common/block-vo';
 
 const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
@@ -20,6 +20,7 @@ const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
 const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
 const CHARACTER_MODEL_SRC = '/characters/a-chiong.gltf';
 
+type BaseModelDownloadedEventSubscriber = () => void;
 type ItemModelsDownloadedEventSubscriber = (itemId: string) => void;
 type DefaultFontDownloadedEventSubscriber = () => void;
 
@@ -31,6 +32,10 @@ export class WorldRenderer {
   private readonly renderer: THREE.WebGLRenderer;
 
   private readonly directionalLight: THREE.DirectionalLight;
+
+  private baseModel: THREE.Group | null = null;
+
+  private baseModelDownloadedEventSubscribers: BaseModelDownloadedEventSubscriber[] = [];
 
   private itemModelsMap: Record<string, THREE.Group[] | undefined> = {};
 
@@ -46,16 +51,16 @@ export class WorldRenderer {
 
   private baseModelInstancesCleaner: () => void = () => {};
 
+  private gridCleaner: () => void = () => {};
+
   private playerInstancesMap: Map<string, [character: THREE.Group, name: THREE.Mesh]> = new Map();
 
   private playerModel: THREE.Group | null = null;
 
-  constructor(worldBound: BoundVo) {
+  constructor() {
     this.scene = this.createScene();
 
     this.camera = this.createCamera();
-
-    this.createGrid(worldBound);
 
     this.directionalLight = this.createDirectionalLight();
     this.scene.add(this.directionalLight);
@@ -63,14 +68,13 @@ export class WorldRenderer {
 
     this.renderer = this.createRenderer();
 
-    this.createBase(worldBound);
-
     this.downloadDefaultFont(DEFAULT_FONT_SRC);
+    this.downloadBaseModel();
     this.downloadPlayerModel();
   }
 
-  static create(worldBound: BoundVo) {
-    return new WorldRenderer(worldBound);
+  static create() {
+    return new WorldRenderer();
   }
 
   public render() {
@@ -132,8 +136,21 @@ export class WorldRenderer {
     });
   }
 
+  private async downloadBaseModel() {
+    this.baseModel = await this.downloadModel(BASE_MODEL_SRC);
+    this.baseModelDownloadedEventSubscribers.forEach((sub) => sub());
+  }
+
   private async downloadPlayerModel() {
     this.playerModel = await this.downloadModel(CHARACTER_MODEL_SRC);
+  }
+
+  public subscribeBaseModelsDownloadedEvent(subscriber: BaseModelDownloadedEventSubscriber): () => void {
+    this.baseModelDownloadedEventSubscribers.push(subscriber);
+
+    return () => {
+      this.baseModelDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
+    };
   }
 
   public subscribeItemModelsDownloadedEvent(subscriber: ItemModelsDownloadedEventSubscriber): () => void {
@@ -211,45 +228,66 @@ export class WorldRenderer {
     return new THREE.PerspectiveCamera(CAMERA_FOV, 1, 0.1, 1000);
   }
 
-  private async createBase(worldBound: BoundVo) {
+  public async updateBase(blocks: BlockVo[]) {
     const baseModel = await this.downloadModel(BASE_MODEL_SRC);
 
     const grassInstanceStates: { x: number; y: number; z: number; rotate: number }[] = [];
-    worldBound.iterate((position) => {
-      grassInstanceStates.push({
-        x: position.getX(),
-        y: 0,
-        z: position.getZ(),
-        rotate: 0,
+    blocks.forEach((block) => {
+      block.iterate((position) => {
+        grassInstanceStates.push({
+          x: position.getX(),
+          y: 0,
+          z: position.getZ(),
+          rotate: 0,
+        });
       });
     });
     const removeInstancesFromScene = createInstancesInScene(this.scene, baseModel, grassInstanceStates);
     this.baseModelInstancesCleaner = removeInstancesFromScene;
   }
 
-  private createGrid(worldBound: BoundVo) {
-    const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
-    const offsetX = worldBound.getFrom().getX() - 0.5;
-    const offsetZ = worldBound.getFrom().getZ() - 0.5;
-    const boundWidth = worldBound.getWidth();
-    const boundheight = worldBound.getDepth();
-    const grid = new THREE.Group();
-    for (let x = 0; x <= boundWidth; x += 1) {
-      const points: THREE.Vector3[] = [
-        new THREE.Vector3(x + offsetX, 0, offsetZ),
-        new THREE.Vector3(x + offsetX, 0, offsetZ + boundheight),
-      ];
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      grid.add(new THREE.Line(geometry, material));
-    }
-    for (let z = 0; z <= boundheight; z += 1) {
-      const points: THREE.Vector3[] = [new THREE.Vector3(offsetX, 0, z + offsetZ), new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ)];
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      grid.add(new THREE.Line(geometry, material));
-    }
-    grid.position.set(0, 0.1, 0);
+  public updateGrid(blocks: BlockVo[]) {
+    this.gridCleaner();
 
-    this.scene.add(grid);
+    const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
+
+    const grids: THREE.Group<THREE.Object3DEventMap>[] = [];
+    blocks.forEach((block) => {
+      const blockBound = block.getBound();
+      const offsetX = blockBound.getFrom().getX() - 0.5;
+      const offsetZ = blockBound.getFrom().getZ() - 0.5;
+      const boundWidth = blockBound.getWidth();
+      const boundHeight = blockBound.getDepth();
+      const grid = new THREE.Group();
+      for (let x = 0; x <= boundWidth; x += 1) {
+        const points: THREE.Vector3[] = [
+          new THREE.Vector3(x + offsetX, 0, offsetZ),
+          new THREE.Vector3(x + offsetX, 0, offsetZ + boundHeight),
+        ];
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        grid.add(new THREE.Line(geometry, material));
+      }
+      for (let z = 0; z <= boundHeight; z += 1) {
+        const points: THREE.Vector3[] = [
+          new THREE.Vector3(offsetX, 0, z + offsetZ),
+          new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ),
+        ];
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        grid.add(new THREE.Line(geometry, material));
+      }
+      grid.position.set(0, 0.1, 0);
+      grids.push(grid);
+    });
+
+    grids.forEach((grid) => {
+      this.scene.add(grid);
+    });
+
+    this.gridCleaner = () => {
+      grids.forEach((grid) => {
+        this.scene.remove(grid);
+      });
+    };
   }
 
   private createDirectionalLight(): THREE.DirectionalLight {

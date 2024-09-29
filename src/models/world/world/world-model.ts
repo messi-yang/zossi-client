@@ -1,28 +1,13 @@
-import { BoundVo } from '../common/bound-vo';
-import { PositionVo } from '../common/position-vo';
 import { DateVo } from '../../global/date-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 
 export class WorldModel {
-  constructor(
-    private id: string,
-    private name: string,
-    private bound: BoundVo,
-    private createdAt: DateVo,
-    private updatedAt: DateVo
-  ) {}
+  constructor(private id: string, private name: string, private createdAt: DateVo, private updatedAt: DateVo) {}
 
-  static create = (id: string, name: string, bound: BoundVo, createdAt: DateVo, updatedAt: DateVo): WorldModel =>
-    new WorldModel(id, name, bound, createdAt, updatedAt);
+  static create = (id: string, name: string, createdAt: DateVo, updatedAt: DateVo): WorldModel =>
+    new WorldModel(id, name, createdAt, updatedAt);
 
-  static createMock = (): WorldModel =>
-    new WorldModel(
-      generateUuidV4(),
-      'Hello World',
-      BoundVo.create(PositionVo.create(-10, -10), PositionVo.create(10, 10)),
-      DateVo.now(),
-      DateVo.now()
-    );
+  static createMock = (): WorldModel => new WorldModel(generateUuidV4(), 'Hello World', DateVo.now(), DateVo.now());
 
   public getId(): string {
     return this.id;
@@ -30,10 +15,6 @@ export class WorldModel {
 
   public getName(): string {
     return this.name;
-  }
-
-  public getBound(): BoundVo {
-    return this.bound;
   }
 
   public getCreatedAt(): DateVo {

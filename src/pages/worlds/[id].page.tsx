@@ -99,9 +99,7 @@ const Page: NextPage = function Page() {
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribe('PLAYER_UPDATED', ([, player]) => {
-      if (!worldJourneyService.isMyPlayer(player)) return;
-
+    return worldJourneyService.subscribe('MY_PLAYER_UPDATED', ([, player]) => {
       setMyPlayerHeldItemId(player.getHeldItemId());
       setMyPlayerPosText(player.getPosition().toText());
     });
@@ -333,7 +331,7 @@ const Page: NextPage = function Page() {
         <Button text="Build Maze" onClick={handleBuildMazeClick} />
         <Button text="Remove Units" onClick={handleRemoveUnitsClick} />
         <Button text="Share" onClick={handleShareClick} />
-        <div className="w-24 flex justify-center">
+        <div className="min-w-24 flex justify-center">
           <Text size="text-xl">{myPlayerPosText}</Text>
         </div>
       </div>

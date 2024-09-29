@@ -78,6 +78,7 @@ export function Provider({ children }: Props) {
             },
             onCommandReceived: () => {},
             onCommandFailed: () => {},
+            onUnitsReturned: () => {},
             onErrored: () => {},
             onOpen: () => {},
             onDisconnect: () => {},

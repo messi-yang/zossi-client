@@ -14,6 +14,7 @@ import {
   ClientEventNameEnum,
   CommandRequestedClientEvent,
   CommandSentClientEvent,
+  UnitsFetchedClientEvent,
   P2pAnswerSentClientEvent,
   P2pOfferSentClientEvent,
   PingClientEvent,
@@ -24,9 +25,17 @@ import { AddPlayerCommand } from '@/services/world-journey-service/managers/comm
 import { RemovePlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-player-command';
 import { generateUuidV4 } from '@/utils/uuid';
 import { DateVo } from '@/models/global/date-vo';
+import { BlockVo } from '@/models/world/common/block-vo';
+import { newBlockDto, parseBlockDto } from '../dtos/block-dto';
 
-function parseWorldEnteredServerEvent(event: WorldEnteredServerEvent): [WorldModel, UnitModel[], string, PlayerModel[]] {
-  return [parseWorldDto(event.world), event.units.map(parseUnitDto), event.myPlayerId, event.players.map(parsePlayerDto)];
+function parseWorldEnteredServerEvent(event: WorldEnteredServerEvent): [WorldModel, BlockVo[], UnitModel[], string, PlayerModel[]] {
+  return [
+    parseWorldDto(event.world),
+    event.blocks.map(parseBlockDto),
+    event.units.map(parseUnitDto),
+    event.myPlayerId,
+    event.players.map(parsePlayerDto),
+  ];
 }
 
 export class WorldJourneyApi {
@@ -44,6 +53,7 @@ export class WorldJourneyApi {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandReceived: (command: Command) => void;
       onCommandFailed: (commandId: string) => void;
+      onUnitsReturned: (blocks: BlockVo[], units: UnitModel[]) => void;
       onErrored: (message: string) => void;
       onDisconnect: () => void;
       onOpen: () => void;
@@ -74,8 +84,8 @@ export class WorldJourneyApi {
 
       // console.log(event.name, event);
       if (event.name === ServerEventNameEnum.WorldEntered) {
-        const [world, units, myPlayerId, players] = parseWorldEnteredServerEvent(event);
-        const worldJourneyService = WorldJourneyService.create(world, players, myPlayerId, units);
+        const [world, blocks, units, myPlayerId, players] = parseWorldEnteredServerEvent(event);
+        const worldJourneyService = WorldJourneyService.create(world, players, myPlayerId, blocks, units);
         events.onWorldEntered(worldJourneyService);
         this.worldJourneyService = worldJourneyService;
       } else if (event.name === ServerEventNameEnum.PlayerJoined) {
@@ -139,6 +149,8 @@ export class WorldJourneyApi {
         events.onCommandReceived(command);
       } else if (event.name === ServerEventNameEnum.CommandFailed) {
         events.onCommandFailed(event.commandId);
+      } else if (event.name === ServerEventNameEnum.UnitsReturned) {
+        events.onUnitsReturned(event.blocks.map(parseBlockDto), event.units.map(parseUnitDto));
       } else if (event.name === ServerEventNameEnum.Errored) {
         events.onErrored(event.message);
       }
@@ -172,6 +184,7 @@ export class WorldJourneyApi {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandReceived: (command: Command) => void;
       onCommandFailed: (commandId: string) => void;
+      onUnitsReturned: (blocks: BlockVo[], units: UnitModel[]) => void;
       onErrored: (message: string) => void;
       onDisconnect: () => void;
       onOpen: () => void;
@@ -243,5 +256,13 @@ export class WorldJourneyApi {
         this.sendMessage(commandSentClientEvent);
       }
     });
+  }
+
+  public fetchUnits(blocks: BlockVo[]) {
+    const clientEvent: UnitsFetchedClientEvent = {
+      name: ClientEventNameEnum.UnitsFetched,
+      blocks: blocks.map(newBlockDto),
+    };
+    this.sendMessage(clientEvent);
   }
 }

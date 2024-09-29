@@ -9,13 +9,18 @@ import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { dispatchUnit } from '@/models/world/unit/utils';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
+import { BlockVo } from '@/models/world/common/block-vo';
 
 export class UnitManager {
+  private blocks: Record<string, BlockVo | undefined>;
+
   private unitMapById: Record<string, UnitModel | undefined>;
 
   private unitMapByPos: Record<string, UnitModel | undefined>;
 
   private unitMapByItemId: Record<string, UnitModel[] | undefined>;
+
+  private blocksUpdatedEventHandler = EventHandler.create<BlockVo[]>();
 
   private unitsChangedEventHandler = EventHandler.create<[itemId: string, units: UnitModel[]]>();
 
@@ -27,7 +32,12 @@ export class UnitManager {
     [UnitTypeEnum.Embed]: EmbedUnitModel[];
   } = { static: [], fence: [], portal: [], link: [], embed: [] };
 
-  constructor(units: UnitModel[]) {
+  constructor(blocks: BlockVo[], units: UnitModel[]) {
+    this.blocks = {};
+    blocks.forEach((block) => {
+      this.blocks[block.toString()] = block;
+    });
+
     this.unitMapById = {};
     this.unitMapByPos = {};
     this.unitMapByItemId = {};
@@ -39,8 +49,23 @@ export class UnitManager {
     });
   }
 
-  static create(units: UnitModel[]): UnitManager {
-    return new UnitManager(units);
+  static create(blocks: BlockVo[], units: UnitModel[]): UnitManager {
+    return new UnitManager(blocks, units);
+  }
+
+  public getBlocks(): BlockVo[] {
+    const blocks: BlockVo[] = [];
+    Object.values(this.blocks).forEach((block) => {
+      if (!block) return;
+
+      blocks.push(block);
+    });
+
+    return blocks;
+  }
+
+  public hasBlock(block: BlockVo): boolean {
+    return !!this.blocks[block.toString()];
   }
 
   public getUnit(id: string): UnitModel | null {
@@ -184,6 +209,15 @@ export class UnitManager {
   }
 
   /**
+   * Add block so the manager know units in the block has been searched
+   */
+  public addBlock(block: BlockVo) {
+    this.blocks[block.toString()] = block;
+
+    this.publishBlocksUpdatedEvent(this.getBlocks());
+  }
+
+  /**
    * Add the unit
    * @returns isStateChanged
    */
@@ -198,6 +232,30 @@ export class UnitManager {
 
     this.publishUnitsChangedEvent(unit.getItemId());
     return true;
+  }
+
+  /**
+   * Add multiple units at once
+   */
+  public addUnits(units: UnitModel[]) {
+    const uniqueItemIds: { [itemId: string]: true } = {};
+
+    units.forEach((unit) => {
+      const unitAtPos = this.getUnitByPos(unit.getPosition());
+      if (unitAtPos) return;
+
+      this.addUnitToUnitMapById(unit);
+      this.addUnitToUnitMapByPos(unit);
+      this.addUnitToUnitMapByItemId(unit);
+      this.addUnitToUnitMapByType(unit);
+
+      const itemId = unit.getItemId();
+      uniqueItemIds[itemId] = true;
+    });
+
+    Object.keys(uniqueItemIds).forEach((itemId) => {
+      this.publishUnitsChangedEvent(itemId);
+    });
   }
 
   /**
@@ -243,5 +301,13 @@ export class UnitManager {
 
   private publishUnitsChangedEvent(itemId: string) {
     this.unitsChangedEventHandler.publish([itemId, this.getUnitsByItemId(itemId)]);
+  }
+
+  public subscribeBlocksUpdatedEvent(subscriber: EventHandlerSubscriber<BlockVo[]>): () => void {
+    return this.blocksUpdatedEventHandler.subscribe(subscriber);
+  }
+
+  private publishBlocksUpdatedEvent(blocks: BlockVo[]) {
+    this.blocksUpdatedEventHandler.publish(blocks);
   }
 }

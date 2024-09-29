@@ -1,9 +1,11 @@
+import { BlockDto } from '../dtos/block-dto';
 import { CommandDto } from './command-dtos';
 
 export enum ClientEventNameEnum {
   Ping = 'PING',
   CommandRequested = 'COMMAND_REQUESTED',
   CommandSent = 'COMMAND_SENT',
+  UnitsFetched = 'UNITS_FETCHED',
   P2pOfferSent = 'P2P_OFFER_SENT',
   P2pAnswerSent = 'P2P_ANSWER_SENT',
 }
@@ -21,6 +23,11 @@ export type CommandSentClientEvent = {
   name: ClientEventNameEnum.CommandSent;
   peerPlayerId: string;
   command: CommandDto;
+};
+
+export type UnitsFetchedClientEvent = {
+  name: ClientEventNameEnum.UnitsFetched;
+  blocks: BlockDto[];
 };
 
 export type P2pOfferSentClientEvent = {
@@ -41,5 +48,6 @@ export type ClientEvent =
   | PingClientEvent
   | CommandRequestedClientEvent
   | CommandSentClientEvent
+  | UnitsFetchedClientEvent
   | P2pOfferSentClientEvent
   | P2pAnswerSentClientEvent;

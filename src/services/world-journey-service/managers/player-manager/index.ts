@@ -15,6 +15,8 @@ export class PlayerManager {
 
   private playerUpdatedEventHandler = EventHandler.create<[oldPlayer: PlayerModel, newPlayer: PlayerModel]>();
 
+  private myPlayerUpdatedEventHandler = EventHandler.create<[oldPlayer: PlayerModel, newPlayer: PlayerModel]>();
+
   private playerRemovedEventHandler = EventHandler.create<PlayerModel>();
 
   constructor(players: PlayerModel[], myPlayerId: string) {
@@ -134,6 +136,9 @@ export class PlayerManager {
     this.updatePlayerInPlayerMapByPos(oldPlayer, player);
 
     this.publishPlayerUpdatedEvent(oldPlayer, player);
+    if (player.getId() === this.myPlayerId) {
+      this.publishMyPlayerUpdatedEvent(oldPlayer, player);
+    }
 
     return true;
   }
@@ -172,6 +177,14 @@ export class PlayerManager {
 
   public subscribePlayerUpdatedEvent(subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>) {
     return this.playerUpdatedEventHandler.subscribe(subscriber);
+  }
+
+  private publishMyPlayerUpdatedEvent(oldPlayer: PlayerModel, newPlayer: PlayerModel) {
+    this.myPlayerUpdatedEventHandler.publish([oldPlayer, newPlayer]);
+  }
+
+  public subscribeMyPlayerUpdatedEvent(subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>) {
+    return this.myPlayerUpdatedEventHandler.subscribe(subscriber);
   }
 
   private publishPlayerRemovedEvent(player: PlayerModel) {

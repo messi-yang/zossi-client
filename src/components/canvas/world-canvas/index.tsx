@@ -14,7 +14,7 @@ type Props = {
 export function WorldCanvas({ worldJourneyService }: Props) {
   const [wrapperDom, setWrapperDom] = useState<HTMLDivElement | null>(null);
   const wrapperDomRect = useDomRect(wrapperDom);
-  const worldRenderer = useMemo(() => WorldRenderer.create(worldJourneyService.getWorldBound()), [worldJourneyService]);
+  const worldRenderer = useMemo(() => WorldRenderer.create(), [worldJourneyService]);
   useEffect(() => {
     if (!wrapperDom) return () => {};
 
@@ -108,6 +108,20 @@ export function WorldCanvas({ worldJourneyService }: Props) {
   useEffect(() => {
     return worldJourneyService.subscribe('PERSPECTIVE_CHANGED', ([perspectiveDepth, targetPrecisePos]) => {
       worldRenderer.updateCameraPosition(perspectiveDepth, targetPrecisePos);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    return worldJourneyService.subscribe('BLOCKS_UPDATED', (blocks) => {
+      worldRenderer.updateBase(blocks);
+      worldRenderer.updateGrid(blocks);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    return worldRenderer.subscribeBaseModelsDownloadedEvent(() => {
+      worldRenderer.updateBase(worldJourneyService.getBlocks());
+      worldRenderer.updateGrid(worldJourneyService.getBlocks());
     });
   }, [worldJourneyService, worldRenderer]);
 

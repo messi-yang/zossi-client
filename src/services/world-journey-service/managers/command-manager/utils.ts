@@ -53,22 +53,26 @@ export const dispatchCommand = <T>(
     return mapper[CommandNameEnum.ChangePlayerPrecisePosition](command);
   } else if (command instanceof CreateFenceUnitCommand) {
     return mapper[CommandNameEnum.CreateFenceUnit](command);
-  } else if (command instanceof CreatePortalUnitCommand) {
-    return mapper[CommandNameEnum.CreatePortalUnit](command);
-  } else if (command instanceof CreateStaticUnitCommand) {
-    return mapper[CommandNameEnum.CreateStaticUnit](command);
-  } else if (command instanceof RemoveEmbedUnitCommand) {
-    return mapper[CommandNameEnum.RemoveEmbedUnit](command);
   } else if (command instanceof RemoveFenceUnitCommand) {
     return mapper[CommandNameEnum.RemoveFenceUnit](command);
+  } else if (command instanceof CreatePortalUnitCommand) {
+    return mapper[CommandNameEnum.CreatePortalUnit](command);
+  } else if (command instanceof RemovePortalUnitCommand) {
+    return mapper[CommandNameEnum.RemovePortalUnit](command);
+  } else if (command instanceof CreateStaticUnitCommand) {
+    return mapper[CommandNameEnum.CreateStaticUnit](command);
+  } else if (command instanceof RemoveStaticUnitCommand) {
+    return mapper[CommandNameEnum.RemoveStaticUnit](command);
+  } else if (command instanceof CreateEmbedUnitCommand) {
+    return mapper[CommandNameEnum.CreateEmbedUnit](command);
+  } else if (command instanceof RemoveEmbedUnitCommand) {
+    return mapper[CommandNameEnum.RemoveEmbedUnit](command);
+  } else if (command instanceof CreateLinkUnitCommand) {
+    return mapper[CommandNameEnum.CreateLinkUnit](command);
   } else if (command instanceof RemoveLinkUnitCommand) {
     return mapper[CommandNameEnum.RemoveLinkUnit](command);
   } else if (command instanceof RemovePlayerCommand) {
     return mapper[CommandNameEnum.RemovePlayer](command);
-  } else if (command instanceof RemovePortalUnitCommand) {
-    return mapper[CommandNameEnum.RemovePortalUnit](command);
-  } else if (command instanceof RemoveStaticUnitCommand) {
-    return mapper[CommandNameEnum.RemoveStaticUnit](command);
   } else if (command instanceof RotateUnitCommand) {
     return mapper[CommandNameEnum.RotateUnit](command);
   } else if (command instanceof SendPlayerIntoPortalCommand) {

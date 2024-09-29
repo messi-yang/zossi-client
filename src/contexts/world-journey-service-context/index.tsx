@@ -163,6 +163,15 @@ export function Provider({ children }: Props) {
         if (!newWorldJourneyService) return;
         newWorldJourneyService.removeFailedCommand(commandId);
       },
+      onUnitsReturned: (blocks, units) => {
+        if (!newWorldJourneyService) return;
+
+        for (let blockIndex = 0; blockIndex < blocks.length; blockIndex += 1) {
+          const block = blocks[blockIndex];
+          newWorldJourneyService.addBlock(block);
+        }
+        newWorldJourneyService.addUnits(units);
+      },
       onErrored: (message) => {
         notificationEventDispatcher.publishErrorTriggeredEvent(message);
       },
@@ -182,9 +191,8 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribe('PLAYER_UPDATED', ([oldPlayer, newPlayer]) => {
+    return worldJourneyService.subscribe('MY_PLAYER_UPDATED', ([oldPlayer, newPlayer]) => {
       if (!worldJourneyApi.current) return;
-      if (!worldJourneyService.isMyPlayer(newPlayer)) return;
 
       const oldPlayerPos = oldPlayer.getPosition();
       const newPlayerPos = newPlayer.getPosition();
@@ -203,6 +211,16 @@ export function Provider({ children }: Props) {
         const command = SendPlayerIntoPortalCommand.create(newPlayer.getId(), unitAtNewPlayerPos.getId());
         worldJourneyService.executeLocalCommand(command);
       }
+    });
+  }, [worldJourneyService]);
+
+  useEffect(() => {
+    if (!worldJourneyService) return () => {};
+
+    return worldJourneyService.subscribe('PLACEHOLDER_BLOCKS_ADDED', (blocks) => {
+      if (!worldJourneyApi.current) return;
+
+      worldJourneyApi.current.fetchUnits(blocks);
     });
   }, [worldJourneyService]);
 
