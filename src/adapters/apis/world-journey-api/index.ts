@@ -25,8 +25,10 @@ import { AddPlayerCommand } from '@/services/world-journey-service/managers/comm
 import { RemovePlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-player-command';
 import { generateUuidV4 } from '@/utils/uuid';
 import { DateVo } from '@/models/global/date-vo';
-import { BlockVo } from '@/models/world/common/block-vo';
-import { newBlockDto, parseBlockDto } from '../dtos/block-dto';
+import { BlockVo } from '@/models/world/block/block-vo';
+import { parseBlockDto } from '../dtos/block-dto';
+import { BlockIdVo } from '@/models/world/block/block-id-vo';
+import { newBlockIdDto } from '../dtos/block-id-dto';
 
 function parseWorldEnteredServerEvent(event: WorldEnteredServerEvent): [WorldModel, BlockVo[], UnitModel[], string, PlayerModel[]] {
   return [
@@ -84,6 +86,7 @@ export class WorldJourneyApi {
 
       // console.log(event.name, event);
       if (event.name === ServerEventNameEnum.WorldEntered) {
+        console.log(event);
         const [world, blocks, units, myPlayerId, players] = parseWorldEnteredServerEvent(event);
         const worldJourneyService = WorldJourneyService.create(world, players, myPlayerId, blocks, units);
         events.onWorldEntered(worldJourneyService);
@@ -258,10 +261,10 @@ export class WorldJourneyApi {
     });
   }
 
-  public fetchUnits(blocks: BlockVo[]) {
+  public fetchUnits(blockIds: BlockIdVo[]) {
     const clientEvent: UnitsFetchedClientEvent = {
       name: ClientEventNameEnum.UnitsFetched,
-      blocks: blocks.map(newBlockDto),
+      blockIds: blockIds.map(newBlockIdDto),
     };
     this.sendMessage(clientEvent);
   }

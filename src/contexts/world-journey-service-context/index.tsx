@@ -217,10 +217,10 @@ export function Provider({ children }: Props) {
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribe('PLACEHOLDER_BLOCKS_ADDED', (blocks) => {
+    return worldJourneyService.subscribe('PLACEHOLDER_BLOCKS_ADDED', (blockIds) => {
       if (!worldJourneyApi.current) return;
 
-      worldJourneyApi.current.fetchUnits(blocks);
+      worldJourneyApi.current.fetchUnits(blockIds);
     });
   }, [worldJourneyService]);
 

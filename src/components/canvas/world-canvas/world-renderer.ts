@@ -10,7 +10,7 @@ import { PlayerModel } from '@/models/world/player/player-model';
 import { InstanceState, createInstancesInScene, createTextMesh } from './tjs-utils';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
-import { BlockVo } from '@/models/world/common/block-vo';
+import { BlockVo } from '@/models/world/block/block-vo';
 
 const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
@@ -205,8 +205,8 @@ export class WorldRenderer {
   }
 
   public updateCameraPosition(perspectiveDepth: number, targetPrecisePos: PrecisePositionVo) {
-    const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((45 / 360) * 2 * Math.PI);
-    const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((45 / 360) * 2 * Math.PI);
+    const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((90 / 360) * 2 * Math.PI);
+    const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((60 / 360) * 2 * Math.PI);
 
     const [targetPrecisePosX, targetPrecisePosZ] = [targetPrecisePos.getX(), targetPrecisePos.getZ()];
     this.camera.position.set(targetPrecisePosX, CAMERA_Y_OFFSET, targetPrecisePosZ + CAMERA_Z_OFFSET);
@@ -252,6 +252,7 @@ export class WorldRenderer {
     const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
 
     const grids: THREE.Group<THREE.Object3DEventMap>[] = [];
+
     blocks.forEach((block) => {
       const blockBound = block.getBound();
       const offsetX = blockBound.getFrom().getX() - 0.5;

@@ -1,18 +1,17 @@
-import { BlockVo } from '@/models/world/common/block-vo';
+import { BlockVo } from '@/models/world/block/block-vo';
+import { BlockIdDto, newBlockIdDto, parseBlockIdDto } from './block-id-dto';
 
 type BlockDto = {
-  x: number;
-  z: number;
+  id: BlockIdDto;
 };
 
 export function parseBlockDto(blockDto: BlockDto): BlockVo {
-  return BlockVo.create(blockDto.x, blockDto.z);
+  return BlockVo.create(parseBlockIdDto(blockDto.id));
 }
 
 export function newBlockDto(block: BlockVo): BlockDto {
   return {
-    x: block.getX(),
-    z: block.getZ(),
+    id: newBlockIdDto(block.getId()),
   };
 }
 

@@ -5,7 +5,7 @@ import { PrecisePositionVo } from '../common/precise-position-vo';
 import { PositionVo } from '../common/position-vo';
 import { generateUuidV4 } from '@/utils/uuid';
 import { DimensionVo } from '../common/dimension-vo';
-import { BlockVo } from '../common/block-vo';
+import { BlockIdVo } from '../block/block-id-vo';
 
 export class PlayerModel {
   constructor(
@@ -78,12 +78,12 @@ export class PlayerModel {
     return this.precisePosition;
   }
 
-  public getNearBlocks(): BlockVo[] {
+  public getNearBlockIds(worldId: string): BlockIdVo[] {
     return [
-      BlockVo.createFromPosition(this.getPosition().shift(-25, -25)),
-      BlockVo.createFromPosition(this.getPosition().shift(25, -25)),
-      BlockVo.createFromPosition(this.getPosition().shift(-25, 25)),
-      BlockVo.createFromPosition(this.getPosition().shift(25, 25)),
+      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(-25, -25)),
+      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(25, -25)),
+      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(-25, 25)),
+      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(25, 25)),
     ];
   }
 

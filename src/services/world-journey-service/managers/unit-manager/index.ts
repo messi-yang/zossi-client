@@ -9,7 +9,8 @@ import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { dispatchUnit } from '@/models/world/unit/utils';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
-import { BlockVo } from '@/models/world/common/block-vo';
+import { BlockVo } from '@/models/world/block/block-vo';
+import { BlockIdVo } from '@/models/world/block/block-id-vo';
 
 export class UnitManager {
   private blocks: Record<string, BlockVo | undefined>;
@@ -35,7 +36,7 @@ export class UnitManager {
   constructor(blocks: BlockVo[], units: UnitModel[]) {
     this.blocks = {};
     blocks.forEach((block) => {
-      this.blocks[block.toString()] = block;
+      this.blocks[block.getId().toString()] = block;
     });
 
     this.unitMapById = {};
@@ -64,8 +65,8 @@ export class UnitManager {
     return blocks;
   }
 
-  public hasBlock(block: BlockVo): boolean {
-    return !!this.blocks[block.toString()];
+  public hasBlock(blockId: BlockIdVo): boolean {
+    return !!this.blocks[blockId.toString()];
   }
 
   public getUnit(id: string): UnitModel | null {
@@ -212,7 +213,9 @@ export class UnitManager {
    * Add block so the manager know units in the block has been searched
    */
   public addBlock(block: BlockVo) {
-    this.blocks[block.toString()] = block;
+    this.blocks[block.getId().toString()] = block;
+
+    console.log(this.blocks);
 
     this.publishBlocksUpdatedEvent(this.getBlocks());
   }

@@ -1,4 +1,4 @@
-import { BlockDto } from '../dtos/block-dto';
+import { BlockIdDto } from '../dtos/block-id-dto';
 import { CommandDto } from './command-dtos';
 
 export enum ClientEventNameEnum {
@@ -27,7 +27,7 @@ export type CommandSentClientEvent = {
 
 export type UnitsFetchedClientEvent = {
   name: ClientEventNameEnum.UnitsFetched;
-  blocks: BlockDto[];
+  blockIds: BlockIdDto[];
 };
 
 export type P2pOfferSentClientEvent = {
