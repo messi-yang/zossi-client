@@ -13,7 +13,7 @@ import { CommandManager } from './managers/command-manager';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
 import { EventHandler, EventHandlerSubscriber } from './managers/common/event-handler';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
-import { BlockVo } from '@/models/world/block/block-vo';
+import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 
 export class WorldJourneyService {
@@ -37,7 +37,7 @@ export class WorldJourneyService {
 
   private calculatePlayerPositionTickCount;
 
-  constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockVo[], units: UnitModel[]) {
+  constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     this.world = world;
 
     this.unitManager = UnitManager.create(blocks, units);
@@ -74,7 +74,7 @@ export class WorldJourneyService {
     }
   }
 
-  static create(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockVo[], units: UnitModel[]) {
+  static create(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     return new WorldJourneyService(world, players, myPlayerId, blocks, units);
   }
 
@@ -138,11 +138,11 @@ export class WorldJourneyService {
     return !!this.playerManager.getPlayersAtPos(pos);
   }
 
-  public getBlocks(): BlockVo[] {
+  public getBlocks(): BlockModel[] {
     return this.unitManager.getBlocks();
   }
 
-  public addBlock(block: BlockVo): void {
+  public addBlock(block: BlockModel): void {
     this.unitManager.addBlock(block);
   }
 
@@ -232,7 +232,7 @@ export class WorldJourneyService {
   ): () => void;
   subscribe(eventName: 'ITEM_ADDED', subscriber: EventHandlerSubscriber<ItemModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_ITEM_IDS_ADDED', subscriber: EventHandlerSubscriber<string[]>): () => void;
-  subscribe(eventName: 'BLOCKS_UPDATED', subscriber: EventHandlerSubscriber<BlockVo[]>): () => void;
+  subscribe(eventName: 'BLOCKS_UPDATED', subscriber: EventHandlerSubscriber<BlockModel[]>): () => void;
   subscribe(eventName: 'PLAYER_ADDED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'MY_PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
@@ -261,7 +261,7 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<PlayerModel>
       | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
       | EventHandlerSubscriber<BlockIdVo[]>
-      | EventHandlerSubscriber<BlockVo[]>
+      | EventHandlerSubscriber<BlockModel[]>
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
@@ -286,7 +286,7 @@ export class WorldJourneyService {
     } else if (eventName === 'PLACEHOLDER_BLOCKS_ADDED') {
       return this.placeholderBlockIdsAddedEventHandler.subscribe(subscriber as EventHandlerSubscriber<BlockIdVo[]>);
     } else if (eventName === 'BLOCKS_UPDATED') {
-      return this.unitManager.subscribeBlocksUpdatedEvent(subscriber as EventHandlerSubscriber<BlockVo[]>);
+      return this.unitManager.subscribeBlocksUpdatedEvent(subscriber as EventHandlerSubscriber<BlockModel[]>);
     } else {
       return () => {};
     }

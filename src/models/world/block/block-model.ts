@@ -4,11 +4,11 @@ import { PositionVo } from '../common/position-vo';
 import { BlockIdVo } from './block-id-vo';
 import { BLOCK_SIZE } from './const';
 
-export class BlockVo {
+export class BlockModel {
   constructor(private id: BlockIdVo) {}
 
   static create(id: BlockIdVo) {
-    return new BlockVo(id);
+    return new BlockModel(id);
   }
 
   public getId() {

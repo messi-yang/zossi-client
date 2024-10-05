@@ -25,12 +25,12 @@ import { AddPlayerCommand } from '@/services/world-journey-service/managers/comm
 import { RemovePlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-player-command';
 import { generateUuidV4 } from '@/utils/uuid';
 import { DateVo } from '@/models/global/date-vo';
-import { BlockVo } from '@/models/world/block/block-vo';
+import { BlockModel } from '@/models/world/block/block-model';
 import { parseBlockDto } from '../dtos/block-dto';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 import { newBlockIdDto } from '../dtos/block-id-dto';
 
-function parseWorldEnteredServerEvent(event: WorldEnteredServerEvent): [WorldModel, BlockVo[], UnitModel[], string, PlayerModel[]] {
+function parseWorldEnteredServerEvent(event: WorldEnteredServerEvent): [WorldModel, BlockModel[], UnitModel[], string, PlayerModel[]] {
   return [
     parseWorldDto(event.world),
     event.blocks.map(parseBlockDto),
@@ -55,7 +55,7 @@ export class WorldJourneyApi {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandReceived: (command: Command) => void;
       onCommandFailed: (commandId: string) => void;
-      onUnitsReturned: (blocks: BlockVo[], units: UnitModel[]) => void;
+      onUnitsReturned: (blocks: BlockModel[], units: UnitModel[]) => void;
       onErrored: (message: string) => void;
       onDisconnect: () => void;
       onOpen: () => void;
@@ -187,7 +187,7 @@ export class WorldJourneyApi {
       onWorldEntered: (worldJourneyService: WorldJourneyService) => void;
       onCommandReceived: (command: Command) => void;
       onCommandFailed: (commandId: string) => void;
-      onUnitsReturned: (blocks: BlockVo[], units: UnitModel[]) => void;
+      onUnitsReturned: (blocks: BlockModel[], units: UnitModel[]) => void;
       onErrored: (message: string) => void;
       onDisconnect: () => void;
       onOpen: () => void;

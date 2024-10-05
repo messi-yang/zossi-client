@@ -1,15 +1,15 @@
-import { BlockVo } from '@/models/world/block/block-vo';
+import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdDto, newBlockIdDto, parseBlockIdDto } from './block-id-dto';
 
 type BlockDto = {
   id: BlockIdDto;
 };
 
-export function parseBlockDto(blockDto: BlockDto): BlockVo {
-  return BlockVo.create(parseBlockIdDto(blockDto.id));
+export function parseBlockDto(blockDto: BlockDto): BlockModel {
+  return BlockModel.create(parseBlockIdDto(blockDto.id));
 }
 
-export function newBlockDto(block: BlockVo): BlockDto {
+export function newBlockDto(block: BlockModel): BlockDto {
   return {
     id: newBlockIdDto(block.getId()),
   };

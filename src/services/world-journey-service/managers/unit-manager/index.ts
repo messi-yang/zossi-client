@@ -9,11 +9,11 @@ import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { dispatchUnit } from '@/models/world/unit/utils';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
-import { BlockVo } from '@/models/world/block/block-vo';
+import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 
 export class UnitManager {
-  private blocks: Record<string, BlockVo | undefined>;
+  private blocks: Record<string, BlockModel | undefined>;
 
   private unitMapById: Record<string, UnitModel | undefined>;
 
@@ -21,7 +21,7 @@ export class UnitManager {
 
   private unitMapByItemId: Record<string, UnitModel[] | undefined>;
 
-  private blocksUpdatedEventHandler = EventHandler.create<BlockVo[]>();
+  private blocksUpdatedEventHandler = EventHandler.create<BlockModel[]>();
 
   private unitsChangedEventHandler = EventHandler.create<[itemId: string, units: UnitModel[]]>();
 
@@ -33,7 +33,7 @@ export class UnitManager {
     [UnitTypeEnum.Embed]: EmbedUnitModel[];
   } = { static: [], fence: [], portal: [], link: [], embed: [] };
 
-  constructor(blocks: BlockVo[], units: UnitModel[]) {
+  constructor(blocks: BlockModel[], units: UnitModel[]) {
     this.blocks = {};
     blocks.forEach((block) => {
       this.blocks[block.getId().toString()] = block;
@@ -50,12 +50,12 @@ export class UnitManager {
     });
   }
 
-  static create(blocks: BlockVo[], units: UnitModel[]): UnitManager {
+  static create(blocks: BlockModel[], units: UnitModel[]): UnitManager {
     return new UnitManager(blocks, units);
   }
 
-  public getBlocks(): BlockVo[] {
-    const blocks: BlockVo[] = [];
+  public getBlocks(): BlockModel[] {
+    const blocks: BlockModel[] = [];
     Object.values(this.blocks).forEach((block) => {
       if (!block) return;
 
@@ -212,7 +212,7 @@ export class UnitManager {
   /**
    * Add block so the manager know units in the block has been searched
    */
-  public addBlock(block: BlockVo) {
+  public addBlock(block: BlockModel) {
     this.blocks[block.getId().toString()] = block;
 
     console.log(this.blocks);
@@ -306,11 +306,11 @@ export class UnitManager {
     this.unitsChangedEventHandler.publish([itemId, this.getUnitsByItemId(itemId)]);
   }
 
-  public subscribeBlocksUpdatedEvent(subscriber: EventHandlerSubscriber<BlockVo[]>): () => void {
+  public subscribeBlocksUpdatedEvent(subscriber: EventHandlerSubscriber<BlockModel[]>): () => void {
     return this.blocksUpdatedEventHandler.subscribe(subscriber);
   }
 
-  private publishBlocksUpdatedEvent(blocks: BlockVo[]) {
+  private publishBlocksUpdatedEvent(blocks: BlockModel[]) {
     this.blocksUpdatedEventHandler.publish(blocks);
   }
 }

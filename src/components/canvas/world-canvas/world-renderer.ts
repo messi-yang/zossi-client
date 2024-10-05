@@ -10,7 +10,7 @@ import { PlayerModel } from '@/models/world/player/player-model';
 import { InstanceState, createInstancesInScene, createTextMesh } from './tjs-utils';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
-import { BlockVo } from '@/models/world/block/block-vo';
+import { BlockModel } from '@/models/world/block/block-model';
 
 const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
@@ -228,7 +228,7 @@ export class WorldRenderer {
     return new THREE.PerspectiveCamera(CAMERA_FOV, 1, 0.1, 1000);
   }
 
-  public async updateBase(blocks: BlockVo[]) {
+  public async updateBase(blocks: BlockModel[]) {
     const baseModel = await this.downloadModel(BASE_MODEL_SRC);
 
     const grassInstanceStates: { x: number; y: number; z: number; rotate: number }[] = [];
@@ -246,7 +246,7 @@ export class WorldRenderer {
     this.baseModelInstancesCleaner = removeInstancesFromScene;
   }
 
-  public updateGrid(blocks: BlockVo[]) {
+  public updateGrid(blocks: BlockModel[]) {
     this.gridCleaner();
 
     const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
