@@ -28,8 +28,10 @@ type ChangePlayerActionCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.ChangePlayerAction;
-  playerId: string;
-  action: PlayerActionDto;
+  payload: {
+    playerId: string;
+    playerAction: PlayerActionDto;
+  };
 };
 
 type ChangePlayerPrecisePositionCommandDto = {
@@ -44,43 +46,53 @@ type SendPlayerIntoPortalCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.SendPlayerIntoPortal;
-  playerId: string;
-  unitId: string;
+  payload: {
+    playerId: string;
+    unitId: string;
+  };
 };
 
 type ChangePlayerHeldItemCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.ChangePlayerHeldItem;
-  playerId: string;
-  itemId: string;
+  payload: {
+    playerId: string;
+    itemId: string;
+  };
 };
 
 type CreateStaticUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreateStaticUnit;
-  unitId: string;
-  itemId: string;
-  position: PositionDto;
-  direction: number;
+  payload: {
+    unitId: string;
+    itemId: string;
+    unitPosition: PositionDto;
+    unitDirection: number;
+  };
 };
 
 type RemoveStaticUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.RemoveStaticUnit;
-  unitId: string;
+  payload: {
+    unitId: string;
+  };
 };
 
 type CreateFenceUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreateFenceUnit;
-  unitId: string;
-  itemId: string;
-  position: PositionDto;
-  direction: number;
+  payload: {
+    unitId: string;
+    itemId: string;
+    unitPosition: PositionDto;
+    unitDirection: number;
+  };
 };
 
 // Hello
@@ -89,160 +101,176 @@ type RemoveFenceUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.RemoveFenceUnit;
-  unitId: string;
+  payload: {
+    unitId: string;
+  };
 };
 
 type CreatePortalUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreatePortalUnit;
-  unitId: string;
-  itemId: string;
-  position: PositionDto;
-  direction: number;
+  payload: {
+    unitId: string;
+    itemId: string;
+    unitPosition: PositionDto;
+    unitDirection: number;
+  };
 };
 
 type RemovePortalUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.RemovePortalUnit;
-  unitId: string;
+  payload: {
+    unitId: string;
+  };
 };
 
 type CreateLinkUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreateLinkUnit;
-  unitId: string;
-  itemId: string;
-  position: PositionDto;
-  direction: number;
-  label: string | null;
-  url: string;
+  payload: {
+    unitId: string;
+    itemId: string;
+    unitPosition: PositionDto;
+    unitDirection: number;
+    unitLabel: string | null;
+    unitUrl: string;
+  };
 };
 
 type RemoveLinkUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.RemoveLinkUnit;
-  unitId: string;
+  payload: {
+    unitId: string;
+  };
 };
 
 type CreateEmbedUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.CreateEmbedUnit;
-  unitId: string;
-  itemId: string;
-  position: PositionDto;
-  direction: number;
-  label: string | null;
-  embedCode: string;
+  payload: {
+    unitId: string;
+    itemId: string;
+    unitPosition: PositionDto;
+    unitDirection: number;
+    unitLabel: string | null;
+    unitEmbedCode: string;
+  };
 };
 
 type RemoveEmbedUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.RemoveEmbedUnit;
-  unitId: string;
+  payload: {
+    unitId: string;
+  };
 };
 
 type RotateUnitCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.RotateUnit;
-  unitId: string;
+  payload: {
+    unitId: string;
+  };
 };
 
 function parseCreateStaticCommand(command: CreateStaticUnitCommandDto): CreateStaticUnitCommand {
   return CreateStaticUnitCommand.createRemote(
     command.id,
     DateVo.fromTimestamp(command.timestamp),
-    command.unitId,
-    command.itemId,
-    PositionVo.create(command.position.x, command.position.z),
-    DirectionVo.create(command.direction)
+    command.payload.unitId,
+    command.payload.itemId,
+    PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
+    DirectionVo.create(command.payload.unitDirection)
   );
 }
 
 function parseRemoveStaticUnitCommand(command: RemoveStaticUnitCommandDto): RemoveStaticUnitCommand {
-  return RemoveStaticUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.unitId);
+  return RemoveStaticUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
 
 function parseCreateFenceCommand(command: CreateFenceUnitCommandDto): CreateFenceUnitCommand {
   return CreateFenceUnitCommand.createRemote(
     command.id,
     DateVo.fromTimestamp(command.timestamp),
-    command.unitId,
-    command.itemId,
-    PositionVo.create(command.position.x, command.position.z),
-    DirectionVo.create(command.direction)
+    command.payload.unitId,
+    command.payload.itemId,
+    PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
+    DirectionVo.create(command.payload.unitDirection)
   );
 }
 
 function parseRemoveFenceUnitCommand(command: RemoveFenceUnitCommandDto): RemoveFenceUnitCommand {
-  return RemoveFenceUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.unitId);
+  return RemoveFenceUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
 
 function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): CreatePortalUnitCommand {
   return CreatePortalUnitCommand.createRemote(
     command.id,
     DateVo.fromTimestamp(command.timestamp),
-    command.unitId,
-    command.itemId,
-    PositionVo.create(command.position.x, command.position.z),
-    DirectionVo.create(command.direction)
+    command.payload.unitId,
+    command.payload.itemId,
+    PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
+    DirectionVo.create(command.payload.unitDirection)
   );
 }
 
 function parseRemovePortalUnitCommand(command: RemovePortalUnitCommandDto): RemovePortalUnitCommand {
-  return RemovePortalUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.unitId);
+  return RemovePortalUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
 
 function parseCreateLinkUnitCommand(command: CreateLinkUnitCommandDto): CreateLinkUnitCommand {
   return CreateLinkUnitCommand.createRemote(
     command.id,
     DateVo.fromTimestamp(command.timestamp),
-    command.unitId,
-    command.itemId,
-    PositionVo.create(command.position.x, command.position.z),
-    DirectionVo.create(command.direction),
-    command.label,
-    command.url
+    command.payload.unitId,
+    command.payload.itemId,
+    PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
+    DirectionVo.create(command.payload.unitDirection),
+    command.payload.unitLabel,
+    command.payload.unitUrl
   );
 }
 
 function parseRemoveLinkUnitCommand(command: RemoveLinkUnitCommandDto): RemoveLinkUnitCommand {
-  return RemoveLinkUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.unitId);
+  return RemoveLinkUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
 
 function parseCreateEmbedUnitCommand(command: CreateEmbedUnitCommandDto): CreateEmbedUnitCommand {
   return CreateEmbedUnitCommand.createRemote(
     command.id,
     DateVo.fromTimestamp(command.timestamp),
-    command.unitId,
-    command.itemId,
-    PositionVo.create(command.position.x, command.position.z),
-    DirectionVo.create(command.direction),
-    command.label,
-    command.embedCode
+    command.payload.unitId,
+    command.payload.itemId,
+    PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
+    DirectionVo.create(command.payload.unitDirection),
+    command.payload.unitLabel,
+    command.payload.unitEmbedCode
   );
 }
 
 function parseRemoveEmbedUnitCommand(command: RemoveEmbedUnitCommandDto): RemoveEmbedUnitCommand {
-  return RemoveEmbedUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.unitId);
+  return RemoveEmbedUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
 
 function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
-  return RotateUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.unitId);
+  return RotateUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
 
 function parseChangePlayerActionCommand(command: ChangePlayerActionCommandDto): ChangePlayerActionCommand {
   return ChangePlayerActionCommand.createRemote(
     command.id,
     DateVo.fromTimestamp(command.timestamp),
-    command.playerId,
-    parsePlayerActionDto(command.action)
+    command.payload.playerId,
+    parsePlayerActionDto(command.payload.playerAction)
   );
 }
 
@@ -256,11 +284,21 @@ function parseChangePlayerPrecisePositionCommand(command: ChangePlayerPrecisePos
 }
 
 function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDto): SendPlayerIntoPortalCommand {
-  return SendPlayerIntoPortalCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.playerId, command.unitId);
+  return SendPlayerIntoPortalCommand.createRemote(
+    command.id,
+    DateVo.fromTimestamp(command.timestamp),
+    command.payload.playerId,
+    command.payload.unitId
+  );
 }
 
 function parseChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
-  return ChangePlayerHeldItemCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.playerId, command.itemId);
+  return ChangePlayerHeldItemCommand.createRemote(
+    command.id,
+    DateVo.fromTimestamp(command.timestamp),
+    command.payload.playerId,
+    command.payload.itemId
+  );
 }
 
 export const parseCommandDto = (commandDto: CommandDto) => {
@@ -304,93 +342,117 @@ export const toCommandDto = (sourceCommand: Command) => {
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreateStaticUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
+      payload: {
+        unitId: command.getUnitId(),
+        itemId: command.getItemId(),
+        unitPosition: newPositionDto(command.getPosition()),
+        unitDirection: command.getDirection().toNumber(),
+      },
     }),
     [CommandNameEnum.RemoveStaticUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemoveStaticUnit,
-      unitId: command.getUnitId(),
+      payload: {
+        unitId: command.getUnitId(),
+      },
     }),
     [CommandNameEnum.CreateFenceUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreateFenceUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
+      payload: {
+        unitId: command.getUnitId(),
+        itemId: command.getItemId(),
+        unitPosition: newPositionDto(command.getPosition()),
+        unitDirection: command.getDirection().toNumber(),
+      },
     }),
     [CommandNameEnum.RemoveFenceUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemoveFenceUnit,
-      unitId: command.getUnitId(),
+      payload: {
+        unitId: command.getUnitId(),
+      },
     }),
     [CommandNameEnum.CreatePortalUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreatePortalUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
+      payload: {
+        unitId: command.getUnitId(),
+        itemId: command.getItemId(),
+        unitPosition: newPositionDto(command.getPosition()),
+        unitDirection: command.getDirection().toNumber(),
+      },
     }),
     [CommandNameEnum.RemovePortalUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemovePortalUnit,
-      unitId: command.getUnitId(),
+      payload: {
+        unitId: command.getUnitId(),
+      },
     }),
     [CommandNameEnum.CreateLinkUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreateLinkUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
-      label: command.getLabel(),
-      url: command.getUrl(),
+      payload: {
+        unitId: command.getUnitId(),
+        itemId: command.getItemId(),
+        unitPosition: newPositionDto(command.getPosition()),
+        unitDirection: command.getDirection().toNumber(),
+        unitLabel: command.getLabel(),
+        unitUrl: command.getUrl(),
+      },
     }),
     [CommandNameEnum.RemoveLinkUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemoveLinkUnit,
-      unitId: command.getUnitId(),
+      payload: {
+        unitId: command.getUnitId(),
+      },
     }),
     [CommandNameEnum.CreateEmbedUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.CreateEmbedUnit,
-      unitId: command.getUnitId(),
-      itemId: command.getItemId(),
-      position: newPositionDto(command.getPosition()),
-      direction: command.getDirection().toNumber(),
-      label: command.getLabel(),
-      embedCode: command.getEmbedCode(),
+      payload: {
+        unitId: command.getUnitId(),
+        itemId: command.getItemId(),
+        unitPosition: newPositionDto(command.getPosition()),
+        unitDirection: command.getDirection().toNumber(),
+        unitLabel: command.getLabel(),
+        unitEmbedCode: command.getEmbedCode(),
+      },
     }),
     [CommandNameEnum.RemoveEmbedUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RemoveEmbedUnit,
-      unitId: command.getUnitId(),
+      payload: {
+        unitId: command.getUnitId(),
+      },
     }),
     [CommandNameEnum.RotateUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.RotateUnit,
-      unitId: command.getUnitId(),
+      payload: {
+        unitId: command.getUnitId(),
+      },
     }),
     [CommandNameEnum.ChangePlayerAction]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.ChangePlayerAction,
-      playerId: command.getPlayerId(),
-      action: newPlayerActionDto(command.getAction()),
+      payload: {
+        playerId: command.getPlayerId(),
+        playerAction: newPlayerActionDto(command.getAction()),
+      },
     }),
     [CommandNameEnum.ChangePlayerPrecisePosition]: (command) => ({
       id: command.getId(),
@@ -403,15 +465,19 @@ export const toCommandDto = (sourceCommand: Command) => {
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.SendPlayerIntoPortal,
-      playerId: command.getPlayerId(),
-      unitId: command.getUnitId(),
+      payload: {
+        playerId: command.getPlayerId(),
+        unitId: command.getUnitId(),
+      },
     }),
     [CommandNameEnum.ChangePlayerHeldItem]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.ChangePlayerHeldItem,
-      playerId: command.getPlayerId(),
-      itemId: command.getItemId(),
+      payload: {
+        playerId: command.getPlayerId(),
+        itemId: command.getItemId(),
+      },
     }),
     [CommandNameEnum.AddPlayer]: () => null,
     [CommandNameEnum.RemovePlayer]: () => null,
