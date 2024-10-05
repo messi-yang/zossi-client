@@ -11,7 +11,7 @@ import { ItemManager } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandManager } from './managers/command-manager';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
-import { EventHandler, EventHandlerSubscriber } from './managers/common/event-handler';
+import { EventHandlerSubscriber } from './managers/common/event-handler';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
@@ -28,8 +28,6 @@ export class WorldJourneyService {
   private commandManager: CommandManager;
 
   private perspectiveManager: PerspectiveManager;
-
-  private placeholderBlockIdsAddedEventHandler = EventHandler.create<BlockIdVo[]>();
 
   private animateId: number | null = null;
 
@@ -54,17 +52,11 @@ export class WorldJourneyService {
     this.calculatePlayerPositionTickCount = 0;
     this.calculatePlayerPositionTicker();
 
-    this.subscribe('MY_PLAYER_UPDATED', ([oldPlayer, newPlayer]) => {
+    this.subscribe('MY_PLAYER_UPDATED', ([, newPlayer]) => {
       this.perspectiveManager.updateTargetPrecisePosition(newPlayer.getPrecisePosition());
 
       const worldId = world.getId();
-      const oldNearBlockIds = oldPlayer.getNearBlockIds(worldId);
-      const newNearBlockIds = newPlayer.getNearBlockIds(worldId);
-      const isNearBlockIdsChanged = oldNearBlockIds.some((blockId, blockIdIndex) => !blockId.isEqual(newNearBlockIds[blockIdIndex]));
-      if (isNearBlockIdsChanged) {
-        const placeholderBlockIds = newNearBlockIds.filter((nearBlockId) => !this.unitManager.hasBlock(nearBlockId));
-        this.placeholderBlockIdsAddedEventHandler.publish(placeholderBlockIds);
-      }
+      this.unitManager.addPlaceholderBlockIds(newPlayer.getNearBlockIds(worldId));
     });
   }
 
@@ -284,7 +276,7 @@ export class WorldJourneyService {
     } else if (eventName === 'PLAYER_REMOVED') {
       return this.playerManager.subscribePlayerRemovedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
     } else if (eventName === 'PLACEHOLDER_BLOCKS_ADDED') {
-      return this.placeholderBlockIdsAddedEventHandler.subscribe(subscriber as EventHandlerSubscriber<BlockIdVo[]>);
+      return this.unitManager.subscribePlaceholderBlockIdsAddedEvent(subscriber as EventHandlerSubscriber<BlockIdVo[]>);
     } else if (eventName === 'BLOCKS_UPDATED') {
       return this.unitManager.subscribeBlocksUpdatedEvent(subscriber as EventHandlerSubscriber<BlockModel[]>);
     } else {

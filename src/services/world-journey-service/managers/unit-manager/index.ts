@@ -15,6 +15,13 @@ import { BlockIdVo } from '@/models/world/block/block-id-vo';
 export class UnitManager {
   private blocks: Record<string, BlockModel | undefined>;
 
+  /**
+   * Placeholder block means the block is requested but not yet fetched from server
+   */
+  private placeholderBlockIds: BlockIdVo[];
+
+  private placeholderBlockIdsAddedEventHandler = EventHandler.create<BlockIdVo[]>();
+
   private unitMapById: Record<string, UnitModel | undefined>;
 
   private unitMapByPos: Record<string, UnitModel | undefined>;
@@ -34,6 +41,7 @@ export class UnitManager {
   } = { static: [], fence: [], portal: [], link: [], embed: [] };
 
   constructor(blocks: BlockModel[], units: UnitModel[]) {
+    this.placeholderBlockIds = [];
     this.blocks = {};
     blocks.forEach((block) => {
       this.blocks[block.getId().toString()] = block;
@@ -52,6 +60,20 @@ export class UnitManager {
 
   static create(blocks: BlockModel[], units: UnitModel[]): UnitManager {
     return new UnitManager(blocks, units);
+  }
+
+  /**
+   * Add placeholder block id to let the manager know we are needing this from server
+   */
+  public addPlaceholderBlockIds(blockIds: BlockIdVo[]) {
+    const newBlockIds = blockIds.filter((blockId) => !this.hasBlock(blockId));
+
+    newBlockIds.forEach((blockId) => {
+      this.placeholderBlockIds.push(blockId);
+    });
+    if (newBlockIds.length === 0) return;
+
+    this.publishPlaceholderBlockIdsAddedEvent(newBlockIds);
   }
 
   public getBlocks(): BlockModel[] {
@@ -215,8 +237,6 @@ export class UnitManager {
   public addBlock(block: BlockModel) {
     this.blocks[block.getId().toString()] = block;
 
-    console.log(this.blocks);
-
     this.publishBlocksUpdatedEvent(this.getBlocks());
   }
 
@@ -304,6 +324,14 @@ export class UnitManager {
 
   private publishUnitsChangedEvent(itemId: string) {
     this.unitsChangedEventHandler.publish([itemId, this.getUnitsByItemId(itemId)]);
+  }
+
+  public subscribePlaceholderBlockIdsAddedEvent(subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void {
+    return this.placeholderBlockIdsAddedEventHandler.subscribe(subscriber);
+  }
+
+  private publishPlaceholderBlockIdsAddedEvent(placeholderBlockIds: BlockIdVo[]) {
+    this.placeholderBlockIdsAddedEventHandler.publish(placeholderBlockIds);
   }
 
   public subscribeBlocksUpdatedEvent(subscriber: EventHandlerSubscriber<BlockModel[]>): () => void {
