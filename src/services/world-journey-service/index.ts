@@ -42,7 +42,7 @@ export class WorldJourneyService {
 
     this.playerManager = PlayerManager.create(players, myPlayerId);
 
-    this.perspectiveManager = PerspectiveManager.create(30, this.playerManager.getMyPlayer().getPrecisePosition());
+    this.perspectiveManager = PerspectiveManager.create(20, this.playerManager.getMyPlayer().getPrecisePosition());
 
     this.itemManager = ItemManager.create();
 
