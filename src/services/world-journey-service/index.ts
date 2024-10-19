@@ -230,7 +230,7 @@ export class WorldJourneyService {
   subscribe(eventName: 'MY_PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_BLOCKS_ADDED', subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void;
-  subscribe(eventName: 'UNITS_CHANGED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
+  subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -243,7 +243,7 @@ export class WorldJourneyService {
       | 'MY_PLAYER_UPDATED'
       | 'PLAYER_REMOVED'
       | 'PLACEHOLDER_BLOCKS_ADDED'
-      | 'UNITS_CHANGED',
+      | 'UNITS_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
@@ -265,8 +265,8 @@ export class WorldJourneyService {
       return this.itemManager.subscribeItemAddedEvent(subscriber as EventHandlerSubscriber<ItemModel>);
     } else if (eventName === 'PLACEHOLDER_ITEM_IDS_ADDED') {
       return this.itemManager.subscribePlaceholderItemIdsAddedEvent(subscriber as EventHandlerSubscriber<string[]>);
-    } else if (eventName === 'UNITS_CHANGED') {
-      return this.unitManager.subscribeUnitsChangedEvent(subscriber as EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>);
+    } else if (eventName === 'UNITS_UPDATED') {
+      return this.unitManager.subscribeUnitsUpdatedEvent(subscriber as EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>);
     } else if (eventName === 'PLAYER_ADDED') {
       return this.playerManager.subscribePlayerAddedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
     } else if (eventName === 'PLAYER_UPDATED') {

@@ -30,7 +30,7 @@ export class UnitManager {
 
   private blocksUpdatedEventHandler = EventHandler.create<BlockModel[]>();
 
-  private unitsChangedEventHandler = EventHandler.create<[itemId: string, units: UnitModel[]]>();
+  private unitsUpdatedEventHandler = EventHandler.create<[itemId: string, units: UnitModel[]]>();
 
   private unitMapByType: {
     [UnitTypeEnum.Static]: StaticUnitModel[];
@@ -253,7 +253,7 @@ export class UnitManager {
     this.addUnitToUnitMapByItemId(unit);
     this.addUnitToUnitMapByType(unit);
 
-    this.publishUnitsChangedEvent(unit.getItemId());
+    this.publishUnitsUpdatedEvent(unit.getItemId());
     return true;
   }
 
@@ -277,7 +277,7 @@ export class UnitManager {
     });
 
     Object.keys(uniqueItemIds).forEach((itemId) => {
-      this.publishUnitsChangedEvent(itemId);
+      this.publishUnitsUpdatedEvent(itemId);
     });
   }
 
@@ -296,7 +296,7 @@ export class UnitManager {
 
     const itemIds = [currentUnit.getItemId(), unit.getItemId()];
     uniq(itemIds).forEach((itemId) => {
-      this.publishUnitsChangedEvent(itemId);
+      this.publishUnitsUpdatedEvent(itemId);
     });
     return true;
   }
@@ -314,16 +314,16 @@ export class UnitManager {
     this.removeUnitFromUnitMapByItemId(currentUnit);
     this.removeUnitFromUnitMapByType(currentUnit);
 
-    this.publishUnitsChangedEvent(currentUnit.getItemId());
+    this.publishUnitsUpdatedEvent(currentUnit.getItemId());
     return true;
   }
 
-  public subscribeUnitsChangedEvent(subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void {
-    return this.unitsChangedEventHandler.subscribe(subscriber);
+  public subscribeUnitsUpdatedEvent(subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void {
+    return this.unitsUpdatedEventHandler.subscribe(subscriber);
   }
 
-  private publishUnitsChangedEvent(itemId: string) {
-    this.unitsChangedEventHandler.publish([itemId, this.getUnitsByItemId(itemId)]);
+  private publishUnitsUpdatedEvent(itemId: string) {
+    this.unitsUpdatedEventHandler.publish([itemId, this.getUnitsByItemId(itemId)]);
   }
 
   public subscribePlaceholderBlockIdsAddedEvent(subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void {

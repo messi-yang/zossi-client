@@ -98,7 +98,7 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
-    return worldJourneyService.subscribe('UNITS_CHANGED', ([itemId, units]) => {
+    return worldJourneyService.subscribe('UNITS_UPDATED', ([itemId, units]) => {
       const item = worldJourneyService.getItem(itemId);
       if (!item) return;
       worldRenderer.updateUnitsOfItem(item, units, getUnit);
