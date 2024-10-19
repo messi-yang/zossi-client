@@ -1,11 +1,11 @@
 import { generateUuidV4 } from '@/utils/uuid';
 import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
-import { BaseUnitModel } from './unit-model';
+import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
 import { DimensionVo } from '../common/dimension-vo';
 
-export class PortalUnitModel extends BaseUnitModel {
+export class PortalUnitModel extends UnitModel {
   constructor(
     id: string,
     itemId: string,

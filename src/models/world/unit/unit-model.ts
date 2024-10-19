@@ -5,21 +5,7 @@ import { PositionVo } from '../common/position-vo';
 import { PrecisePositionVo } from '../common/precise-position-vo';
 import { UnitTypeEnum } from './unit-type-enum';
 
-export interface UnitModel {
-  clone(): UnitModel;
-  getId(): string;
-  getType(): UnitTypeEnum;
-  getItemId(): string;
-  getPosition(): PositionVo;
-  getCenterPrecisePosition(): PrecisePositionVo;
-  getDirection(): DirectionVo;
-  getDimension(): DimensionVo;
-  getLabel(): string | null;
-  rotate(): void;
-  getOccupiedPositions(): PositionVo[];
-}
-
-export abstract class BaseUnitModel implements UnitModel {
+export abstract class UnitModel {
   constructor(
     private id: string,
     private type: UnitTypeEnum,

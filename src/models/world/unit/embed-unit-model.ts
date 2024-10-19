@@ -1,19 +1,12 @@
 import { generateUuidV4 } from '@/utils/uuid';
 import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
-import { BaseUnitModel, UnitModel } from './unit-model';
+import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
 import { DimensionVo } from '../common/dimension-vo';
 
-export class EmbedUnitModel extends BaseUnitModel implements UnitModel {
-  constructor(
-    id: string,
-    itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    dimension: DimensionVo,
-    label: string | null
-  ) {
+export class EmbedUnitModel extends UnitModel {
+  constructor(id: string, itemId: string, position: PositionVo, direction: DirectionVo, dimension: DimensionVo, label: string | null) {
     super(id, UnitTypeEnum.Embed, itemId, position, direction, dimension, label);
   }
 

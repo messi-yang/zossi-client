@@ -1,22 +1,17 @@
 import { generateUuidV4 } from '@/utils/uuid';
 import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
-import { BaseUnitModel, UnitModel } from './unit-model';
+import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
 import { DimensionVo } from '../common/dimension-vo';
 
-export class StaticUnitModel extends BaseUnitModel implements UnitModel {
+export class StaticUnitModel extends UnitModel {
   constructor(id: string, itemId: string, position: PositionVo, direction: DirectionVo, dimension: DimensionVo) {
     super(id, UnitTypeEnum.Static, itemId, position, direction, dimension, null);
   }
 
-  static create = (
-    id: string,
-    itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    dimension: DimensionVo
-  ): StaticUnitModel => new StaticUnitModel(id, itemId, position, direction, dimension);
+  static create = (id: string, itemId: string, position: PositionVo, direction: DirectionVo, dimension: DimensionVo): StaticUnitModel =>
+    new StaticUnitModel(id, itemId, position, direction, dimension);
 
   static createMock(): StaticUnitModel {
     return new StaticUnitModel(
@@ -29,13 +24,7 @@ export class StaticUnitModel extends BaseUnitModel implements UnitModel {
   }
 
   public clone() {
-    return new StaticUnitModel(
-      this.getId(),
-      this.getItemId(),
-      this.getPosition(),
-      this.getDirection(),
-      this.getDimension()
-    );
+    return new StaticUnitModel(this.getId(), this.getItemId(), this.getPosition(), this.getDirection(), this.getDimension());
   }
 
   public getType() {

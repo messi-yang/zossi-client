@@ -8,7 +8,7 @@ type Props = {
   description?: string;
 };
 
-export function Field({ children, label, description }: PropsWithChildren<Props>) {
+export function Field({ children, label, description }: PropsWithChildren<Props>): JSX.Element {
   return (
     <div data-testid={dataTestids.root} className={classnames('flex', 'flex-col', 'w-full')}>
       <Text weight="font-bold">{label}</Text>
