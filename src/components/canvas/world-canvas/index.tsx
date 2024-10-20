@@ -60,7 +60,7 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
 
   const getUnit = useCallback(
     (position: PositionVo) => {
-      return worldJourneyService.getUnit(position);
+      return worldJourneyService.getUnitByPos(position);
     },
     [worldJourneyService]
   );

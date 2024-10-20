@@ -23,6 +23,7 @@ import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { DateVo } from '@/models/global/date-vo';
 import { CommandNameEnum } from '@/services/world-journey-service/managers/command-manager/command-name-enum';
 import { dispatchCommand } from '@/services/world-journey-service/managers/command-manager/utils';
+import { TeleportPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/teleport-player-command';
 
 type ChangePlayerActionCommandDto = {
   id: string;
@@ -49,6 +50,16 @@ type SendPlayerIntoPortalCommandDto = {
   payload: {
     playerId: string;
     unitId: string;
+  };
+};
+
+type TeleportPlayerCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.TeleportPlayer;
+  payload: {
+    playerId: string;
+    position: PositionDto;
   };
 };
 
@@ -292,6 +303,15 @@ function parseSendPlayerIntoPortalCommand(command: SendPlayerIntoPortalCommandDt
   );
 }
 
+function parseTeleportPlayerCommand(command: TeleportPlayerCommandDto): TeleportPlayerCommand {
+  return TeleportPlayerCommand.createRemote(
+    command.id,
+    DateVo.fromTimestamp(command.timestamp),
+    command.payload.playerId,
+    PositionVo.create(command.payload.position.x, command.payload.position.z)
+  );
+}
+
 function parseChangePlayerHeldItemCommand(command: ChangePlayerHeldItemCommandDto): ChangePlayerHeldItemCommand {
   return ChangePlayerHeldItemCommand.createRemote(
     command.id,
@@ -330,6 +350,8 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseChangePlayerPrecisePositionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
     return parseSendPlayerIntoPortalCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.TeleportPlayer) {
+    return parseTeleportPlayerCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerHeldItem) {
     return parseChangePlayerHeldItemCommand(commandDto);
   }
@@ -470,6 +492,15 @@ export const toCommandDto = (sourceCommand: Command) => {
         unitId: command.getUnitId(),
       },
     }),
+    [CommandNameEnum.TeleportPlayer]: (command) => ({
+      id: command.getId(),
+      timestamp: command.getCreatedAtTimestamp(),
+      name: CommandNameEnum.TeleportPlayer,
+      payload: {
+        playerId: command.getPlayerId(),
+        position: newPositionDto(command.getPosition()),
+      },
+    }),
     [CommandNameEnum.ChangePlayerHeldItem]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
@@ -490,6 +521,7 @@ export type CommandDto =
   | ChangePlayerActionCommandDto
   | ChangePlayerPrecisePositionCommandDto
   | SendPlayerIntoPortalCommandDto
+  | TeleportPlayerCommandDto
   | ChangePlayerHeldItemCommandDto
   | CreateStaticUnitCommandDto
   | RemoveStaticUnitCommandDto

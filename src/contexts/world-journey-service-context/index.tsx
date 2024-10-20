@@ -5,9 +5,7 @@ import { ItemModel } from '@/models/world/item/item-model';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { WorldJourneyService } from '@/services/world-journey-service';
 import { PositionVo } from '@/models/world/common/position-vo';
-import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
-import { SendPlayerIntoPortalCommand } from '@/services/world-journey-service/managers/command-manager/commands/send-player-into-portal-command';
 import { ChangePlayerActionCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-action-command';
 import { CreateStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-static-unit-command';
 import { ChangePlayerHeldItemCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-held-item-command';
@@ -31,6 +29,9 @@ import { BoundVo } from '@/models/world/common/bound-vo';
 import { sleep } from '@/utils/general';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { MazeVo } from '@/models/global/maze-vo';
+import { SendPlayerIntoPortalCommand } from '@/services/world-journey-service/managers/command-manager/commands/send-player-into-portal-command';
+import { PortalUnitApi } from '@/adapters/apis/portal-unit-api';
+import { TeleportPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/teleport-player-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -85,6 +86,7 @@ type Props = {
 export function Provider({ children }: Props) {
   const linkUnitApi = useMemo(() => LinkUnitApi.create(), []);
   const embedUnitApi = useMemo(() => EmbedUnitApi.create(), []);
+  const portalUnitApi = useMemo(() => PortalUnitApi.create(), []);
   const itemApi = useMemo<ItemApi>(() => ItemApi.create(), []);
   const [items, setItems] = useState<ItemModel[] | null>([]);
   const [worldJourneyService, setWorldJourneyService] = useState<WorldJourneyService | null>(null);
@@ -188,29 +190,21 @@ export function Provider({ children }: Props) {
     worldJourneyApi.current = newWorldJourneyApi;
   }, []);
 
+  // When my player walks into a portal, get its target position and sends my player to there
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribe('MY_PLAYER_UPDATED', ([oldPlayer, newPlayer]) => {
+    return worldJourneyService.subscribe('LOCAL_COMMAND_EXECUTED', async (command) => {
       if (!worldJourneyApi.current) return;
+      if (!(command instanceof SendPlayerIntoPortalCommand)) return;
 
-      const oldPlayerPos = oldPlayer.getPosition();
-      const newPlayerPos = newPlayer.getPosition();
-      if (oldPlayerPos.isEqual(newPlayerPos)) {
-        return;
-      }
+      const myPlayer = worldJourneyService.getMyPlayer();
+      const playerId = command.getPlayerId();
+      if (myPlayer.getId() !== playerId) return;
 
-      const unitAtNewPlayerPos = worldJourneyService.getUnit(newPlayerPos);
-      if (!unitAtNewPlayerPos) return;
-
-      if (unitAtNewPlayerPos instanceof PortalUnitModel) {
-        // To prevent infinite teleporting loop, we need to check if we just came from another portal
-        const unitAtOldPlayerPos = worldJourneyService.getUnit(oldPlayerPos);
-        if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
-
-        const command = SendPlayerIntoPortalCommand.create(newPlayer.getId(), unitAtNewPlayerPos.getId());
-        worldJourneyService.executeLocalCommand(command);
-      }
+      const targetPosition = await portalUnitApi.getPortalUnitTargetPosition(command.getUnitId());
+      const newCommand = TeleportPlayerCommand.create(playerId, targetPosition ?? myPlayer.getPosition());
+      worldJourneyService.executeLocalCommand(newCommand);
     });
   }, [worldJourneyService]);
 
@@ -373,7 +367,7 @@ export function Provider({ children }: Props) {
 
     const myPlayer = worldJourneyService.getMyPlayer();
     const unitPos = myPlayer.getFowardPosition(1);
-    const unitAtPos = worldJourneyService.getUnit(unitPos);
+    const unitAtPos = worldJourneyService.getUnitByPos(unitPos);
     if (!unitAtPos) return;
 
     if (unitAtPos instanceof LinkUnitModel) {
@@ -415,7 +409,7 @@ export function Provider({ children }: Props) {
   const removeUnit = useCallback(
     (pos: PositionVo): boolean => {
       if (!worldJourneyService) return false;
-      const unitAtPos = worldJourneyService.getUnit(pos);
+      const unitAtPos = worldJourneyService.getUnitByPos(pos);
       if (!unitAtPos) return false;
 
       const unitId = unitAtPos.getId();
@@ -480,7 +474,7 @@ export function Provider({ children }: Props) {
 
     const myPlayer = worldJourneyService.getMyPlayer();
     const unitPos = myPlayer.getFowardPosition(1);
-    const unitAtPos = worldJourneyService.getUnit(unitPos);
+    const unitAtPos = worldJourneyService.getUnitByPos(unitPos);
     if (!unitAtPos) return;
 
     const command = RotateUnitCommand.create(unitAtPos.getId());

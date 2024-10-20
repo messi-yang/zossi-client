@@ -16,12 +16,24 @@ export class PlayerActionVo {
     return new PlayerActionVo(PlayerActionNameEnum.Stand, direction);
   }
 
+  static newTeleport(direction: DirectionVo) {
+    return new PlayerActionVo(PlayerActionNameEnum.Teleport, direction);
+  }
+
+  static newTeleported(direction: DirectionVo) {
+    return new PlayerActionVo(PlayerActionNameEnum.Teleported, direction);
+  }
+
   public isWalk() {
     return this.name === PlayerActionNameEnum.Walk;
   }
 
   public isStand() {
     return this.name === PlayerActionNameEnum.Stand;
+  }
+
+  public isTeleport() {
+    return this.name === PlayerActionNameEnum.Teleport;
   }
 
   public getName(): PlayerActionNameEnum {

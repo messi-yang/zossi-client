@@ -15,6 +15,8 @@ import { EventHandlerSubscriber } from './managers/common/event-handler';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { SendPlayerIntoPortalCommand } from './managers/command-manager/commands/send-player-into-portal-command';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -31,9 +33,9 @@ export class WorldJourneyService {
 
   private animateId: number | null = null;
 
-  private calculatePlayerPositionTickFps;
+  private updatePlayerPositionTickFps;
 
-  private calculatePlayerPositionTickCount;
+  private updatePlayerPositionTickCount;
 
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     this.world = world;
@@ -48,16 +50,13 @@ export class WorldJourneyService {
 
     this.commandManager = CommandManager.create(world, this.playerManager, this.unitManager, this.itemManager, this.perspectiveManager);
 
-    this.calculatePlayerPositionTickFps = 24;
-    this.calculatePlayerPositionTickCount = 0;
-    this.calculatePlayerPositionTicker();
+    this.updatePlayerPositionTickFps = 24;
+    this.updatePlayerPositionTickCount = 0;
+    this.updatePlayerPositionTicker();
 
-    this.subscribe('MY_PLAYER_UPDATED', ([, newPlayer]) => {
-      this.perspectiveManager.updateTargetPrecisePosition(newPlayer.getPrecisePosition());
+    this.updateMyPlayerNearBlocksTicker();
 
-      const worldId = world.getId();
-      this.unitManager.addPlaceholderBlockIds(newPlayer.getNearBlockIds(worldId));
-    });
+    this.checkMyPlayerWalkIntoPortalTicker();
   }
 
   public destroy() {
@@ -138,7 +137,7 @@ export class WorldJourneyService {
     this.unitManager.addBlock(block);
   }
 
-  public getUnit(position: PositionVo) {
+  public getUnitByPos(position: PositionVo) {
     return this.unitManager.getUnitByPos(position);
   }
 
@@ -172,13 +171,48 @@ export class WorldJourneyService {
     return this.itemManager.getItem(itemId);
   }
 
-  private calculatePlayerPosition() {
-    this.calculatePlayerPositionTickCount += 1;
+  private checkMyPlayerWalkIntoPortalTicker() {
+    this.subscribe('MY_PLAYER_UPDATED', ([oldPlayer, newPlayer]) => {
+      if (this.commandManager.getIsReplayingCommands()) return;
+
+      const oldPlayerPos = oldPlayer.getPosition();
+      const newPlayerPos = newPlayer.getPosition();
+      if (oldPlayerPos.isEqual(newPlayerPos)) {
+        return;
+      }
+
+      const unitAtNewPlayerPos = this.unitManager.getUnitByPos(newPlayerPos);
+      if (!unitAtNewPlayerPos) return;
+
+      if (unitAtNewPlayerPos instanceof PortalUnitModel) {
+        // To prevent infinite teleporting loop, we need to check if we just came from another portal
+        const unitAtOldPlayerPos = this.unitManager.getUnitByPos(oldPlayerPos);
+        if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
+
+        const command = SendPlayerIntoPortalCommand.create(newPlayer.getId(), unitAtNewPlayerPos.getId());
+        this.commandManager.executeLocalCommand(command);
+      }
+    });
+  }
+
+  private updateMyPlayerNearBlocksTicker() {
+    this.subscribe('MY_PLAYER_UPDATED', ([, newPlayer]) => {
+      if (this.commandManager.getIsReplayingCommands()) return;
+
+      this.perspectiveManager.updateTargetPrecisePosition(newPlayer.getPrecisePosition());
+
+      const worldId = this.world.getId();
+      this.unitManager.addPlaceholderBlockIds(newPlayer.getNearBlockIds(worldId));
+    });
+  }
+
+  private updatePlayerPosition() {
+    this.updatePlayerPositionTickCount += 1;
 
     const myPlayer = this.playerManager.getMyPlayer();
     const myPlayerAction = myPlayer.getAction();
     if (myPlayerAction.isStand()) {
-      if (this.calculatePlayerPositionTickCount % 10 === 0) {
+      if (this.updatePlayerPositionTickCount % 10 === 0) {
         this.executeLocalCommand(ChangePlayerPrecisePositionCommand.create(myPlayer.getId(), myPlayer.getPrecisePosition()));
       }
     } else if (myPlayerAction.isWalk()) {
@@ -192,24 +226,21 @@ export class WorldJourneyService {
         if (!item.getTraversable()) return;
       }
 
-      const nextMyPlayerPrecisePosition = myPlayerPrecisePosition.shiftByDirection(
-        myPlayerDirection,
-        5 / this.calculatePlayerPositionTickFps
-      );
+      const nextMyPlayerPrecisePosition = myPlayerPrecisePosition.shiftByDirection(myPlayerDirection, 5 / this.updatePlayerPositionTickFps);
 
       this.executeLocalCommand(ChangePlayerPrecisePositionCommand.create(myPlayer.getId(), nextMyPlayerPrecisePosition));
     }
   }
 
-  private calculatePlayerPositionTicker() {
-    const frameDelay = 1000 / this.calculatePlayerPositionTickFps;
+  private updatePlayerPositionTicker() {
+    const frameDelay = 1000 / this.updatePlayerPositionTickFps;
     let lastFrameTime = 0;
 
     const animate = () => {
       const currentTime = performance.now();
       const elapsed = currentTime - lastFrameTime;
       if (elapsed > frameDelay) {
-        this.calculatePlayerPosition();
+        this.updatePlayerPosition();
         lastFrameTime = currentTime - (elapsed % frameDelay);
       }
       this.animateId = requestAnimationFrame(animate);

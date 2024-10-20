@@ -13,7 +13,8 @@ export class PlayerModel {
     private name: string,
     private heldItemId: string | null,
     private action: PlayerActionVo,
-    private precisePosition: PrecisePositionVo
+    private precisePosition: PrecisePositionVo,
+    private frozen: boolean
   ) {
     this.precisePosition = precisePosition;
   }
@@ -25,7 +26,7 @@ export class PlayerModel {
     action: PlayerActionVo,
     precisePosition: PrecisePositionVo
   ): PlayerModel {
-    return new PlayerModel(id, name, heldItemId, action, precisePosition);
+    return new PlayerModel(id, name, heldItemId, action, precisePosition, false);
   }
 
   static createMock(): PlayerModel {
@@ -39,7 +40,7 @@ export class PlayerModel {
   }
 
   public clone(): PlayerModel {
-    return new PlayerModel(this.id, this.name, this.heldItemId, this.action, this.precisePosition);
+    return new PlayerModel(this.id, this.name, this.heldItemId, this.action, this.precisePosition, this.frozen);
   }
 
   public getId(): string {
@@ -67,6 +68,7 @@ export class PlayerModel {
   }
 
   public updateAction(action: PlayerActionVo) {
+    if (this.frozen) return;
     this.action = action;
   }
 
@@ -88,6 +90,7 @@ export class PlayerModel {
   }
 
   public updatePrecisePosition(pos: PrecisePositionVo) {
+    if (this.frozen) return;
     this.precisePosition = pos;
   }
 
@@ -127,5 +130,17 @@ export class PlayerModel {
     } else {
       return playerPosition.shift(-unitDimensionDepth, -Math.floor((unitDimensionWidth - 1) / 2));
     }
+  }
+
+  public getFrozen(): boolean {
+    return this.frozen;
+  }
+
+  public freeze() {
+    this.frozen = true;
+  }
+
+  public unfreeze() {
+    this.frozen = false;
   }
 }

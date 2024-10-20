@@ -67,6 +67,10 @@ export class CommandManager {
     return command;
   }
 
+  public getIsReplayingCommands() {
+    return this.isReplayingCommands;
+  }
+
   public removeFailedCommand(commandId: string) {
     this.addFailedCommandId(commandId);
 

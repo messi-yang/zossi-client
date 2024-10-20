@@ -5,6 +5,7 @@ export enum CommandNameEnum {
   ChangePlayerAction = 'CHANGE_PLAYER_ACTION',
   ChangePlayerPrecisePosition = 'CHANGE_PLAYER_PRECISE_POSITION',
   SendPlayerIntoPortal = 'SEND_PLAYER_INTO_PORTAL',
+  TeleportPlayer = 'TELEPORT_PLAYER',
   ChangePlayerHeldItem = 'CHANGE_PLAYER_HELD_ITEM',
   CreateStaticUnit = 'CREATE_STATIC_UNIT',
   RemoveStaticUnit = 'REMOVE_STATIC_UNIT',

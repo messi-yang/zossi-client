@@ -17,6 +17,7 @@ import { RemovePortalUnitCommand } from './commands/remove-portal-unit-command';
 import { RemoveStaticUnitCommand } from './commands/remove-static-unit-command';
 import { RotateUnitCommand } from './commands/rotate-unit-command';
 import { SendPlayerIntoPortalCommand } from './commands/send-player-into-portal-command';
+import { TeleportPlayerCommand } from './commands/teleport-player-command';
 
 /**
  * This function is mainly for making sure you handle every type of command
@@ -41,6 +42,7 @@ export const dispatchCommand = <T>(
     [CommandNameEnum.RemoveStaticUnit]: (_unit: RemoveStaticUnitCommand) => T;
     [CommandNameEnum.RotateUnit]: (_unit: RotateUnitCommand) => T;
     [CommandNameEnum.SendPlayerIntoPortal]: (_unit: SendPlayerIntoPortalCommand) => T;
+    [CommandNameEnum.TeleportPlayer]: (_unit: TeleportPlayerCommand) => T;
   }
 ): T => {
   if (command instanceof AddPlayerCommand) {
@@ -77,6 +79,8 @@ export const dispatchCommand = <T>(
     return mapper[CommandNameEnum.RotateUnit](command);
   } else if (command instanceof SendPlayerIntoPortalCommand) {
     return mapper[CommandNameEnum.SendPlayerIntoPortal](command);
+  } else if (command instanceof TeleportPlayerCommand) {
+    return mapper[CommandNameEnum.TeleportPlayer](command);
   }
   throw new Error(`The command name ${command.getName()} is not handled here`);
 };
