@@ -7,7 +7,7 @@ export class PortalUnitApi {
   private axios: Axios;
 
   constructor() {
-    this.axios = AxiosProvider.create(`${process.env.API_URL}/api/link-units`);
+    this.axios = AxiosProvider.create(`${process.env.API_URL}/api/portal-units`);
   }
 
   static create(): PortalUnitApi {
