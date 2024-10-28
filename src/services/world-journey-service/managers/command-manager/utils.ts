@@ -4,11 +4,13 @@ import { AddPlayerCommand } from './commands/add-player-command';
 import { ChangePlayerActionCommand } from './commands/change-player-action-command';
 import { ChangePlayerHeldItemCommand } from './commands/change-player-held-item-command';
 import { ChangePlayerPrecisePositionCommand } from './commands/change-player-precise-position-command';
+import { CreateColorUnitCommand } from './commands/create-color-unit-command';
 import { CreateEmbedUnitCommand } from './commands/create-embed-unit-command';
 import { CreateFenceUnitCommand } from './commands/create-fence-unit-command';
 import { CreateLinkUnitCommand } from './commands/create-link-unit-command';
 import { CreatePortalUnitCommand } from './commands/create-portal-unit-command';
 import { CreateStaticUnitCommand } from './commands/create-static-unit-command';
+import { RemoveColorUnitCommand } from './commands/remove-color-unit-command';
 import { RemoveEmbedUnitCommand } from './commands/remove-embed-unit-command';
 import { RemoveFenceUnitCommand } from './commands/remove-fence-unit-command';
 import { RemoveLinkUnitCommand } from './commands/remove-link-unit-command';
@@ -34,12 +36,14 @@ export const dispatchCommand = <T>(
     [CommandNameEnum.CreateLinkUnit]: (_unit: CreateLinkUnitCommand) => T;
     [CommandNameEnum.CreatePortalUnit]: (_unit: CreatePortalUnitCommand) => T;
     [CommandNameEnum.CreateStaticUnit]: (_unit: CreateStaticUnitCommand) => T;
+    [CommandNameEnum.CreateColorUnit]: (_unit: CreateColorUnitCommand) => T;
     [CommandNameEnum.RemoveEmbedUnit]: (_unit: RemoveEmbedUnitCommand) => T;
     [CommandNameEnum.RemoveFenceUnit]: (_unit: RemoveFenceUnitCommand) => T;
     [CommandNameEnum.RemoveLinkUnit]: (_unit: RemoveLinkUnitCommand) => T;
     [CommandNameEnum.RemovePlayer]: (_unit: RemovePlayerCommand) => T;
     [CommandNameEnum.RemovePortalUnit]: (_unit: RemovePortalUnitCommand) => T;
     [CommandNameEnum.RemoveStaticUnit]: (_unit: RemoveStaticUnitCommand) => T;
+    [CommandNameEnum.RemoveColorUnit]: (_unit: RemoveColorUnitCommand) => T;
     [CommandNameEnum.RotateUnit]: (_unit: RotateUnitCommand) => T;
     [CommandNameEnum.SendPlayerIntoPortal]: (_unit: SendPlayerIntoPortalCommand) => T;
     [CommandNameEnum.TeleportPlayer]: (_unit: TeleportPlayerCommand) => T;
@@ -63,6 +67,10 @@ export const dispatchCommand = <T>(
     return mapper[CommandNameEnum.RemovePortalUnit](command);
   } else if (command instanceof CreateStaticUnitCommand) {
     return mapper[CommandNameEnum.CreateStaticUnit](command);
+  } else if (command instanceof CreateColorUnitCommand) {
+    return mapper[CommandNameEnum.CreateColorUnit](command);
+  } else if (command instanceof RemoveColorUnitCommand) {
+    return mapper[CommandNameEnum.RemoveColorUnit](command);
   } else if (command instanceof RemoveStaticUnitCommand) {
     return mapper[CommandNameEnum.RemoveStaticUnit](command);
   } else if (command instanceof CreateEmbedUnitCommand) {

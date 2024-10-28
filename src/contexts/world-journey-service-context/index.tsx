@@ -32,6 +32,9 @@ import { MazeVo } from '@/models/global/maze-vo';
 import { SendPlayerIntoPortalCommand } from '@/services/world-journey-service/managers/command-manager/commands/send-player-into-portal-command';
 import { PortalUnitApi } from '@/adapters/apis/portal-unit-api';
 import { TeleportPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/teleport-player-command';
+import { ColorVo } from '@/models/world/common/color-vo';
+import { CreateColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-color-unit-command';
+import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -328,6 +331,16 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
+  const createColorUnit = useCallback(
+    (itemId: string, position: PositionVo, direction: DirectionVo, color: ColorVo) => {
+      if (!worldJourneyService || !worldJourneyApi.current) return;
+
+      const command = CreateColorUnitCommand.create(itemId, position, direction, color);
+      worldJourneyService.executeLocalCommand(command);
+    },
+    [worldJourneyService]
+  );
+
   const createUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
@@ -358,6 +371,9 @@ export function Provider({ children }: Props) {
         const enteredEmbedCode = prompt('Enter embed code');
         const label = prompt('Enter label');
         createEmbedUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, label, enteredEmbedCode ?? '');
+      },
+      color: () => {
+        createColorUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, ColorVo.createRandom());
       },
     });
   }, [worldJourneyService]);
@@ -443,6 +459,12 @@ export function Provider({ children }: Props) {
           if (!worldJourneyApi.current) return;
 
           const command = RemoveEmbedUnitCommand.create(unitId);
+          worldJourneyService.executeLocalCommand(command);
+        },
+        color: () => {
+          if (!worldJourneyApi.current) return;
+
+          const command = RemoveColorUnitCommand.create(unitId);
           worldJourneyService.executeLocalCommand(command);
         },
       });

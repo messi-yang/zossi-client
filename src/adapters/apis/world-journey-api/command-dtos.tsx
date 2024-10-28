@@ -184,6 +184,29 @@ type RemoveEmbedUnitCommandDto = {
   };
 };
 
+type CreateColorUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.CreateColorUnit;
+  payload: {
+    unitId: string;
+    itemId: string;
+    unitPosition: PositionDto;
+    unitDirection: number;
+    unitLabel: null;
+    unitColor: string;
+  };
+};
+
+type RemoveColorUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RemoveColorUnit;
+  payload: {
+    unitId: string;
+  };
+};
+
 type RotateUnitCommandDto = {
   id: string;
   timestamp: number;
@@ -459,6 +482,27 @@ export const toCommandDto = (sourceCommand: Command) => {
         unitId: command.getUnitId(),
       },
     }),
+    [CommandNameEnum.CreateColorUnit]: (command) => ({
+      id: command.getId(),
+      timestamp: command.getCreatedAtTimestamp(),
+      name: CommandNameEnum.CreateColorUnit,
+      payload: {
+        unitId: command.getUnitId(),
+        itemId: command.getItemId(),
+        unitPosition: newPositionDto(command.getPosition()),
+        unitDirection: command.getDirection().toNumber(),
+        unitLabel: null,
+        unitColor: command.getColor().toHex(),
+      },
+    }),
+    [CommandNameEnum.RemoveColorUnit]: (command) => ({
+      id: command.getId(),
+      timestamp: command.getCreatedAtTimestamp(),
+      name: CommandNameEnum.RemoveColorUnit,
+      payload: {
+        unitId: command.getUnitId(),
+      },
+    }),
     [CommandNameEnum.RotateUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
@@ -533,4 +577,6 @@ export type CommandDto =
   | RemoveLinkUnitCommandDto
   | CreateEmbedUnitCommandDto
   | RemoveEmbedUnitCommandDto
+  | CreateColorUnitCommandDto
+  | RemoveColorUnitCommandDto
   | RotateUnitCommandDto;

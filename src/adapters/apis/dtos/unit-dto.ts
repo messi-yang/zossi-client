@@ -11,6 +11,8 @@ import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { DimensionDto } from './dimension-dto';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
+import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
+import { ColorVo } from '@/models/world/common/color-vo';
 
 type UnitDtoBase = {
   id: string;
@@ -48,7 +50,14 @@ interface EmbedUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Embed;
 }
 
-type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | EmbedUnitDto;
+interface ColorUnitDto extends UnitDtoBase {
+  type: UnitTypeEnum.Color;
+  info: {
+    color: string;
+  };
+}
+
+type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | EmbedUnitDto | ColorUnitDto;
 
 function parseUnitDto(unitDto: UnitDto): UnitModel {
   const position = PositionVo.create(unitDto.position.x, unitDto.position.z);
@@ -63,9 +72,22 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
     return PortalUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.info.target_unit_id);
   } else if (unitDto.type === UnitTypeEnum.Link) {
     return LinkUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
-  } else {
+  } else if (unitDto.type === UnitTypeEnum.Embed) {
     return EmbedUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
+  } else if (unitDto.type === UnitTypeEnum.Color) {
+    return ColorUnitModel.create(
+      unitDto.id,
+      unitDto.itemId,
+      position,
+      direction,
+      dimension,
+      unitDto.label,
+      ColorVo.parse(unitDto.info.color)
+    );
   }
+
+  // @ts-expect-error
+  throw new Error(`invalid unit type: ${unitDto.type}`);
 }
 
 export type { UnitDto };

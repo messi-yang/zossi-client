@@ -17,5 +17,7 @@ export enum CommandNameEnum {
   RemoveLinkUnit = 'REMOVE_LINK_UNIT',
   CreateEmbedUnit = 'CREATE_EMBED_UNIT',
   RemoveEmbedUnit = 'REMOVE_EMBED_UNIT',
+  CreateColorUnit = 'CREATE_COLOR_UNIT',
+  RemoveColorUnit = 'REMOVE_COLOR_UNIT',
   RotateUnit = 'ROTATE_UNIT',
 }

@@ -11,6 +11,7 @@ import { InstanceState, createInstancesInScene, createTextMesh } from './tjs-uti
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { BlockModel } from '@/models/world/block/block-model';
+import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
 
 const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
@@ -459,6 +460,34 @@ export class WorldRenderer {
     };
   }
 
+  private updateColorUnits(item: ItemModel, units: UnitModel[]) {
+    const itemId = item.getId();
+
+    const itemModels = this.itemModelsMap[itemId];
+    if (!itemModels) return;
+
+    this.itemModelInstancesCleanerMap[itemId]?.();
+
+    const itemUnitInstanceStates: InstanceState[] = [];
+
+    units.forEach((unit) => {
+      if (!(unit instanceof ColorUnitModel)) return;
+
+      itemUnitInstanceStates.push({
+        x: unit.getCenterPrecisePosition().getX(),
+        y: 0,
+        z: unit.getCenterPrecisePosition().getZ(),
+        rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
+        color: unit.getColor(),
+      });
+    });
+
+    const removeInstancesFromScene = createInstancesInScene(this.scene, itemModels[0], itemUnitInstanceStates);
+    this.itemModelInstancesCleanerMap[itemId] = () => {
+      removeInstancesFromScene();
+    };
+  }
+
   private updateOtherUnits(item: ItemModel, units: UnitModel[]) {
     const itemId = item.getId();
 
@@ -488,6 +517,8 @@ export class WorldRenderer {
       this.updateLinkUnits(item, units, font);
     } else if (itemCompatibleUnitType === UnitTypeEnum.Embed) {
       this.updateEmbedUnits(item, units, font);
+    } else if (itemCompatibleUnitType === UnitTypeEnum.Color) {
+      this.updateColorUnits(item, units);
     } else {
       this.updateOtherUnits(item, units);
     }

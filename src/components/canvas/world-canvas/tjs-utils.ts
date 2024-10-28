@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { Font } from 'three/examples/jsm/loaders/FontLoader';
+import { ColorVo } from '@/models/world/common/color-vo';
 
 export type InstancedMeshInfo = {
   mesh: THREE.InstancedMesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
@@ -14,6 +15,7 @@ export type InstanceState = {
   y: number;
   z: number;
   rotate: number;
+  color?: ColorVo;
 };
 
 export const createTextMesh = (
@@ -39,11 +41,7 @@ export const createTextMesh = (
   return textMesh;
 };
 
-export const createInstancesInScene = (
-  scene: THREE.Scene,
-  model: THREE.Group,
-  instanceStates: { x: number; y: number; z: number; rotate: number }[]
-): (() => void) => {
+export const createInstancesInScene = (scene: THREE.Scene, model: THREE.Group, instanceStates: InstanceState[]): (() => void) => {
   const modelMeshes: THREE.Mesh[] = [];
   model.traverse((node) => {
     const currentNode = node as THREE.Mesh;
@@ -51,6 +49,9 @@ export const createInstancesInScene = (
   });
 
   const modelInstancedMeshInfos: InstancedMeshInfo[] = modelMeshes.map((baseObjMesh) => {
+    // TEST
+    // const material = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+
     const mesh = new THREE.InstancedMesh(baseObjMesh.geometry, baseObjMesh.material, instanceStates.length);
     mesh.receiveShadow = true;
     mesh.castShadow = true;
@@ -76,12 +77,13 @@ export const createInstancesInScene = (
       );
 
       const position = new THREE.Vector3(instanceState.x, instanceState.y, instanceState.z).add(meshPosAfterRotation);
-      const quaternion = new THREE.Quaternion()
-        .setFromAxisAngle(new THREE.Vector3(0, 1, 0), instanceState.rotate)
-        .multiply(meshQuaternion);
+      const quaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), instanceState.rotate).multiply(meshQuaternion);
 
       const matrix = new THREE.Matrix4().compose(position, quaternion, meshScale);
       mesh.setMatrixAt(instanceStateIdx, matrix);
+      if (instanceState.color) {
+        mesh.setColorAt(instanceStateIdx, new THREE.Color(instanceState.color.toRgb()));
+      }
     });
   });
 

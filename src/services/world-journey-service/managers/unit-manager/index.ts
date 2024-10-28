@@ -11,6 +11,7 @@ import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
+import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
 
 export class UnitManager {
   private blocks: Record<string, BlockModel | undefined>;
@@ -38,7 +39,8 @@ export class UnitManager {
     [UnitTypeEnum.Portal]: PortalUnitModel[];
     [UnitTypeEnum.Link]: LinkUnitModel[];
     [UnitTypeEnum.Embed]: EmbedUnitModel[];
-  } = { static: [], fence: [], portal: [], link: [], embed: [] };
+    [UnitTypeEnum.Color]: ColorUnitModel[];
+  } = { static: [], fence: [], portal: [], link: [], embed: [], color: [] };
 
   constructor(blocks: BlockModel[], units: UnitModel[]) {
     this.placeholderBlockIds = [];
@@ -193,6 +195,9 @@ export class UnitManager {
       embed: (_unit) => {
         this.unitMapByType[UnitTypeEnum.Embed].push(_unit);
       },
+      color: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Color].push(_unit);
+      },
     });
   }
 
@@ -225,6 +230,11 @@ export class UnitManager {
       },
       embed: (_unit) => {
         this.unitMapByType[UnitTypeEnum.Embed] = this.unitMapByType[UnitTypeEnum.Embed].filter(
+          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
+        );
+      },
+      color: (_unit) => {
+        this.unitMapByType[UnitTypeEnum.Color] = this.unitMapByType[UnitTypeEnum.Color].filter(
           (unit) => !unit.getPosition().isEqual(_unit.getPosition())
         );
       },
