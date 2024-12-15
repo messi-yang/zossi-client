@@ -39,7 +39,7 @@ export class CreatePortalUnitCommand extends Command {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Portal)) return;
 
-    const newUnit = PortalUnitModel.create(this.unitId, this.itemId, this.position, this.direction, item.getDimension(), null);
+    const newUnit = PortalUnitModel.create(this.unitId, this.itemId, this.position, this.direction, item.getDimension());
 
     const occupiedPositions = newUnit.getOccupiedPositions();
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {
@@ -51,42 +51,11 @@ export class CreatePortalUnitCommand extends Command {
       if (playersAtPos) return;
     }
 
-    const portalsWithoutTarget = unitManager.getPortalUnits().filter((unit) => !unit.getTargetUnitId());
-    // const portalWithoutTarget = portalsWithoutTarget[0];
-
-    const topLeftMostPortalWithoutTarget = portalsWithoutTarget
-      .sort((unitA, unitB) => {
-        const unitPosA = unitA.getPosition();
-        const unitPosB = unitB.getPosition();
-
-        if (unitPosA.getZ() === unitPosB.getZ()) {
-          return unitPosA.getX() - unitPosB.getX();
-        } else {
-          return unitPosA.getZ() - unitPosB.getZ();
-        }
-      })
-      .at(0);
-
-    let isUnitAdded = false;
-    let isTopLeftMostPortalWithoutTargetUpdated = false;
-    if (topLeftMostPortalWithoutTarget) {
-      newUnit.updateTargetUnitId(topLeftMostPortalWithoutTarget.getId());
-      isUnitAdded = unitManager.addUnit(newUnit);
-
-      const clonedTopLeftMostPortalWithoutTarget = topLeftMostPortalWithoutTarget.clone();
-      clonedTopLeftMostPortalWithoutTarget.updateTargetUnitId(newUnit.getId());
-      isTopLeftMostPortalWithoutTargetUpdated = unitManager.updateUnit(clonedTopLeftMostPortalWithoutTarget);
-    } else {
-      isUnitAdded = unitManager.addUnit(newUnit);
-    }
+    const isUnitAdded = unitManager.addUnit(newUnit);
 
     this.setUndoAction(() => {
       if (isUnitAdded) {
         unitManager.removeUnit(newUnit.getId());
-      }
-
-      if (topLeftMostPortalWithoutTarget && isTopLeftMostPortalWithoutTargetUpdated) {
-        unitManager.updateUnit(topLeftMostPortalWithoutTarget);
       }
     });
   }

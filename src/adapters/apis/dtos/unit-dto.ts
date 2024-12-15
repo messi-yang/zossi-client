@@ -37,9 +37,7 @@ interface FenceUnitDto extends UnitDtoBase {
 
 interface PortalUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Portal;
-  info: {
-    target_unit_id: string | null;
-  };
+  info: null;
 }
 
 interface LinkUnitDto extends UnitDtoBase {
@@ -69,7 +67,7 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
   } else if (unitDto.type === UnitTypeEnum.Fence) {
     return FenceUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension);
   } else if (unitDto.type === UnitTypeEnum.Portal) {
-    return PortalUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.info.target_unit_id);
+    return PortalUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension);
   } else if (unitDto.type === UnitTypeEnum.Link) {
     return LinkUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
   } else if (unitDto.type === UnitTypeEnum.Embed) {
