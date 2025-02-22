@@ -7,7 +7,7 @@ import { generateUuidV4 } from '@/utils/uuid';
 
 export class FenceUnitModel extends UnitModel {
   constructor(id: string, itemId: string, position: PositionVo, direction: DirectionVo, dimension: DimensionVo) {
-    super(id, UnitTypeEnum.Fence, itemId, position, direction, dimension, null);
+    super(id, UnitTypeEnum.Fence, itemId, position, direction, dimension, null, null);
   }
 
   static create = (id: string, itemId: string, position: PositionVo, direction: DirectionVo, dimension: DimensionVo): FenceUnitModel =>

@@ -22,6 +22,7 @@ type UnitDtoBase = {
   direction: DirectionEnum;
   dimension: DimensionDto;
   label: string | null;
+  color: string | null;
   info: Object | null;
 };
 
@@ -50,9 +51,6 @@ interface EmbedUnitDto extends UnitDtoBase {
 
 interface ColorUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Color;
-  info: {
-    color: string;
-  };
 }
 
 type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | EmbedUnitDto | ColorUnitDto;
@@ -80,7 +78,7 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
       direction,
       dimension,
       unitDto.label,
-      ColorVo.parse(unitDto.info.color)
+      unitDto.color ? ColorVo.parse(unitDto.color) : null
     );
   }
 

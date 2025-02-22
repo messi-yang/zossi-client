@@ -14,9 +14,9 @@ export class ColorUnitModel extends UnitModel {
     direction: DirectionVo,
     dimension: DimensionVo,
     label: string | null,
-    private color: ColorVo
+    color: ColorVo | null
   ) {
-    super(id, UnitTypeEnum.Color, itemId, position, direction, dimension, label);
+    super(id, UnitTypeEnum.Color, itemId, position, direction, dimension, label, color);
   }
 
   static create = (
@@ -26,7 +26,7 @@ export class ColorUnitModel extends UnitModel {
     direction: DirectionVo,
     dimension: DimensionVo,
     label: string | null,
-    color: ColorVo
+    color: ColorVo | null
   ): ColorUnitModel => new ColorUnitModel(id, itemId, position, direction, dimension, label, color);
 
   static createMock(): ColorUnitModel {
@@ -49,11 +49,7 @@ export class ColorUnitModel extends UnitModel {
       this.getDirection(),
       this.getDimension(),
       this.getLabel(),
-      this.color
+      this.getColor()
     );
-  }
-
-  public getColor(): ColorVo {
-    return this.color;
   }
 }

@@ -7,7 +7,7 @@ import { DimensionVo } from '../common/dimension-vo';
 
 export class LinkUnitModel extends UnitModel {
   constructor(id: string, itemId: string, position: PositionVo, direction: DirectionVo, dimension: DimensionVo, label: string | null) {
-    super(id, UnitTypeEnum.Link, itemId, position, direction, dimension, label);
+    super(id, UnitTypeEnum.Link, itemId, position, direction, dimension, label, null);
   }
 
   static create = (

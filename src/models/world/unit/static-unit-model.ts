@@ -7,7 +7,7 @@ import { DimensionVo } from '../common/dimension-vo';
 
 export class StaticUnitModel extends UnitModel {
   constructor(id: string, itemId: string, position: PositionVo, direction: DirectionVo, dimension: DimensionVo) {
-    super(id, UnitTypeEnum.Static, itemId, position, direction, dimension, null);
+    super(id, UnitTypeEnum.Static, itemId, position, direction, dimension, null, null);
   }
 
   static create = (id: string, itemId: string, position: PositionVo, direction: DirectionVo, dimension: DimensionVo): StaticUnitModel =>

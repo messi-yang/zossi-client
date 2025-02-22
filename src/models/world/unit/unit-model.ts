@@ -1,4 +1,5 @@
 import { BoundVo } from '../common/bound-vo';
+import { ColorVo } from '../common/color-vo';
 import { DimensionVo } from '../common/dimension-vo';
 import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
@@ -7,13 +8,14 @@ import { UnitTypeEnum } from './unit-type-enum';
 
 export abstract class UnitModel {
   constructor(
-    private id: string,
-    private type: UnitTypeEnum,
-    private itemId: string,
-    private position: PositionVo,
-    private direction: DirectionVo,
-    private dimension: DimensionVo,
-    private label: string | null
+    protected id: string,
+    protected type: UnitTypeEnum,
+    protected itemId: string,
+    protected position: PositionVo,
+    protected direction: DirectionVo,
+    protected dimension: DimensionVo,
+    protected label: string | null,
+    protected color: ColorVo | null
   ) {}
 
   abstract clone(): UnitModel;
@@ -59,6 +61,10 @@ export abstract class UnitModel {
 
   public getLabel(): string | null {
     return this.label;
+  }
+
+  public getColor(): ColorVo | null {
+    return this.color;
   }
 
   private getOccupiedBound(): BoundVo {

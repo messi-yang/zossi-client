@@ -478,7 +478,7 @@ export class WorldRenderer {
         y: 0,
         z: unit.getCenterPrecisePosition().getZ(),
         rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
-        color: unit.getColor(),
+        color: unit.getColor() ?? undefined,
       });
     });
 
