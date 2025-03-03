@@ -17,6 +17,8 @@ export class PlayerManager {
 
   private myPlayerUpdatedEventHandler = EventHandler.create<[oldPlayer: PlayerModel, newPlayer: PlayerModel]>();
 
+  private myPlayerPositionUpdatedEventHandler = EventHandler.create<[PositionVo, PositionVo]>();
+
   private playerRemovedEventHandler = EventHandler.create<PlayerModel>();
 
   constructor(players: PlayerModel[], myPlayerId: string) {
@@ -138,6 +140,12 @@ export class PlayerManager {
     this.publishPlayerUpdatedEvent(oldPlayer, player);
     if (player.getId() === this.myPlayerId) {
       this.publishMyPlayerUpdatedEvent(oldPlayer, player);
+
+      const oldPosition = oldPlayer.getPosition();
+      const newPosition = player.getPosition();
+      if (!oldPosition.isEqual(newPosition)) {
+        this.publishMyPlayerPositionUpdatedEvent(oldPosition, newPosition);
+      }
     }
 
     return true;
@@ -185,6 +193,14 @@ export class PlayerManager {
 
   public subscribeMyPlayerUpdatedEvent(subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>) {
     return this.myPlayerUpdatedEventHandler.subscribe(subscriber);
+  }
+
+  private publishMyPlayerPositionUpdatedEvent(oldPosition: PositionVo, newPosition: PositionVo) {
+    this.myPlayerPositionUpdatedEventHandler.publish([oldPosition, newPosition]);
+  }
+
+  public subscribeMyPlayerPositionUpdatedEvent(subscriber: EventHandlerSubscriber<[PositionVo, PositionVo]>) {
+    return this.myPlayerPositionUpdatedEventHandler.subscribe(subscriber);
   }
 
   private publishPlayerRemovedEvent(player: PlayerModel) {

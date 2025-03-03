@@ -172,11 +172,9 @@ export class WorldJourneyService {
   }
 
   private checkMyPlayerWalkIntoPortalTicker() {
-    this.subscribe('MY_PLAYER_UPDATED', ([oldPlayer, newPlayer]) => {
+    this.subscribe('MY_PLAYER_POSITION_UPDATED', ([oldPlayerPos, newPlayerPos]) => {
       if (this.commandManager.getIsReplayingCommands()) return;
 
-      const oldPlayerPos = oldPlayer.getPosition();
-      const newPlayerPos = newPlayer.getPosition();
       if (oldPlayerPos.isEqual(newPlayerPos)) {
         return;
       }
@@ -189,7 +187,7 @@ export class WorldJourneyService {
         const unitAtOldPlayerPos = this.unitManager.getUnitByPos(oldPlayerPos);
         if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
 
-        const command = SendPlayerIntoPortalCommand.create(newPlayer.getId(), unitAtNewPlayerPos.getId());
+        const command = SendPlayerIntoPortalCommand.create(this.playerManager.getMyPlayerId(), unitAtNewPlayerPos.getId());
         this.commandManager.executeLocalCommand(command);
       }
     });
@@ -259,6 +257,7 @@ export class WorldJourneyService {
   subscribe(eventName: 'PLAYER_ADDED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'MY_PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
+  subscribe(eventName: 'MY_PLAYER_POSITION_UPDATED', subscriber: EventHandlerSubscriber<[PositionVo, PositionVo]>): () => void;
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_BLOCKS_ADDED', subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void;
   subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
@@ -272,6 +271,7 @@ export class WorldJourneyService {
       | 'PLAYER_ADDED'
       | 'PLAYER_UPDATED'
       | 'MY_PLAYER_UPDATED'
+      | 'MY_PLAYER_POSITION_UPDATED'
       | 'PLAYER_REMOVED'
       | 'PLACEHOLDER_BLOCKS_ADDED'
       | 'UNITS_UPDATED',
@@ -283,6 +283,7 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
       | EventHandlerSubscriber<PlayerModel>
       | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
+      | EventHandlerSubscriber<[PositionVo, PositionVo]>
       | EventHandlerSubscriber<BlockIdVo[]>
       | EventHandlerSubscriber<BlockModel[]>
   ): () => void {
@@ -304,6 +305,8 @@ export class WorldJourneyService {
       return this.playerManager.subscribePlayerUpdatedEvent(subscriber as EventHandlerSubscriber<[PlayerModel, PlayerModel]>);
     } else if (eventName === 'MY_PLAYER_UPDATED') {
       return this.playerManager.subscribeMyPlayerUpdatedEvent(subscriber as EventHandlerSubscriber<[PlayerModel, PlayerModel]>);
+    } else if (eventName === 'MY_PLAYER_POSITION_UPDATED') {
+      return this.playerManager.subscribeMyPlayerPositionUpdatedEvent(subscriber as EventHandlerSubscriber<[PositionVo, PositionVo]>);
     } else if (eventName === 'PLAYER_REMOVED') {
       return this.playerManager.subscribePlayerRemovedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
     } else if (eventName === 'PLACEHOLDER_BLOCKS_ADDED') {
