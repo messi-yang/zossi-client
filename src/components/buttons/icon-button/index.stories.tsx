@@ -8,7 +8,7 @@ export default {
   component: IconButton,
   argTypes: {
     text: {
-      control: 'string',
+      control: 'text',
     },
     onClick: { action: true },
   },

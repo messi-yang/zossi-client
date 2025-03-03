@@ -9,7 +9,7 @@ export default {
   component: Button,
   argTypes: {
     text: {
-      control: 'string',
+      control: 'text',
     },
     onClick: { action: true },
   },

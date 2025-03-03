@@ -9,7 +9,7 @@ export default {
   component: Field,
   argTypes: {
     text: {
-      control: 'string',
+      control: 'text',
     },
     onClick: { action: true },
   },

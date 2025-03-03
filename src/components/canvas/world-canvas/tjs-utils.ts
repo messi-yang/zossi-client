@@ -45,7 +45,9 @@ export const createInstancesInScene = (scene: THREE.Scene, model: THREE.Group, i
   const modelMeshes: THREE.Mesh[] = [];
   model.traverse((node) => {
     const currentNode = node as THREE.Mesh;
-    if (currentNode.isMesh) modelMeshes.push(currentNode);
+    if (currentNode.isMesh) {
+      modelMeshes.push(currentNode);
+    }
   });
 
   const modelInstancedMeshInfos: InstancedMeshInfo[] = modelMeshes.map((baseObjMesh) => {
