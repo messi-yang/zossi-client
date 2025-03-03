@@ -36,6 +36,10 @@ export class PlayerActionVo {
     return this.name === PlayerActionNameEnum.Teleport;
   }
 
+  public isTeleported() {
+    return this.name === PlayerActionNameEnum.Teleported;
+  }
+
   public getName(): PlayerActionNameEnum {
     return this.name;
   }

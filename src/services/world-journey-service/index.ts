@@ -11,12 +11,11 @@ import { ItemManager } from './managers/item-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandManager } from './managers/command-manager';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
-import { EventHandlerSubscriber } from './managers/common/event-handler';
+import { EventHandlerSubscriber, EventHandler } from './managers/common/event-handler';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
-import { SendPlayerIntoPortalCommand } from './managers/command-manager/commands/send-player-into-portal-command';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -36,6 +35,8 @@ export class WorldJourneyService {
   private updatePlayerPositionTickFps;
 
   private updatePlayerPositionTickCount;
+
+  private myPlayerEnteredPortalUnitEventHandler = EventHandler.create<PortalUnitModel>();
 
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     this.world = world;
@@ -175,20 +176,18 @@ export class WorldJourneyService {
     this.subscribe('MY_PLAYER_POSITION_UPDATED', ([oldPlayerPos, newPlayerPos]) => {
       if (this.commandManager.getIsReplayingCommands()) return;
 
-      if (oldPlayerPos.isEqual(newPlayerPos)) {
-        return;
-      }
-
       const unitAtNewPlayerPos = this.unitManager.getUnitByPos(newPlayerPos);
       if (!unitAtNewPlayerPos) return;
 
       if (unitAtNewPlayerPos instanceof PortalUnitModel) {
-        // To prevent infinite teleporting loop, we need to check if we just came from another portal
         const unitAtOldPlayerPos = this.unitManager.getUnitByPos(oldPlayerPos);
         if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
 
-        const command = SendPlayerIntoPortalCommand.create(this.playerManager.getMyPlayerId(), unitAtNewPlayerPos.getId());
-        this.commandManager.executeLocalCommand(command);
+        // To prevent infinite teleporting loop, we need to check if we just came from another portal
+        const myPlayer = this.playerManager.getMyPlayer();
+        if (myPlayer.getAction().isTeleported()) return;
+
+        this.myPlayerEnteredPortalUnitEventHandler.publish(unitAtNewPlayerPos);
       }
     });
   }
@@ -258,6 +257,7 @@ export class WorldJourneyService {
   subscribe(eventName: 'PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'MY_PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'MY_PLAYER_POSITION_UPDATED', subscriber: EventHandlerSubscriber<[PositionVo, PositionVo]>): () => void;
+  subscribe(eventName: 'MY_PLAYER_ENTERED_PORTAL_UNIT', subscriber: EventHandlerSubscriber<PortalUnitModel>): () => void;
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_BLOCKS_ADDED', subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void;
   subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
@@ -272,6 +272,7 @@ export class WorldJourneyService {
       | 'PLAYER_UPDATED'
       | 'MY_PLAYER_UPDATED'
       | 'MY_PLAYER_POSITION_UPDATED'
+      | 'MY_PLAYER_ENTERED_PORTAL_UNIT'
       | 'PLAYER_REMOVED'
       | 'PLACEHOLDER_BLOCKS_ADDED'
       | 'UNITS_UPDATED',
@@ -284,6 +285,7 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<PlayerModel>
       | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
       | EventHandlerSubscriber<[PositionVo, PositionVo]>
+      | EventHandlerSubscriber<PortalUnitModel>
       | EventHandlerSubscriber<BlockIdVo[]>
       | EventHandlerSubscriber<BlockModel[]>
   ): () => void {
@@ -307,6 +309,8 @@ export class WorldJourneyService {
       return this.playerManager.subscribeMyPlayerUpdatedEvent(subscriber as EventHandlerSubscriber<[PlayerModel, PlayerModel]>);
     } else if (eventName === 'MY_PLAYER_POSITION_UPDATED') {
       return this.playerManager.subscribeMyPlayerPositionUpdatedEvent(subscriber as EventHandlerSubscriber<[PositionVo, PositionVo]>);
+    } else if (eventName === 'MY_PLAYER_ENTERED_PORTAL_UNIT') {
+      return this.myPlayerEnteredPortalUnitEventHandler.subscribe(subscriber as EventHandlerSubscriber<PortalUnitModel>);
     } else if (eventName === 'PLAYER_REMOVED') {
       return this.playerManager.subscribePlayerRemovedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
     } else if (eventName === 'PLACEHOLDER_BLOCKS_ADDED') {

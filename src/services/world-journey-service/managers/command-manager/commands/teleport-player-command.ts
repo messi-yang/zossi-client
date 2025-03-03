@@ -5,6 +5,7 @@ import { generateUuidV4 } from '@/utils/uuid';
 import { CommandNameEnum } from '../command-name-enum';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
+import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 
 export class TeleportPlayerCommand extends Command {
   constructor(id: string, createdAt: DateVo, isRemote: boolean, private playerId: string, private position: PositionVo) {
@@ -29,6 +30,7 @@ export class TeleportPlayerCommand extends Command {
 
     const clonedPlayer = currentPlayer.clone();
     clonedPlayer.unfreeze();
+    clonedPlayer.updateAction(PlayerActionVo.newTeleported(clonedPlayer.getDirection()));
     clonedPlayer.updatePrecisePosition(PrecisePositionVo.create(this.position.getX(), this.position.getZ()));
 
     const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);

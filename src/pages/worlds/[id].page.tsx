@@ -23,6 +23,8 @@ import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { BuildMazeModal } from '@/components/modals/build-maze-modal';
 import { ReplayCommandsModal } from '@/components/modals/replay-commands-modal';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { ConfirmModal } from '@/components/modals/confirm-modal';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -72,6 +74,7 @@ const Page: NextPage = function Page() {
     subtractPerspectiveDepth,
     makePlayerStand,
     makePlayerWalk,
+    sendPlayerIntoPortal,
     leaveWorld,
     changePlayerHeldItem,
     engageUnit,
@@ -285,9 +288,42 @@ const Page: NextPage = function Page() {
     [buildMaze]
   );
 
+  const [myPlayerEnteredPortalUnit, setMyPlayerEnteredPortalUnit] = useState<PortalUnitModel | null>(null);
+  const [showSendPlayerIntoPortalConfirmModal, setShowSendPlayerIntoPortalConfirmModal] = useState(false);
+  useEffect(() => {
+    if (!worldJourneyService) return () => {};
+
+    return worldJourneyService.subscribe('MY_PLAYER_ENTERED_PORTAL_UNIT', (unit) => {
+      setMyPlayerEnteredPortalUnit(unit);
+      setShowSendPlayerIntoPortalConfirmModal(true);
+      makePlayerStand();
+    });
+  }, [worldJourneyService, makePlayerStand]);
+
+  const handleSendPlayerIntoPortalConfirm = useCallback(
+    async (confirmed: boolean) => {
+      setShowSendPlayerIntoPortalConfirmModal(false);
+
+      if (!worldJourneyService || !myPlayerEnteredPortalUnit) return;
+
+      if (confirmed) {
+        sendPlayerIntoPortal(myPlayerEnteredPortalUnit.getId());
+      }
+    },
+    [sendPlayerIntoPortal, myPlayerEnteredPortalUnit]
+  );
+
   return (
     <main className="relative w-full h-screen">
       {embedCode && <EmbedModal opened embedCode={embedCode} onClose={cleanEmbedCode} />}
+      {myPlayerEnteredPortalUnit && showSendPlayerIntoPortalConfirmModal && (
+        <ConfirmModal
+          opened={showSendPlayerIntoPortalConfirmModal}
+          onCancel={() => handleSendPlayerIntoPortalConfirm(false)}
+          message="Are you sure you want to send your player into the portal?"
+          onComfirm={() => handleSendPlayerIntoPortalConfirm(true)}
+        />
+      )}
       <MessageModal
         opened={isDisconnected}
         message="You're disconnected to the world."

@@ -47,6 +47,7 @@ type ContextValue = {
   subtractPerspectiveDepth: () => void;
   makePlayerStand: () => void;
   makePlayerWalk: (direction: DirectionVo) => void;
+  sendPlayerIntoPortal: (unitId: string) => void;
   changePlayerHeldItem: (item: ItemModel) => void;
   engageUnit: () => void;
   createUnit: () => void;
@@ -69,6 +70,7 @@ const Context = createContext<ContextValue>({
   subtractPerspectiveDepth: () => {},
   makePlayerStand: () => {},
   makePlayerWalk: () => {},
+  sendPlayerIntoPortal: () => {},
   changePlayerHeldItem: () => {},
   engageUnit: () => {},
   createUnit: () => {},
@@ -192,6 +194,21 @@ export function Provider({ children }: Props) {
     setConnectionStatus('CONNECTING');
     worldJourneyApi.current = newWorldJourneyApi;
   }, []);
+
+  const sendPlayerIntoPortal = useCallback(
+    async (unitId: string) => {
+      if (!worldJourneyService) return;
+
+      const command = SendPlayerIntoPortalCommand.create(worldJourneyService.getMyPlayer().getId(), unitId);
+      worldJourneyService.executeLocalCommand(command);
+
+      const myPlayer = worldJourneyService.getMyPlayer();
+      const targetPosition = await portalUnitApi.getPortalUnitTargetPosition(command.getUnitId());
+      const newCommand = TeleportPlayerCommand.create(myPlayer.getId(), targetPosition ?? myPlayer.getPosition());
+      worldJourneyService.executeLocalCommand(newCommand);
+    },
+    [worldJourneyService]
+  );
 
   // When my player walks into a portal, get its target position and sends my player to there
   useEffect(() => {
@@ -512,6 +529,7 @@ export function Provider({ children }: Props) {
     subtractPerspectiveDepth,
     makePlayerStand,
     makePlayerWalk,
+    sendPlayerIntoPortal,
     leaveWorld,
     changePlayerHeldItem,
     engageUnit,
