@@ -370,6 +370,7 @@ export const parseCommandDto = (commandDto: CommandDto) => {
   } else if (commandDto.name === CommandNameEnum.ChangePlayerAction) {
     return parseChangePlayerActionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerPrecisePosition) {
+    console.log('parseChangePlayerPrecisePositionCommand', commandDto);
     return parseChangePlayerPrecisePositionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
     return parseSendPlayerIntoPortalCommand(commandDto);
@@ -382,6 +383,7 @@ export const parseCommandDto = (commandDto: CommandDto) => {
 };
 
 export const toCommandDto = (sourceCommand: Command) => {
+  console.log('toCommandDto', sourceCommand);
   return dispatchCommand<CommandDto | null>(sourceCommand, {
     [CommandNameEnum.CreateStaticUnit]: (command) => ({
       id: command.getId(),
