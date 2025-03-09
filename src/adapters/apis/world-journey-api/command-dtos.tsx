@@ -39,8 +39,8 @@ type ChangePlayerPrecisePositionCommandDto = {
   id: string;
   timestamp: number;
   name: CommandNameEnum.ChangePlayerPrecisePosition;
-  playerId: string;
   payload: {
+    playerId: string;
     precisePosition: PrecisePositionDto;
   };
 };
@@ -314,7 +314,7 @@ function parseChangePlayerPrecisePositionCommand(command: ChangePlayerPrecisePos
   return ChangePlayerPrecisePositionCommand.createRemote(
     command.id,
     DateVo.fromTimestamp(command.timestamp),
-    command.playerId,
+    command.payload.playerId,
     PrecisePositionVo.create(command.payload.precisePosition.x, command.payload.precisePosition.z)
   );
 }
@@ -526,8 +526,8 @@ export const toCommandDto = (sourceCommand: Command) => {
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.ChangePlayerPrecisePosition,
-      playerId: command.getPlayerId(),
       payload: {
+        playerId: command.getPlayerId(),
         precisePosition: newPrecisePositionDto(command.getPrecisePosition()),
       },
     }),
