@@ -40,7 +40,9 @@ type ChangePlayerPrecisePositionCommandDto = {
   timestamp: number;
   name: CommandNameEnum.ChangePlayerPrecisePosition;
   playerId: string;
-  precisePosition: PrecisePositionDto;
+  payload: {
+    precisePosition: PrecisePositionDto;
+  };
 };
 
 type SendPlayerIntoPortalCommandDto = {
@@ -313,7 +315,7 @@ function parseChangePlayerPrecisePositionCommand(command: ChangePlayerPrecisePos
     command.id,
     DateVo.fromTimestamp(command.timestamp),
     command.playerId,
-    PrecisePositionVo.create(command.precisePosition.x, command.precisePosition.z)
+    PrecisePositionVo.create(command.payload.precisePosition.x, command.payload.precisePosition.z)
   );
 }
 
@@ -370,7 +372,6 @@ export const parseCommandDto = (commandDto: CommandDto) => {
   } else if (commandDto.name === CommandNameEnum.ChangePlayerAction) {
     return parseChangePlayerActionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerPrecisePosition) {
-    console.log('parseChangePlayerPrecisePositionCommand', commandDto);
     return parseChangePlayerPrecisePositionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.SendPlayerIntoPortal) {
     return parseSendPlayerIntoPortalCommand(commandDto);
@@ -383,7 +384,6 @@ export const parseCommandDto = (commandDto: CommandDto) => {
 };
 
 export const toCommandDto = (sourceCommand: Command) => {
-  console.log('toCommandDto', sourceCommand);
   return dispatchCommand<CommandDto | null>(sourceCommand, {
     [CommandNameEnum.CreateStaticUnit]: (command) => ({
       id: command.getId(),
@@ -527,7 +527,9 @@ export const toCommandDto = (sourceCommand: Command) => {
       timestamp: command.getCreatedAtTimestamp(),
       name: CommandNameEnum.ChangePlayerPrecisePosition,
       playerId: command.getPlayerId(),
-      precisePosition: newPrecisePositionDto(command.getPrecisePosition()),
+      payload: {
+        precisePosition: newPrecisePositionDto(command.getPrecisePosition()),
+      },
     }),
     [CommandNameEnum.SendPlayerIntoPortal]: (command) => ({
       id: command.getId(),

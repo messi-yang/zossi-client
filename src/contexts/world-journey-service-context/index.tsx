@@ -164,7 +164,6 @@ export function Provider({ children }: Props) {
       },
       onCommandReceived: (command) => {
         if (!newWorldJourneyService) return;
-        console.log('onCommandReceived', command);
         newWorldJourneyService.executeRemoteCommand(command);
       },
       onCommandFailed: (commandId) => {
