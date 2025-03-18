@@ -35,6 +35,8 @@ import { TeleportPlayerCommand } from '@/services/world-journey-service/managers
 import { ColorVo } from '@/models/world/common/color-vo';
 import { CreateColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-color-unit-command';
 import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
+import { RemoveSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-sign-unit-command';
+import { CreateSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-sign-unit-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -358,6 +360,16 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
+  const createSignUnit = useCallback(
+    (itemId: string, position: PositionVo, direction: DirectionVo, label: string) => {
+      if (!worldJourneyService || !worldJourneyApi.current) return;
+
+      const command = CreateSignUnitCommand.create(itemId, position, direction, label);
+      worldJourneyService.executeLocalCommand(command);
+    },
+    [worldJourneyService]
+  );
+
   const createUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
@@ -391,6 +403,11 @@ export function Provider({ children }: Props) {
       },
       color: () => {
         createColorUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, ColorVo.createRandom());
+      },
+      sign: () => {
+        const label = prompt('Enter label');
+        if (!label) return;
+        createSignUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, label);
       },
     });
   }, [worldJourneyService]);
@@ -482,6 +499,12 @@ export function Provider({ children }: Props) {
           if (!worldJourneyApi.current) return;
 
           const command = RemoveColorUnitCommand.create(unitId);
+          worldJourneyService.executeLocalCommand(command);
+        },
+        sign: () => {
+          if (!worldJourneyApi.current) return;
+
+          const command = RemoveSignUnitCommand.create(unitId);
           worldJourneyService.executeLocalCommand(command);
         },
       });

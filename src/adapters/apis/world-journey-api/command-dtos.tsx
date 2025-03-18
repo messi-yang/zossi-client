@@ -24,6 +24,11 @@ import { DateVo } from '@/models/global/date-vo';
 import { CommandNameEnum } from '@/services/world-journey-service/managers/command-manager/command-name-enum';
 import { dispatchCommand } from '@/services/world-journey-service/managers/command-manager/utils';
 import { TeleportPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/teleport-player-command';
+import { CreateSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-sign-unit-command';
+import { RemoveSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-sign-unit-command';
+import { CreateColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-color-unit-command';
+import { ColorVo } from '@/models/world/common/color-vo';
+import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
 
 type ChangePlayerActionCommandDto = {
   id: string;
@@ -209,6 +214,28 @@ type RemoveColorUnitCommandDto = {
   };
 };
 
+type CreateSignUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.CreateSignUnit;
+  payload: {
+    unitId: string;
+    itemId: string;
+    unitPosition: PositionDto;
+    unitDirection: number;
+    unitLabel: string;
+  };
+};
+
+type RemoveSignUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.RemoveSignUnit;
+  payload: {
+    unitId: string;
+  };
+};
+
 type RotateUnitCommandDto = {
   id: string;
   timestamp: number;
@@ -297,6 +324,38 @@ function parseRemoveEmbedUnitCommand(command: RemoveEmbedUnitCommandDto): Remove
   return RemoveEmbedUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
 
+function parseCreateColorUnitCommand(command: CreateColorUnitCommandDto): CreateColorUnitCommand {
+  return CreateColorUnitCommand.createRemote(
+    command.id,
+    DateVo.fromTimestamp(command.timestamp),
+    command.payload.unitId,
+    command.payload.itemId,
+    PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
+    DirectionVo.create(command.payload.unitDirection),
+    ColorVo.parse(command.payload.unitColor)
+  );
+}
+
+function parseRemoveColorUnitCommand(command: RemoveColorUnitCommandDto): RemoveColorUnitCommand {
+  return RemoveColorUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
+}
+
+function parseCreateSignUnitCommand(command: CreateSignUnitCommandDto): CreateSignUnitCommand {
+  return CreateSignUnitCommand.createRemote(
+    command.id,
+    DateVo.fromTimestamp(command.timestamp),
+    command.payload.unitId,
+    command.payload.itemId,
+    PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
+    DirectionVo.create(command.payload.unitDirection),
+    command.payload.unitLabel
+  );
+}
+
+function parseRemoveSignUnitCommand(command: RemoveSignUnitCommandDto): RemoveSignUnitCommand {
+  return RemoveSignUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
+}
+
 function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitCommand {
   return RotateUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
@@ -367,6 +426,14 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseCreateEmbedUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RemoveEmbedUnit) {
     return parseRemoveEmbedUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.CreateColorUnit) {
+    return parseCreateColorUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemoveColorUnit) {
+    return parseRemoveColorUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.CreateSignUnit) {
+    return parseCreateSignUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.RemoveSignUnit) {
+    return parseRemoveSignUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RotateUnit) {
     return parseRotateUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerAction) {
@@ -505,6 +572,26 @@ export const toCommandDto = (sourceCommand: Command) => {
         unitId: command.getUnitId(),
       },
     }),
+    [CommandNameEnum.CreateSignUnit]: (command) => ({
+      id: command.getId(),
+      timestamp: command.getCreatedAtTimestamp(),
+      name: CommandNameEnum.CreateSignUnit,
+      payload: {
+        unitId: command.getUnitId(),
+        itemId: command.getItemId(),
+        unitPosition: newPositionDto(command.getPosition()),
+        unitDirection: command.getDirection().toNumber(),
+        unitLabel: command.getLabel(),
+      },
+    }),
+    [CommandNameEnum.RemoveSignUnit]: (command) => ({
+      id: command.getId(),
+      timestamp: command.getCreatedAtTimestamp(),
+      name: CommandNameEnum.RemoveSignUnit,
+      payload: {
+        unitId: command.getUnitId(),
+      },
+    }),
     [CommandNameEnum.RotateUnit]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
@@ -583,4 +670,6 @@ export type CommandDto =
   | RemoveEmbedUnitCommandDto
   | CreateColorUnitCommandDto
   | RemoveColorUnitCommandDto
+  | CreateSignUnitCommandDto
+  | RemoveSignUnitCommandDto
   | RotateUnitCommandDto;

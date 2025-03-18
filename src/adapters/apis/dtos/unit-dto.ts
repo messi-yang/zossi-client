@@ -13,6 +13,7 @@ import { DimensionDto } from './dimension-dto';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
 import { ColorVo } from '@/models/world/common/color-vo';
+import { SignUnitModel } from '@/models/world/unit/sign-unit-model';
 
 type UnitDtoBase = {
   id: string;
@@ -51,9 +52,15 @@ interface EmbedUnitDto extends UnitDtoBase {
 
 interface ColorUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Color;
+  color: string;
 }
 
-type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | EmbedUnitDto | ColorUnitDto;
+interface SignUnitDto extends UnitDtoBase {
+  type: UnitTypeEnum.Sign;
+  label: string;
+}
+
+type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | EmbedUnitDto | ColorUnitDto | SignUnitDto;
 
 function parseUnitDto(unitDto: UnitDto): UnitModel {
   const position = PositionVo.create(unitDto.position.x, unitDto.position.z);
@@ -71,15 +78,9 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
   } else if (unitDto.type === UnitTypeEnum.Embed) {
     return EmbedUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
   } else if (unitDto.type === UnitTypeEnum.Color) {
-    return ColorUnitModel.create(
-      unitDto.id,
-      unitDto.itemId,
-      position,
-      direction,
-      dimension,
-      unitDto.label,
-      unitDto.color ? ColorVo.parse(unitDto.color) : null
-    );
+    return ColorUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label, ColorVo.parse(unitDto.color));
+  } else if (unitDto.type === UnitTypeEnum.Sign) {
+    return SignUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
   }
 
   // @ts-expect-error

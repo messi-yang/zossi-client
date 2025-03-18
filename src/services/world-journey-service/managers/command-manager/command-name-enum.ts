@@ -19,5 +19,7 @@ export enum CommandNameEnum {
   RemoveEmbedUnit = 'REMOVE_EMBED_UNIT',
   CreateColorUnit = 'CREATE_COLOR_UNIT',
   RemoveColorUnit = 'REMOVE_COLOR_UNIT',
+  CreateSignUnit = 'CREATE_SIGN_UNIT',
+  RemoveSignUnit = 'REMOVE_SIGN_UNIT',
   RotateUnit = 'ROTATE_UNIT',
 }

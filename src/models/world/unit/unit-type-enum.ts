@@ -5,4 +5,5 @@ export enum UnitTypeEnum {
   Link = 'link',
   Embed = 'embed',
   Color = 'color',
+  Sign = 'sign',
 }
