@@ -17,6 +17,7 @@ const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
+const PLAYER_NAME_HEIGHT = 2;
 const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
 const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
 const CHARACTER_MODEL_SRC = '/characters/a-chiong.gltf';
@@ -206,8 +207,8 @@ export class WorldRenderer {
   }
 
   public updateCameraPosition(perspectiveDepth: number, targetPrecisePos: PrecisePositionVo) {
-    const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((90 / 360) * 2 * Math.PI);
-    const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((60 / 360) * 2 * Math.PI);
+    const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((38 / 360) * 2 * Math.PI);
+    const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((38 / 360) * 2 * Math.PI);
 
     const [targetPrecisePosX, targetPrecisePosZ] = [targetPrecisePos.getX(), targetPrecisePos.getZ()];
     this.camera.position.set(targetPrecisePosX, CAMERA_Y_OFFSET, targetPrecisePosZ + CAMERA_Z_OFFSET);
@@ -577,7 +578,7 @@ export class WorldRenderer {
       playerCharacterInstance.position.set(player.getPrecisePosition().getX(), 0, player.getPrecisePosition().getZ());
       playerCharacterInstance.rotation.set(0, (player.getDirection().toNumber() * Math.PI) / 2, 0);
 
-      playerNameInstance.position.set(player.getPrecisePosition().getX(), 1.5, player.getPrecisePosition().getZ());
+      playerNameInstance.position.set(player.getPrecisePosition().getX(), PLAYER_NAME_HEIGHT, player.getPrecisePosition().getZ());
     } else {
       const newPlayerInstance = this.playerModel.clone();
       newPlayerInstance.position.set(player.getPrecisePosition().getX(), 0, player.getPrecisePosition().getZ());
@@ -588,7 +589,7 @@ export class WorldRenderer {
         font,
         player.getName(),
         player.getPrecisePosition().getX(),
-        1.5,
+        PLAYER_NAME_HEIGHT,
         player.getPrecisePosition().getZ()
       );
       this.scene.add(newPlayerNameInstance);
