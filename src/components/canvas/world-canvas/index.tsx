@@ -135,6 +135,12 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
     });
   }, [worldRenderer, worldJourneyService]);
 
+  useEffect(() => {
+    return worldJourneyService.subscribe('SELECTED_POSITION_CHANGED', ([, newSelectedPosition]) => {
+      worldRenderer.updateSelectedPosition(newSelectedPosition);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
   return (
     <div
       data-testid={dataTestids.root}

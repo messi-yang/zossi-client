@@ -59,6 +59,8 @@ export class WorldRenderer {
 
   private playerModel: THREE.Group | null = null;
 
+  private selectedPositionIndicator: THREE.Mesh;
+
   constructor() {
     this.scene = this.createScene();
 
@@ -73,6 +75,12 @@ export class WorldRenderer {
     this.downloadDefaultFont(DEFAULT_FONT_SRC);
     this.downloadBaseModel();
     this.downloadPlayerModel();
+
+    this.selectedPositionIndicator = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 2, 1),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true })
+    );
+    this.scene.add(this.selectedPositionIndicator);
   }
 
   static create() {
@@ -606,5 +614,13 @@ export class WorldRenderer {
     const [playerCharacterInstance, playerNameInstance] = playerInstances;
     this.scene.remove(playerCharacterInstance);
     this.scene.remove(playerNameInstance);
+  }
+
+  public updateSelectedPosition(newSelectedPosition: PositionVo | null) {
+    if (newSelectedPosition) {
+      this.selectedPositionIndicator.position.set(newSelectedPosition.getX(), 0, newSelectedPosition.getZ());
+    } else {
+      this.selectedPositionIndicator.position.set(0, -100, 0);
+    }
   }
 }

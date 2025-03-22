@@ -84,6 +84,7 @@ const Page: NextPage = function Page() {
     removeFowardUnit,
     removeUnitsInBound,
     rotateUnit,
+    selectPosition,
     embedCode,
     cleanEmbedCode,
   } = useContext(WorldJourneyServiceContext);
@@ -197,20 +198,27 @@ const Page: NextPage = function Page() {
   );
   useHotKeys(['Minus', 'KeyC'], { onPressedKeysChange: handleSubtractPerspectiveDepthPressedKeysChange });
 
+  useHotKeys(['KeyS'], {
+    onPressedKeysChange: (keys) => {
+      if (keys.length === 0) return;
+      selectPosition();
+    },
+  });
+
   const handleMakePlayerWalkPressedKeysChange = useCallback(
     (keys: string[]) => {
       const lastKey = keys[keys.length - 1] || null;
       switch (lastKey) {
-        case 'KeyW':
+        case 'ArrowUp':
           makePlayerWalk(DirectionVo.newUp());
           break;
-        case 'KeyD':
+        case 'ArrowRight':
           makePlayerWalk(DirectionVo.newRight());
           break;
-        case 'KeyS':
+        case 'ArrowDown':
           makePlayerWalk(DirectionVo.newDown());
           break;
-        case 'KeyA':
+        case 'ArrowLeft':
           makePlayerWalk(DirectionVo.newLeft());
           break;
         default:
@@ -219,7 +227,7 @@ const Page: NextPage = function Page() {
     },
     [makePlayerStand, makePlayerWalk]
   );
-  useHotKeys(['KeyW', 'KeyD', 'KeyS', 'KeyA'], {
+  useHotKeys(['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'], {
     onPressedKeysChange: handleMakePlayerWalkPressedKeysChange,
   });
 

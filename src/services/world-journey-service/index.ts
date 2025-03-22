@@ -8,6 +8,7 @@ import { UnitManager } from './managers/unit-manager';
 import { PlayerManager } from './managers/player-manager';
 import { PerspectiveManager } from './managers/perspective-manager';
 import { ItemManager } from './managers/item-manager';
+import { SelectionManager } from './managers/selection-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandManager } from './managers/command-manager';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
@@ -30,6 +31,8 @@ export class WorldJourneyService {
 
   private perspectiveManager: PerspectiveManager;
 
+  private selectionManager: SelectionManager;
+
   private animateId: number | null = null;
 
   private updatePlayerPositionTickFps;
@@ -50,6 +53,8 @@ export class WorldJourneyService {
     this.itemManager = ItemManager.create();
 
     this.commandManager = CommandManager.create(world, this.playerManager, this.unitManager, this.itemManager, this.perspectiveManager);
+
+    this.selectionManager = SelectionManager.create();
 
     this.updatePlayerPositionTickFps = 24;
     this.updatePlayerPositionTickCount = 0;
@@ -245,6 +250,18 @@ export class WorldJourneyService {
     animate();
   }
 
+  public getSelectedPosition(): PositionVo | null {
+    return this.selectionManager.getSelectedPosition();
+  }
+
+  public selectPosition(position: PositionVo) {
+    this.selectionManager.selectPosition(position);
+  }
+
+  public clearSelectedPosition() {
+    this.selectionManager.clearSelectedPosition();
+  }
+
   subscribe(eventName: 'LOCAL_COMMAND_EXECUTED', subscriber: EventHandlerSubscriber<Command>): () => void;
   subscribe(
     eventName: 'PERSPECTIVE_CHANGED',
@@ -261,6 +278,7 @@ export class WorldJourneyService {
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_BLOCKS_ADDED', subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void;
   subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
+  subscribe(eventName: 'SELECTED_POSITION_CHANGED', subscriber: EventHandlerSubscriber<[PositionVo | null, PositionVo | null]>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -275,7 +293,8 @@ export class WorldJourneyService {
       | 'MY_PLAYER_ENTERED_PORTAL_UNIT'
       | 'PLAYER_REMOVED'
       | 'PLACEHOLDER_BLOCKS_ADDED'
-      | 'UNITS_UPDATED',
+      | 'UNITS_UPDATED'
+      | 'SELECTED_POSITION_CHANGED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
@@ -288,6 +307,7 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<PortalUnitModel>
       | EventHandlerSubscriber<BlockIdVo[]>
       | EventHandlerSubscriber<BlockModel[]>
+      | EventHandlerSubscriber<[PositionVo | null, PositionVo | null]>
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
@@ -317,6 +337,10 @@ export class WorldJourneyService {
       return this.unitManager.subscribePlaceholderBlockIdsAddedEvent(subscriber as EventHandlerSubscriber<BlockIdVo[]>);
     } else if (eventName === 'BLOCKS_UPDATED') {
       return this.unitManager.subscribeBlocksUpdatedEvent(subscriber as EventHandlerSubscriber<BlockModel[]>);
+    } else if (eventName === 'SELECTED_POSITION_CHANGED') {
+      return this.selectionManager.subscribeSelectedPositionChanged(
+        subscriber as EventHandlerSubscriber<[PositionVo | null, PositionVo | null]>
+      );
     } else {
       return () => {};
     }

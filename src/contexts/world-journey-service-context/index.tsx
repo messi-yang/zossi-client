@@ -58,6 +58,7 @@ type ContextValue = {
   removeFowardUnit: () => void;
   removeUnitsInBound: (bound: BoundVo) => void;
   rotateUnit: () => void;
+  selectPosition: () => void;
   leaveWorld: () => void;
   embedCode: string | null;
   cleanEmbedCode: () => void;
@@ -81,6 +82,7 @@ const Context = createContext<ContextValue>({
   removeFowardUnit: () => {},
   removeUnitsInBound: () => {},
   rotateUnit: () => {},
+  selectPosition: () => {},
   leaveWorld: () => {},
   embedCode: null,
   cleanEmbedCode: () => {},
@@ -543,6 +545,20 @@ export function Provider({ children }: Props) {
     worldJourneyService.executeLocalCommand(command);
   }, [worldJourneyService]);
 
+  const selectPosition = useCallback(() => {
+    if (!worldJourneyService) return;
+
+    const previousSelectedPosition = worldJourneyService.getSelectedPosition();
+    const myPlayer = worldJourneyService.getMyPlayer();
+    const myPlayerFowardPos = myPlayer.getFowardPosition(1);
+
+    if (previousSelectedPosition && previousSelectedPosition.isEqual(myPlayerFowardPos)) {
+      worldJourneyService.clearSelectedPosition();
+    } else {
+      worldJourneyService.selectPosition(myPlayerFowardPos);
+    }
+  }, [worldJourneyService]);
+
   const context = {
     worldJourneyService,
     connectionStatus,
@@ -562,6 +578,7 @@ export function Provider({ children }: Props) {
     removeFowardUnit,
     removeUnitsInBound,
     rotateUnit,
+    selectPosition,
     embedCode,
     cleanEmbedCode,
   };
