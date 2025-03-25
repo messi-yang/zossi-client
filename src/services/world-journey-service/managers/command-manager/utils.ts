@@ -22,6 +22,7 @@ import { RemoveStaticUnitCommand } from './commands/remove-static-unit-command';
 import { RotateUnitCommand } from './commands/rotate-unit-command';
 import { SendPlayerIntoPortalCommand } from './commands/send-player-into-portal-command';
 import { TeleportPlayerCommand } from './commands/teleport-player-command';
+import { MoveUnitCommand } from './commands/move-unit-command';
 
 /**
  * This function is mainly for making sure you handle every type of command
@@ -49,6 +50,7 @@ export const dispatchCommand = <T>(
     [CommandNameEnum.RemoveColorUnit]: (_unit: RemoveColorUnitCommand) => T;
     [CommandNameEnum.RemoveSignUnit]: (_unit: RemoveSignUnitCommand) => T;
     [CommandNameEnum.RotateUnit]: (_unit: RotateUnitCommand) => T;
+    [CommandNameEnum.MoveUnit]: (_unit: MoveUnitCommand) => T;
     [CommandNameEnum.SendPlayerIntoPortal]: (_unit: SendPlayerIntoPortalCommand) => T;
     [CommandNameEnum.TeleportPlayer]: (_unit: TeleportPlayerCommand) => T;
   }
@@ -93,6 +95,8 @@ export const dispatchCommand = <T>(
     return mapper[CommandNameEnum.RemovePlayer](command);
   } else if (command instanceof RotateUnitCommand) {
     return mapper[CommandNameEnum.RotateUnit](command);
+  } else if (command instanceof MoveUnitCommand) {
+    return mapper[CommandNameEnum.MoveUnit](command);
   } else if (command instanceof SendPlayerIntoPortalCommand) {
     return mapper[CommandNameEnum.SendPlayerIntoPortal](command);
   } else if (command instanceof TeleportPlayerCommand) {

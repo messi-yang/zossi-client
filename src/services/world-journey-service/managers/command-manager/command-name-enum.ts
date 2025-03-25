@@ -22,4 +22,5 @@ export enum CommandNameEnum {
   CreateSignUnit = 'CREATE_SIGN_UNIT',
   RemoveSignUnit = 'REMOVE_SIGN_UNIT',
   RotateUnit = 'ROTATE_UNIT',
+  MoveUnit = 'MOVE_UNIT',
 }

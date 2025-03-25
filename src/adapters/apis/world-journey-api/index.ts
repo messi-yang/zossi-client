@@ -225,6 +225,8 @@ export class WorldJourneyApi {
     const commandDto = toCommandDto(command);
     if (!commandDto) return;
 
+    console.log('sendCommand', commandDto);
+
     const isClientOnly = command.getIsClientOnly();
 
     if (!isClientOnly) {

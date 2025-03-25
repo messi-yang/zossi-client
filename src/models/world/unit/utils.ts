@@ -1,3 +1,7 @@
+import { ColorVo } from '../common/color-vo';
+import { DimensionVo } from '../common/dimension-vo';
+import { DirectionVo } from '../common/direction-vo';
+import { PositionVo } from '../common/position-vo';
 import { ColorUnitModel } from './color-unit-model';
 import { EmbedUnitModel } from './embed-unit-model';
 import { FenceUnitModel } from './fence-unit-model';
@@ -72,4 +76,30 @@ export const dipatchUnitType = <T>(
     return mapper[UnitTypeEnum.Sign]();
   }
   throw new Error(`The unit type ${unitType} is not handled here`);
+};
+
+export const createUnitModel = (
+  unitId: string,
+  unitType: UnitTypeEnum,
+  itemId: string,
+  position: PositionVo,
+  direction: DirectionVo,
+  dimension: DimensionVo,
+  label: string | null,
+  color: ColorVo | null
+): UnitModel => {
+  return dipatchUnitType(unitType, {
+    [UnitTypeEnum.Static]: () => StaticUnitModel.create(unitId, itemId, position, direction, dimension),
+    [UnitTypeEnum.Fence]: () => FenceUnitModel.create(unitId, itemId, position, direction, dimension),
+    [UnitTypeEnum.Portal]: () => PortalUnitModel.create(unitId, itemId, position, direction, dimension),
+    [UnitTypeEnum.Link]: () => LinkUnitModel.create(unitId, itemId, position, direction, dimension, label),
+    [UnitTypeEnum.Embed]: () => EmbedUnitModel.create(unitId, itemId, position, direction, dimension, label),
+    [UnitTypeEnum.Color]: () => ColorUnitModel.create(unitId, itemId, position, direction, dimension, label, color),
+    [UnitTypeEnum.Sign]: () => {
+      if (label === null) {
+        throw new Error('Label is required for SignUnitModel');
+      }
+      return SignUnitModel.create(unitId, itemId, position, direction, dimension, label);
+    },
+  });
 };

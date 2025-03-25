@@ -34,6 +34,10 @@ export class UnitManager {
 
   private unitsUpdatedEventHandler = EventHandler.create<[itemId: string, units: UnitModel[]]>();
 
+  private unitUpdatedEventHandler = EventHandler.create<UnitModel>();
+
+  private unitRemovedEventHandler = EventHandler.create<UnitModel>();
+
   private unitMapByType: {
     [UnitTypeEnum.Static]: StaticUnitModel[];
     [UnitTypeEnum.Fence]: FenceUnitModel[];
@@ -318,6 +322,7 @@ export class UnitManager {
     uniq(itemIds).forEach((itemId) => {
       this.publishUnitsUpdatedEvent(itemId);
     });
+    this.publishUnitUpdatedEvent(unit);
     return true;
   }
 
@@ -335,6 +340,7 @@ export class UnitManager {
     this.removeUnitFromUnitMapByType(currentUnit);
 
     this.publishUnitsUpdatedEvent(currentUnit.getItemId());
+    this.publishUnitRemovedEvent(currentUnit);
     return true;
   }
 
@@ -344,6 +350,22 @@ export class UnitManager {
 
   private publishUnitsUpdatedEvent(itemId: string) {
     this.unitsUpdatedEventHandler.publish([itemId, this.getUnitsByItemId(itemId)]);
+  }
+
+  public subscribeUnitUpdatedEvent(subscriber: EventHandlerSubscriber<UnitModel>): () => void {
+    return this.unitUpdatedEventHandler.subscribe(subscriber);
+  }
+
+  private publishUnitUpdatedEvent(unit: UnitModel) {
+    this.unitUpdatedEventHandler.publish(unit);
+  }
+
+  public subscribeUnitRemovedEvent(subscriber: EventHandlerSubscriber<UnitModel>): () => void {
+    return this.unitRemovedEventHandler.subscribe(subscriber);
+  }
+
+  private publishUnitRemovedEvent(unit: UnitModel) {
+    this.unitRemovedEventHandler.publish(unit);
   }
 
   public subscribePlaceholderBlockIdsAddedEvent(subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void {

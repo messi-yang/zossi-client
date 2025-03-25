@@ -59,6 +59,10 @@ export abstract class UnitModel {
     }
   }
 
+  public move(position: PositionVo) {
+    this.position = position;
+  }
+
   public getLabel(): string | null {
     return this.label;
   }
@@ -67,7 +71,7 @@ export abstract class UnitModel {
     return this.color;
   }
 
-  private getOccupiedBound(): BoundVo {
+  public getOccupiedBound(): BoundVo {
     const dimensionWidth = this.dimension.getWidth();
     const dimensionDepth = this.dimension.getDepth();
 

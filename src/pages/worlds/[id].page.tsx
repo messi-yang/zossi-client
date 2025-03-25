@@ -84,7 +84,8 @@ const Page: NextPage = function Page() {
     removeFowardUnit,
     removeUnitsInBound,
     rotateUnit,
-    selectPosition,
+    selectUnit,
+    moveUnit,
     embedCode,
     cleanEmbedCode,
   } = useContext(WorldJourneyServiceContext);
@@ -201,7 +202,14 @@ const Page: NextPage = function Page() {
   useHotKeys(['KeyS'], {
     onPressedKeysChange: (keys) => {
       if (keys.length === 0) return;
-      selectPosition();
+      selectUnit();
+    },
+  });
+
+  useHotKeys(['KeyM'], {
+    onPressedKeysChange: (keys) => {
+      if (keys.length === 0) return;
+      moveUnit();
     },
   });
 

@@ -17,6 +17,7 @@ import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
+import { BoundVo } from '@/models/world/common/bound-vo';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -41,6 +42,8 @@ export class WorldJourneyService {
 
   private myPlayerEnteredPortalUnitEventHandler = EventHandler.create<PortalUnitModel>();
 
+  private selectedBoundUpdatedEventHandler = EventHandler.create<BoundVo | null>();
+
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     this.world = world;
 
@@ -63,6 +66,31 @@ export class WorldJourneyService {
     this.updateMyPlayerNearBlocksTicker();
 
     this.checkMyPlayerWalkIntoPortalTicker();
+
+    this.selectionManager.subscribeSelectedUnitIdChanged(([, newSelectedUnitId]) => {
+      if (newSelectedUnitId) {
+        const unit = this.getUnit(newSelectedUnitId);
+        this.selectedBoundUpdatedEventHandler.publish(unit ? unit.getOccupiedBound() : null);
+      } else {
+        this.selectedBoundUpdatedEventHandler.publish(null);
+      }
+    });
+
+    this.unitManager.subscribeUnitUpdatedEvent((unit) => {
+      const unitId = unit.getId();
+      const selectedUnitId = this.selectionManager.getSelectedUnitId();
+      if (selectedUnitId && unitId === selectedUnitId) {
+        this.selectedBoundUpdatedEventHandler.publish(unit.getOccupiedBound());
+      }
+    });
+
+    this.unitManager.subscribeUnitRemovedEvent((unit) => {
+      const unitId = unit.getId();
+      const selectedUnitId = this.selectionManager.getSelectedUnitId();
+      if (selectedUnitId && unitId === selectedUnitId) {
+        this.selectedBoundUpdatedEventHandler.publish(null);
+      }
+    });
   }
 
   public destroy() {
@@ -141,6 +169,10 @@ export class WorldJourneyService {
 
   public addBlock(block: BlockModel): void {
     this.unitManager.addBlock(block);
+  }
+
+  public getUnit(unitId: string): UnitModel | null {
+    return this.unitManager.getUnit(unitId);
   }
 
   public getUnitByPos(position: PositionVo) {
@@ -250,16 +282,16 @@ export class WorldJourneyService {
     animate();
   }
 
-  public getSelectedPosition(): PositionVo | null {
-    return this.selectionManager.getSelectedPosition();
+  public getSelectedUnitId(): string | null {
+    return this.selectionManager.getSelectedUnitId();
   }
 
-  public selectPosition(position: PositionVo) {
-    this.selectionManager.selectPosition(position);
+  public selectUnitId(unitId: string) {
+    this.selectionManager.selectUnitId(unitId);
   }
 
-  public clearSelectedPosition() {
-    this.selectionManager.clearSelectedPosition();
+  public clearSelectedUnitId() {
+    this.selectionManager.clearSelectedUnitId();
   }
 
   subscribe(eventName: 'LOCAL_COMMAND_EXECUTED', subscriber: EventHandlerSubscriber<Command>): () => void;
@@ -278,7 +310,8 @@ export class WorldJourneyService {
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_BLOCKS_ADDED', subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void;
   subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
-  subscribe(eventName: 'SELECTED_POSITION_CHANGED', subscriber: EventHandlerSubscriber<[PositionVo | null, PositionVo | null]>): () => void;
+  subscribe(eventName: 'SELECTED_UNIT_ID_CHANGED', subscriber: EventHandlerSubscriber<[string | null, string | null]>): () => void;
+  subscribe(eventName: 'SELECTED_BOUND_UPDATED', subscriber: EventHandlerSubscriber<BoundVo | null>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -294,7 +327,8 @@ export class WorldJourneyService {
       | 'PLAYER_REMOVED'
       | 'PLACEHOLDER_BLOCKS_ADDED'
       | 'UNITS_UPDATED'
-      | 'SELECTED_POSITION_CHANGED',
+      | 'SELECTED_UNIT_ID_CHANGED'
+      | 'SELECTED_BOUND_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
@@ -307,7 +341,8 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<PortalUnitModel>
       | EventHandlerSubscriber<BlockIdVo[]>
       | EventHandlerSubscriber<BlockModel[]>
-      | EventHandlerSubscriber<[PositionVo | null, PositionVo | null]>
+      | EventHandlerSubscriber<[string | null, string | null]>
+      | EventHandlerSubscriber<BoundVo | null>
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
@@ -337,10 +372,10 @@ export class WorldJourneyService {
       return this.unitManager.subscribePlaceholderBlockIdsAddedEvent(subscriber as EventHandlerSubscriber<BlockIdVo[]>);
     } else if (eventName === 'BLOCKS_UPDATED') {
       return this.unitManager.subscribeBlocksUpdatedEvent(subscriber as EventHandlerSubscriber<BlockModel[]>);
-    } else if (eventName === 'SELECTED_POSITION_CHANGED') {
-      return this.selectionManager.subscribeSelectedPositionChanged(
-        subscriber as EventHandlerSubscriber<[PositionVo | null, PositionVo | null]>
-      );
+    } else if (eventName === 'SELECTED_UNIT_ID_CHANGED') {
+      return this.selectionManager.subscribeSelectedUnitIdChanged(subscriber as EventHandlerSubscriber<[string | null, string | null]>);
+    } else if (eventName === 'SELECTED_BOUND_UPDATED') {
+      return this.selectedBoundUpdatedEventHandler.subscribe(subscriber as EventHandlerSubscriber<BoundVo | null>);
     } else {
       return () => {};
     }

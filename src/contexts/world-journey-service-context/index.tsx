@@ -37,6 +37,7 @@ import { CreateColorUnitCommand } from '@/services/world-journey-service/manager
 import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
 import { RemoveSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-sign-unit-command';
 import { CreateSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-sign-unit-command';
+import { MoveUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/move-unit-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -58,7 +59,8 @@ type ContextValue = {
   removeFowardUnit: () => void;
   removeUnitsInBound: (bound: BoundVo) => void;
   rotateUnit: () => void;
-  selectPosition: () => void;
+  moveUnit: () => void;
+  selectUnit: () => void;
   leaveWorld: () => void;
   embedCode: string | null;
   cleanEmbedCode: () => void;
@@ -82,7 +84,8 @@ const Context = createContext<ContextValue>({
   removeFowardUnit: () => {},
   removeUnitsInBound: () => {},
   rotateUnit: () => {},
-  selectPosition: () => {},
+  moveUnit: () => {},
+  selectUnit: () => {},
   leaveWorld: () => {},
   embedCode: null,
   cleanEmbedCode: () => {},
@@ -545,17 +548,48 @@ export function Provider({ children }: Props) {
     worldJourneyService.executeLocalCommand(command);
   }, [worldJourneyService]);
 
-  const selectPosition = useCallback(() => {
+  const moveUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
-    const previousSelectedPosition = worldJourneyService.getSelectedPosition();
+    const selectedUnitId = worldJourneyService.getSelectedUnitId();
+    if (!selectedUnitId) return;
+
+    const selectedUnit = worldJourneyService.getUnit(selectedUnitId);
+    if (!selectedUnit) return;
+
+    const myPlayer = worldJourneyService.getMyPlayer();
+    const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(selectedUnit.getDimension());
+    const command = MoveUnitCommand.create(
+      selectedUnitId,
+      selectedUnit.getType(),
+      selectedUnit.getItemId(),
+      desiredNewUnitPos,
+      selectedUnit.getDirection(),
+      selectedUnit.getLabel(),
+      selectedUnit.getColor()
+    );
+    worldJourneyService.executeLocalCommand(command);
+  }, [worldJourneyService]);
+
+  const selectUnit = useCallback(() => {
+    if (!worldJourneyService) return;
+
+    const previousSelectedUnitId = worldJourneyService.getSelectedUnitId();
     const myPlayer = worldJourneyService.getMyPlayer();
     const myPlayerFowardPos = myPlayer.getFowardPosition(1);
 
-    if (previousSelectedPosition && previousSelectedPosition.isEqual(myPlayerFowardPos)) {
-      worldJourneyService.clearSelectedPosition();
+    const unitAtPos = worldJourneyService.getUnitByPos(myPlayerFowardPos);
+    if (!unitAtPos) {
+      worldJourneyService.clearSelectedUnitId();
+      return;
+    }
+
+    const unitId = unitAtPos.getId();
+
+    if (previousSelectedUnitId === unitId) {
+      worldJourneyService.clearSelectedUnitId();
     } else {
-      worldJourneyService.selectPosition(myPlayerFowardPos);
+      worldJourneyService.selectUnitId(unitId);
     }
   }, [worldJourneyService]);
 
@@ -578,7 +612,8 @@ export function Provider({ children }: Props) {
     removeFowardUnit,
     removeUnitsInBound,
     rotateUnit,
-    selectPosition,
+    moveUnit,
+    selectUnit,
     embedCode,
     cleanEmbedCode,
   };

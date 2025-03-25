@@ -29,6 +29,8 @@ import { RemoveSignUnitCommand } from '@/services/world-journey-service/managers
 import { CreateColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-color-unit-command';
 import { ColorVo } from '@/models/world/common/color-vo';
 import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
+import { MoveUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/move-unit-command';
 
 type ChangePlayerActionCommandDto = {
   id: string;
@@ -245,6 +247,21 @@ type RotateUnitCommandDto = {
   };
 };
 
+type MoveUnitCommandDto = {
+  id: string;
+  timestamp: number;
+  name: CommandNameEnum.MoveUnit;
+  payload: {
+    unitId: string;
+    unitType: UnitTypeEnum;
+    itemId: string;
+    unitPosition: PositionDto;
+    unitDirection: number;
+    unitLabel: string | null;
+    unitColor: string | null;
+  };
+};
+
 function parseCreateStaticCommand(command: CreateStaticUnitCommandDto): CreateStaticUnitCommand {
   return CreateStaticUnitCommand.createRemote(
     command.id,
@@ -360,6 +377,20 @@ function parseRotateUnitCommand(command: RotateUnitCommandDto): RotateUnitComman
   return RotateUnitCommand.createRemote(command.id, DateVo.fromTimestamp(command.timestamp), command.payload.unitId);
 }
 
+function parseMoveUnitCommand(command: MoveUnitCommandDto): MoveUnitCommand {
+  return MoveUnitCommand.createRemote(
+    command.id,
+    DateVo.fromTimestamp(command.timestamp),
+    command.payload.unitId,
+    command.payload.unitType,
+    command.payload.itemId,
+    PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
+    DirectionVo.create(command.payload.unitDirection),
+    command.payload.unitLabel,
+    command.payload.unitColor ? ColorVo.parse(command.payload.unitColor) : null
+  );
+}
+
 function parseChangePlayerActionCommand(command: ChangePlayerActionCommandDto): ChangePlayerActionCommand {
   return ChangePlayerActionCommand.createRemote(
     command.id,
@@ -436,6 +467,8 @@ export const parseCommandDto = (commandDto: CommandDto) => {
     return parseRemoveSignUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.RotateUnit) {
     return parseRotateUnitCommand(commandDto);
+  } else if (commandDto.name === CommandNameEnum.MoveUnit) {
+    return parseMoveUnitCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerAction) {
     return parseChangePlayerActionCommand(commandDto);
   } else if (commandDto.name === CommandNameEnum.ChangePlayerPrecisePosition) {
@@ -600,6 +633,20 @@ export const toCommandDto = (sourceCommand: Command) => {
         unitId: command.getUnitId(),
       },
     }),
+    [CommandNameEnum.MoveUnit]: (command) => ({
+      id: command.getId(),
+      timestamp: command.getCreatedAtTimestamp(),
+      name: CommandNameEnum.MoveUnit,
+      payload: {
+        unitId: command.getUnitId(),
+        unitType: command.getUnitType(),
+        itemId: command.getItemId(),
+        unitPosition: newPositionDto(command.getPosition()),
+        unitDirection: command.getDirection().toNumber(),
+        unitLabel: command.getLabel(),
+        unitColor: command.getColor()?.toHex() ?? null,
+      },
+    }),
     [CommandNameEnum.ChangePlayerAction]: (command) => ({
       id: command.getId(),
       timestamp: command.getCreatedAtTimestamp(),
@@ -672,4 +719,5 @@ export type CommandDto =
   | RemoveColorUnitCommandDto
   | CreateSignUnitCommandDto
   | RemoveSignUnitCommandDto
-  | RotateUnitCommandDto;
+  | RotateUnitCommandDto
+  | MoveUnitCommandDto;

@@ -12,6 +12,7 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { BlockModel } from '@/models/world/block/block-model';
 import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
+import { BoundVo } from '@/models/world/common/bound-vo';
 
 const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
@@ -59,7 +60,7 @@ export class WorldRenderer {
 
   private playerModel: THREE.Group | null = null;
 
-  private selectedPositionIndicator: THREE.Mesh;
+  private selectedBoundIndicator: THREE.Mesh;
 
   constructor() {
     this.scene = this.createScene();
@@ -76,11 +77,12 @@ export class WorldRenderer {
     this.downloadBaseModel();
     this.downloadPlayerModel();
 
-    this.selectedPositionIndicator = new THREE.Mesh(
+    this.selectedBoundIndicator = new THREE.Mesh(
       new THREE.BoxGeometry(1, 2, 1),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true })
+      new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.5, transparent: true })
     );
-    this.scene.add(this.selectedPositionIndicator);
+    this.selectedBoundIndicator.position.set(0, -100, 0);
+    this.scene.add(this.selectedBoundIndicator);
   }
 
   static create() {
@@ -616,11 +618,13 @@ export class WorldRenderer {
     this.scene.remove(playerNameInstance);
   }
 
-  public updateSelectedPosition(newSelectedPosition: PositionVo | null) {
-    if (newSelectedPosition) {
-      this.selectedPositionIndicator.position.set(newSelectedPosition.getX(), 0, newSelectedPosition.getZ());
+  public updateSelectedBound(newSelectedBound: BoundVo | null) {
+    if (newSelectedBound) {
+      const center = newSelectedBound.getCenterPrecisePosition();
+      this.selectedBoundIndicator.position.set(center.getX(), 0, center.getZ());
+      this.selectedBoundIndicator.scale.set(newSelectedBound.getWidth() + 0.1, 1, newSelectedBound.getDepth() + 0.1);
     } else {
-      this.selectedPositionIndicator.position.set(0, -100, 0);
+      this.selectedBoundIndicator.position.set(0, -100, 0);
     }
   }
 }

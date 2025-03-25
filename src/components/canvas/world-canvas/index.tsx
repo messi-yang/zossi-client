@@ -136,8 +136,8 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
   }, [worldRenderer, worldJourneyService]);
 
   useEffect(() => {
-    return worldJourneyService.subscribe('SELECTED_POSITION_CHANGED', ([, newSelectedPosition]) => {
-      worldRenderer.updateSelectedPosition(newSelectedPosition);
+    return worldJourneyService.subscribe('SELECTED_BOUND_UPDATED', (selectedBound) => {
+      worldRenderer.updateSelectedBound(selectedBound);
     });
   }, [worldJourneyService, worldRenderer]);
 

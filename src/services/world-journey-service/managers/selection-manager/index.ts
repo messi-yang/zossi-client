@@ -1,38 +1,37 @@
-import { PositionVo } from '@/models/world/common/position-vo';
 import { EventHandler } from '../common/event-handler';
 
-export type SelectedPositionChangedHandler = ([oldSelectedPosition, newSelectedPosition]: [PositionVo | null, PositionVo | null]) => void;
+export type SelectedUnitIdChangedHandler = ([oldSelectedUnitId, newSelectedUnitId]: [string | null, string | null]) => void;
 
 export class SelectionManager {
-  private selectedPosition: PositionVo | null = null;
+  private selectedUnitId: string | null = null;
 
-  private selectedPositionChangedHandler = EventHandler.create<[PositionVo | null, PositionVo | null]>();
+  private selectedUnitIdChangedHandler = EventHandler.create<[string | null, string | null]>();
 
   static create() {
     return new SelectionManager();
   }
 
-  public getSelectedPosition(): PositionVo | null {
-    return this.selectedPosition;
+  public getSelectedUnitId(): string | null {
+    return this.selectedUnitId;
   }
 
-  public selectPosition(position: PositionVo) {
-    const oldPosition = this.selectedPosition;
-    this.selectedPosition = position;
-    this.publishSelectedPositionChanged(oldPosition, position);
+  public selectUnitId(unitId: string) {
+    const oldUnitId = this.selectedUnitId;
+    this.selectedUnitId = unitId;
+    this.publishSelectedUnitIdChanged(oldUnitId, unitId);
   }
 
-  public clearSelectedPosition() {
-    const oldPosition = this.selectedPosition;
-    this.selectedPosition = null;
-    this.publishSelectedPositionChanged(oldPosition, null);
+  public clearSelectedUnitId() {
+    const oldUnitId = this.selectedUnitId;
+    this.selectedUnitId = null;
+    this.publishSelectedUnitIdChanged(oldUnitId, null);
   }
 
-  public subscribeSelectedPositionChanged(handler: SelectedPositionChangedHandler): () => void {
-    return this.selectedPositionChangedHandler.subscribe(handler);
+  public subscribeSelectedUnitIdChanged(handler: SelectedUnitIdChangedHandler): () => void {
+    return this.selectedUnitIdChangedHandler.subscribe(handler);
   }
 
-  private publishSelectedPositionChanged(oldPosition: PositionVo | null, newPosition: PositionVo | null) {
-    this.selectedPositionChangedHandler.publish([oldPosition, newPosition]);
+  private publishSelectedUnitIdChanged(oldUnitId: string | null, newUnitId: string | null) {
+    this.selectedUnitIdChangedHandler.publish([oldUnitId, newUnitId]);
   }
 }
