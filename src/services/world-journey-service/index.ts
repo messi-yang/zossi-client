@@ -18,6 +18,7 @@ import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { BoundVo } from '@/models/world/common/bound-vo';
+import { DirectionVo } from '@/models/world/common/direction-vo';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -134,6 +135,17 @@ export class WorldJourneyService {
 
   public getWorld(): WorldModel {
     return this.world;
+  }
+
+  public getDesiredNewUnitPositionAndDirection(itemId: string): { position: PositionVo; direction: DirectionVo } | null {
+    const item = this.getItem(itemId);
+    if (!item) return null;
+
+    const myPlayer = this.getMyPlayer();
+    const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(item.getDimension());
+    const direction = myPlayer.getDirection().getOppositeDirection();
+
+    return { position: desiredNewUnitPos, direction };
   }
 
   public getMyPlayerHeldItem(): ItemModel | null {

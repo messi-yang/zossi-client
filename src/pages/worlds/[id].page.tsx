@@ -28,6 +28,7 @@ import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { CreateEmbedUnitModal } from '@/components/modals/create-embed-unit-modal';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { CreateLinkUnitModal } from '@/components/modals/create-link-unit-modal';
+import { CreateSignUnitModal } from '@/components/modals/create-sign-unit-modal';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -84,6 +85,7 @@ const Page: NextPage = function Page() {
     createUnit,
     createEmbedUnit,
     createLinkUnit,
+    createSignUnit,
     buildMaze,
     replayCommands,
     removeFowardUnit,
@@ -172,6 +174,17 @@ const Page: NextPage = function Page() {
     [myPlayerHeldItemId, createLinkUnit]
   );
 
+  const [isCreateSignUnitModalVisible, setIsCreateSignUnitModalVisible] = useState(false);
+  const handleCreateSignUnitConfirm = useCallback(
+    (label: string) => {
+      if (!myPlayerHeldItemId) return;
+
+      createSignUnit(myPlayerHeldItemId, label);
+      setIsCreateSignUnitModalVisible(false);
+    },
+    [myPlayerHeldItemId, createSignUnit]
+  );
+
   const handleCreateUnitPressedKeysChange = useCallback(
     (keys: string[]) => {
       if (keys.length === 0) return;
@@ -183,6 +196,8 @@ const Page: NextPage = function Page() {
         setIsCreateEmbedUnitModalVisible(true);
       } else if (compatibleUnitType === UnitTypeEnum.Link) {
         setIsCreateLinkUnitModalVisible(true);
+      } else if (compatibleUnitType === UnitTypeEnum.Sign) {
+        setIsCreateSignUnitModalVisible(true);
       } else {
         createUnit();
       }
@@ -375,7 +390,6 @@ const Page: NextPage = function Page() {
           onConfirm={handleCreateEmbedUnitConfirm}
         />
       )}
-      {displayedEmbedCode && <EmbedModal opened embedCode={displayedEmbedCode} onClose={cleanDisplayedEmbedCode} />}
       {isCreateLinkUnitModalVisible && (
         <CreateLinkUnitModal
           opened={isCreateLinkUnitModalVisible}
@@ -383,6 +397,14 @@ const Page: NextPage = function Page() {
           onConfirm={handleCreateLinkUnitConfirm}
         />
       )}
+      {isCreateSignUnitModalVisible && (
+        <CreateSignUnitModal
+          opened={isCreateSignUnitModalVisible}
+          onCancel={() => setIsCreateSignUnitModalVisible(false)}
+          onConfirm={handleCreateSignUnitConfirm}
+        />
+      )}
+      {displayedEmbedCode && <EmbedModal opened embedCode={displayedEmbedCode} onClose={cleanDisplayedEmbedCode} />}
       {myPlayerEnteredPortalUnit && showSendPlayerIntoPortalConfirmModal && (
         <ConfirmModal
           opened={showSendPlayerIntoPortalConfirmModal}

@@ -56,6 +56,7 @@ type ContextValue = {
   createUnit: () => void;
   createEmbedUnit: (itemId: string, label: string, embedCode: string) => void;
   createLinkUnit: (itemId: string, label: string, url: string) => void;
+  createSignUnit: (itemId: string, label: string) => void;
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
   replayCommands: (duration: number, speed: number) => void;
   removeFowardUnit: () => void;
@@ -83,6 +84,7 @@ const Context = createContext<ContextValue>({
   createUnit: () => {},
   createEmbedUnit: () => {},
   createLinkUnit: () => {},
+  createSignUnit: () => {},
   buildMaze: () => {},
   replayCommands: () => {},
   removeFowardUnit: () => {},
@@ -349,16 +351,6 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
-  const createSignUnit = useCallback(
-    (itemId: string, position: PositionVo, direction: DirectionVo, label: string) => {
-      if (!worldJourneyService || !worldJourneyApi.current) return;
-
-      const command = CreateSignUnitCommand.create(itemId, position, direction, label);
-      worldJourneyService.executeLocalCommand(command);
-    },
-    [worldJourneyService]
-  );
-
   const createUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
@@ -385,11 +377,7 @@ export function Provider({ children }: Props) {
       color: () => {
         createColorUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, ColorVo.createRandom());
       },
-      sign: () => {
-        const label = prompt('Enter label');
-        if (!label) return;
-        createSignUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, label);
-      },
+      sign: () => {},
     });
   }, [worldJourneyService]);
 
@@ -397,14 +385,10 @@ export function Provider({ children }: Props) {
     (itemId: string, label: string, embedCode: string) => {
       if (!worldJourneyService) return;
 
-      const item = worldJourneyService.getItem(itemId);
-      if (!item) return;
+      const response = worldJourneyService.getDesiredNewUnitPositionAndDirection(itemId);
+      if (!response) return;
 
-      const myPlayer = worldJourneyService.getMyPlayer();
-      const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(item.getDimension());
-      const direction = myPlayer.getDirection().getOppositeDirection();
-
-      const command = CreateEmbedUnitCommand.create(itemId, desiredNewUnitPos, direction, label, embedCode);
+      const command = CreateEmbedUnitCommand.create(itemId, response.position, response.direction, label, embedCode);
       worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
@@ -414,14 +398,23 @@ export function Provider({ children }: Props) {
     (itemId: string, label: string, url: string) => {
       if (!worldJourneyService) return;
 
-      const item = worldJourneyService.getItem(itemId);
-      if (!item) return;
+      const response = worldJourneyService.getDesiredNewUnitPositionAndDirection(itemId);
+      if (!response) return;
 
-      const myPlayer = worldJourneyService.getMyPlayer();
-      const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(item.getDimension());
-      const direction = myPlayer.getDirection().getOppositeDirection();
+      const command = CreateLinkUnitCommand.create(itemId, response.position, response.direction, label, url);
+      worldJourneyService.executeLocalCommand(command);
+    },
+    [worldJourneyService]
+  );
 
-      const command = CreateLinkUnitCommand.create(itemId, desiredNewUnitPos, direction, label, url);
+  const createSignUnit = useCallback(
+    (itemId: string, label: string) => {
+      if (!worldJourneyService) return;
+
+      const response = worldJourneyService.getDesiredNewUnitPositionAndDirection(itemId);
+      if (!response) return;
+
+      const command = CreateSignUnitCommand.create(itemId, response.position, response.direction, label);
       worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
@@ -619,6 +612,7 @@ export function Provider({ children }: Props) {
     createUnit,
     createEmbedUnit,
     createLinkUnit,
+    createSignUnit,
     buildMaze,
     replayCommands,
     removeFowardUnit,
