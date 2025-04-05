@@ -25,6 +25,9 @@ import { BuildMazeModal } from '@/components/modals/build-maze-modal';
 import { ReplayCommandsModal } from '@/components/modals/replay-commands-modal';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
+import { CreateEmbedUnitModal } from '@/components/modals/create-embed-unit-modal';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
+import { CreateLinkUnitModal } from '@/components/modals/create-link-unit-modal';
 
 const Page: NextPage = function Page() {
   const router = useRouter();
@@ -79,6 +82,8 @@ const Page: NextPage = function Page() {
     changePlayerHeldItem,
     engageUnit,
     createUnit,
+    createEmbedUnit,
+    createLinkUnit,
     buildMaze,
     replayCommands,
     removeFowardUnit,
@@ -86,8 +91,8 @@ const Page: NextPage = function Page() {
     rotateUnit,
     selectUnit,
     moveUnit,
-    embedCode,
-    cleanEmbedCode,
+    displayedEmbedCode,
+    cleanDisplayedEmbedCode,
   } = useContext(WorldJourneyServiceContext);
 
   const handleEngageUnitPressedKeysChange = useCallback(
@@ -145,12 +150,44 @@ const Page: NextPage = function Page() {
     changePlayerHeldItem(items[targetItemIdIndex % items.length]);
   }, [items, myPlayerHeldItemId, changePlayerHeldItem]);
 
+  const [isCreateEmbedUnitModalVisible, setIsCreateEmbedUnitModalVisible] = useState(false);
+  const handleCreateEmbedUnitConfirm = useCallback(
+    (label: string, embedCode: string) => {
+      if (!myPlayerHeldItemId) return;
+
+      createEmbedUnit(myPlayerHeldItemId, label, embedCode);
+      setIsCreateEmbedUnitModalVisible(false);
+    },
+    [myPlayerHeldItemId, createEmbedUnit]
+  );
+
+  const [isCreateLinkUnitModalVisible, setIsCreateLinkUnitModalVisible] = useState(false);
+  const handleCreateLinkUnitConfirm = useCallback(
+    (label: string, url: string) => {
+      if (!myPlayerHeldItemId) return;
+
+      createLinkUnit(myPlayerHeldItemId, label, url);
+      setIsCreateLinkUnitModalVisible(false);
+    },
+    [myPlayerHeldItemId, createLinkUnit]
+  );
+
   const handleCreateUnitPressedKeysChange = useCallback(
     (keys: string[]) => {
       if (keys.length === 0) return;
-      createUnit();
+      if (!worldJourneyService) return;
+
+      const compatibleUnitType = worldJourneyService.getMyPlayerHeldItem()?.getCompatibleUnitType();
+
+      if (compatibleUnitType === UnitTypeEnum.Embed) {
+        setIsCreateEmbedUnitModalVisible(true);
+      } else if (compatibleUnitType === UnitTypeEnum.Link) {
+        setIsCreateLinkUnitModalVisible(true);
+      } else {
+        createUnit();
+      }
     },
-    [createUnit]
+    [createUnit, createEmbedUnit, worldJourneyService]
   );
   useHotKeys(['KeyP'], { onPressedKeysChange: handleCreateUnitPressedKeysChange });
 
@@ -331,7 +368,21 @@ const Page: NextPage = function Page() {
 
   return (
     <main className="relative w-full h-screen">
-      {embedCode && <EmbedModal opened embedCode={embedCode} onClose={cleanEmbedCode} />}
+      {isCreateEmbedUnitModalVisible && (
+        <CreateEmbedUnitModal
+          opened={isCreateEmbedUnitModalVisible}
+          onCancel={() => setIsCreateEmbedUnitModalVisible(false)}
+          onConfirm={handleCreateEmbedUnitConfirm}
+        />
+      )}
+      {displayedEmbedCode && <EmbedModal opened embedCode={displayedEmbedCode} onClose={cleanDisplayedEmbedCode} />}
+      {isCreateLinkUnitModalVisible && (
+        <CreateLinkUnitModal
+          opened={isCreateLinkUnitModalVisible}
+          onCancel={() => setIsCreateLinkUnitModalVisible(false)}
+          onConfirm={handleCreateLinkUnitConfirm}
+        />
+      )}
       {myPlayerEnteredPortalUnit && showSendPlayerIntoPortalConfirmModal && (
         <ConfirmModal
           opened={showSendPlayerIntoPortalConfirmModal}

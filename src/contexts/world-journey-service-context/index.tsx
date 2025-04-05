@@ -54,6 +54,8 @@ type ContextValue = {
   changePlayerHeldItem: (item: ItemModel) => void;
   engageUnit: () => void;
   createUnit: () => void;
+  createEmbedUnit: (itemId: string, label: string, embedCode: string) => void;
+  createLinkUnit: (itemId: string, label: string, url: string) => void;
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
   replayCommands: (duration: number, speed: number) => void;
   removeFowardUnit: () => void;
@@ -62,8 +64,8 @@ type ContextValue = {
   moveUnit: () => void;
   selectUnit: () => void;
   leaveWorld: () => void;
-  embedCode: string | null;
-  cleanEmbedCode: () => void;
+  displayedEmbedCode: string | null;
+  cleanDisplayedEmbedCode: () => void;
 };
 
 const Context = createContext<ContextValue>({
@@ -79,6 +81,8 @@ const Context = createContext<ContextValue>({
   changePlayerHeldItem: () => {},
   engageUnit: () => {},
   createUnit: () => {},
+  createEmbedUnit: () => {},
+  createLinkUnit: () => {},
   buildMaze: () => {},
   replayCommands: () => {},
   removeFowardUnit: () => {},
@@ -87,8 +91,8 @@ const Context = createContext<ContextValue>({
   moveUnit: () => {},
   selectUnit: () => {},
   leaveWorld: () => {},
-  embedCode: null,
-  cleanEmbedCode: () => {},
+  displayedEmbedCode: null,
+  cleanDisplayedEmbedCode: () => {},
 });
 
 type Props = {
@@ -109,9 +113,9 @@ export function Provider({ children }: Props) {
 
   const notificationEventDispatcher = useMemo(() => NotificationEventDispatcher.create(), []);
 
-  const [embedCode, setEmbedCode] = useState<string | null>(null);
-  const cleanEmbedCode = useCallback(() => {
-    setEmbedCode(null);
+  const [displayedEmbedCode, setDisplayedEmbedCode] = useState<string | null>(null);
+  const cleanDisplayedEmbedCode = useCallback(() => {
+    setDisplayedEmbedCode(null);
   }, []);
 
   useEffect(() => {
@@ -335,26 +339,6 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
-  const createLinkUnit = useCallback(
-    (itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, url: string) => {
-      if (!worldJourneyService || !worldJourneyApi.current) return;
-
-      const command = CreateLinkUnitCommand.create(itemId, position, direction, label, url);
-      worldJourneyService.executeLocalCommand(command);
-    },
-    [worldJourneyService]
-  );
-
-  const createEmbedUnit = useCallback(
-    (itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, inputEmbedCode: string) => {
-      if (!worldJourneyService || !worldJourneyApi.current) return;
-
-      const command = CreateEmbedUnitCommand.create(itemId, position, direction, label, inputEmbedCode);
-      worldJourneyService.executeLocalCommand(command);
-    },
-    [worldJourneyService]
-  );
-
   const createColorUnit = useCallback(
     (itemId: string, position: PositionVo, direction: DirectionVo, color: ColorVo) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
@@ -396,16 +380,8 @@ export function Provider({ children }: Props) {
       portal: () => {
         createPortalUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction);
       },
-      link: () => {
-        const url = prompt('Enter url');
-        const label = prompt('Enter label');
-        createLinkUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, label, url ?? '');
-      },
-      embed: () => {
-        const enteredEmbedCode = prompt('Enter embed code');
-        const label = prompt('Enter label');
-        createEmbedUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, label, enteredEmbedCode ?? '');
-      },
+      link: () => {},
+      embed: () => {},
       color: () => {
         createColorUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, ColorVo.createRandom());
       },
@@ -416,6 +392,40 @@ export function Provider({ children }: Props) {
       },
     });
   }, [worldJourneyService]);
+
+  const createEmbedUnit = useCallback(
+    (itemId: string, label: string, embedCode: string) => {
+      if (!worldJourneyService) return;
+
+      const item = worldJourneyService.getItem(itemId);
+      if (!item) return;
+
+      const myPlayer = worldJourneyService.getMyPlayer();
+      const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(item.getDimension());
+      const direction = myPlayer.getDirection().getOppositeDirection();
+
+      const command = CreateEmbedUnitCommand.create(itemId, desiredNewUnitPos, direction, label, embedCode);
+      worldJourneyService.executeLocalCommand(command);
+    },
+    [worldJourneyService]
+  );
+
+  const createLinkUnit = useCallback(
+    (itemId: string, label: string, url: string) => {
+      if (!worldJourneyService) return;
+
+      const item = worldJourneyService.getItem(itemId);
+      if (!item) return;
+
+      const myPlayer = worldJourneyService.getMyPlayer();
+      const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(item.getDimension());
+      const direction = myPlayer.getDirection().getOppositeDirection();
+
+      const command = CreateLinkUnitCommand.create(itemId, desiredNewUnitPos, direction, label, url);
+      worldJourneyService.executeLocalCommand(command);
+    },
+    [worldJourneyService]
+  );
 
   const engageUnit = useCallback(async () => {
     if (!worldJourneyService) return;
@@ -430,7 +440,7 @@ export function Provider({ children }: Props) {
       window.open(linkUnitUrl);
     } else if (unitAtPos instanceof EmbedUnitModel) {
       const embedUnitUrl = await embedUnitApi.getEmbedUnitEmbedCode(unitAtPos.getId());
-      setEmbedCode(embedUnitUrl);
+      setDisplayedEmbedCode(embedUnitUrl);
     }
   }, [worldJourneyService]);
 
@@ -607,6 +617,8 @@ export function Provider({ children }: Props) {
     changePlayerHeldItem,
     engageUnit,
     createUnit,
+    createEmbedUnit,
+    createLinkUnit,
     buildMaze,
     replayCommands,
     removeFowardUnit,
@@ -614,8 +626,8 @@ export function Provider({ children }: Props) {
     rotateUnit,
     moveUnit,
     selectUnit,
-    embedCode,
-    cleanEmbedCode,
+    displayedEmbedCode,
+    cleanDisplayedEmbedCode,
   };
 
   return <Context.Provider value={useMemo<ContextValue>(() => context, Object.values(context))}>{children}</Context.Provider>;
