@@ -25,11 +25,27 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
 
       worldRenderer.destroy(wrapperDom);
     };
-  }, [worldRenderer, wrapperDom]);
+  }, [worldRenderer, wrapperDom, worldJourneyService]);
 
   useEffect(() => {
     worldRenderer.updateCanvasSize(wrapperDomRect?.width || 0, wrapperDomRect?.height || 0);
   }, [wrapperDomRect, worldRenderer]);
+
+  const [hasDownloadedPlayerModel, setHasDownloadedPlayerModel] = useState(false);
+  useEffect(() => {
+    return worldRenderer.subscribePlayerModelDownloadedEvent(() => {
+      setHasDownloadedPlayerModel(true);
+    });
+  }, [worldRenderer]);
+
+  const [hasDownloadedFont, setHasDownloadedFont] = useState(false);
+  useEffect(() => {
+    return worldRenderer.subscribeDefaultFontDownloadedEvent(() => {
+      setHasDownloadedFont(true);
+    });
+  }, [worldRenderer]);
+
+  useEffect(() => {}, [hasDownloadedPlayerModel, hasDownloadedFont]);
 
   useEffect(() => {
     const maxFps = 60;
@@ -152,6 +168,15 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
       worldJourneyService.selectPosition(position);
     });
   }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    if (!hasDownloadedPlayerModel || !hasDownloadedFont) return;
+
+    const players = worldJourneyService.getPlayers();
+    players.forEach((player) => {
+      worldRenderer.updatePlayer(player);
+    });
+  }, [hasDownloadedPlayerModel, hasDownloadedFont, worldJourneyService, worldRenderer]);
 
   return (
     <div

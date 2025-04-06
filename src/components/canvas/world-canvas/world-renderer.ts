@@ -39,17 +39,17 @@ export class WorldRenderer {
 
   private baseModel: THREE.Group | null = null;
 
-  private baseModelDownloadedEventSubscribers: BaseModelDownloadedEventSubscriber[] = [];
+  private baseModelDownloadedEventSubscribers = EventHandler.create<void>();
 
   private itemModelsMap: Record<string, THREE.Group[] | undefined> = {};
 
   private fontMap: Record<string, Font | undefined> = {};
 
-  private defaultFontDownloadedEventSubscribers: DefaultFontDownloadedEventSubscriber[] = [];
+  private defaultFontDownloadedEventSubscribers = EventHandler.create<void>();
 
   private existingPlayerNameFontMeshesMap: Record<string, THREE.Mesh> = {};
 
-  private itemModelsDownloadedEventSubscribers: ItemModelsDownloadedEventSubscriber[] = [];
+  private itemModelsDownloadedEventSubscribers = EventHandler.create<string>();
 
   private itemModelInstancesCleanerMap: Record<string, (() => void) | undefined> = {};
 
@@ -60,6 +60,8 @@ export class WorldRenderer {
   private playerInstancesMap: Map<string, [character: THREE.Group, name: THREE.Mesh]> = new Map();
 
   private playerModel: THREE.Group | null = null;
+
+  private playerModelDownloadedEventSubscribers = EventHandler.create<void>();
 
   private selectedBoundIndicator: THREE.Mesh;
 
@@ -161,9 +163,7 @@ export class WorldRenderer {
     const playerFont = await this.downloadFont(fontSource);
     this.fontMap[fontSource] = playerFont;
 
-    this.defaultFontDownloadedEventSubscribers.forEach((sub) => {
-      sub();
-    });
+    this.defaultFontDownloadedEventSubscribers.publish();
   }
 
   private async downloadModel(modelSource: string) {
@@ -185,35 +185,28 @@ export class WorldRenderer {
 
   private async downloadBaseModel() {
     this.baseModel = await this.downloadModel(BASE_MODEL_SRC);
-    this.baseModelDownloadedEventSubscribers.forEach((sub) => sub());
+    this.baseModelDownloadedEventSubscribers.publish();
   }
 
   private async downloadPlayerModel() {
     this.playerModel = await this.downloadModel(CHARACTER_MODEL_SRC);
+    this.playerModelDownloadedEventSubscribers.publish();
+  }
+
+  public subscribePlayerModelDownloadedEvent(subscriber: EventHandlerSubscriber<void>): () => void {
+    return this.playerModelDownloadedEventSubscribers.subscribe(subscriber);
   }
 
   public subscribeBaseModelsDownloadedEvent(subscriber: BaseModelDownloadedEventSubscriber): () => void {
-    this.baseModelDownloadedEventSubscribers.push(subscriber);
-
-    return () => {
-      this.baseModelDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
-    };
+    return this.baseModelDownloadedEventSubscribers.subscribe(subscriber);
   }
 
   public subscribeItemModelsDownloadedEvent(subscriber: ItemModelsDownloadedEventSubscriber): () => void {
-    this.itemModelsDownloadedEventSubscribers.push(subscriber);
-
-    return () => {
-      this.itemModelsDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
-    };
+    return this.itemModelsDownloadedEventSubscribers.subscribe(subscriber);
   }
 
   public subscribeDefaultFontDownloadedEvent(subscriber: DefaultFontDownloadedEventSubscriber): () => void {
-    this.defaultFontDownloadedEventSubscribers.push(subscriber);
-
-    return () => {
-      this.defaultFontDownloadedEventSubscribers.filter((_subscriber) => _subscriber !== subscriber);
-    };
+    return this.defaultFontDownloadedEventSubscribers.subscribe(subscriber);
   }
 
   public async downloadItemModels(item: ItemModel): Promise<void> {
@@ -227,9 +220,7 @@ export class WorldRenderer {
 
     this.itemModelsMap[itemId] = itemModels;
 
-    this.itemModelsDownloadedEventSubscribers.forEach((sub) => {
-      sub(itemId);
-    });
+    this.itemModelsDownloadedEventSubscribers.publish(itemId);
   }
 
   public printRendererInfomation(): void {
