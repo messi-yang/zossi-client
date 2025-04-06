@@ -8,7 +8,7 @@ import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { dispatchUnit } from '@/models/world/unit/utils';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
-import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
+import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatchers/common/event-handler';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 import { ColorUnitModel } from '@/models/world/unit/color-unit-model';

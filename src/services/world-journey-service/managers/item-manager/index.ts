@@ -1,5 +1,5 @@
 import { ItemModel } from '@/models/world/item/item-model';
-import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
+import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatchers/common/event-handler';
 
 export class ItemManager {
   /**

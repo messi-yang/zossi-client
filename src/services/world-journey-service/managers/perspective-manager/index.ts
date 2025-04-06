@@ -1,5 +1,5 @@
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
-import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
+import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatchers/common/event-handler';
 
 export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo) => void;
 

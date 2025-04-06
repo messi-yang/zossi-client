@@ -577,23 +577,10 @@ export function Provider({ children }: Props) {
   const selectUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
-    const previousSelectedUnitId = worldJourneyService.getSelectedUnitId();
     const myPlayer = worldJourneyService.getMyPlayer();
     const myPlayerFowardPos = myPlayer.getFowardPosition(1);
 
-    const unitAtPos = worldJourneyService.getUnitByPos(myPlayerFowardPos);
-    if (!unitAtPos) {
-      worldJourneyService.clearSelectedUnitId();
-      return;
-    }
-
-    const unitId = unitAtPos.getId();
-
-    if (previousSelectedUnitId === unitId) {
-      worldJourneyService.clearSelectedUnitId();
-    } else {
-      worldJourneyService.selectUnitId(unitId);
-    }
+    worldJourneyService.selectPosition(myPlayerFowardPos);
   }, [worldJourneyService]);
 
   const context = {

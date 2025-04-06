@@ -98,6 +98,12 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
+    return worldJourneyService.subscribe('MY_PLAYER_POSITION_UPDATED', ([, newPrecisePosition]) => {
+      worldRenderer.updateTouchPanelPosition(newPrecisePosition);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
     return worldJourneyService.subscribe('UNITS_UPDATED', ([itemId, units]) => {
       const item = worldJourneyService.getItem(itemId);
       if (!item) return;
@@ -138,6 +144,12 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
   useEffect(() => {
     return worldJourneyService.subscribe('SELECTED_BOUND_UPDATED', (selectedBound) => {
       worldRenderer.updateSelectedBound(selectedBound);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    return worldRenderer.subscribePositionClickedEvent((position) => {
+      worldJourneyService.selectPosition(position);
     });
   }, [worldJourneyService, worldRenderer]);
 

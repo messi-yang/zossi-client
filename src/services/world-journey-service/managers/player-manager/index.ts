@@ -1,6 +1,6 @@
 import { PlayerModel } from '@/models/world/player/player-model';
 import { PositionVo } from '@/models/world/common/position-vo';
-import { EventHandler, EventHandlerSubscriber } from '@/services/world-journey-service/managers/common/event-handler';
+import { EventHandler, EventHandlerSubscriber } from '@/event-dispatchers/common/event-handler';
 
 export type PlayersChangedHandler = (oldPlayers: PlayerModel[], newPlayers: PlayerModel[]) => void;
 export type PlayerUpdatedEventListener = (oldPlyaer: PlayerModel, player: PlayerModel) => void;

@@ -1,4 +1,4 @@
-import { EventHandler } from '../common/event-handler';
+import { EventHandler } from '../../../../event-dispatchers/common/event-handler';
 
 export type SelectedUnitIdChangedHandler = ([oldSelectedUnitId, newSelectedUnitId]: [string | null, string | null]) => void;
 

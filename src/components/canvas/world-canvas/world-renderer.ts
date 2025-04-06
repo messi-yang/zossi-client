@@ -13,6 +13,7 @@ import { DirectionVo } from '@/models/world/common/direction-vo';
 import { BlockModel } from '@/models/world/block/block-model';
 import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
 import { BoundVo } from '@/models/world/common/bound-vo';
+import { EventHandler, EventHandlerSubscriber } from '@/event-dispatchers/common/event-handler';
 
 const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
@@ -62,6 +63,13 @@ export class WorldRenderer {
 
   private selectedBoundIndicator: THREE.Mesh;
 
+  /**
+   * @description a panel for selecting items or a bound
+   */
+  private touchPanel: THREE.Mesh;
+
+  private positionClickedEventHandler = EventHandler.create<PositionVo>();
+
   constructor() {
     this.scene = this.createScene();
 
@@ -83,6 +91,14 @@ export class WorldRenderer {
     );
     this.selectedBoundIndicator.position.set(0, -100, 0);
     this.scene.add(this.selectedBoundIndicator);
+
+    this.touchPanel = new THREE.Mesh(
+      new THREE.BoxGeometry(100, 1, 100),
+      new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0, transparent: true })
+    );
+    this.touchPanel.position.set(0, -0.5, 0);
+
+    this.scene.add(this.touchPanel);
   }
 
   static create() {
@@ -95,6 +111,8 @@ export class WorldRenderer {
 
   public mount(element: HTMLElement) {
     element.appendChild(this.renderer.domElement);
+
+    element.addEventListener('click', this.handleTouchPanelClick.bind(this));
   }
 
   public destroy(element: HTMLElement) {
@@ -110,7 +128,24 @@ export class WorldRenderer {
 
     this.baseModelInstancesCleaner();
 
+    element.removeEventListener('click', this.handleTouchPanelClick.bind(this));
     element.removeChild(this.renderer.domElement);
+  }
+
+  private handleTouchPanelClick(event: MouseEvent) {
+    const x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    const y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(x, y), this.camera);
+    const intersect = raycaster.intersectObjects([this.touchPanel])[0];
+    if (intersect) {
+      this.positionClickedEventHandler.publish(PositionVo.create(Math.round(intersect.point.x), Math.round(intersect.point.z)));
+    }
+  }
+
+  public subscribePositionClickedEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionClickedEventHandler.subscribe(subscriber);
   }
 
   private async downloadFont(fontSrc: string): Promise<Font> {
@@ -572,6 +607,10 @@ export class WorldRenderer {
     } else {
       this.updateOtherUnits(item, units);
     }
+  }
+
+  public updateTouchPanelPosition(position: PositionVo) {
+    this.touchPanel.position.set(position.getX(), -0.5, position.getZ());
   }
 
   public updatePlayer(player: PlayerModel): void {

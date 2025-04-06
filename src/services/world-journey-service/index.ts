@@ -12,13 +12,14 @@ import { SelectionManager } from './managers/selection-manager';
 import { Command } from './managers/command-manager/command';
 import { CommandManager } from './managers/command-manager';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
-import { EventHandlerSubscriber, EventHandler } from './managers/common/event-handler';
+import { EventHandlerSubscriber, EventHandler } from '../../event-dispatchers/common/event-handler';
 import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { DirectionVo } from '@/models/world/common/direction-vo';
+import { MoveUnitCommand } from './managers/command-manager/commands/move-unit-command';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -304,6 +305,36 @@ export class WorldJourneyService {
 
   public clearSelectedUnitId() {
     this.selectionManager.clearSelectedUnitId();
+  }
+
+  public selectPosition(position: PositionVo) {
+    const currentSelectedUnitId = this.getSelectedUnitId();
+
+    const unit = this.getUnitByPos(position);
+    if (unit) {
+      if (unit.getId() === currentSelectedUnitId) {
+        this.clearSelectedUnitId();
+      } else {
+        this.selectUnitId(unit.getId());
+      }
+    } else if (currentSelectedUnitId) {
+      const currentSelectedUnit = this.getUnit(currentSelectedUnitId);
+      if (!currentSelectedUnit) {
+        this.clearSelectedUnitId();
+        return;
+      }
+      this.executeLocalCommand(
+        MoveUnitCommand.create(
+          currentSelectedUnitId,
+          currentSelectedUnit.getType(),
+          currentSelectedUnit.getItemId(),
+          position,
+          currentSelectedUnit.getDirection(),
+          currentSelectedUnit.getLabel(),
+          currentSelectedUnit.getColor()
+        )
+      );
+    }
   }
 
   subscribe(eventName: 'LOCAL_COMMAND_EXECUTED', subscriber: EventHandlerSubscriber<Command>): () => void;

@@ -1,6 +1,6 @@
 import { sleep } from '@/utils/general';
 import { Command } from './command';
-import { EventHandler, EventHandlerSubscriber } from '../common/event-handler';
+import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatchers/common/event-handler';
 import { DateVo } from '@/models/global/date-vo';
 import { WorldModel } from '@/models/world/world/world-model';
 import { PlayerManager } from '../player-manager';
