@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
+import { TextGeometry, TextGeometryParameters } from 'three/examples/jsm/geometries/TextGeometry';
 import { Font } from 'three/examples/jsm/loaders/FontLoader';
 import { ColorVo } from '@/models/world/common/color-vo';
 
@@ -25,11 +25,12 @@ export const createTextMesh = (
   y: number,
   z: number
 ): THREE.Mesh<TextGeometry, THREE.MeshBasicMaterial> => {
-  const textGeometry = new TextGeometry(text, {
+  const params: TextGeometryParameters = {
     font,
-    size: 0.35,
+    size: 0.34,
     height: 0.05,
-  });
+  };
+  const textGeometry = new TextGeometry(text, params);
   const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.7, transparent: true });
   const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 

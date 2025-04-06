@@ -20,7 +20,7 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const PLAYER_NAME_HEIGHT = 2;
 const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
-const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json';
+const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_sans_regular.typeface.json';
 const CHARACTER_MODEL_SRC = '/characters/a-chiong.gltf';
 
 type BaseModelDownloadedEventSubscriber = () => void;
