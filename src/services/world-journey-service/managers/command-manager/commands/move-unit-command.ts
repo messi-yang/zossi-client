@@ -90,10 +90,9 @@ export class MoveUnitCommand extends Command {
         this.color
       );
 
-      // if (isPositionsOccupied(newUnit.getOccupiedPositions(), unitManager, playerManager)) {
-      //   return;
-      // }
-      alert('move unit');
+      if (isPositionsOccupied(newUnit.getOccupiedPositions(), unitManager, playerManager)) {
+        return;
+      }
 
       const newUnitAdded = unitManager.addUnit(newUnit);
       this.setUndoAction(() => {
