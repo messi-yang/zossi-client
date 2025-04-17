@@ -37,7 +37,6 @@ import { CreateColorUnitCommand } from '@/services/world-journey-service/manager
 import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
 import { RemoveSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-sign-unit-command';
 import { CreateSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-sign-unit-command';
-import { MoveUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/move-unit-command';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -562,16 +561,8 @@ export function Provider({ children }: Props) {
 
     const myPlayer = worldJourneyService.getMyPlayer();
     const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(selectedUnit.getDimension());
-    const command = MoveUnitCommand.create(
-      selectedUnitId,
-      selectedUnit.getType(),
-      selectedUnit.getItemId(),
-      desiredNewUnitPos,
-      selectedUnit.getDirection(),
-      selectedUnit.getLabel(),
-      selectedUnit.getColor()
-    );
-    worldJourneyService.executeLocalCommand(command);
+
+    worldJourneyService.moveUnit(selectedUnitId, desiredNewUnitPos);
   }, [worldJourneyService]);
 
   const selectUnit = useCallback(() => {
@@ -580,7 +571,18 @@ export function Provider({ children }: Props) {
     const myPlayer = worldJourneyService.getMyPlayer();
     const myPlayerFowardPos = myPlayer.getFowardPosition(1);
 
-    worldJourneyService.selectPosition(myPlayerFowardPos);
+    const unitAtPos = worldJourneyService.getUnitByPos(myPlayerFowardPos);
+
+    if (unitAtPos) {
+      const selectedUnitId = worldJourneyService.getSelectedUnitId();
+      if (selectedUnitId === unitAtPos.getId()) {
+        worldJourneyService.clearSelectedUnitId();
+      } else {
+        worldJourneyService.selectUnitId(unitAtPos.getId());
+      }
+    } else {
+      worldJourneyService.clearSelectedUnitId();
+    }
   }, [worldJourneyService]);
 
   const context = {

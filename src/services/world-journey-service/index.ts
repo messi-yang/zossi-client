@@ -307,34 +307,21 @@ export class WorldJourneyService {
     this.selectionManager.clearSelectedUnitId();
   }
 
-  public selectPosition(position: PositionVo) {
-    const currentSelectedUnitId = this.getSelectedUnitId();
+  public moveUnit(unitId: string, position: PositionVo) {
+    const unit = this.unitManager.getUnit(unitId);
+    if (!unit) return;
 
-    const unit = this.getUnitByPos(position);
-    if (unit) {
-      if (unit.getId() === currentSelectedUnitId) {
-        this.clearSelectedUnitId();
-      } else {
-        this.selectUnitId(unit.getId());
-      }
-    } else if (currentSelectedUnitId) {
-      const currentSelectedUnit = this.getUnit(currentSelectedUnitId);
-      if (!currentSelectedUnit) {
-        this.clearSelectedUnitId();
-        return;
-      }
-      this.executeLocalCommand(
-        MoveUnitCommand.create(
-          currentSelectedUnitId,
-          currentSelectedUnit.getType(),
-          currentSelectedUnit.getItemId(),
-          position,
-          currentSelectedUnit.getDirection(),
-          currentSelectedUnit.getLabel(),
-          currentSelectedUnit.getColor()
-        )
-      );
-    }
+    const command = MoveUnitCommand.create(
+      unitId,
+      unit.getType(),
+      unit.getItemId(),
+      position,
+      unit.getDirection(),
+      unit.getLabel(),
+      unit.getColor()
+    );
+
+    this.commandManager.executeLocalCommand(command);
   }
 
   subscribe(eventName: 'LOCAL_COMMAND_EXECUTED', subscriber: EventHandlerSubscriber<Command>): () => void;

@@ -24,10 +24,6 @@ const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
 const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_sans_regular.typeface.json';
 const CHARACTER_MODEL_SRC = '/characters/a-chiong.gltf';
 
-type BaseModelDownloadedEventSubscriber = () => void;
-type ItemModelsDownloadedEventSubscriber = (itemId: string) => void;
-type DefaultFontDownloadedEventSubscriber = () => void;
-
 export class WorldRenderer {
   private readonly scene: THREE.Scene;
 
@@ -70,7 +66,13 @@ export class WorldRenderer {
    */
   private touchPanel: THREE.Mesh;
 
-  private positionClickedEventHandler = EventHandler.create<PositionVo>();
+  private positionMouseDownEventHandler = EventHandler.create<PositionVo>();
+
+  private positionMouseUpEventHandler = EventHandler.create<PositionVo>();
+
+  private mouseOverPositionIndicator: THREE.Mesh;
+
+  private positionMouseMoveEventHandler = EventHandler.create<PositionVo>();
 
   constructor() {
     this.scene = this.createScene();
@@ -94,6 +96,13 @@ export class WorldRenderer {
     this.selectedBoundIndicator.position.set(0, -100, 0);
     this.scene.add(this.selectedBoundIndicator);
 
+    this.mouseOverPositionIndicator = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 0.1, 1),
+      new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.3, transparent: true })
+    );
+    this.mouseOverPositionIndicator.position.set(0, -100, 0);
+    this.scene.add(this.mouseOverPositionIndicator);
+
     this.touchPanel = new THREE.Mesh(
       new THREE.BoxGeometry(100, 1, 100),
       new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0, transparent: true })
@@ -114,7 +123,9 @@ export class WorldRenderer {
   public mount(element: HTMLElement) {
     element.appendChild(this.renderer.domElement);
 
-    element.addEventListener('click', this.handleTouchPanelClick.bind(this));
+    element.addEventListener('mousedown', this.handlePositionMouseDown.bind(this));
+    element.addEventListener('mouseup', this.handlePositionMouseUp.bind(this));
+    window.addEventListener('mousemove', this.handlePositionMouseMove.bind(this));
   }
 
   public destroy(element: HTMLElement) {
@@ -130,24 +141,57 @@ export class WorldRenderer {
 
     this.baseModelInstancesCleaner();
 
-    element.removeEventListener('click', this.handleTouchPanelClick.bind(this));
+    element.removeEventListener('mouseup', this.handlePositionMouseDown.bind(this));
+    element.removeEventListener('mousedown', this.handlePositionMouseUp.bind(this));
+    window.removeEventListener('mousemove', this.handlePositionMouseMove.bind(this));
     element.removeChild(this.renderer.domElement);
   }
 
-  private handleTouchPanelClick(event: MouseEvent) {
-    const x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
-    const y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+  private getMousePosition(mousePosition: { x: number; y: number }): PositionVo | null {
+    const x = (mousePosition.x / this.renderer.domElement.clientWidth) * 2 - 1;
+    const y = -(mousePosition.y / this.renderer.domElement.clientHeight) * 2 + 1;
 
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(new THREE.Vector2(x, y), this.camera);
     const intersect = raycaster.intersectObjects([this.touchPanel])[0];
     if (intersect) {
-      this.positionClickedEventHandler.publish(PositionVo.create(Math.round(intersect.point.x), Math.round(intersect.point.z)));
+      return PositionVo.create(Math.round(intersect.point.x), Math.round(intersect.point.z));
+    }
+    return null;
+  }
+
+  private handlePositionMouseDown(event: MouseEvent) {
+    const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
+    if (position) {
+      this.positionMouseDownEventHandler.publish(position);
     }
   }
 
-  public subscribePositionClickedEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
-    return this.positionClickedEventHandler.subscribe(subscriber);
+  private handlePositionMouseUp(event: MouseEvent) {
+    const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
+    if (position) {
+      this.positionMouseUpEventHandler.publish(position);
+    }
+  }
+
+  private handlePositionMouseMove(event: MouseEvent) {
+    const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
+    if (position) {
+      this.mouseOverPositionIndicator.position.set(position.getX(), 0, position.getZ());
+      this.positionMouseMoveEventHandler.publish(position);
+    }
+  }
+
+  public subscribePositionMouseDownEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionMouseDownEventHandler.subscribe(subscriber);
+  }
+
+  public subscribePositionMouseUpEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionMouseUpEventHandler.subscribe(subscriber);
+  }
+
+  public subscribePositionMouseOverEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionMouseMoveEventHandler.subscribe(subscriber);
   }
 
   private async downloadFont(fontSrc: string): Promise<Font> {
@@ -197,15 +241,15 @@ export class WorldRenderer {
     return this.playerModelDownloadedEventSubscribers.subscribe(subscriber);
   }
 
-  public subscribeBaseModelsDownloadedEvent(subscriber: BaseModelDownloadedEventSubscriber): () => void {
+  public subscribeBaseModelsDownloadedEvent(subscriber: EventHandlerSubscriber<void>): () => void {
     return this.baseModelDownloadedEventSubscribers.subscribe(subscriber);
   }
 
-  public subscribeItemModelsDownloadedEvent(subscriber: ItemModelsDownloadedEventSubscriber): () => void {
+  public subscribeItemModelsDownloadedEvent(subscriber: EventHandlerSubscriber<string>): () => void {
     return this.itemModelsDownloadedEventSubscribers.subscribe(subscriber);
   }
 
-  public subscribeDefaultFontDownloadedEvent(subscriber: DefaultFontDownloadedEventSubscriber): () => void {
+  public subscribeDefaultFontDownloadedEvent(subscriber: EventHandlerSubscriber<void>): () => void {
     return this.defaultFontDownloadedEventSubscribers.subscribe(subscriber);
   }
 

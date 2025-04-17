@@ -164,8 +164,30 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
-    return worldRenderer.subscribePositionClickedEvent((position) => {
-      worldJourneyService.selectPosition(position);
+    return worldRenderer.subscribePositionMouseDownEvent((position) => {
+      const unitAtPos = worldJourneyService.getUnitByPos(position);
+      if (unitAtPos) {
+        worldJourneyService.selectUnitId(unitAtPos.getId());
+      } else {
+        worldJourneyService.clearSelectedUnitId();
+      }
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    return worldRenderer.subscribePositionMouseUpEvent((position) => {
+      const currentSelectedUnitId = worldJourneyService.getSelectedUnitId();
+      if (!currentSelectedUnitId) return;
+
+      const unitAtPos = worldJourneyService.getUnitByPos(position);
+      if (!unitAtPos) {
+        const currentSelectedUnit = worldJourneyService.getUnit(currentSelectedUnitId);
+        if (!currentSelectedUnit) {
+          worldJourneyService.clearSelectedUnitId();
+          return;
+        }
+        worldJourneyService.moveUnit(currentSelectedUnitId, position);
+      }
     });
   }, [worldJourneyService, worldRenderer]);
 
