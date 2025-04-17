@@ -90,7 +90,7 @@ export class WorldJourneyService {
       const unitId = unit.getId();
       const selectedUnitId = this.selectionManager.getSelectedUnitId();
       if (selectedUnitId && unitId === selectedUnitId) {
-        this.selectedBoundUpdatedEventHandler.publish(null);
+        this.clearSelectedUnitId();
       }
     });
   }

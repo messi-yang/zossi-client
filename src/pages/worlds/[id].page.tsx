@@ -73,6 +73,7 @@ const Page: NextPage = function Page() {
     worldJourneyService,
     connectionStatus,
     items,
+    selectedUnitId,
     enterWorld,
     addPerspectiveDepth,
     subtractPerspectiveDepth,
@@ -88,6 +89,7 @@ const Page: NextPage = function Page() {
     createSignUnit,
     buildMaze,
     replayCommands,
+    removeUnit,
     removeFowardUnit,
     removeUnitsInBound,
     rotateUnit,
@@ -214,6 +216,11 @@ const Page: NextPage = function Page() {
     [removeFowardUnit]
   );
   useHotKeys(['KeyO'], { onPressedKeysChange: handleRemoveUnitPressedKeysChange });
+
+  const handleRemoveClick = useCallback(() => {
+    if (!selectedUnitId) return;
+    removeUnit(selectedUnitId);
+  }, [removeUnit, selectedUnitId]);
 
   const handleRotateUnitPressedKeysChange = useCallback(
     (keys: string[]) => {
@@ -460,6 +467,11 @@ const Page: NextPage = function Page() {
           <Text size="text-xl">{myPlayerPosText}</Text>
         </div>
       </div>
+      {selectedUnitId && (
+        <div className="absolute top-16 right-2 z-10 flex flex-col items-end gap-2">
+          <Button text="Remove" onClick={handleRemoveClick} />
+        </div>
+      )}
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 w-screen">
         <ItemSelect items={items} selectedItemId={myPlayerHeldItemId} onSelect={handleItemSelect} />
       </section>

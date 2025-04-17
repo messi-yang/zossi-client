@@ -44,6 +44,7 @@ type ContextValue = {
   worldJourneyService: WorldJourneyService | null;
   connectionStatus: ConnectionStatus;
   items: ItemModel[] | null;
+  selectedUnitId: string | null;
   enterWorld: (worldId: string) => void;
   addPerspectiveDepth: () => void;
   subtractPerspectiveDepth: () => void;
@@ -59,6 +60,7 @@ type ContextValue = {
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
   replayCommands: (duration: number, speed: number) => void;
   removeFowardUnit: () => void;
+  removeUnit: (unitId: string) => void;
   removeUnitsInBound: (bound: BoundVo) => void;
   rotateUnit: () => void;
   moveUnit: () => void;
@@ -72,6 +74,7 @@ const Context = createContext<ContextValue>({
   worldJourneyService: null,
   connectionStatus: 'WAITING',
   items: null,
+  selectedUnitId: null,
   enterWorld: () => {},
   addPerspectiveDepth: () => {},
   subtractPerspectiveDepth: () => {},
@@ -86,6 +89,7 @@ const Context = createContext<ContextValue>({
   createSignUnit: () => {},
   buildMaze: () => {},
   replayCommands: () => {},
+  removeUnit: () => {},
   removeFowardUnit: () => {},
   removeUnitsInBound: () => {},
   rotateUnit: () => {},
@@ -161,6 +165,17 @@ export function Provider({ children }: Props) {
     setWorldJourneyService(null);
     setConnectionStatus('WAITING');
   }, []);
+
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!worldJourneyService) return () => {};
+
+    setSelectedUnitId(worldJourneyService.getSelectedUnitId());
+
+    return worldJourneyService.subscribe('SELECTED_UNIT_ID_CHANGED', ([, newSelectedUnitId]) => {
+      setSelectedUnitId(newSelectedUnitId);
+    });
+  }, [worldJourneyService]);
 
   const enterWorld = useCallback((worldId: string) => {
     if (worldJourneyApi.current) {
@@ -463,7 +478,7 @@ export function Provider({ children }: Props) {
   /**
    * If a unit is removed, return true
    */
-  const removeUnit = useCallback(
+  const removeUnitAtPos = useCallback(
     (pos: PositionVo): boolean => {
       if (!worldJourneyService) return false;
       const unitAtPos = worldJourneyService.getUnitByPos(pos);
@@ -521,21 +536,33 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
+  const removeUnit = useCallback(
+    (unitId: string) => {
+      if (!worldJourneyService) return;
+
+      const unit = worldJourneyService.getUnit(unitId);
+      if (!unit) return;
+
+      removeUnitAtPos(unit.getPosition());
+    },
+    [worldJourneyService]
+  );
+
   const removeFowardUnit = useCallback(() => {
     if (!worldJourneyService) return;
     const myPlayer = worldJourneyService.getMyPlayer();
 
-    removeUnit(myPlayer.getFowardPosition(1));
-  }, [removeUnit, worldJourneyService]);
+    removeUnitAtPos(myPlayer.getFowardPosition(1));
+  }, [removeUnitAtPos, worldJourneyService]);
 
   const removeUnitsInBound = useCallback(
     (bound: BoundVo) => {
       bound.iterateSync(async (position) => {
-        const removed = removeUnit(position);
+        const removed = removeUnitAtPos(position);
         if (removed) await sleep(10);
       });
     },
-    [worldJourneyService, removeUnit]
+    [worldJourneyService, removeUnitAtPos]
   );
 
   const rotateUnit = useCallback(() => {
@@ -553,16 +580,16 @@ export function Provider({ children }: Props) {
   const moveUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
-    const selectedUnitId = worldJourneyService.getSelectedUnitId();
-    if (!selectedUnitId) return;
+    const currentSelectedUnitId = worldJourneyService.getSelectedUnitId();
+    if (!currentSelectedUnitId) return;
 
-    const selectedUnit = worldJourneyService.getUnit(selectedUnitId);
+    const selectedUnit = worldJourneyService.getUnit(currentSelectedUnitId);
     if (!selectedUnit) return;
 
     const myPlayer = worldJourneyService.getMyPlayer();
     const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(selectedUnit.getDimension());
 
-    worldJourneyService.moveUnit(selectedUnitId, desiredNewUnitPos);
+    worldJourneyService.moveUnit(currentSelectedUnitId, desiredNewUnitPos);
   }, [worldJourneyService]);
 
   const selectUnit = useCallback(() => {
@@ -574,8 +601,8 @@ export function Provider({ children }: Props) {
     const unitAtPos = worldJourneyService.getUnitByPos(myPlayerFowardPos);
 
     if (unitAtPos) {
-      const selectedUnitId = worldJourneyService.getSelectedUnitId();
-      if (selectedUnitId === unitAtPos.getId()) {
+      const currentSelectedUnitId = worldJourneyService.getSelectedUnitId();
+      if (currentSelectedUnitId === unitAtPos.getId()) {
         worldJourneyService.clearSelectedUnitId();
       } else {
         worldJourneyService.selectUnitId(unitAtPos.getId());
@@ -589,6 +616,7 @@ export function Provider({ children }: Props) {
     worldJourneyService,
     connectionStatus,
     items,
+    selectedUnitId,
     enterWorld,
     addPerspectiveDepth,
     subtractPerspectiveDepth,
@@ -604,6 +632,7 @@ export function Provider({ children }: Props) {
     createSignUnit,
     buildMaze,
     replayCommands,
+    removeUnit,
     removeFowardUnit,
     removeUnitsInBound,
     rotateUnit,
