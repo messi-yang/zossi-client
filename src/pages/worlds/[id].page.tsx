@@ -90,23 +90,13 @@ const Page: NextPage = function Page() {
     buildMaze,
     replayCommands,
     removeUnit,
-    removeFowardUnit,
-    removeUnitsInBound,
     rotateUnit,
+    removeUnitsInBound,
     selectUnit,
     moveUnit,
     displayedEmbedCode,
     cleanDisplayedEmbedCode,
   } = useContext(WorldJourneyServiceContext);
-
-  const handleEngageUnitPressedKeysChange = useCallback(
-    (keys: string[]) => {
-      if (keys.length === 0) return;
-      engageUnit();
-    },
-    [engageUnit]
-  );
-  useHotKeys(['KeyG'], { onPressedKeysChange: handleEngageUnitPressedKeysChange });
 
   const [myPlayerHeldItemId, setMyPlayerHeldItemId] = useState<string | null>(null);
   const [myPlayerPosText, setMyPlayerPosText] = useState<string | null>(null);
@@ -208,28 +198,20 @@ const Page: NextPage = function Page() {
   );
   useHotKeys(['KeyP'], { onPressedKeysChange: handleCreateUnitPressedKeysChange });
 
-  const handleRemoveUnitPressedKeysChange = useCallback(
-    (keys: string[]) => {
-      if (keys.length === 0) return;
-      removeFowardUnit();
-    },
-    [removeFowardUnit]
-  );
-  useHotKeys(['KeyO'], { onPressedKeysChange: handleRemoveUnitPressedKeysChange });
-
   const handleRemoveClick = useCallback(() => {
     if (!selectedUnitId) return;
     removeUnit(selectedUnitId);
   }, [removeUnit, selectedUnitId]);
 
-  const handleRotateUnitPressedKeysChange = useCallback(
-    (keys: string[]) => {
-      if (keys.length === 0) return;
-      rotateUnit();
-    },
-    [rotateUnit]
-  );
-  useHotKeys(['KeyR'], { onPressedKeysChange: handleRotateUnitPressedKeysChange });
+  const handleRotateUnitClick = useCallback(() => {
+    if (!selectedUnitId) return;
+    rotateUnit(selectedUnitId);
+  }, [rotateUnit, selectedUnitId]);
+
+  const handleEngageUnitClick = useCallback(() => {
+    if (!selectedUnitId) return;
+    engageUnit(selectedUnitId);
+  }, [engageUnit, selectedUnitId]);
 
   const handleSwitchToNextItemPressedKeysChange = useCallback(
     (keys: string[]) => {
@@ -470,6 +452,8 @@ const Page: NextPage = function Page() {
       {selectedUnitId && (
         <div className="absolute top-16 right-2 z-10 flex flex-col items-end gap-2">
           <Button text="Remove" onClick={handleRemoveClick} />
+          <Button text="Rotate" onClick={handleRotateUnitClick} />
+          <Button text="Engage" onClick={handleEngageUnitClick} />
         </div>
       )}
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 w-screen">

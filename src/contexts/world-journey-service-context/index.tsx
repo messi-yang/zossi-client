@@ -52,17 +52,16 @@ type ContextValue = {
   makePlayerWalk: (direction: DirectionVo) => void;
   sendPlayerIntoPortal: (unitId: string) => void;
   changePlayerHeldItem: (item: ItemModel) => void;
-  engageUnit: () => void;
+  engageUnit: (unitId: string) => void;
   createUnit: () => void;
   createEmbedUnit: (itemId: string, label: string, embedCode: string) => void;
   createLinkUnit: (itemId: string, label: string, url: string) => void;
   createSignUnit: (itemId: string, label: string) => void;
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
   replayCommands: (duration: number, speed: number) => void;
-  removeFowardUnit: () => void;
   removeUnit: (unitId: string) => void;
+  rotateUnit: (unitId: string) => void;
   removeUnitsInBound: (bound: BoundVo) => void;
-  rotateUnit: () => void;
   moveUnit: () => void;
   selectUnit: () => void;
   leaveWorld: () => void;
@@ -90,9 +89,8 @@ const Context = createContext<ContextValue>({
   buildMaze: () => {},
   replayCommands: () => {},
   removeUnit: () => {},
-  removeFowardUnit: () => {},
-  removeUnitsInBound: () => {},
   rotateUnit: () => {},
+  removeUnitsInBound: () => {},
   moveUnit: () => {},
   selectUnit: () => {},
   leaveWorld: () => {},
@@ -434,22 +432,23 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
-  const engageUnit = useCallback(async () => {
-    if (!worldJourneyService) return;
+  const engageUnit = useCallback(
+    async (unitId: string) => {
+      if (!worldJourneyService) return;
 
-    const myPlayer = worldJourneyService.getMyPlayer();
-    const unitPos = myPlayer.getFowardPosition(1);
-    const unitAtPos = worldJourneyService.getUnitByPos(unitPos);
-    if (!unitAtPos) return;
+      const unit = worldJourneyService.getUnit(unitId);
+      if (!unit) return;
 
-    if (unitAtPos instanceof LinkUnitModel) {
-      const linkUnitUrl = await linkUnitApi.getLinkUnitUrl(unitAtPos.getId());
-      window.open(linkUnitUrl);
-    } else if (unitAtPos instanceof EmbedUnitModel) {
-      const embedUnitUrl = await embedUnitApi.getEmbedUnitEmbedCode(unitAtPos.getId());
-      setDisplayedEmbedCode(embedUnitUrl);
-    }
-  }, [worldJourneyService]);
+      if (unit instanceof LinkUnitModel) {
+        const linkUnitUrl = await linkUnitApi.getLinkUnitUrl(unit.getId());
+        window.open(linkUnitUrl);
+      } else if (unit instanceof EmbedUnitModel) {
+        const embedUnitUrl = await embedUnitApi.getEmbedUnitEmbedCode(unit.getId());
+        setDisplayedEmbedCode(embedUnitUrl);
+      }
+    },
+    [worldJourneyService]
+  );
 
   const buildMaze = useCallback(
     (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => {
@@ -478,15 +477,13 @@ export function Provider({ children }: Props) {
   /**
    * If a unit is removed, return true
    */
-  const removeUnitAtPos = useCallback(
-    (pos: PositionVo): boolean => {
+  const removeUnitByType = useCallback(
+    (unitId: string): boolean => {
       if (!worldJourneyService) return false;
-      const unitAtPos = worldJourneyService.getUnitByPos(pos);
-      if (!unitAtPos) return false;
+      const unit = worldJourneyService.getUnit(unitId);
+      if (!unit) return false;
 
-      const unitId = unitAtPos.getId();
-
-      dipatchUnitType(unitAtPos.getType(), {
+      dipatchUnitType(unit.getType(), {
         static: () => {
           if (!worldJourneyApi.current) return;
 
@@ -540,42 +537,37 @@ export function Provider({ children }: Props) {
     (unitId: string) => {
       if (!worldJourneyService) return;
 
-      const unit = worldJourneyService.getUnit(unitId);
-      if (!unit) return;
-
-      removeUnitAtPos(unit.getPosition());
+      removeUnitByType(unitId);
     },
     [worldJourneyService]
   );
 
-  const removeFowardUnit = useCallback(() => {
-    if (!worldJourneyService) return;
-    const myPlayer = worldJourneyService.getMyPlayer();
+  const rotateUnit = useCallback(
+    (unitId: string) => {
+      if (!worldJourneyService) return;
 
-    removeUnitAtPos(myPlayer.getFowardPosition(1));
-  }, [removeUnitAtPos, worldJourneyService]);
+      const unit = worldJourneyService.getUnit(unitId);
+      if (!unit) return;
+
+      const command = RotateUnitCommand.create(unitId);
+      worldJourneyService.executeLocalCommand(command);
+    },
+    [worldJourneyService]
+  );
 
   const removeUnitsInBound = useCallback(
     (bound: BoundVo) => {
+      if (!worldJourneyService) return;
       bound.iterateSync(async (position) => {
-        const removed = removeUnitAtPos(position);
+        const unitAtPos = worldJourneyService.getUnitByPos(position);
+        if (!unitAtPos) return;
+
+        const removed = removeUnitByType(unitAtPos.getId());
         if (removed) await sleep(10);
       });
     },
-    [worldJourneyService, removeUnitAtPos]
+    [worldJourneyService]
   );
-
-  const rotateUnit = useCallback(() => {
-    if (!worldJourneyService || !worldJourneyApi.current) return;
-
-    const myPlayer = worldJourneyService.getMyPlayer();
-    const unitPos = myPlayer.getFowardPosition(1);
-    const unitAtPos = worldJourneyService.getUnitByPos(unitPos);
-    if (!unitAtPos) return;
-
-    const command = RotateUnitCommand.create(unitAtPos.getId());
-    worldJourneyService.executeLocalCommand(command);
-  }, [worldJourneyService]);
 
   const moveUnit = useCallback(() => {
     if (!worldJourneyService) return;
@@ -633,9 +625,8 @@ export function Provider({ children }: Props) {
     buildMaze,
     replayCommands,
     removeUnit,
-    removeFowardUnit,
-    removeUnitsInBound,
     rotateUnit,
+    removeUnitsInBound,
     moveUnit,
     selectUnit,
     displayedEmbedCode,
