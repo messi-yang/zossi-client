@@ -188,6 +188,19 @@ export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
         }
         worldJourneyService.moveUnit(currentSelectedUnitId, position);
       }
+
+      worldRenderer.removeDraggedItem();
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    return worldRenderer.subscribePositionMouseDragEvent((position) => {
+      const selectedUnit = worldJourneyService.getSelectedUnit();
+      if (!selectedUnit) return;
+      const selectedUnitItem = worldJourneyService.getItem(selectedUnit.getItemId());
+      if (!selectedUnitItem) return;
+
+      worldRenderer.updateDraggedItem(selectedUnitItem, position, selectedUnitItem.getDimension(), selectedUnit.getDirection());
     });
   }, [worldJourneyService, worldRenderer]);
 

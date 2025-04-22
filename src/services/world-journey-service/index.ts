@@ -299,6 +299,13 @@ export class WorldJourneyService {
     return this.selectionManager.getSelectedUnitId();
   }
 
+  public getSelectedUnit(): UnitModel | null {
+    const selectedUnitId = this.getSelectedUnitId();
+    if (!selectedUnitId) return null;
+
+    return this.unitManager.getUnit(selectedUnitId);
+  }
+
   public selectUnitId(unitId: string) {
     this.selectionManager.selectUnitId(unitId);
   }

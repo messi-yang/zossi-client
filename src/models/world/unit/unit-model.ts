@@ -4,6 +4,7 @@ import { DimensionVo } from '../common/dimension-vo';
 import { DirectionVo } from '../common/direction-vo';
 import { PositionVo } from '../common/position-vo';
 import { PrecisePositionVo } from '../common/precise-position-vo';
+import { calculateExpectedUnitBound } from '../common/utils';
 import { UnitTypeEnum } from './unit-type-enum';
 
 export abstract class UnitModel {
@@ -72,22 +73,7 @@ export abstract class UnitModel {
   }
 
   public getOccupiedBound(): BoundVo {
-    const dimensionWidth = this.dimension.getWidth();
-    const dimensionDepth = this.dimension.getDepth();
-
-    let occupiedBoundTo = PositionVo.create(0, 0);
-
-    if (this.direction.isDown()) {
-      occupiedBoundTo = this.position.shift(dimensionWidth - 1, dimensionDepth - 1);
-    } else if (this.direction.isRight()) {
-      occupiedBoundTo = this.position.shift(dimensionDepth - 1, dimensionWidth - 1);
-    } else if (this.direction.isUp()) {
-      occupiedBoundTo = this.position.shift(dimensionWidth - 1, dimensionDepth - 1);
-    } else {
-      occupiedBoundTo = this.position.shift(dimensionDepth - 1, dimensionWidth - 1);
-    }
-
-    return BoundVo.create(this.position, occupiedBoundTo);
+    return calculateExpectedUnitBound(this.position, this.dimension, this.direction);
   }
 
   public getOccupiedPositions(): PositionVo[] {
