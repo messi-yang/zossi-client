@@ -4,7 +4,7 @@ type ModalProps = {
   width?: string | number;
   height?: string | number;
   onCrossClick?: () => void;
-  children: JSX.Element;
+  children: React.ReactNode;
 };
 
 export function Modal({ width, height, onCrossClick, children }: ModalProps) {

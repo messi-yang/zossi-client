@@ -1,9 +1,8 @@
-import { ReactFragment } from 'react';
 import classnames from 'classnames';
 
 type WrapperProps = {
   visible: boolean;
-  children: ReactFragment;
+  children: React.ReactNode;
 };
 
 export function Wrapper({ visible, children }: WrapperProps) {

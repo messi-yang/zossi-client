@@ -7,7 +7,7 @@ type ContextValue = {};
 const Context = createContext<ContextValue>({});
 
 type Props = {
-  children: JSX.Element;
+  children: React.ReactNode;
 };
 
 function Provider({ children }: Props) {

@@ -17,7 +17,7 @@ function createInitialContextValue(): ContextValue {
 const Context = createContext<ContextValue>(createInitialContextValue());
 
 type Props = {
-  children: JSX.Element;
+  children: React.ReactNode;
 };
 
 function Provider({ children }: Props) {
@@ -30,9 +30,7 @@ function Provider({ children }: Props) {
   }, []);
 
   return (
-    <Context.Provider
-      value={useMemo<ContextValue>(() => ({ getWorldMembers, worldMembers }), [getWorldMembers, worldMembers])}
-    >
+    <Context.Provider value={useMemo<ContextValue>(() => ({ getWorldMembers, worldMembers }), [getWorldMembers, worldMembers])}>
       {children}
     </Context.Provider>
   );

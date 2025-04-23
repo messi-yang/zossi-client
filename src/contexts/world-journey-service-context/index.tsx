@@ -99,7 +99,7 @@ const Context = createContext<ContextValue>({
 });
 
 type Props = {
-  children: JSX.Element;
+  children: React.ReactNode;
 };
 
 export function Provider({ children }: Props) {

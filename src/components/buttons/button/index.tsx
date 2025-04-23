@@ -6,7 +6,7 @@ import { dataTestids } from './data-test-ids';
 type Props = {
   text: string;
   fullWidth?: boolean;
-  rightChild?: JSX.Element;
+  rightChild?: React.ReactNode;
   loading?: boolean;
   onClick?: () => any;
 };
@@ -39,15 +39,7 @@ export function Button({ text, fullWidth = false, rightChild, loading = false, o
     <button
       data-testid={dataTestids.root}
       type="button"
-      className={classnames(
-        'relative',
-        'rounded-lg',
-        'overflow-hidden',
-        'backdrop-blur',
-        'h-10',
-        fullWidth ? 'w-full' : undefined,
-        'px-5'
-      )}
+      className={classnames('relative', 'rounded-lg', 'overflow-hidden', 'backdrop-blur', 'h-10', fullWidth ? 'w-full' : undefined, 'px-5')}
       onClick={handleClick}
       onFocus={handleFocus}
       onBlur={handleBlure}
@@ -83,8 +75,7 @@ export function Button({ text, fullWidth = false, rightChild, loading = false, o
           highlighted ? 'opacity-100' : 'opacity-0'
         )}
         style={{
-          backgroundImage:
-            'linear-gradient(92.88deg, rgba(255, 255, 255, 0.25) 14.49%, rgba(255, 255, 255, 0.12) 98.56%)',
+          backgroundImage: 'linear-gradient(92.88deg, rgba(255, 255, 255, 0.25) 14.49%, rgba(255, 255, 255, 0.12) 98.56%)',
         }}
       />
       <div className={classnames('relative', 'z-10', 'w-full', 'h-full', 'flex', 'justify-center', 'items-center')}>

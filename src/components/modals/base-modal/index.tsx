@@ -6,7 +6,7 @@ type BaseModalProps = {
   width?: string | number;
   height?: string | number;
   opened: boolean;
-  children: JSX.Element;
+  children: React.ReactNode;
   onBackgroundClick?: () => void;
   onCrossClick?: () => void;
 };

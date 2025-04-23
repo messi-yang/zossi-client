@@ -5,8 +5,8 @@ import { UserContext } from '@/contexts/user-context';
 import { Text } from '@/components/texts/text';
 
 type Props = {
-  panel: JSX.Element;
-  children: JSX.Element;
+  panel: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export function DashboardLayout({ panel, children }: Props) {

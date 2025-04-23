@@ -11,7 +11,7 @@ type Props = {
   worldJourneyService: WorldJourneyService;
 };
 
-export function WorldCanvas({ worldJourneyService }: Props): JSX.Element {
+export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
   const [wrapperDom, setWrapperDom] = useState<HTMLDivElement | null>(null);
   const wrapperDomRect = useDomRect(wrapperDom);
   const worldRenderer = useMemo(() => WorldRenderer.create(), [worldJourneyService]);
