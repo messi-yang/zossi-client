@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "type": "tsc --project tsconfig.json",
-    "prettier": "prettier --write ./src",
+    "prettier:fix": "prettier --write ./src",
     "test": "jest",
     "test:watch": "jest --watch",
     "prepare": "husky install",
