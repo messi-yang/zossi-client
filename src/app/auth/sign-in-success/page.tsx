@@ -1,13 +1,15 @@
+'use client';
+
 import { useContext, useEffect } from 'react';
-import type { NextPage, GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthContext } from '@/contexts/auth-context';
 import { Text } from '@/components/texts/text';
 
-const Page: NextPage = function Page() {
+const Page = function Page() {
   const router = useRouter();
-  const accessToken = router.query.access_token as string | null;
-  const oauthClientRedirectPath = router.query.client_redirect_path as string | null;
+  const searchParams = useSearchParams();
+  const accessToken = searchParams.get('access_token');
+  const oauthClientRedirectPath = searchParams.get('client_redirect_path');
 
   const { signIn } = useContext(AuthContext);
   useEffect(() => {
@@ -16,7 +18,7 @@ const Page: NextPage = function Page() {
     }
     signIn(accessToken);
     router.push(oauthClientRedirectPath);
-  }, [accessToken, oauthClientRedirectPath]);
+  }, [accessToken, oauthClientRedirectPath, signIn, router]);
 
   return (
     <main className="relative w-full h-screen flex justify-center items-center bg-[#1E1E1E]">
@@ -26,9 +28,5 @@ const Page: NextPage = function Page() {
     </main>
   );
 };
-
-export const getStaticProps: GetStaticProps = async () => ({
-  props: {},
-});
 
 export default Page;

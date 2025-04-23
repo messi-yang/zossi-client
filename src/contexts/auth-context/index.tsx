@@ -1,7 +1,8 @@
 'use client';
 
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
+
 import { AuthApi } from '@/adapters/apis/auth-api';
 import { AuthSessionStorage } from '@/adapters/storages/auth-session-storage';
 import { AuthenticationEventDispatcher } from '@/event-dispatchers/authentication-event-dispatcher';
@@ -35,7 +36,7 @@ function Provider({ children }: Props) {
   const [authApi] = useState<AuthApi>(() => AuthApi.create());
   const [authSessionStorage] = useState(() => AuthSessionStorage.get());
   const router = useRouter();
-
+  const pathname = usePathname();
   const [clientRedirectPath, setClientRedirectPath] = useState('/dashboard/worlds');
   const setOauthClientRedirectPath = useCallback((path: string) => {
     setClientRedirectPath(path);
@@ -71,7 +72,7 @@ function Provider({ children }: Props) {
   useEffect(() => {
     const unauthenticatedEventHandler = () => {
       setIsSignedIn(false);
-      setClientRedirectPath(router.asPath);
+      setClientRedirectPath(pathname);
       router.push('/auth/sign-in');
     };
 
@@ -82,7 +83,7 @@ function Provider({ children }: Props) {
     return () => {
       unsubscribe();
     };
-  }, [router]);
+  }, [router, pathname]);
 
   return (
     <Context.Provider

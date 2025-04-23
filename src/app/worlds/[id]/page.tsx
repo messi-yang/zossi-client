@@ -1,6 +1,8 @@
-import { useEffect, useCallback, useRef, KeyboardEventHandler, useContext, useState } from 'react';
-import type { NextPage, GetStaticProps, GetStaticPaths } from 'next';
-import { useRouter } from 'next/router';
+'use client';
+
+import { useEffect, useCallback, useRef, KeyboardEventHandler, useContext, useState, use } from 'react';
+
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 import { useHotKeys } from '@/hooks/use-hot-keys';
@@ -30,9 +32,10 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { CreateLinkUnitModal } from '@/components/modals/create-link-unit-modal';
 import { CreateSignUnitModal } from '@/components/modals/create-sign-unit-modal';
 
-const Page: NextPage = function Page() {
+const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const worldId = router.query.id as string | null;
+  const { id } = use(params);
+  const worldId = id;
 
   const [isShareWorldModalVisible, setIsShareWorldModalVisible] = useState(false);
   const handleShareClick = useCallback(() => {
@@ -54,7 +57,6 @@ const Page: NextPage = function Page() {
   useEffect(() => {
     // @ts-expect-error
     window.startLoadTest = () => {
-      // @ts-expect-error
       startLoadTest(worldId);
     };
     // @ts-expect-error
@@ -474,14 +476,5 @@ const Page: NextPage = function Page() {
     </main>
   );
 };
-
-export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: [],
-  fallback: true,
-});
-
-export const getStaticProps: GetStaticProps = async () => ({
-  props: {},
-});
 
 export default Page;

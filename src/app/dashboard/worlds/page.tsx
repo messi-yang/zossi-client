@@ -1,5 +1,7 @@
+'use client';
+
 import { useCallback, useContext, useEffect, useState } from 'react';
-import type { NextPage, GetStaticProps } from 'next';
+import type { NextPage } from 'next';
 import Link from 'next/link';
 
 import { MyWorldsContext } from '@/contexts/my-worlds-context';
@@ -97,9 +99,5 @@ const Page: NextPage = function Page() {
     </DashboardLayout>
   );
 };
-
-export const getStaticProps: GetStaticProps = async () => ({
-  props: {},
-});
 
 export default Page;
