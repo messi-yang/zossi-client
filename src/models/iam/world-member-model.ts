@@ -10,12 +10,7 @@ export class WorldMemberModel {
   }
 
   static createMock(): WorldMemberModel {
-    return new WorldMemberModel(
-      generateUuidV4(),
-      generateUuidV4(),
-      UserModel.createMock(),
-      WorldRoleVo.create('admin')
-    );
+    return new WorldMemberModel(generateUuidV4(), generateUuidV4(), UserModel.createMock(), WorldRoleVo.create('admin'));
   }
 
   public getId(): string {

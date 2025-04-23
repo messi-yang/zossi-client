@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useCallback, useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { AuthApi } from '@/adapters/apis/auth-api';

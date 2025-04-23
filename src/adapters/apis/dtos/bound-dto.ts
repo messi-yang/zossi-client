@@ -8,10 +8,7 @@ type BoundDto = {
 };
 
 export function parseBoundDto(boundDto: BoundDto): BoundVo {
-  return BoundVo.create(
-    PositionVo.create(boundDto.from.x, boundDto.from.z),
-    PositionVo.create(boundDto.to.x, boundDto.to.z)
-  );
+  return BoundVo.create(PositionVo.create(boundDto.from.x, boundDto.from.z), PositionVo.create(boundDto.to.x, boundDto.to.z));
 }
 
 export type { BoundDto };

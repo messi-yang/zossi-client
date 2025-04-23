@@ -10,10 +10,7 @@ type Props = {
 
 export function WorldMemberCard({ worldMember }: Props) {
   return (
-    <div
-      data-testid={dataTestids.root}
-      className={classnames('relative', 'w-full', 'p-2', 'flex', 'flex-row', 'items-center')}
-    >
+    <div data-testid={dataTestids.root} className={classnames('relative', 'w-full', 'p-2', 'flex', 'flex-row', 'items-center')}>
       <div className="grow flex flex-row items-center">
         <UserAvatar size="small" user={worldMember.getUser()} />
         <div className="ml-2">

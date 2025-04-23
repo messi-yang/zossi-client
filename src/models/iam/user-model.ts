@@ -1,18 +1,12 @@
 import { generateUuidV4 } from '@/utils/uuid';
 
 export class UserModel {
-  constructor(
-    private id: string,
-    private emailAddress: string,
-    private username: string,
-    private friendlyName: string
-  ) {}
+  constructor(private id: string, private emailAddress: string, private username: string, private friendlyName: string) {}
 
   static create = (id: string, emailAddress: string, username: string, friendlyName: string): UserModel =>
     new UserModel(id, emailAddress, username, friendlyName);
 
-  static createMock = (): UserModel =>
-    new UserModel(generateUuidV4(), 'example@gmail.com', 'my_username', 'My Friendly Name');
+  static createMock = (): UserModel => new UserModel(generateUuidV4(), 'example@gmail.com', 'my_username', 'My Friendly Name');
 
   public clone(): UserModel {
     return new UserModel(this.id, this.emailAddress, this.username, this.friendlyName);

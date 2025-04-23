@@ -28,9 +28,7 @@ describe('PlayerModel', () => {
       const player = PlayerModel.createMock();
       player.updateAction(PlayerActionVo.newStand(DirectionVo.newUp()));
 
-      expect(
-        player.getDesiredNewUnitPosition(DimensionVo.create(3, 3)).isEqual(PositionVo.create(-1, -3))
-      ).toBeTruthy();
+      expect(player.getDesiredNewUnitPosition(DimensionVo.create(3, 3)).isEqual(PositionVo.create(-1, -3))).toBeTruthy();
       expect(player.getDesiredNewUnitPosition(DimensionVo.create(2, 2)).isEqual(PositionVo.create(0, -2))).toBeTruthy();
       expect(player.getDesiredNewUnitPosition(DimensionVo.create(1, 1)).isEqual(PositionVo.create(0, -1))).toBeTruthy();
     });
@@ -39,9 +37,7 @@ describe('PlayerModel', () => {
       const player = PlayerModel.createMock();
       player.updateAction(PlayerActionVo.newStand(DirectionVo.newLeft()));
 
-      expect(
-        player.getDesiredNewUnitPosition(DimensionVo.create(3, 3)).isEqual(PositionVo.create(-3, -1))
-      ).toBeTruthy();
+      expect(player.getDesiredNewUnitPosition(DimensionVo.create(3, 3)).isEqual(PositionVo.create(-3, -1))).toBeTruthy();
       expect(player.getDesiredNewUnitPosition(DimensionVo.create(2, 2)).isEqual(PositionVo.create(-2, 0))).toBeTruthy();
       expect(player.getDesiredNewUnitPosition(DimensionVo.create(1, 1)).isEqual(PositionVo.create(-1, 0))).toBeTruthy();
     });
