@@ -100,15 +100,15 @@ export class PlayerModel {
   public getFowardPosition(distance: number): PositionVo {
     const direction = this.getDirection();
     if (direction.isUp()) {
-      return this.precisePosition.shift(PositionVo.create(0, -distance, 0)).toPosition();
+      return this.precisePosition.shift(PrecisePositionVo.create(0, -distance, 0)).toPosition();
     } else if (direction.isRight()) {
-      return this.precisePosition.shift(PositionVo.create(distance, 0, 0)).toPosition();
+      return this.precisePosition.shift(PrecisePositionVo.create(distance, 0, 0)).toPosition();
     } else if (direction.isDown()) {
-      return this.precisePosition.shift(PositionVo.create(0, distance, 0)).toPosition();
+      return this.precisePosition.shift(PrecisePositionVo.create(0, distance, 0)).toPosition();
     } else if (direction.isLeft()) {
-      return this.precisePosition.shift(PositionVo.create(-distance, 0, 0)).toPosition();
+      return this.precisePosition.shift(PrecisePositionVo.create(-distance, 0, 0)).toPosition();
     } else {
-      return this.precisePosition.shift(PositionVo.create(0, distance, 0)).toPosition();
+      return this.precisePosition.shift(PrecisePositionVo.create(0, distance, 0)).toPosition();
     }
   }
 
