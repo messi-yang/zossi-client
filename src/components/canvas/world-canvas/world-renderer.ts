@@ -340,13 +340,9 @@ export class WorldRenderer {
     this.updateRendererSize(width, height);
   }
 
-  public updateCameraPosition(perspectiveDepth: number, targetPrecisePos: PrecisePositionVo) {
-    const CAMERA_Y_OFFSET = perspectiveDepth * Math.sin((38 / 360) * 2 * Math.PI);
-    const CAMERA_Z_OFFSET = perspectiveDepth * Math.cos((38 / 360) * 2 * Math.PI);
-
-    const [targetPrecisePosX, targetPrecisePosZ] = [targetPrecisePos.getX(), targetPrecisePos.getZ()];
-    this.camera.position.set(targetPrecisePosX, CAMERA_Y_OFFSET, targetPrecisePosZ + CAMERA_Z_OFFSET);
-    this.camera.lookAt(targetPrecisePosX, 0, targetPrecisePosZ);
+  public updateCameraPosition(cameraPosition: PrecisePositionVo, targetPrecisePos: PrecisePositionVo) {
+    this.camera.position.set(cameraPosition.getX(), cameraPosition.getY(), cameraPosition.getZ());
+    this.camera.lookAt(targetPrecisePos.getX(), 0, targetPrecisePos.getZ());
   }
 
   private createScene() {

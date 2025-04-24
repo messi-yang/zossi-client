@@ -82,10 +82,10 @@ export class PlayerModel {
 
   public getNearBlockIds(worldId: string): BlockIdVo[] {
     return [
-      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(-25, -25)),
-      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(25, -25)),
-      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(-25, 25)),
-      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(25, 25)),
+      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(PositionVo.create(-25, -25))),
+      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(PositionVo.create(25, -25))),
+      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(PositionVo.create(-25, 25))),
+      BlockIdVo.createFromPosition(worldId, this.getPosition().shift(PositionVo.create(25, 25))),
     ];
   }
 
@@ -100,15 +100,15 @@ export class PlayerModel {
   public getFowardPosition(distance: number): PositionVo {
     const direction = this.getDirection();
     if (direction.isUp()) {
-      return this.precisePosition.shift(0, -distance).toPosition();
+      return this.precisePosition.shift(PositionVo.create(0, -distance, 0)).toPosition();
     } else if (direction.isRight()) {
-      return this.precisePosition.shift(distance, 0).toPosition();
+      return this.precisePosition.shift(PositionVo.create(distance, 0, 0)).toPosition();
     } else if (direction.isDown()) {
-      return this.precisePosition.shift(0, distance).toPosition();
+      return this.precisePosition.shift(PositionVo.create(0, distance, 0)).toPosition();
     } else if (direction.isLeft()) {
-      return this.precisePosition.shift(-distance, 0).toPosition();
+      return this.precisePosition.shift(PositionVo.create(-distance, 0, 0)).toPosition();
     } else {
-      return this.precisePosition.shift(0, distance).toPosition();
+      return this.precisePosition.shift(PositionVo.create(0, distance, 0)).toPosition();
     }
   }
 
@@ -122,13 +122,13 @@ export class PlayerModel {
     const unitDimensionDepth = unitDimension.getDepth();
 
     if (playerDirection.isDown()) {
-      return playerPosition.shift(-Math.floor((unitDimensionWidth - 1) / 2), 1);
+      return playerPosition.shift(PositionVo.create(-Math.floor((unitDimensionWidth - 1) / 2), 1));
     } else if (playerDirection.isRight()) {
-      return playerPosition.shift(1, -Math.floor((unitDimensionWidth - 1) / 2));
+      return playerPosition.shift(PositionVo.create(1, -Math.floor((unitDimensionWidth - 1) / 2)));
     } else if (playerDirection.isUp()) {
-      return playerPosition.shift(-Math.floor((unitDimensionWidth - 1) / 2), -unitDimensionDepth);
+      return playerPosition.shift(PositionVo.create(-Math.floor((unitDimensionWidth - 1) / 2), -unitDimensionDepth));
     } else {
-      return playerPosition.shift(-unitDimensionDepth, -Math.floor((unitDimensionWidth - 1) / 2));
+      return playerPosition.shift(PositionVo.create(-unitDimensionDepth, -Math.floor((unitDimensionWidth - 1) / 2)));
     }
   }
 

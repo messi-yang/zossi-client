@@ -46,8 +46,7 @@ type ContextValue = {
   items: ItemModel[] | null;
   selectedUnitId: string | null;
   enterWorld: (worldId: string) => void;
-  addPerspectiveDepth: () => void;
-  subtractPerspectiveDepth: () => void;
+  updateCameraPosition: () => void;
   makePlayerStand: () => void;
   makePlayerWalk: (direction: DirectionVo) => void;
   sendPlayerIntoPortal: (unitId: string) => void;
@@ -75,8 +74,7 @@ const Context = createContext<ContextValue>({
   items: null,
   selectedUnitId: null,
   enterWorld: () => {},
-  addPerspectiveDepth: () => {},
-  subtractPerspectiveDepth: () => {},
+  updateCameraPosition: () => {},
   makePlayerStand: () => {},
   makePlayerWalk: () => {},
   sendPlayerIntoPortal: () => {},
@@ -273,16 +271,10 @@ export function Provider({ children }: Props) {
     });
   }, [worldJourneyService]);
 
-  const addPerspectiveDepth = useCallback(() => {
+  const updateCameraPosition = useCallback(() => {
     if (!worldJourneyService) return;
 
-    worldJourneyService.addPerspectiveDepth();
-  }, [worldJourneyService]);
-
-  const subtractPerspectiveDepth = useCallback(() => {
-    if (!worldJourneyService) return;
-
-    worldJourneyService.subtractPerspectiveDepth();
+    worldJourneyService.updateCameraPosition();
   }, [worldJourneyService]);
 
   const makePlayerStand = useCallback(() => {
@@ -457,7 +449,7 @@ export function Provider({ children }: Props) {
       const maze = MazeVo.create(dimension.getWidth(), dimension.getDepth());
       maze.iterateSync(async (pos, isWall) => {
         if (isWall) {
-          createFenceUnit(item.getId(), origin.shift(pos.getX(), pos.getZ()), DirectionVo.newDown());
+          createFenceUnit(item.getId(), origin.shift(PositionVo.create(pos.getX(), pos.getZ())), DirectionVo.newDown());
           await sleep(10);
         }
       });
@@ -610,8 +602,7 @@ export function Provider({ children }: Props) {
     items,
     selectedUnitId,
     enterWorld,
-    addPerspectiveDepth,
-    subtractPerspectiveDepth,
+    updateCameraPosition,
     makePlayerStand,
     makePlayerWalk,
     sendPlayerIntoPortal,

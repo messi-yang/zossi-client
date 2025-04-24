@@ -1,62 +1,39 @@
-import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatchers/common/event-handler';
+import { PositionVo } from '@/models/world/common/position-vo';
 
-export type PerspectiveChangedHandler = (perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo) => void;
+const CAMERA_POSITION_LIST = [
+  PositionVo.create(0, 0, 25), // From Top
+  PositionVo.create(0, 15, 15), // From Front Top
+  PositionVo.create(0, 15, 2), // From Front
+];
 
 export class PerspectiveManager {
-  private depth: number;
+  private perspectiveIndex: number;
 
-  private targetPrecisePosition: PrecisePositionVo;
+  private cameraPositionChangedHandler = EventHandler.create<PositionVo>();
 
-  private perspectiveChangedHandler = EventHandler.create<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>();
-
-  constructor(depth: number, targetPrecisePosition: PrecisePositionVo) {
-    this.depth = depth;
-    this.targetPrecisePosition = targetPrecisePosition;
+  constructor() {
+    this.perspectiveIndex = 0;
   }
 
-  static create(depth: number, targetPrecisePosition: PrecisePositionVo) {
-    return new PerspectiveManager(depth, targetPrecisePosition);
+  static create() {
+    return new PerspectiveManager();
   }
 
-  /**
-   * Add perspective depth
-   * @returns isStateChanged
-   */
-  public addPerspectiveDepth(): boolean {
-    if (this.depth <= 10) return false;
-
-    this.depth -= 10;
-    this.publishPerspectiveChangedEvent();
-    return true;
+  public getCameraPosition(): PositionVo {
+    return CAMERA_POSITION_LIST[this.perspectiveIndex];
   }
 
-  /**
-   * Subtract perspective depth
-   * @returns isStateChanged
-   */
-  public subtractPerspectiveDepth(): boolean {
-    if (this.depth >= 200) return false;
-
-    this.depth += 10;
-    this.publishPerspectiveChangedEvent();
-    return true;
+  public updateCameraPosition() {
+    this.perspectiveIndex = (this.perspectiveIndex + 1) % CAMERA_POSITION_LIST.length;
+    this.publishCameraPositionChangedEvent();
   }
 
-  public updateTargetPrecisePosition(position: PrecisePositionVo) {
-    this.targetPrecisePosition = position;
-    this.publishPerspectiveChangedEvent();
+  public subscribePerspectiveChangedEvent(subscriber: EventHandlerSubscriber<PositionVo>) {
+    return this.cameraPositionChangedHandler.subscribe(subscriber);
   }
 
-  public subscribePerspectiveChangedEvent(
-    subscriber: EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
-  ): () => void {
-    subscriber([this.depth, this.targetPrecisePosition]);
-
-    return this.perspectiveChangedHandler.subscribe(subscriber);
-  }
-
-  private publishPerspectiveChangedEvent() {
-    this.perspectiveChangedHandler.publish([this.depth, this.targetPrecisePosition]);
+  private publishCameraPositionChangedEvent() {
+    this.cameraPositionChangedHandler.publish(CAMERA_POSITION_LIST[this.perspectiveIndex]);
   }
 }

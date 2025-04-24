@@ -2,15 +2,16 @@
  * Position that has x and z axis, the values can only be integers.
  */
 export class PositionVo {
-  constructor(private x: number, private z: number) {
+  constructor(private x: number, private z: number, private y: number) {
     this.x = Math.round(x);
     this.z = Math.round(z);
+    this.y = Math.round(y);
   }
 
-  static create = (x: number, z: number): PositionVo => new PositionVo(x, z);
+  static create = (x: number, z: number, y: number = 0): PositionVo => new PositionVo(x, z, y);
 
   public isEqual(position: PositionVo): boolean {
-    return this.x === position.getX() && this.z === position.getZ();
+    return this.x === position.getX() && this.z === position.getZ() && this.y === position.getY();
   }
 
   public getX(): number {
@@ -21,24 +22,28 @@ export class PositionVo {
     return this.z;
   }
 
+  public getY(): number {
+    return this.y;
+  }
+
   public getLeftPosition(): PositionVo {
-    return PositionVo.create(this.x - 1, this.z);
+    return PositionVo.create(this.x - 1, this.z, this.y);
   }
 
   public getTopPosition(): PositionVo {
-    return PositionVo.create(this.x, this.z - 1);
+    return PositionVo.create(this.x, this.z - 1, this.y);
   }
 
   public getRightPosition(): PositionVo {
-    return PositionVo.create(this.x + 1, this.z);
+    return PositionVo.create(this.x + 1, this.z, this.y);
   }
 
   public getBottomPosition(): PositionVo {
-    return PositionVo.create(this.x, this.z + 1);
+    return PositionVo.create(this.x, this.z + 1, this.y);
   }
 
-  public shift(x: number, z: number): PositionVo {
-    return PositionVo.create(this.x + x, this.z + z);
+  public shift(position: PositionVo): PositionVo {
+    return PositionVo.create(this.x + position.getX(), this.z + position.getZ(), this.y + position.getY());
   }
 
   public toString(): string {

@@ -13,7 +13,6 @@ import { Command } from './managers/command-manager/command';
 import { CommandManager } from './managers/command-manager';
 import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/commands/change-player-precise-position-command';
 import { EventHandlerSubscriber, EventHandler } from '../../event-dispatchers/common/event-handler';
-import { PrecisePositionVo } from '@/models/world/common/precise-position-vo';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
@@ -53,7 +52,7 @@ export class WorldJourneyService {
 
     this.playerManager = PlayerManager.create(players, myPlayerId);
 
-    this.perspectiveManager = PerspectiveManager.create(20, this.playerManager.getMyPlayer().getPrecisePosition());
+    this.perspectiveManager = PerspectiveManager.create();
 
     this.itemManager = ItemManager.create();
 
@@ -124,12 +123,12 @@ export class WorldJourneyService {
     this.commandManager.executeLocalCommand(command);
   }
 
-  public addPerspectiveDepth() {
-    this.perspectiveManager.addPerspectiveDepth();
+  public getCameraPosition(): PositionVo {
+    return this.perspectiveManager.getCameraPosition();
   }
 
-  public subtractPerspectiveDepth() {
-    this.perspectiveManager.subtractPerspectiveDepth();
+  public updateCameraPosition() {
+    this.perspectiveManager.updateCameraPosition();
   }
 
   public getWorld(): WorldModel {
@@ -244,8 +243,6 @@ export class WorldJourneyService {
     this.subscribe('MY_PLAYER_UPDATED', ([, newPlayer]) => {
       if (this.commandManager.getIsReplayingCommands()) return;
 
-      this.perspectiveManager.updateTargetPrecisePosition(newPlayer.getPrecisePosition());
-
       const worldId = this.world.getId();
       this.unitManager.addPlaceholderBlockIds(newPlayer.getNearBlockIds(worldId));
     });
@@ -349,10 +346,7 @@ export class WorldJourneyService {
   }
 
   subscribe(eventName: 'LOCAL_COMMAND_EXECUTED', subscriber: EventHandlerSubscriber<Command>): () => void;
-  subscribe(
-    eventName: 'PERSPECTIVE_CHANGED',
-    subscriber: EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
-  ): () => void;
+  subscribe(eventName: 'CAMERA_POSITION_UPDATED', subscriber: EventHandlerSubscriber<PositionVo>): () => void;
   subscribe(eventName: 'ITEM_ADDED', subscriber: EventHandlerSubscriber<ItemModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_ITEM_IDS_ADDED', subscriber: EventHandlerSubscriber<string[]>): () => void;
   subscribe(eventName: 'BLOCKS_UPDATED', subscriber: EventHandlerSubscriber<BlockModel[]>): () => void;
@@ -370,7 +364,7 @@ export class WorldJourneyService {
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
-      | 'PERSPECTIVE_CHANGED'
+      | 'CAMERA_POSITION_UPDATED'
       | 'ITEM_ADDED'
       | 'PLACEHOLDER_ITEM_IDS_ADDED'
       | 'BLOCKS_UPDATED'
@@ -387,7 +381,7 @@ export class WorldJourneyService {
       | 'DRAGGED_UNIT_ID_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
-      | EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
+      | EventHandlerSubscriber<PositionVo>
       | EventHandlerSubscriber<ItemModel>
       | EventHandlerSubscriber<string[]>
       | EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>
@@ -404,10 +398,8 @@ export class WorldJourneyService {
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
-    } else if (eventName === 'PERSPECTIVE_CHANGED') {
-      return this.perspectiveManager.subscribePerspectiveChangedEvent(
-        subscriber as EventHandlerSubscriber<[perspectiveDepth: number, targetPrecisePosition: PrecisePositionVo]>
-      );
+    } else if (eventName === 'CAMERA_POSITION_UPDATED') {
+      return this.perspectiveManager.subscribePerspectiveChangedEvent(subscriber as EventHandlerSubscriber<PositionVo>);
     } else if (eventName === 'ITEM_ADDED') {
       return this.itemManager.subscribeItemAddedEvent(subscriber as EventHandlerSubscriber<ItemModel>);
     } else if (eventName === 'PLACEHOLDER_ITEM_IDS_ADDED') {

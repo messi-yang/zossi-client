@@ -13,13 +13,13 @@ export function calculateExpectedUnitBound(position: PositionVo, dimension: Dime
   let occupiedBoundTo = PositionVo.create(0, 0);
 
   if (direction.isDown()) {
-    occupiedBoundTo = position.shift(dimensionWidth - 1, dimensionDepth - 1);
+    occupiedBoundTo = position.shift(PositionVo.create(dimensionWidth - 1, dimensionDepth - 1));
   } else if (direction.isRight()) {
-    occupiedBoundTo = position.shift(dimensionDepth - 1, dimensionWidth - 1);
+    occupiedBoundTo = position.shift(PositionVo.create(dimensionDepth - 1, dimensionWidth - 1));
   } else if (direction.isUp()) {
-    occupiedBoundTo = position.shift(dimensionWidth - 1, dimensionDepth - 1);
+    occupiedBoundTo = position.shift(PositionVo.create(dimensionWidth - 1, dimensionDepth - 1));
   } else {
-    occupiedBoundTo = position.shift(dimensionDepth - 1, dimensionWidth - 1);
+    occupiedBoundTo = position.shift(PositionVo.create(dimensionDepth - 1, dimensionWidth - 1));
   }
 
   return BoundVo.create(position, occupiedBoundTo);

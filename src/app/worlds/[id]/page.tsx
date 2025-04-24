@@ -77,8 +77,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     items,
     selectedUnitId,
     enterWorld,
-    addPerspectiveDepth,
-    subtractPerspectiveDepth,
+    updateCameraPosition,
     makePlayerStand,
     makePlayerWalk,
     sendPlayerIntoPortal,
@@ -224,24 +223,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   );
   useHotKeys(['Space'], { onPressedKeysChange: handleSwitchToNextItemPressedKeysChange });
 
-  const handleAddPerspectiveDepthPressedKeysChange = useCallback(
-    (keys: string[]) => {
-      if (keys.length === 0) return;
-      addPerspectiveDepth();
-    },
-    [addPerspectiveDepth]
-  );
-  useHotKeys(['Equal'], { onPressedKeysChange: handleAddPerspectiveDepthPressedKeysChange });
-
-  const handleSubtractPerspectiveDepthPressedKeysChange = useCallback(
-    (keys: string[]) => {
-      if (keys.length === 0) return;
-      subtractPerspectiveDepth();
-    },
-    [subtractPerspectiveDepth]
-  );
-  useHotKeys(['Minus', 'KeyC'], { onPressedKeysChange: handleSubtractPerspectiveDepthPressedKeysChange });
-
   useHotKeys(['KeyS'], {
     onPressedKeysChange: (keys) => {
       if (keys.length === 0) return;
@@ -325,7 +306,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   const handleRemoveUnitsConfirm = useCallback(
     (origin: PositionVo, dimension: DimensionVo) => {
       const from = origin;
-      const to = from.shift(dimension.getWidth(), dimension.getDepth());
+      const to = from.shift(PositionVo.create(dimension.getWidth(), dimension.getDepth()));
 
       const bound = BoundVo.create(from, to);
       removeUnitsInBound(bound);
@@ -371,6 +352,10 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     },
     [sendPlayerIntoPortal, myPlayerEnteredPortalUnit]
   );
+
+  const handleUpdateCameraClick = useCallback(() => {
+    updateCameraPosition();
+  }, [updateCameraPosition]);
 
   return (
     <main className="relative w-full h-screen">
@@ -444,6 +429,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
       />
       <div className="absolute top-2 right-3 z-10 flex items-center gap-2">
         <Button text="Replay" onClick={handleReplayClick} />
+        <Button text="Update Camera" onClick={handleUpdateCameraClick} />
         <Button text="Build Maze" onClick={handleBuildMazeClick} />
         <Button text="Remove Units" onClick={handleRemoveUnitsClick} />
         <Button text="Share" onClick={handleShareClick} />

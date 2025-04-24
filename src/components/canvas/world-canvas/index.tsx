@@ -110,6 +110,11 @@ export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
   useEffect(() => {
     return worldJourneyService.subscribe('PLAYER_UPDATED', ([, newPlayer]) => {
       worldRenderer.updatePlayer(newPlayer);
+
+      const myPlayerPrecisePosition = newPlayer.getPrecisePosition();
+      const cameraPosition = worldJourneyService.getCameraPosition();
+
+      worldRenderer.updateCameraPosition(myPlayerPrecisePosition.shift(cameraPosition), myPlayerPrecisePosition);
     });
   }, [worldJourneyService, worldRenderer]);
 
@@ -128,8 +133,9 @@ export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
   }, [worldJourneyService, worldRenderer, getUnit]);
 
   useEffect(() => {
-    return worldJourneyService.subscribe('PERSPECTIVE_CHANGED', ([perspectiveDepth, targetPrecisePos]) => {
-      worldRenderer.updateCameraPosition(perspectiveDepth, targetPrecisePos);
+    return worldJourneyService.subscribe('CAMERA_POSITION_UPDATED', (cameraPosition) => {
+      const playerPrecisePosition = worldJourneyService.getMyPlayer().getPrecisePosition();
+      worldRenderer.updateCameraPosition(playerPrecisePosition.shift(cameraPosition), playerPrecisePosition);
     });
   }, [worldJourneyService, worldRenderer]);
 
