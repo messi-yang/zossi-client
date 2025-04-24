@@ -2,8 +2,8 @@ import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatch
 import { PositionVo } from '@/models/world/common/position-vo';
 
 const CAMERA_POSITION_LIST = [
-  PositionVo.create(0, 0, 25), // From Top
   PositionVo.create(0, 15, 15), // From Front Top
+  PositionVo.create(0, 0, 25), // From Top
   PositionVo.create(0, 15, 2), // From Front
 ];
 
