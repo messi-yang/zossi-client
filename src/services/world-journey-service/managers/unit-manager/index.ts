@@ -34,7 +34,7 @@ export class UnitManager {
 
   private unitsUpdatedEventHandler = EventHandler.create<[itemId: string, units: UnitModel[]]>();
 
-  private unitUpdatedEventHandler = EventHandler.create<UnitModel>();
+  private unitUpdatedEventHandler = EventHandler.create<[UnitModel, UnitModel]>();
 
   private unitRemovedEventHandler = EventHandler.create<UnitModel>();
 
@@ -322,7 +322,7 @@ export class UnitManager {
     uniq(itemIds).forEach((itemId) => {
       this.publishUnitsUpdatedEvent(itemId);
     });
-    this.publishUnitUpdatedEvent(unit);
+    this.publishUnitUpdatedEvent(currentUnit, unit);
     return true;
   }
 
@@ -352,12 +352,12 @@ export class UnitManager {
     this.unitsUpdatedEventHandler.publish([itemId, this.getUnitsByItemId(itemId)]);
   }
 
-  public subscribeUnitUpdatedEvent(subscriber: EventHandlerSubscriber<UnitModel>): () => void {
+  public subscribeUnitUpdatedEvent(subscriber: EventHandlerSubscriber<[UnitModel, UnitModel]>): () => void {
     return this.unitUpdatedEventHandler.subscribe(subscriber);
   }
 
-  private publishUnitUpdatedEvent(unit: UnitModel) {
-    this.unitUpdatedEventHandler.publish(unit);
+  private publishUnitUpdatedEvent(oldUnit: UnitModel, unit: UnitModel) {
+    this.unitUpdatedEventHandler.publish([oldUnit, unit]);
   }
 
   public subscribeUnitRemovedEvent(subscriber: EventHandlerSubscriber<UnitModel>): () => void {

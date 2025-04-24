@@ -170,7 +170,7 @@ export function Provider({ children }: Props) {
 
     setSelectedUnitId(worldJourneyService.getSelectedUnitId());
 
-    return worldJourneyService.subscribe('SELECTED_UNIT_ID_CHANGED', ([, newSelectedUnitId]) => {
+    return worldJourneyService.subscribe('SELECTED_UNIT_ID_UPDATED', ([, newSelectedUnitId]) => {
       setSelectedUnitId(newSelectedUnitId);
     });
   }, [worldJourneyService]);
@@ -595,12 +595,12 @@ export function Provider({ children }: Props) {
     if (unitAtPos) {
       const currentSelectedUnitId = worldJourneyService.getSelectedUnitId();
       if (currentSelectedUnitId === unitAtPos.getId()) {
-        worldJourneyService.clearSelectedUnitId();
+        worldJourneyService.clearSelectedUnit();
       } else {
-        worldJourneyService.selectUnitId(unitAtPos.getId());
+        worldJourneyService.selectUnit(unitAtPos.getId());
       }
     } else {
-      worldJourneyService.clearSelectedUnitId();
+      worldJourneyService.clearSelectedUnit();
     }
   }, [worldJourneyService]);
 

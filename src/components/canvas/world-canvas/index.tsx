@@ -158,51 +158,72 @@ export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
   }, [worldRenderer, worldJourneyService]);
 
   useEffect(() => {
-    return worldJourneyService.subscribe('SELECTED_BOUND_UPDATED', (selectedBound) => {
-      worldRenderer.updateSelectedBound(selectedBound);
+    return worldJourneyService.subscribe('SELECTED_UNIT_UPDATED', ([, newUnit]) => {
+      worldRenderer.updateSelectedBound(newUnit ? newUnit.getOccupiedBound() : null);
     });
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
-    return worldRenderer.subscribePositionMouseDownEvent((position) => {
+    return worldRenderer.subscribePositionClickEvent((position) => {
       const unitAtPos = worldJourneyService.getUnitByPos(position);
       if (unitAtPos) {
-        worldJourneyService.selectUnitId(unitAtPos.getId());
+        if (unitAtPos.getId() === worldJourneyService.getSelectedUnitId()) {
+          worldJourneyService.clearSelectedUnit();
+        } else {
+          worldJourneyService.selectUnit(unitAtPos.getId());
+        }
       } else {
-        worldJourneyService.clearSelectedUnitId();
+        worldJourneyService.clearSelectedUnit();
       }
     });
-  }, [worldJourneyService, worldRenderer]);
+  }, [worldRenderer]);
 
   useEffect(() => {
-    return worldRenderer.subscribePositionMouseUpEvent((position) => {
-      const currentSelectedUnitId = worldJourneyService.getSelectedUnitId();
-      if (!currentSelectedUnitId) return;
+    return worldRenderer.subscribePositionDragStartEvent((position) => {
+      const unitAtPos = worldJourneyService.getUnitByPos(position);
+      if (unitAtPos) {
+        const item = worldJourneyService.getItem(unitAtPos.getItemId());
+        if (!item) return;
+        worldJourneyService.dragUnit(unitAtPos.getId());
+        worldRenderer.addDraggedItem(item);
+      }
+      worldJourneyService.clearSelectedUnit();
+    });
+  }, [worldRenderer]);
+
+  useEffect(() => {
+    return worldRenderer.subscribePositionDragEvent((position) => {
+      const draggedUnit = worldJourneyService.getDraggedUnit();
+      if (!draggedUnit) return;
+
+      const item = worldJourneyService.getItem(draggedUnit.getItemId());
+      if (!item) return;
+
+      worldRenderer.updateDraggedItem(position, item.getDimension(), draggedUnit.getDirection());
+    });
+  }, [worldRenderer]);
+
+  useEffect(() => {
+    return worldRenderer.subscribePositionDragEndEvent((position) => {
+      const draggedUnit = worldJourneyService.getDraggedUnit();
+      if (!draggedUnit) return;
 
       const unitAtPos = worldJourneyService.getUnitByPos(position);
       if (!unitAtPos) {
-        const currentSelectedUnit = worldJourneyService.getUnit(currentSelectedUnitId);
-        if (!currentSelectedUnit) {
-          worldJourneyService.clearSelectedUnitId();
-          return;
-        }
-        worldJourneyService.moveUnit(currentSelectedUnitId, position);
+        worldJourneyService.selectUnit(draggedUnit.getId());
+        worldJourneyService.moveUnit(draggedUnit.getId(), position);
       }
-
+      worldJourneyService.clearDraggedUnit();
       worldRenderer.removeDraggedItem();
     });
-  }, [worldJourneyService, worldRenderer]);
+  }, [worldRenderer]);
 
   useEffect(() => {
-    return worldRenderer.subscribePositionMouseDragEvent((position) => {
-      const selectedUnit = worldJourneyService.getSelectedUnit();
-      if (!selectedUnit) return;
-      const selectedUnitItem = worldJourneyService.getItem(selectedUnit.getItemId());
-      if (!selectedUnitItem) return;
-
-      worldRenderer.updateDraggedItem(selectedUnitItem, position, selectedUnitItem.getDimension(), selectedUnit.getDirection());
+    return worldRenderer.subscribePositionDragCancelEvent(() => {
+      worldJourneyService.clearDraggedUnit();
+      worldRenderer.removeDraggedItem();
     });
-  }, [worldJourneyService, worldRenderer]);
+  }, [worldRenderer]);
 
   useEffect(() => {
     if (!hasDownloadedPlayerModel || !hasDownloadedFont) return;

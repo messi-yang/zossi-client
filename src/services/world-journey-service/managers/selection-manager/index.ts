@@ -1,11 +1,13 @@
-import { EventHandler } from '../../../../event-dispatchers/common/event-handler';
-
-export type SelectedUnitIdChangedHandler = ([oldSelectedUnitId, newSelectedUnitId]: [string | null, string | null]) => void;
+import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatchers/common/event-handler';
 
 export class SelectionManager {
   private selectedUnitId: string | null = null;
 
-  private selectedUnitIdChangedHandler = EventHandler.create<[string | null, string | null]>();
+  private selectedUnitIdUpdatedHandler = EventHandler.create<[string | null, string | null]>();
+
+  private draggedUnitId: string | null = null;
+
+  private draggedUnitIdUpdatedHandler = EventHandler.create<[string | null, string | null]>();
 
   static create() {
     return new SelectionManager();
@@ -15,23 +17,47 @@ export class SelectionManager {
     return this.selectedUnitId;
   }
 
-  public selectUnitId(unitId: string) {
+  public selectUnit(unitId: string) {
     const oldUnitId = this.selectedUnitId;
     this.selectedUnitId = unitId;
-    this.publishSelectedUnitIdChanged(oldUnitId, unitId);
+    this.publishSelectedUnitIdUpdated(oldUnitId, unitId);
   }
 
-  public clearSelectedUnitId() {
+  public clearSelectedUnit() {
     const oldUnitId = this.selectedUnitId;
     this.selectedUnitId = null;
-    this.publishSelectedUnitIdChanged(oldUnitId, null);
+    this.publishSelectedUnitIdUpdated(oldUnitId, null);
   }
 
-  public subscribeSelectedUnitIdChanged(handler: SelectedUnitIdChangedHandler): () => void {
-    return this.selectedUnitIdChangedHandler.subscribe(handler);
+  public subscribeSelectedUnitIdUpdated(handler: EventHandlerSubscriber<[string | null, string | null]>): () => void {
+    return this.selectedUnitIdUpdatedHandler.subscribe(handler);
   }
 
-  private publishSelectedUnitIdChanged(oldUnitId: string | null, newUnitId: string | null) {
-    this.selectedUnitIdChangedHandler.publish([oldUnitId, newUnitId]);
+  private publishSelectedUnitIdUpdated(oldUnitId: string | null, newUnitId: string | null) {
+    this.selectedUnitIdUpdatedHandler.publish([oldUnitId, newUnitId]);
+  }
+
+  public getDraggedUnitId(): string | null {
+    return this.draggedUnitId;
+  }
+
+  public dragUnit(unitId: string) {
+    const oldUnitId = this.draggedUnitId;
+    this.draggedUnitId = unitId;
+    this.publishDraggedUnitIdUpdated(oldUnitId, unitId);
+  }
+
+  public clearDraggedUnit() {
+    const oldUnitId = this.draggedUnitId;
+    this.draggedUnitId = null;
+    this.publishDraggedUnitIdUpdated(oldUnitId, null);
+  }
+
+  public subscribeDraggedUnitIdUpdated(handler: EventHandlerSubscriber<[string | null, string | null]>): () => void {
+    return this.draggedUnitIdUpdatedHandler.subscribe(handler);
+  }
+
+  private publishDraggedUnitIdUpdated(oldUnitId: string | null, newUnitId: string | null) {
+    this.draggedUnitIdUpdatedHandler.publish([oldUnitId, newUnitId]);
   }
 }

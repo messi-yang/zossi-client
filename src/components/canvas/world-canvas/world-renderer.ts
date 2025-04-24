@@ -68,15 +68,19 @@ export class WorldRenderer {
    */
   private touchPanel: THREE.Mesh;
 
-  private draggedItemId: string | null = null;
-
   private draggedItemModel: THREE.Group | null = null;
 
-  private isMouseDown = false;
+  private draggedPosition: PositionVo | null = null;
 
-  private positionMouseDownEventHandler = EventHandler.create<PositionVo>();
+  private positionDragStartEventHandler = EventHandler.create<PositionVo>();
 
-  private positionMouseUpEventHandler = EventHandler.create<PositionVo>();
+  private positionDragEventHandler = EventHandler.create<PositionVo>();
+
+  private positionDragEndEventHandler = EventHandler.create<PositionVo>();
+
+  private positionDragCancelEventHandler = EventHandler.create<void>();
+
+  private positionClickEventHandler = EventHandler.create<PositionVo>();
 
   private mouseOverPositionIndicator: THREE.Mesh;
 
@@ -134,7 +138,7 @@ export class WorldRenderer {
     element.appendChild(this.renderer.domElement);
 
     element.addEventListener('mousedown', this.handlePositionMouseDown.bind(this));
-    element.addEventListener('mouseup', this.handlePositionMouseUp.bind(this));
+    window.addEventListener('mouseup', this.handlePositionMouseUp.bind(this));
     window.addEventListener('mousemove', this.handlePositionMouseMove.bind(this));
     window.addEventListener('mousemove', this.handlePositionMouseDrag.bind(this));
   }
@@ -152,8 +156,8 @@ export class WorldRenderer {
 
     this.baseModelInstancesCleaner();
 
-    element.removeEventListener('mouseup', this.handlePositionMouseDown.bind(this));
-    element.removeEventListener('mousedown', this.handlePositionMouseUp.bind(this));
+    element.removeEventListener('mousedown', this.handlePositionMouseDown.bind(this));
+    window.removeEventListener('mouseup', this.handlePositionMouseUp.bind(this));
     window.removeEventListener('mousemove', this.handlePositionMouseMove.bind(this));
     window.removeEventListener('mousemove', this.handlePositionMouseDrag.bind(this));
     element.removeChild(this.renderer.domElement);
@@ -173,19 +177,34 @@ export class WorldRenderer {
   }
 
   private handlePositionMouseDown(event: MouseEvent) {
-    this.isMouseDown = true;
     const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
     if (position) {
-      this.positionMouseDownEventHandler.publish(position);
+      this.draggedPosition = position;
+      this.positionDragStartEventHandler.publish(position);
     }
   }
 
   private handlePositionMouseUp(event: MouseEvent) {
-    this.isMouseDown = false;
+    if (event.target !== this.renderer.domElement) {
+      if (this.draggedPosition) {
+        this.positionDragCancelEventHandler.publish();
+        this.draggedPosition = null;
+      }
+      return;
+    }
+
     const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
     if (position) {
-      this.positionMouseUpEventHandler.publish(position);
+      if (this.draggedPosition) {
+        if (this.draggedPosition.isEqual(position)) {
+          this.positionClickEventHandler.publish(position);
+          this.positionDragCancelEventHandler.publish();
+        } else {
+          this.positionDragEndEventHandler.publish(position);
+        }
+      }
     }
+    this.draggedPosition = null;
   }
 
   private handlePositionMouseMove(event: MouseEvent) {
@@ -193,11 +212,15 @@ export class WorldRenderer {
     if (position) {
       this.mouseOverPositionIndicator.position.set(position.getX(), 0, position.getZ());
       this.positionMouseMoveEventHandler.publish(position);
+
+      if (this.draggedPosition) {
+        this.positionDragEventHandler.publish(position);
+      }
     }
   }
 
   private handlePositionMouseDrag(event: MouseEvent) {
-    if (!this.isMouseDown) return;
+    if (!this.draggedPosition) return;
 
     const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
     if (position) {
@@ -205,20 +228,24 @@ export class WorldRenderer {
     }
   }
 
-  public subscribePositionMouseDownEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
-    return this.positionMouseDownEventHandler.subscribe(subscriber);
+  public subscribePositionDragStartEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionDragStartEventHandler.subscribe(subscriber);
   }
 
-  public subscribePositionMouseUpEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
-    return this.positionMouseUpEventHandler.subscribe(subscriber);
+  public subscribePositionDragEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionDragEventHandler.subscribe(subscriber);
   }
 
-  public subscribePositionMouseOverEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
-    return this.positionMouseMoveEventHandler.subscribe(subscriber);
+  public subscribePositionDragEndEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionDragEndEventHandler.subscribe(subscriber);
   }
 
-  public subscribePositionMouseDragEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
-    return this.positionMouseDragEventHandler.subscribe(subscriber);
+  public subscribePositionDragCancelEvent(subscriber: EventHandlerSubscriber<void>): () => void {
+    return this.positionDragCancelEventHandler.subscribe(subscriber);
+  }
+
+  public subscribePositionClickEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionClickEventHandler.subscribe(subscriber);
   }
 
   private async downloadFont(fontSrc: string): Promise<Font> {
@@ -729,20 +756,21 @@ export class WorldRenderer {
     }
   }
 
-  public updateDraggedItem(item: ItemModel, position: PositionVo, dimension: DimensionVo, direction: DirectionVo) {
+  public addDraggedItem(item: ItemModel) {
     const draggedItemModels = this.itemModelsMap[item.getId()];
     if (!draggedItemModels) return;
 
     const draggedItemModel = draggedItemModels[0];
     if (!draggedItemModel) return;
 
-    const itemId = item.getId();
+    this.draggedItemModel = draggedItemModel.clone();
+    this.draggedItemModel.position.set(0, -1000, 0);
+    this.draggedItemModel.rotation.set(0, 0, 0);
+    this.scene.add(this.draggedItemModel);
+  }
 
-    if (!this.draggedItemModel || this.draggedItemId !== itemId) {
-      this.draggedItemModel = draggedItemModel.clone();
-      this.scene.add(this.draggedItemModel);
-    }
-    this.draggedItemId = itemId;
+  public updateDraggedItem(position: PositionVo, dimension: DimensionVo, direction: DirectionVo) {
+    if (!this.draggedItemModel) return;
 
     const bound = calculateExpectedUnitBound(position, dimension, direction);
     const boundCenter = bound.getCenterPrecisePosition();
@@ -755,6 +783,5 @@ export class WorldRenderer {
 
     this.scene.remove(this.draggedItemModel);
     this.draggedItemModel = null;
-    this.draggedItemId = null;
   }
 }
