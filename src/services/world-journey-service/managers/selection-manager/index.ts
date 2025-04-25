@@ -21,9 +21,12 @@ export class SelectionManager {
     const oldUnitId = this.selectedUnitId;
     this.selectedUnitId = unitId;
     this.publishSelectedUnitIdUpdated(oldUnitId, unitId);
+
+    this.clearDraggedUnit();
   }
 
   public clearSelectedUnit() {
+    if (!this.selectedUnitId) return;
     const oldUnitId = this.selectedUnitId;
     this.selectedUnitId = null;
     this.publishSelectedUnitIdUpdated(oldUnitId, null);
@@ -45,9 +48,13 @@ export class SelectionManager {
     const oldUnitId = this.draggedUnitId;
     this.draggedUnitId = unitId;
     this.publishDraggedUnitIdUpdated(oldUnitId, unitId);
+
+    this.clearSelectedUnit();
   }
 
   public clearDraggedUnit() {
+    if (!this.draggedUnitId) return;
+
     const oldUnitId = this.draggedUnitId;
     this.draggedUnitId = null;
     this.publishDraggedUnitIdUpdated(oldUnitId, null);

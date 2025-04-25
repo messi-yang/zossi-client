@@ -45,6 +45,8 @@ export class WorldJourneyService {
 
   private selectedUnitUpdatedEventHandler = EventHandler.create<[UnitModel | null, UnitModel | null]>();
 
+  private draggedUnitUpdatedEventHandler = EventHandler.create<[UnitModel | null, UnitModel | null]>();
+
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     this.world = world;
 
@@ -72,6 +74,13 @@ export class WorldJourneyService {
       this.selectedUnitUpdatedEventHandler.publish([
         oldSelectedUnitId ? this.getUnit(oldSelectedUnitId) : null,
         newSelectedUnitId ? this.getUnit(newSelectedUnitId) : null,
+      ]);
+    });
+
+    this.selectionManager.subscribeDraggedUnitIdUpdated(([oldDraggedUnitId, newDraggedUnitId]) => {
+      this.draggedUnitUpdatedEventHandler.publish([
+        oldDraggedUnitId ? this.getUnit(oldDraggedUnitId) : null,
+        newDraggedUnitId ? this.getUnit(newDraggedUnitId) : null,
       ]);
     });
 
@@ -361,6 +370,7 @@ export class WorldJourneyService {
   subscribe(eventName: 'SELECTED_UNIT_ID_UPDATED', subscriber: EventHandlerSubscriber<[string | null, string | null]>): () => void;
   subscribe(eventName: 'SELECTED_UNIT_UPDATED', subscriber: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void;
   subscribe(eventName: 'DRAGGED_UNIT_ID_UPDATED', subscriber: EventHandlerSubscriber<[string | null, string | null]>): () => void;
+  subscribe(eventName: 'DRAGGED_UNIT_UPDATED', subscriber: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -378,7 +388,8 @@ export class WorldJourneyService {
       | 'UNITS_UPDATED'
       | 'SELECTED_UNIT_ID_UPDATED'
       | 'SELECTED_UNIT_UPDATED'
-      | 'DRAGGED_UNIT_ID_UPDATED',
+      | 'DRAGGED_UNIT_ID_UPDATED'
+      | 'DRAGGED_UNIT_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<PositionVo>
@@ -394,7 +405,6 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<[string | null, string | null]>
       | EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>
       | EventHandlerSubscriber<BoundVo | null>
-      | EventHandlerSubscriber<[string | null, string | null]>
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
@@ -428,6 +438,8 @@ export class WorldJourneyService {
       return this.selectedUnitUpdatedEventHandler.subscribe(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
     } else if (eventName === 'DRAGGED_UNIT_ID_UPDATED') {
       return this.selectionManager.subscribeDraggedUnitIdUpdated(subscriber as EventHandlerSubscriber<[string | null, string | null]>);
+    } else if (eventName === 'DRAGGED_UNIT_UPDATED') {
+      return this.draggedUnitUpdatedEventHandler.subscribe(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
     } else {
       return () => {};
     }

@@ -194,9 +194,7 @@ export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
         const item = worldJourneyService.getItem(unitAtPos.getItemId());
         if (!item) return;
         worldJourneyService.dragUnit(unitAtPos.getId());
-        worldRenderer.addDraggedItem(item);
       }
-      worldJourneyService.clearSelectedUnit();
     });
   }, [worldRenderer]);
 
@@ -221,18 +219,30 @@ export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
       if (!unitAtPos) {
         worldJourneyService.selectUnit(draggedUnit.getId());
         worldJourneyService.moveUnit(draggedUnit.getId(), position);
+      } else {
+        worldJourneyService.clearDraggedUnit();
       }
-      worldJourneyService.clearDraggedUnit();
-      worldRenderer.removeDraggedItem();
     });
   }, [worldRenderer]);
 
   useEffect(() => {
     return worldRenderer.subscribePositionDragCancelEvent(() => {
       worldJourneyService.clearDraggedUnit();
-      worldRenderer.removeDraggedItem();
     });
   }, [worldRenderer]);
+
+  useEffect(() => {
+    return worldJourneyService.subscribe('DRAGGED_UNIT_UPDATED', ([, newDraggedUnit]) => {
+      if (newDraggedUnit) {
+        const item = worldJourneyService.getItem(newDraggedUnit.getItemId());
+        if (!item) return;
+        worldRenderer.addDraggedItem(item);
+      } else {
+        worldJourneyService.clearDraggedUnit();
+        worldRenderer.removeDraggedItem();
+      }
+    });
+  }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
     if (!hasDownloadedPlayerModel || !hasDownloadedFont) return;
