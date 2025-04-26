@@ -217,8 +217,8 @@ export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
 
       const unitAtPos = worldJourneyService.getUnitByPos(position);
       if (!unitAtPos) {
-        worldJourneyService.selectUnit(draggedUnit.getId());
         worldJourneyService.moveUnit(draggedUnit.getId(), position);
+        worldJourneyService.selectUnit(draggedUnit.getId());
       } else {
         worldJourneyService.clearDraggedUnit();
       }

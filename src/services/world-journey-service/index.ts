@@ -44,12 +44,6 @@ export class WorldJourneyService {
 
   private myPlayerEnteredPortalUnitEventHandler = EventHandler.create<PortalUnitModel>();
 
-  private selectedUnitUpdatedEventHandler = EventHandler.create<[UnitModel | null, UnitModel | null]>();
-
-  private draggedUnitUpdatedEventHandler = EventHandler.create<[UnitModel | null, UnitModel | null]>();
-
-  private selectedItemUpdatedEventHandler = EventHandler.create<[ItemModel | null, ItemModel | null]>();
-
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     this.world = world;
 
@@ -63,7 +57,7 @@ export class WorldJourneyService {
 
     this.commandManager = CommandManager.create(world, this.playerManager, this.unitManager, this.itemManager, this.perspectiveManager);
 
-    this.selectionManager = SelectionManager.create();
+    this.selectionManager = SelectionManager.create(this.unitManager, this.itemManager);
 
     this.updatePlayerPositionTickFps = 24;
     this.updatePlayerPositionTickCount = 0;
@@ -73,43 +67,10 @@ export class WorldJourneyService {
 
     this.checkMyPlayerWalkIntoPortalTicker();
 
-    this.selectionManager.subscribeSelectedUnitIdUpdated(([oldSelectedUnitId, newSelectedUnitId]) => {
-      this.selectedUnitUpdatedEventHandler.publish([
-        oldSelectedUnitId ? this.getUnit(oldSelectedUnitId) : null,
-        newSelectedUnitId ? this.getUnit(newSelectedUnitId) : null,
-      ]);
-    });
-
-    this.selectionManager.subscribeDraggedUnitIdUpdated(([oldDraggedUnitId, newDraggedUnitId]) => {
-      this.draggedUnitUpdatedEventHandler.publish([
-        oldDraggedUnitId ? this.getUnit(oldDraggedUnitId) : null,
-        newDraggedUnitId ? this.getUnit(newDraggedUnitId) : null,
-      ]);
-    });
-
-    this.selectionManager.subscribeSelectedItemIdUpdated(([oldSelectedItemId, newSelectedItemId]) => {
-      this.selectedItemUpdatedEventHandler.publish([
-        oldSelectedItemId ? this.getItem(oldSelectedItemId) : null,
-        newSelectedItemId ? this.getItem(newSelectedItemId) : null,
-      ]);
-
-      this.commandManager.executeLocalCommand(ChangePlayerHeldItemCommand.create(this.getMyPlayer().getId(), newSelectedItemId));
-    });
-
-    this.unitManager.subscribeUnitUpdatedEvent(([oldUnit, unit]) => {
-      const unitId = unit.getId();
-      const selectedUnitId = this.selectionManager.getSelectedUnitId();
-      if (selectedUnitId && unitId === selectedUnitId) {
-        this.selectedUnitUpdatedEventHandler.publish([oldUnit, unit]);
-      }
-    });
-
-    this.unitManager.subscribeUnitRemovedEvent((oldUnit) => {
-      const oldUnitId = oldUnit.getId();
-      const selectedUnitId = this.selectionManager.getSelectedUnitId();
-      if (selectedUnitId && oldUnitId === selectedUnitId) {
-        this.clearSelectedUnit();
-      }
+    this.selectionManager.subscribeSelectedItemUpdated(([, newSelectedItem]) => {
+      this.commandManager.executeLocalCommand(
+        ChangePlayerHeldItemCommand.create(this.getMyPlayer().getId(), newSelectedItem ? newSelectedItem.getId() : null)
+      );
     });
   }
 
@@ -330,15 +291,8 @@ export class WorldJourneyService {
     this.selectionManager.clearSelectedUnit();
   }
 
-  public getDraggedUnitId(): string | null {
-    return this.selectionManager.getDraggedUnitId();
-  }
-
   public getDraggedUnit(): UnitModel | null {
-    const draggedUnitId = this.getDraggedUnitId();
-    if (!draggedUnitId) return null;
-
-    return this.unitManager.getUnit(draggedUnitId);
+    return this.selectionManager.getDraggedUnit();
   }
 
   public dragUnit(unitId: string) {
@@ -349,15 +303,8 @@ export class WorldJourneyService {
     this.selectionManager.clearDraggedUnit();
   }
 
-  public getSelectedItemId(): string | null {
-    return this.selectionManager.getSelectedItemId();
-  }
-
   public getSelectedItem(): ItemModel | null {
-    const selectedItemId = this.getSelectedItemId();
-    if (!selectedItemId) return null;
-
-    return this.itemManager.getItem(selectedItemId);
+    return this.selectionManager.getSelectedItem();
   }
 
   public selectItem(itemId: string) {
@@ -398,11 +345,8 @@ export class WorldJourneyService {
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_BLOCKS_ADDED', subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void;
   subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
-  subscribe(eventName: 'SELECTED_UNIT_ID_UPDATED', subscriber: EventHandlerSubscriber<[string | null, string | null]>): () => void;
   subscribe(eventName: 'SELECTED_UNIT_UPDATED', subscriber: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void;
-  subscribe(eventName: 'DRAGGED_UNIT_ID_UPDATED', subscriber: EventHandlerSubscriber<[string | null, string | null]>): () => void;
   subscribe(eventName: 'DRAGGED_UNIT_UPDATED', subscriber: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void;
-  subscribe(eventName: 'SELECTED_ITEM_ID_UPDATED', subscriber: EventHandlerSubscriber<[string | null, string | null]>): () => void;
   subscribe(eventName: 'SELECTED_ITEM_UPDATED', subscriber: EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>): () => void;
   public subscribe(
     eventName:
@@ -419,11 +363,8 @@ export class WorldJourneyService {
       | 'PLAYER_REMOVED'
       | 'PLACEHOLDER_BLOCKS_ADDED'
       | 'UNITS_UPDATED'
-      | 'SELECTED_UNIT_ID_UPDATED'
       | 'SELECTED_UNIT_UPDATED'
-      | 'DRAGGED_UNIT_ID_UPDATED'
       | 'DRAGGED_UNIT_UPDATED'
-      | 'SELECTED_ITEM_ID_UPDATED'
       | 'SELECTED_ITEM_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
@@ -437,7 +378,6 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<PortalUnitModel>
       | EventHandlerSubscriber<BlockIdVo[]>
       | EventHandlerSubscriber<BlockModel[]>
-      | EventHandlerSubscriber<[string | null, string | null]>
       | EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>
       | EventHandlerSubscriber<BoundVo | null>
       | EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>
@@ -468,18 +408,12 @@ export class WorldJourneyService {
       return this.unitManager.subscribePlaceholderBlockIdsAddedEvent(subscriber as EventHandlerSubscriber<BlockIdVo[]>);
     } else if (eventName === 'BLOCKS_UPDATED') {
       return this.unitManager.subscribeBlocksUpdatedEvent(subscriber as EventHandlerSubscriber<BlockModel[]>);
-    } else if (eventName === 'SELECTED_UNIT_ID_UPDATED') {
-      return this.selectionManager.subscribeSelectedUnitIdUpdated(subscriber as EventHandlerSubscriber<[string | null, string | null]>);
     } else if (eventName === 'SELECTED_UNIT_UPDATED') {
-      return this.selectedUnitUpdatedEventHandler.subscribe(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
-    } else if (eventName === 'DRAGGED_UNIT_ID_UPDATED') {
-      return this.selectionManager.subscribeDraggedUnitIdUpdated(subscriber as EventHandlerSubscriber<[string | null, string | null]>);
+      return this.selectionManager.subscribeSelectedUnitUpdated(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
     } else if (eventName === 'DRAGGED_UNIT_UPDATED') {
-      return this.draggedUnitUpdatedEventHandler.subscribe(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
-    } else if (eventName === 'SELECTED_ITEM_ID_UPDATED') {
-      return this.selectionManager.subscribeSelectedItemIdUpdated(subscriber as EventHandlerSubscriber<[string | null, string | null]>);
+      return this.selectionManager.subscribeDraggedUnitUpdated(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
     } else if (eventName === 'SELECTED_ITEM_UPDATED') {
-      return this.selectedItemUpdatedEventHandler.subscribe(subscriber as EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>);
+      return this.selectionManager.subscribeSelectedItemUpdated(subscriber as EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>);
     } else {
       return () => {};
     }

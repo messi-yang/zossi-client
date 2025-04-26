@@ -36,6 +36,7 @@ import { CreateColorUnitCommand } from '@/services/world-journey-service/manager
 import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
 import { RemoveSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-sign-unit-command';
 import { CreateSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-sign-unit-command';
+import { UnitModel } from '@/models/world/unit/unit-model';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -43,8 +44,8 @@ type ContextValue = {
   worldJourneyService: WorldJourneyService | null;
   connectionStatus: ConnectionStatus;
   items: ItemModel[] | null;
-  selectedUnitId: string | null;
-  selectedItemId: string | null;
+  selectedUnit: UnitModel | null;
+  selectedItem: ItemModel | null;
   enterWorld: (worldId: string) => void;
   updateCameraPosition: () => void;
   makePlayerStand: () => void;
@@ -70,8 +71,8 @@ const Context = createContext<ContextValue>({
   worldJourneyService: null,
   connectionStatus: 'WAITING',
   items: null,
-  selectedUnitId: null,
-  selectedItemId: null,
+  selectedUnit: null,
+  selectedItem: null,
   enterWorld: () => {},
   updateCameraPosition: () => {},
   makePlayerStand: () => {},
@@ -159,23 +160,23 @@ export function Provider({ children }: Props) {
     setConnectionStatus('WAITING');
   }, []);
 
-  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+  const [selectedUnit, setSelectedUnit] = useState<UnitModel | null>(null);
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    setSelectedUnitId(worldJourneyService.getSelectedUnitId());
+    setSelectedUnit(worldJourneyService.getSelectedUnit());
 
-    return worldJourneyService.subscribe('SELECTED_UNIT_ID_UPDATED', ([, newSelectedUnitId]) => {
-      setSelectedUnitId(newSelectedUnitId);
+    return worldJourneyService.subscribe('SELECTED_UNIT_UPDATED', ([, newSelectedUnit]) => {
+      setSelectedUnit(newSelectedUnit);
     });
   }, [worldJourneyService]);
 
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ItemModel | null>(null);
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribe('SELECTED_ITEM_ID_UPDATED', ([, newSelectedItemId]) => {
-      setSelectedItemId(newSelectedItemId);
+    return worldJourneyService.subscribe('SELECTED_ITEM_UPDATED', ([, newSelectedItem]) => {
+      setSelectedItem(newSelectedItem);
     });
   }, [worldJourneyService]);
 
@@ -563,11 +564,11 @@ export function Provider({ children }: Props) {
     const currentSelectedUnitId = worldJourneyService.getSelectedUnitId();
     if (!currentSelectedUnitId) return;
 
-    const selectedUnit = worldJourneyService.getUnit(currentSelectedUnitId);
-    if (!selectedUnit) return;
+    const currentSelectedUnit = worldJourneyService.getSelectedUnit();
+    if (!currentSelectedUnit) return;
 
     const myPlayer = worldJourneyService.getMyPlayer();
-    const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(selectedUnit.getDimension());
+    const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(currentSelectedUnit.getDimension());
 
     worldJourneyService.moveUnit(currentSelectedUnitId, desiredNewUnitPos);
   }, [worldJourneyService]);
@@ -576,8 +577,8 @@ export function Provider({ children }: Props) {
     worldJourneyService,
     connectionStatus,
     items,
-    selectedUnitId,
-    selectedItemId,
+    selectedUnit,
+    selectedItem,
     enterWorld,
     updateCameraPosition,
     makePlayerStand,

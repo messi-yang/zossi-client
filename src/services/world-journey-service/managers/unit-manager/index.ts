@@ -103,6 +103,10 @@ export class UnitManager {
     return this.unitMapById[id] || null;
   }
 
+  public hasUnit(id: string): boolean {
+    return !!this.unitMapById[id];
+  }
+
   public getUnitByPos(pos: PositionVo): UnitModel | null {
     return this.unitMapByPos[pos.toString()] || null;
   }

@@ -75,8 +75,8 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     worldJourneyService,
     connectionStatus,
     items,
-    selectedUnitId,
-    selectedItemId,
+    selectedUnit,
+    selectedItem,
     enterWorld,
     updateCameraPosition,
     makePlayerStand,
@@ -191,19 +191,19 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   useHotKeys(['KeyP'], { onPressedKeysChange: handleCreateUnitPressedKeysChange });
 
   const handleRemoveClick = useCallback(() => {
-    if (!selectedUnitId) return;
-    removeUnit(selectedUnitId);
-  }, [removeUnit, selectedUnitId]);
+    if (!selectedUnit) return;
+    removeUnit(selectedUnit.getId());
+  }, [removeUnit, selectedUnit]);
 
   const handleRotateUnitClick = useCallback(() => {
-    if (!selectedUnitId) return;
-    rotateUnit(selectedUnitId);
-  }, [rotateUnit, selectedUnitId]);
+    if (!selectedUnit) return;
+    rotateUnit(selectedUnit.getId());
+  }, [rotateUnit, selectedUnit]);
 
   const handleEngageUnitClick = useCallback(() => {
-    if (!selectedUnitId) return;
-    engageUnit(selectedUnitId);
-  }, [engageUnit, selectedUnitId]);
+    if (!selectedUnit) return;
+    engageUnit(selectedUnit.getId());
+  }, [engageUnit, selectedUnit]);
 
   useHotKeys(['KeyM'], {
     onPressedKeysChange: (keys) => {
@@ -254,6 +254,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     (item: ItemModel) => {
       if (!worldJourneyService) return;
 
+      // worldJourneyService.loadItem(item);
       worldJourneyService.selectItem(item.getId());
     },
     [worldJourneyService]
@@ -417,7 +418,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
           <Text size="text-xl">{myPlayerPosText}</Text>
         </div>
       </div>
-      {selectedUnitId && (
+      {selectedUnit && (
         <div className="absolute top-16 right-2 z-10 flex flex-col items-end gap-2">
           <Button text="Remove" onClick={handleRemoveClick} />
           <Button text="Rotate" onClick={handleRotateUnitClick} />
@@ -425,7 +426,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
         </div>
       )}
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 w-screen">
-        <ItemSelect items={items} selectedItemId={selectedItemId} onSelect={handleItemSelect} />
+        <ItemSelect items={items} selectedItemId={selectedItem?.getId() ?? null} onSelect={handleItemSelect} />
       </section>
       <section
         className="absolute top-2 left-2 z-10 bg-black p-2 rounded-lg"
