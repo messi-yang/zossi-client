@@ -8,7 +8,6 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { ChangePlayerActionCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-action-command';
 import { CreateStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-static-unit-command';
-import { ChangePlayerHeldItemCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-held-item-command';
 import { CreatePortalUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-portal-unit-command';
 import { RemoveStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-static-unit-command';
 import { RemovePortalUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-portal-unit-command';
@@ -45,12 +44,12 @@ type ContextValue = {
   connectionStatus: ConnectionStatus;
   items: ItemModel[] | null;
   selectedUnitId: string | null;
+  selectedItemId: string | null;
   enterWorld: (worldId: string) => void;
   updateCameraPosition: () => void;
   makePlayerStand: () => void;
   makePlayerWalk: (direction: DirectionVo) => void;
   sendPlayerIntoPortal: (unitId: string) => void;
-  changePlayerHeldItem: (item: ItemModel) => void;
   engageUnit: (unitId: string) => void;
   createUnit: () => void;
   createEmbedUnit: (itemId: string, label: string, embedCode: string) => void;
@@ -62,7 +61,6 @@ type ContextValue = {
   rotateUnit: (unitId: string) => void;
   removeUnitsInBound: (bound: BoundVo) => void;
   moveUnit: () => void;
-  selectUnit: () => void;
   leaveWorld: () => void;
   displayedEmbedCode: string | null;
   cleanDisplayedEmbedCode: () => void;
@@ -73,12 +71,12 @@ const Context = createContext<ContextValue>({
   connectionStatus: 'WAITING',
   items: null,
   selectedUnitId: null,
+  selectedItemId: null,
   enterWorld: () => {},
   updateCameraPosition: () => {},
   makePlayerStand: () => {},
   makePlayerWalk: () => {},
   sendPlayerIntoPortal: () => {},
-  changePlayerHeldItem: () => {},
   engageUnit: () => {},
   createUnit: () => {},
   createEmbedUnit: () => {},
@@ -90,7 +88,6 @@ const Context = createContext<ContextValue>({
   rotateUnit: () => {},
   removeUnitsInBound: () => {},
   moveUnit: () => {},
-  selectUnit: () => {},
   leaveWorld: () => {},
   displayedEmbedCode: null,
   cleanDisplayedEmbedCode: () => {},
@@ -170,6 +167,15 @@ export function Provider({ children }: Props) {
 
     return worldJourneyService.subscribe('SELECTED_UNIT_ID_UPDATED', ([, newSelectedUnitId]) => {
       setSelectedUnitId(newSelectedUnitId);
+    });
+  }, [worldJourneyService]);
+
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!worldJourneyService) return () => {};
+
+    return worldJourneyService.subscribe('SELECTED_ITEM_ID_UPDATED', ([, newSelectedItemId]) => {
+      setSelectedItemId(newSelectedItemId);
     });
   }, [worldJourneyService]);
 
@@ -300,16 +306,6 @@ export function Provider({ children }: Props) {
       const myPlayer = worldJourneyService.getMyPlayer();
       const playerAction = PlayerActionVo.newWalk(direction);
       const command = ChangePlayerActionCommand.create(myPlayer.getId(), playerAction);
-      worldJourneyService.executeLocalCommand(command);
-    },
-    [worldJourneyService]
-  );
-
-  const changePlayerHeldItem = useCallback(
-    (item: ItemModel) => {
-      if (!worldJourneyService || !worldJourneyApi.current) return;
-
-      const command = ChangePlayerHeldItemCommand.create(worldJourneyService.getMyPlayer().getId(), item.getId());
       worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
@@ -576,38 +572,18 @@ export function Provider({ children }: Props) {
     worldJourneyService.moveUnit(currentSelectedUnitId, desiredNewUnitPos);
   }, [worldJourneyService]);
 
-  const selectUnit = useCallback(() => {
-    if (!worldJourneyService) return;
-
-    const myPlayer = worldJourneyService.getMyPlayer();
-    const myPlayerFowardPos = myPlayer.getFowardPosition(1);
-
-    const unitAtPos = worldJourneyService.getUnitByPos(myPlayerFowardPos);
-
-    if (unitAtPos) {
-      const currentSelectedUnitId = worldJourneyService.getSelectedUnitId();
-      if (currentSelectedUnitId === unitAtPos.getId()) {
-        worldJourneyService.clearSelectedUnit();
-      } else {
-        worldJourneyService.selectUnit(unitAtPos.getId());
-      }
-    } else {
-      worldJourneyService.clearSelectedUnit();
-    }
-  }, [worldJourneyService]);
-
   const context = {
     worldJourneyService,
     connectionStatus,
     items,
     selectedUnitId,
+    selectedItemId,
     enterWorld,
     updateCameraPosition,
     makePlayerStand,
     makePlayerWalk,
     sendPlayerIntoPortal,
     leaveWorld,
-    changePlayerHeldItem,
     engageUnit,
     createUnit,
     createEmbedUnit,
@@ -619,7 +595,6 @@ export function Provider({ children }: Props) {
     rotateUnit,
     removeUnitsInBound,
     moveUnit,
-    selectUnit,
     displayedEmbedCode,
     cleanDisplayedEmbedCode,
   };

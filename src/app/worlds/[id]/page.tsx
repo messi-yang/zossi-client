@@ -76,13 +76,13 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     connectionStatus,
     items,
     selectedUnitId,
+    selectedItemId,
     enterWorld,
     updateCameraPosition,
     makePlayerStand,
     makePlayerWalk,
     sendPlayerIntoPortal,
     leaveWorld,
-    changePlayerHeldItem,
     engageUnit,
     createUnit,
     createEmbedUnit,
@@ -93,7 +93,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     removeUnit,
     rotateUnit,
     removeUnitsInBound,
-    selectUnit,
     moveUnit,
     displayedEmbedCode,
     cleanDisplayedEmbedCode,
@@ -136,14 +135,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     },
     [worldId]
   );
-
-  const switchToNextItem = useCallback(() => {
-    if (!items) {
-      return;
-    }
-    const targetItemIdIndex = items.findIndex((item) => item.getId() === myPlayerHeldItemId) + 1;
-    changePlayerHeldItem(items[targetItemIdIndex % items.length]);
-  }, [items, myPlayerHeldItemId, changePlayerHeldItem]);
 
   const [isCreateEmbedUnitModalVisible, setIsCreateEmbedUnitModalVisible] = useState(false);
   const handleCreateEmbedUnitConfirm = useCallback(
@@ -214,22 +205,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     engageUnit(selectedUnitId);
   }, [engageUnit, selectedUnitId]);
 
-  const handleSwitchToNextItemPressedKeysChange = useCallback(
-    (keys: string[]) => {
-      if (keys.length === 0) return;
-      switchToNextItem();
-    },
-    [switchToNextItem]
-  );
-  useHotKeys(['Space'], { onPressedKeysChange: handleSwitchToNextItemPressedKeysChange });
-
-  useHotKeys(['KeyS'], {
-    onPressedKeysChange: (keys) => {
-      if (keys.length === 0) return;
-      selectUnit();
-    },
-  });
-
   useHotKeys(['KeyM'], {
     onPressedKeysChange: (keys) => {
       if (keys.length === 0) return;
@@ -275,9 +250,14 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     }
   };
 
-  const handleItemSelect = (item: ItemModel) => {
-    changePlayerHeldItem(item);
-  };
+  const handleItemSelect = useCallback(
+    (item: ItemModel) => {
+      if (!worldJourneyService) return;
+
+      worldJourneyService.selectItem(item.getId());
+    },
+    [worldJourneyService]
+  );
 
   const handleRecconectModalConfirmClick = useCallback(() => {
     if (worldId) {
@@ -445,7 +425,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
         </div>
       )}
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 w-screen">
-        <ItemSelect items={items} selectedItemId={myPlayerHeldItemId} onSelect={handleItemSelect} />
+        <ItemSelect items={items} selectedItemId={selectedItemId} onSelect={handleItemSelect} />
       </section>
       <section
         className="absolute top-2 left-2 z-10 bg-black p-2 rounded-lg"

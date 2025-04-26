@@ -7,19 +7,19 @@ import { generateUuidV4 } from '@/utils/uuid';
 export class ChangePlayerHeldItemCommand extends Command {
   private playerId: string;
 
-  private itemId: string;
+  private itemId: string | null;
 
-  constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string, itemId: string) {
+  constructor(id: string, createdAt: DateVo, isRemote: boolean, playerId: string, itemId: string | null) {
     super(CommandNameEnum.ChangePlayerHeldItem, id, createdAt, isRemote);
     this.playerId = playerId;
     this.itemId = itemId;
   }
 
-  static create(playerId: string, itemId: string) {
+  static create(playerId: string, itemId: string | null) {
     return new ChangePlayerHeldItemCommand(generateUuidV4(), DateVo.now(), false, playerId, itemId);
   }
 
-  static createRemote(id: string, createdAt: DateVo, playerId: string, itemId: string) {
+  static createRemote(id: string, createdAt: DateVo, playerId: string, itemId: string | null) {
     return new ChangePlayerHeldItemCommand(id, createdAt, true, playerId, itemId);
   }
 

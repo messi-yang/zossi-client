@@ -59,7 +59,7 @@ export class PlayerModel {
     return this.heldItemId;
   }
 
-  public changeHeldItemId(itemId: string): void {
+  public changeHeldItemId(itemId: string | null): void {
     this.heldItemId = itemId;
   }
 

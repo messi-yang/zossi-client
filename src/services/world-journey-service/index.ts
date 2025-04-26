@@ -19,6 +19,7 @@ import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { MoveUnitCommand } from './managers/command-manager/commands/move-unit-command';
+import { ChangePlayerHeldItemCommand } from './managers/command-manager/commands/change-player-held-item-command';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -46,6 +47,8 @@ export class WorldJourneyService {
   private selectedUnitUpdatedEventHandler = EventHandler.create<[UnitModel | null, UnitModel | null]>();
 
   private draggedUnitUpdatedEventHandler = EventHandler.create<[UnitModel | null, UnitModel | null]>();
+
+  private selectedItemUpdatedEventHandler = EventHandler.create<[ItemModel | null, ItemModel | null]>();
 
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     this.world = world;
@@ -82,6 +85,15 @@ export class WorldJourneyService {
         oldDraggedUnitId ? this.getUnit(oldDraggedUnitId) : null,
         newDraggedUnitId ? this.getUnit(newDraggedUnitId) : null,
       ]);
+    });
+
+    this.selectionManager.subscribeSelectedItemIdUpdated(([oldSelectedItemId, newSelectedItemId]) => {
+      this.selectedItemUpdatedEventHandler.publish([
+        oldSelectedItemId ? this.getItem(oldSelectedItemId) : null,
+        newSelectedItemId ? this.getItem(newSelectedItemId) : null,
+      ]);
+
+      this.commandManager.executeLocalCommand(ChangePlayerHeldItemCommand.create(this.getMyPlayer().getId(), newSelectedItemId));
     });
 
     this.unitManager.subscribeUnitUpdatedEvent(([oldUnit, unit]) => {
@@ -337,6 +349,25 @@ export class WorldJourneyService {
     this.selectionManager.clearDraggedUnit();
   }
 
+  public getSelectedItemId(): string | null {
+    return this.selectionManager.getSelectedItemId();
+  }
+
+  public getSelectedItem(): ItemModel | null {
+    const selectedItemId = this.getSelectedItemId();
+    if (!selectedItemId) return null;
+
+    return this.itemManager.getItem(selectedItemId);
+  }
+
+  public selectItem(itemId: string) {
+    this.selectionManager.selectItem(itemId);
+  }
+
+  public clearSelectedItem() {
+    this.selectionManager.clearSelectedItem();
+  }
+
   public moveUnit(unitId: string, position: PositionVo) {
     const unit = this.unitManager.getUnit(unitId);
     if (!unit) return;
@@ -371,6 +402,8 @@ export class WorldJourneyService {
   subscribe(eventName: 'SELECTED_UNIT_UPDATED', subscriber: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void;
   subscribe(eventName: 'DRAGGED_UNIT_ID_UPDATED', subscriber: EventHandlerSubscriber<[string | null, string | null]>): () => void;
   subscribe(eventName: 'DRAGGED_UNIT_UPDATED', subscriber: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void;
+  subscribe(eventName: 'SELECTED_ITEM_ID_UPDATED', subscriber: EventHandlerSubscriber<[string | null, string | null]>): () => void;
+  subscribe(eventName: 'SELECTED_ITEM_UPDATED', subscriber: EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -389,7 +422,9 @@ export class WorldJourneyService {
       | 'SELECTED_UNIT_ID_UPDATED'
       | 'SELECTED_UNIT_UPDATED'
       | 'DRAGGED_UNIT_ID_UPDATED'
-      | 'DRAGGED_UNIT_UPDATED',
+      | 'DRAGGED_UNIT_UPDATED'
+      | 'SELECTED_ITEM_ID_UPDATED'
+      | 'SELECTED_ITEM_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<PositionVo>
@@ -405,6 +440,7 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<[string | null, string | null]>
       | EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>
       | EventHandlerSubscriber<BoundVo | null>
+      | EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
@@ -440,6 +476,10 @@ export class WorldJourneyService {
       return this.selectionManager.subscribeDraggedUnitIdUpdated(subscriber as EventHandlerSubscriber<[string | null, string | null]>);
     } else if (eventName === 'DRAGGED_UNIT_UPDATED') {
       return this.draggedUnitUpdatedEventHandler.subscribe(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
+    } else if (eventName === 'SELECTED_ITEM_ID_UPDATED') {
+      return this.selectionManager.subscribeSelectedItemIdUpdated(subscriber as EventHandlerSubscriber<[string | null, string | null]>);
+    } else if (eventName === 'SELECTED_ITEM_UPDATED') {
+      return this.selectedItemUpdatedEventHandler.subscribe(subscriber as EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>);
     } else {
       return () => {};
     }

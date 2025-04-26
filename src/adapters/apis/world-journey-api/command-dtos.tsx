@@ -78,7 +78,7 @@ type ChangePlayerHeldItemCommandDto = {
   name: CommandNameEnum.ChangePlayerHeldItem;
   payload: {
     playerId: string;
-    itemId: string;
+    itemId: string | null;
   };
 };
 

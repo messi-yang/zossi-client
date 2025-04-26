@@ -9,6 +9,10 @@ export class SelectionManager {
 
   private draggedUnitIdUpdatedHandler = EventHandler.create<[string | null, string | null]>();
 
+  private selectedItemId: string | null = null;
+
+  private selectedItemIdUpdatedHandler = EventHandler.create<[string | null, string | null]>();
+
   static create() {
     return new SelectionManager();
   }
@@ -23,6 +27,7 @@ export class SelectionManager {
     this.publishSelectedUnitIdUpdated(oldUnitId, unitId);
 
     this.clearDraggedUnit();
+    this.clearSelectedItem();
   }
 
   public clearSelectedUnit() {
@@ -50,6 +55,7 @@ export class SelectionManager {
     this.publishDraggedUnitIdUpdated(oldUnitId, unitId);
 
     this.clearSelectedUnit();
+    this.clearSelectedItem();
   }
 
   public clearDraggedUnit() {
@@ -66,5 +72,33 @@ export class SelectionManager {
 
   private publishDraggedUnitIdUpdated(oldUnitId: string | null, newUnitId: string | null) {
     this.draggedUnitIdUpdatedHandler.publish([oldUnitId, newUnitId]);
+  }
+
+  public getSelectedItemId(): string | null {
+    return this.selectedItemId;
+  }
+
+  public selectItem(itemId: string) {
+    const oldItemId = this.selectedItemId;
+    this.selectedItemId = itemId;
+    this.publishSelectedItemIdUpdated(oldItemId, itemId);
+
+    this.clearDraggedUnit();
+    this.clearSelectedUnit();
+  }
+
+  public clearSelectedItem() {
+    if (!this.selectedItemId) return;
+    const oldItemId = this.selectedItemId;
+    this.selectedItemId = null;
+    this.publishSelectedItemIdUpdated(oldItemId, null);
+  }
+
+  public subscribeSelectedItemIdUpdated(handler: EventHandlerSubscriber<[string | null, string | null]>): () => void {
+    return this.selectedItemIdUpdatedHandler.subscribe(handler);
+  }
+
+  private publishSelectedItemIdUpdated(oldItemId: string | null, newItemId: string | null) {
+    this.selectedItemIdUpdatedHandler.publish([oldItemId, newItemId]);
   }
 }
