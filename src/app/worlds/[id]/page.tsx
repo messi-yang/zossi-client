@@ -10,7 +10,6 @@ import { WorldJourneyServiceContext } from '@/contexts/world-journey-service-con
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { WorldCanvas } from '@/components/canvas/world-canvas';
 import { MessageModal } from '@/components/modals/message-modal';
-import { ItemSelect } from '@/components/selects/item-select';
 import { Text } from '@/components/texts/text';
 import { AuthContext } from '@/contexts/auth-context';
 import { WorldMembersContext } from '@/contexts/world-members-context';
@@ -31,6 +30,8 @@ import { CreateEmbedUnitModal } from '@/components/modals/create-embed-unit-moda
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { CreateLinkUnitModal } from '@/components/modals/create-link-unit-modal';
 import { CreateSignUnitModal } from '@/components/modals/create-sign-unit-modal';
+import { WorldBottomPanel } from '@/components/panels/world-bottom-panel';
+import { SelectItemModal } from '@/components/modals/select-item-modal';
 
 const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -254,7 +255,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     (item: ItemModel) => {
       if (!worldJourneyService) return;
 
-      // worldJourneyService.loadItem(item);
       worldJourneyService.selectItem(item.getId());
     },
     [worldJourneyService]
@@ -338,6 +338,17 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     updateCameraPosition();
   }, [updateCameraPosition]);
 
+  const [isSelectItemModalVisible, setIsSelectItemModalVisible] = useState(false);
+  const handleBuildClick = useCallback(() => {
+    setIsSelectItemModalVisible(true);
+  }, []);
+
+  const handleMoveClick = useCallback(() => {
+    if (!worldJourneyService) return;
+
+    worldJourneyService.resetSelection();
+  }, [worldJourneyService]);
+
   return (
     <main className="relative w-full h-screen">
       {isCreateEmbedUnitModalVisible && (
@@ -410,7 +421,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
       />
       <div className="absolute top-2 right-3 z-10 flex items-center gap-2">
         <Button text="Replay" onClick={handleReplayClick} />
-        <Button text="Update Camera" onClick={handleUpdateCameraClick} />
         <Button text="Build Maze" onClick={handleBuildMazeClick} />
         <Button text="Remove Units" onClick={handleRemoveUnitsClick} />
         <Button text="Share" onClick={handleShareClick} />
@@ -425,8 +435,20 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
           <Button text="Engage" onClick={handleEngageUnitClick} />
         </div>
       )}
-      <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 w-screen">
-        <ItemSelect items={items} selectedItemId={selectedItem?.getId() ?? null} onSelect={handleItemSelect} />
+      <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
+        <SelectItemModal
+          opened={isSelectItemModalVisible}
+          items={items ?? []}
+          selectedItemId={selectedItem?.getId() ?? null}
+          onItemSelect={handleItemSelect}
+          onClose={() => setIsSelectItemModalVisible(false)}
+        />
+        <WorldBottomPanel
+          selectedItem={selectedItem}
+          onMoveClick={handleMoveClick}
+          onCameraClick={handleUpdateCameraClick}
+          onBuildClick={handleBuildClick}
+        />
       </section>
       <section
         className="absolute top-2 left-2 z-10 bg-black p-2 rounded-lg"

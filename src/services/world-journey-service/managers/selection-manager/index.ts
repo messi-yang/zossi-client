@@ -40,6 +40,12 @@ export class SelectionManager {
     return new SelectionManager(unitManager, itemManager);
   }
 
+  public resetSelection() {
+    this.clearSelectedUnit();
+    this.clearDraggedUnit();
+    this.clearSelectedItem();
+  }
+
   public getSelectedUnitId(): string | null {
     return this.selectedUnitId;
   }

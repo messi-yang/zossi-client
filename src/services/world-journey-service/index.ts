@@ -272,6 +272,10 @@ export class WorldJourneyService {
     animate();
   }
 
+  public resetSelection() {
+    this.selectionManager.resetSelection();
+  }
+
   public getSelectedUnitId(): string | null {
     return this.selectionManager.getSelectedUnitId();
   }

@@ -1,3 +1,7 @@
+'use client';
+
+import { useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Wrapper } from './sub-components/wrapper';
 import { Background } from './sub-components/background';
 import { Modal } from './sub-components/modal';
@@ -12,12 +16,22 @@ type BaseModalProps = {
 };
 
 export function BaseModal({ opened, width, height, children, onBackgroundClick, onCrossClick }: BaseModalProps) {
-  return (
-    <Wrapper visible={opened}>
-      <Background onClick={onBackgroundClick} />
-      <Modal width={width} height={height} onCrossClick={onCrossClick}>
-        {children}
-      </Modal>
-    </Wrapper>
-  );
+  const portalRoot = useMemo(() => {
+    if (!('document' in globalThis)) {
+      return null;
+    }
+    return globalThis.document.body;
+  }, []);
+
+  return portalRoot
+    ? createPortal(
+        <Wrapper visible={opened}>
+          <Background onClick={onBackgroundClick} />
+          <Modal width={width} height={height} onCrossClick={onCrossClick}>
+            {children}
+          </Modal>
+        </Wrapper>,
+        portalRoot
+      )
+    : null;
 }
