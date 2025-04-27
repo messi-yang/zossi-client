@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { dataTestids } from './data-test-ids';
 import { useClickOutside } from '@/hooks/use-click-outside';
@@ -118,7 +119,22 @@ export function WorldBottomPanel({ selectedItem, onMoveClick, onCameraClick, onB
     >
       <BottomPanelButton icon="mage:mouse-pointer" active={isMoveActive} onClick={onMoveClick} />
       <div className={twMerge('flex', 'items-center', 'flex-row')}>
-        <BottomPanelButton icon="icon-park-outline:hammer-and-anvil" active={isBuildActive} onClick={handleBuildClick} />
+        {!selectedItem && <BottomPanelButton icon="icon-park-outline:hammer-and-anvil" active={isBuildActive} onClick={handleBuildClick} />}
+        {selectedItem && (
+          <div
+            className={twMerge('w-12', 'h-12', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'bg-blue-600', 'rounded-lg')}
+            onClick={handleBuildClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleBuildClick();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+          >
+            <Image src={selectedItem.getThumbnailSrc()} alt={selectedItem.getName()} width={36} height={36} />
+          </div>
+        )}
         <MenuAnchor opened={isBuildMenuOpen} onClick={handleBuildMenuClick}>
           <div className={twMerge('flex', 'flex-col', 'gap-1', 'p-2', 'rounded-[10px]')}>
             {Object.values(UnitTypeEnum).map((unitType) => (
