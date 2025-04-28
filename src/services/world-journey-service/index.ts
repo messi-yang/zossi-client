@@ -353,7 +353,11 @@ export class WorldJourneyService {
   subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
   subscribe(eventName: 'SELECTED_UNIT_ADDED', subscriber: EventHandlerSubscriber<UnitModel>): () => void;
   subscribe(eventName: 'SELECTED_UNIT_REMOVED', subscriber: EventHandlerSubscriber<void>): () => void;
-  subscribe(eventName: 'DRAGGED_UNIT_ADDED', subscriber: EventHandlerSubscriber<UnitModel>): () => void;
+  subscribe(eventName: 'DRAGGED_UNIT_ADDED', subscriber: EventHandlerSubscriber<{ unit: UnitModel; position: PositionVo }>): () => void;
+  subscribe(
+    eventName: 'DRAGGED_UNIT_POSITION_UPDATED',
+    subscriber: EventHandlerSubscriber<[{ unit: UnitModel; position: PositionVo }, { unit: UnitModel; position: PositionVo }]>
+  ): () => void;
   subscribe(eventName: 'DRAGGED_UNIT_REMOVED', subscriber: EventHandlerSubscriber<void>): () => void;
   subscribe(
     eventName: 'SELECTED_ITEM_ADDED',
@@ -366,7 +370,6 @@ export class WorldJourneyService {
     >
   ): () => void;
   subscribe(eventName: 'SELECTED_ITEM_REMOVED', subscriber: EventHandlerSubscriber<void>): () => void;
-  subscribe(eventName: 'HOVERED_POSITION_UPDATED', subscriber: EventHandlerSubscriber<PositionVo>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -385,11 +388,11 @@ export class WorldJourneyService {
       | 'SELECTED_UNIT_ADDED'
       | 'SELECTED_UNIT_REMOVED'
       | 'DRAGGED_UNIT_ADDED'
+      | 'DRAGGED_UNIT_POSITION_UPDATED'
       | 'DRAGGED_UNIT_REMOVED'
       | 'SELECTED_ITEM_ADDED'
       | 'SELECTED_ITEM_UPDATED'
-      | 'SELECTED_ITEM_REMOVED'
-      | 'HOVERED_POSITION_UPDATED',
+      | 'SELECTED_ITEM_REMOVED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<PositionVo>
@@ -404,6 +407,8 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<BlockModel[]>
       | EventHandlerSubscriber<UnitModel>
       | EventHandlerSubscriber<void>
+      | EventHandlerSubscriber<{ unit: UnitModel; position: PositionVo }>
+      | EventHandlerSubscriber<[{ unit: UnitModel; position: PositionVo }, { unit: UnitModel; position: PositionVo }]>
       | EventHandlerSubscriber<{ item: ItemModel; position: PositionVo; direction: DirectionVo }>
       | EventHandlerSubscriber<
           [
@@ -412,7 +417,6 @@ export class WorldJourneyService {
           ]
         >
       | EventHandlerSubscriber<void>
-      | EventHandlerSubscriber<PositionVo>
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
@@ -445,7 +449,13 @@ export class WorldJourneyService {
     } else if (eventName === 'SELECTED_UNIT_REMOVED') {
       return this.selectionManager.subscribeSelectedUnitRemoved(subscriber as EventHandlerSubscriber<void>);
     } else if (eventName === 'DRAGGED_UNIT_ADDED') {
-      return this.selectionManager.subscribeDraggedUnitAdded(subscriber as EventHandlerSubscriber<UnitModel>);
+      return this.selectionManager.subscribeDraggedUnitAdded(
+        subscriber as EventHandlerSubscriber<{ unit: UnitModel; position: PositionVo }>
+      );
+    } else if (eventName === 'DRAGGED_UNIT_POSITION_UPDATED') {
+      return this.selectionManager.subscribeDraggedUnitPositionUpdated(
+        subscriber as EventHandlerSubscriber<[{ unit: UnitModel; position: PositionVo }, { unit: UnitModel; position: PositionVo }]>
+      );
     } else if (eventName === 'DRAGGED_UNIT_REMOVED') {
       return this.selectionManager.subscribeDraggedUnitRemoved(subscriber as EventHandlerSubscriber<void>);
     } else if (eventName === 'SELECTED_ITEM_ADDED') {
@@ -463,8 +473,6 @@ export class WorldJourneyService {
       );
     } else if (eventName === 'SELECTED_ITEM_REMOVED') {
       return this.selectionManager.subscribeSelectedItemRemoved(subscriber as EventHandlerSubscriber<void>);
-    } else if (eventName === 'HOVERED_POSITION_UPDATED') {
-      return this.selectionManager.subscribeHoveredPositionUpdated(subscriber as EventHandlerSubscriber<PositionVo>);
     } else {
       return () => {};
     }

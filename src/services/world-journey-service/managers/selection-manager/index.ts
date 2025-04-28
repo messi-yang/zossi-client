@@ -10,8 +10,6 @@ import { PlayerManager } from '../player-manager';
 export class SelectionManager {
   private hoveredPosition: PositionVo = PositionVo.create(0, 0, 0);
 
-  private hoveredPositionUpdatedHandler = EventHandler.create<PositionVo>();
-
   private selectedUnitId: string | null = null;
 
   private selectedUnitAddedHandler = EventHandler.create<UnitModel>();
@@ -20,7 +18,10 @@ export class SelectionManager {
 
   private draggedUnitId: string | null = null;
 
-  private draggedUnitAddedHandler = EventHandler.create<UnitModel>();
+  private draggedUnitAddedHandler = EventHandler.create<{ unit: UnitModel; position: PositionVo }>();
+
+  private draggedUnitPositionUpdatedHandler =
+    EventHandler.create<[{ unit: UnitModel; position: PositionVo }, { unit: UnitModel; position: PositionVo }]>();
 
   private draggedUnitRemovedHandler = EventHandler.create<void>();
 
@@ -73,7 +74,6 @@ export class SelectionManager {
   public hoverPosition(position: PositionVo) {
     const oldHoveredPosition = this.hoveredPosition;
     this.hoveredPosition = position;
-    this.publishHoveredPositionUpdated(position);
 
     const selectedItem = this.getSelectedItem();
     if (selectedItem) {
@@ -84,6 +84,14 @@ export class SelectionManager {
           position: this.hoveredPosition,
           direction: this.selectedItemDirection,
         }
+      );
+    }
+
+    const draggedUnit = this.getDraggedUnit();
+    if (draggedUnit) {
+      this.publishDraggedUnitPositionUpdated(
+        { unit: draggedUnit, position: oldHoveredPosition },
+        { unit: draggedUnit, position: this.hoveredPosition }
       );
     }
   }
@@ -137,7 +145,7 @@ export class SelectionManager {
 
     this.draggedUnitId = unitId;
 
-    this.publishDraggedUnitAdded(newUnit);
+    this.publishDraggedUnitAdded(newUnit, this.hoveredPosition);
 
     this.clearSelectedUnit();
     this.clearSelectedItem();
@@ -155,20 +163,25 @@ export class SelectionManager {
     this.publishDraggedUnitRemoved();
   }
 
-  public subscribeHoveredPositionUpdated(handler: EventHandlerSubscriber<PositionVo>): () => void {
-    return this.hoveredPositionUpdatedHandler.subscribe(handler);
-  }
-
-  private publishHoveredPositionUpdated(position: PositionVo) {
-    this.hoveredPositionUpdatedHandler.publish(position);
-  }
-
-  public subscribeDraggedUnitAdded(handler: EventHandlerSubscriber<UnitModel>): () => void {
+  public subscribeDraggedUnitAdded(handler: EventHandlerSubscriber<{ unit: UnitModel; position: PositionVo }>): () => void {
     return this.draggedUnitAddedHandler.subscribe(handler);
   }
 
-  private publishDraggedUnitAdded(unit: UnitModel) {
-    this.draggedUnitAddedHandler.publish(unit);
+  public subscribeDraggedUnitPositionUpdated(
+    handler: EventHandlerSubscriber<[{ unit: UnitModel; position: PositionVo }, { unit: UnitModel; position: PositionVo }]>
+  ): () => void {
+    return this.draggedUnitPositionUpdatedHandler.subscribe(handler);
+  }
+
+  private publishDraggedUnitPositionUpdated(
+    oldParams: { unit: UnitModel; position: PositionVo },
+    newParams: { unit: UnitModel; position: PositionVo }
+  ) {
+    this.draggedUnitPositionUpdatedHandler.publish([oldParams, newParams]);
+  }
+
+  private publishDraggedUnitAdded(unit: UnitModel, position: PositionVo) {
+    this.draggedUnitAddedHandler.publish({ unit, position });
   }
 
   public subscribeDraggedUnitRemoved(handler: EventHandlerSubscriber<void>): () => void {

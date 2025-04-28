@@ -224,12 +224,17 @@ export function WorldCanvas({
   }, [worldRenderer, onPositionDragCancel]);
 
   useEffect(() => {
-    const draggedUnitAddedUnsubscribe = worldJourneyService.subscribe('DRAGGED_UNIT_ADDED', (newDraggedUnit) => {
-      if (newDraggedUnit) {
-        const item = worldJourneyService.getItem(newDraggedUnit.getItemId());
-        if (!item) return;
-        worldRenderer.addDraggedItem(item);
-      }
+    const draggedUnitAddedUnsubscribe = worldJourneyService.subscribe('DRAGGED_UNIT_ADDED', ({ unit }) => {
+      const item = worldJourneyService.getItem(unit.getItemId());
+      if (!item) return;
+      worldRenderer.addDraggedItem(item);
+    });
+
+    const draggedUnitPositionUpdatedUnsubscribe = worldJourneyService.subscribe('DRAGGED_UNIT_POSITION_UPDATED', ([, newParams]) => {
+      const item = worldJourneyService.getItem(newParams.unit.getItemId());
+      if (!item) return;
+
+      worldRenderer.updateDraggedItem(newParams.position, item.getDimension(), newParams.unit.getDirection());
     });
 
     const draggedUnitRemovedUnsubscribe = worldJourneyService.subscribe('DRAGGED_UNIT_REMOVED', () => {
@@ -238,6 +243,7 @@ export function WorldCanvas({
 
     return () => {
       draggedUnitAddedUnsubscribe();
+      draggedUnitPositionUpdatedUnsubscribe();
       draggedUnitRemovedUnsubscribe();
     };
   }, [worldJourneyService, worldRenderer]);
@@ -260,18 +266,6 @@ export function WorldCanvas({
       selectedItemUpdatedUnsubscribe();
       selectedItemRemovedUnsubscribe();
     };
-  }, [worldJourneyService, worldRenderer]);
-
-  useEffect(() => {
-    return worldJourneyService.subscribe('HOVERED_POSITION_UPDATED', (position) => {
-      const draggedUnit = worldJourneyService.getDraggedUnit();
-
-      if (draggedUnit) {
-        const item = worldJourneyService.getItem(draggedUnit.getItemId());
-        if (!item) return;
-        worldRenderer.updateDraggedItem(position, item.getDimension(), draggedUnit.getDirection());
-      }
-    });
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
