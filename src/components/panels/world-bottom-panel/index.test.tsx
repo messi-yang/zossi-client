@@ -3,7 +3,15 @@ import { dataTestids } from './data-test-ids';
 import { WorldBottomPanel } from '.';
 
 function renderWorldBottomPanel(): RenderResult {
-  return render(<WorldBottomPanel selectedItem={null} onMoveClick={() => {}} onCameraClick={() => {}} onBuildClick={() => {}} />);
+  return render(
+    <WorldBottomPanel
+      selectedItem={null}
+      onMoveClick={() => {}}
+      onCameraClick={() => {}}
+      onRotateSelectedItemClick={() => {}}
+      onBuildClick={() => {}}
+    />
+  );
 }
 
 describe('WorldBottomPanel', () => {

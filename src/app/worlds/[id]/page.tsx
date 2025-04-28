@@ -99,13 +99,11 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     cleanDisplayedEmbedCode,
   } = useContext(WorldJourneyServiceContext);
 
-  const [myPlayerHeldItemId, setMyPlayerHeldItemId] = useState<string | null>(null);
   const [myPlayerPosText, setMyPlayerPosText] = useState<string | null>(null);
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
     return worldJourneyService.subscribe('MY_PLAYER_UPDATED', ([, player]) => {
-      setMyPlayerHeldItemId(player.getHeldItemId());
       setMyPlayerPosText(player.getPosition().toText());
     });
   }, [worldJourneyService]);
@@ -137,59 +135,86 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     [worldId]
   );
 
+  const [newUnitPosition, setNewUnitPosition] = useState<PositionVo | null>(null);
+
   const [isCreateEmbedUnitModalVisible, setIsCreateEmbedUnitModalVisible] = useState(false);
   const handleCreateEmbedUnitConfirm = useCallback(
     (label: string, embedCode: string) => {
-      if (!myPlayerHeldItemId) return;
+      if (!worldJourneyService || !newUnitPosition) return;
 
-      createEmbedUnit(myPlayerHeldItemId, label, embedCode);
+      const item = worldJourneyService.getSelectedItem();
+      if (!item) return;
+
+      const currentSelectedItemDirection = worldJourneyService.getSelectedItemDirection();
+      if (!currentSelectedItemDirection) return;
+
+      createEmbedUnit(newUnitPosition, currentSelectedItemDirection, item.getId(), label, embedCode);
       setIsCreateEmbedUnitModalVisible(false);
     },
-    [myPlayerHeldItemId, createEmbedUnit]
+    [worldJourneyService, newUnitPosition]
   );
 
   const [isCreateLinkUnitModalVisible, setIsCreateLinkUnitModalVisible] = useState(false);
   const handleCreateLinkUnitConfirm = useCallback(
     (label: string, url: string) => {
-      if (!myPlayerHeldItemId) return;
+      if (!worldJourneyService || !newUnitPosition) return;
 
-      createLinkUnit(myPlayerHeldItemId, label, url);
+      const item = worldJourneyService.getSelectedItem();
+      if (!item) return;
+
+      const currentSelectedItemDirection = worldJourneyService.getSelectedItemDirection();
+      if (!currentSelectedItemDirection) return;
+
+      createLinkUnit(newUnitPosition, currentSelectedItemDirection, item.getId(), label, url);
       setIsCreateLinkUnitModalVisible(false);
     },
-    [myPlayerHeldItemId, createLinkUnit]
+    [worldJourneyService, newUnitPosition]
   );
 
   const [isCreateSignUnitModalVisible, setIsCreateSignUnitModalVisible] = useState(false);
   const handleCreateSignUnitConfirm = useCallback(
     (label: string) => {
-      if (!myPlayerHeldItemId) return;
+      if (!worldJourneyService || !newUnitPosition) return;
 
-      createSignUnit(myPlayerHeldItemId, label);
+      const item = worldJourneyService.getSelectedItem();
+      if (!item) return;
+
+      const currentSelectedItemDirection = worldJourneyService.getSelectedItemDirection();
+      if (!currentSelectedItemDirection) return;
+
+      createSignUnit(newUnitPosition, currentSelectedItemDirection, item.getId(), label);
       setIsCreateSignUnitModalVisible(false);
     },
-    [myPlayerHeldItemId, createSignUnit]
+    [worldJourneyService, newUnitPosition]
   );
 
-  const handleCreateUnitPressedKeysChange = useCallback(
-    (keys: string[]) => {
-      if (keys.length === 0) return;
+  const handleUnitCreate = useCallback(
+    (position: PositionVo) => {
       if (!worldJourneyService) return;
 
-      const compatibleUnitType = worldJourneyService.getMyPlayerHeldItem()?.getCompatibleUnitType();
+      const currentSelectedItem = worldJourneyService.getSelectedItem();
+      if (!currentSelectedItem) return;
+
+      const currentSelectedItemDirection = worldJourneyService.getSelectedItemDirection();
+      if (!currentSelectedItemDirection) return;
+
+      const compatibleUnitType = currentSelectedItem.getCompatibleUnitType();
 
       if (compatibleUnitType === UnitTypeEnum.Embed) {
+        setNewUnitPosition(position);
         setIsCreateEmbedUnitModalVisible(true);
       } else if (compatibleUnitType === UnitTypeEnum.Link) {
+        setNewUnitPosition(position);
         setIsCreateLinkUnitModalVisible(true);
       } else if (compatibleUnitType === UnitTypeEnum.Sign) {
+        setNewUnitPosition(position);
         setIsCreateSignUnitModalVisible(true);
       } else {
-        createUnit();
+        createUnit(position, currentSelectedItem, currentSelectedItemDirection);
       }
     },
-    [createUnit, createEmbedUnit, worldJourneyService]
+    [worldJourneyService]
   );
-  useHotKeys(['KeyP'], { onPressedKeysChange: handleCreateUnitPressedKeysChange });
 
   const handleRemoveClick = useCallback(() => {
     if (!selectedUnit) return;
@@ -343,10 +368,86 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     setIsSelectItemModalVisible(true);
   }, []);
 
+  const handleRotateSelectedItemClick = useCallback(() => {
+    if (!worldJourneyService) return;
+
+    worldJourneyService.rotateSelectedItem();
+  }, [worldJourneyService]);
+
   const handleMoveClick = useCallback(() => {
     if (!worldJourneyService) return;
 
     worldJourneyService.resetSelection();
+  }, [worldJourneyService]);
+
+  const handlePositionClick = useCallback(
+    (position: PositionVo) => {
+      if (!worldJourneyService) return;
+
+      const currentSelectedUnit = worldJourneyService.getSelectedUnit();
+      const currentSelectedItem = worldJourneyService.getSelectedItem();
+
+      const unitAtPos = worldJourneyService.getUnitByPos(position);
+      if (unitAtPos) {
+        if (currentSelectedUnit && unitAtPos.getId() === currentSelectedUnit.getId()) {
+          worldJourneyService.clearSelectedUnit();
+        } else {
+          worldJourneyService.selectUnit(unitAtPos.getId());
+        }
+      } else if (currentSelectedUnit) {
+        worldJourneyService.clearSelectedUnit();
+      } else if (currentSelectedItem) {
+        handleUnitCreate(position);
+      }
+    },
+    [worldJourneyService, handleUnitCreate]
+  );
+
+  const handlePositionHover = useCallback(
+    (position: PositionVo) => {
+      if (!worldJourneyService) return;
+
+      worldJourneyService.hoverPosition(position);
+    },
+    [worldJourneyService]
+  );
+
+  const handlePositionDragStart = useCallback(
+    (position: PositionVo) => {
+      if (!worldJourneyService) return;
+
+      const unitAtPos = worldJourneyService.getUnitByPos(position);
+      if (unitAtPos) {
+        const item = worldJourneyService.getItem(unitAtPos.getItemId());
+        if (!item) return;
+        worldJourneyService.dragUnit(unitAtPos.getId());
+      }
+    },
+    [worldJourneyService]
+  );
+
+  const handlePositionDragEnd = useCallback(
+    (position: PositionVo) => {
+      if (!worldJourneyService) return;
+
+      const draggedUnit = worldJourneyService.getDraggedUnit();
+      if (!draggedUnit) return;
+
+      const unitAtPos = worldJourneyService.getUnitByPos(position);
+      if (!unitAtPos) {
+        worldJourneyService.moveUnit(draggedUnit.getId(), position);
+        worldJourneyService.selectUnit(draggedUnit.getId());
+      } else {
+        worldJourneyService.clearDraggedUnit();
+      }
+    },
+    [worldJourneyService]
+  );
+
+  const handlePositionDragCancel = useCallback(() => {
+    if (!worldJourneyService) return;
+
+    worldJourneyService.clearDraggedUnit();
   }, [worldJourneyService]);
 
   return (
@@ -448,6 +549,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
           onMoveClick={handleMoveClick}
           onCameraClick={handleUpdateCameraClick}
           onBuildClick={handleBuildClick}
+          onRotateSelectedItemClick={handleRotateSelectedItemClick}
         />
       </section>
       <section
@@ -460,7 +562,18 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
         <Image src="/assets/images/logos/small-logo.png" alt="small logo" width={28} height={28} />
       </section>
       <section ref={mapContainerRef} className="relative w-full h-full overflow-hidden bg-black">
-        <section className="w-full h-full">{worldJourneyService && <WorldCanvas worldJourneyService={worldJourneyService} />}</section>
+        <section className="w-full h-full">
+          {worldJourneyService && (
+            <WorldCanvas
+              worldJourneyService={worldJourneyService}
+              onPositionClick={handlePositionClick}
+              onPositionHover={handlePositionHover}
+              onPositionDragStart={handlePositionDragStart}
+              onPositionDragEnd={handlePositionDragEnd}
+              onPositionDragCancel={handlePositionDragCancel}
+            />
+          )}
+        </section>
       </section>
     </main>
   );

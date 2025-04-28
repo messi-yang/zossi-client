@@ -16,10 +16,9 @@ import { EventHandlerSubscriber, EventHandler } from '../../event-dispatchers/co
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
-import { BoundVo } from '@/models/world/common/bound-vo';
-import { DirectionVo } from '@/models/world/common/direction-vo';
 import { MoveUnitCommand } from './managers/command-manager/commands/move-unit-command';
 import { ChangePlayerHeldItemCommand } from './managers/command-manager/commands/change-player-held-item-command';
+import { DirectionVo } from '@/models/world/common/direction-vo';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -57,7 +56,7 @@ export class WorldJourneyService {
 
     this.commandManager = CommandManager.create(world, this.playerManager, this.unitManager, this.itemManager, this.perspectiveManager);
 
-    this.selectionManager = SelectionManager.create(this.unitManager, this.itemManager);
+    this.selectionManager = SelectionManager.create(this.unitManager, this.itemManager, this.playerManager);
 
     this.updatePlayerPositionTickFps = 24;
     this.updatePlayerPositionTickCount = 0;
@@ -67,10 +66,12 @@ export class WorldJourneyService {
 
     this.checkMyPlayerWalkIntoPortalTicker();
 
-    this.selectionManager.subscribeSelectedItemUpdated(([, newSelectedItem]) => {
-      this.commandManager.executeLocalCommand(
-        ChangePlayerHeldItemCommand.create(this.getMyPlayer().getId(), newSelectedItem ? newSelectedItem.getId() : null)
-      );
+    this.selectionManager.subscribeSelectedItemAdded(({ item }) => {
+      this.commandManager.executeLocalCommand(ChangePlayerHeldItemCommand.create(this.getMyPlayer().getId(), item.getId()));
+    });
+
+    this.selectionManager.subscribeSelectedItemRemoved(() => {
+      this.commandManager.executeLocalCommand(ChangePlayerHeldItemCommand.create(this.getMyPlayer().getId(), null));
     });
   }
 
@@ -115,17 +116,6 @@ export class WorldJourneyService {
 
   public getWorld(): WorldModel {
     return this.world;
-  }
-
-  public getDesiredNewUnitPositionAndDirection(itemId: string): { position: PositionVo; direction: DirectionVo } | null {
-    const item = this.getItem(itemId);
-    if (!item) return null;
-
-    const myPlayer = this.getMyPlayer();
-    const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(item.getDimension());
-    const direction = myPlayer.getDirection().getOppositeDirection();
-
-    return { position: desiredNewUnitPos, direction };
   }
 
   public getMyPlayerHeldItem(): ItemModel | null {
@@ -276,12 +266,16 @@ export class WorldJourneyService {
     this.selectionManager.resetSelection();
   }
 
-  public getSelectedUnitId(): string | null {
-    return this.selectionManager.getSelectedUnitId();
+  public hoverPosition(position: PositionVo) {
+    this.selectionManager.hoverPosition(position);
+  }
+
+  public getHoveredPosition(): PositionVo | null {
+    return this.selectionManager.getHoveredPosition();
   }
 
   public getSelectedUnit(): UnitModel | null {
-    const selectedUnitId = this.getSelectedUnitId();
+    const selectedUnitId = this.selectionManager.getSelectedUnitId();
     if (!selectedUnitId) return null;
 
     return this.unitManager.getUnit(selectedUnitId);
@@ -311,8 +305,16 @@ export class WorldJourneyService {
     return this.selectionManager.getSelectedItem();
   }
 
+  public getSelectedItemDirection(): DirectionVo | null {
+    return this.selectionManager.getSelectedItemDirection();
+  }
+
   public selectItem(itemId: string) {
     this.selectionManager.selectItem(itemId);
+  }
+
+  public rotateSelectedItem() {
+    this.selectionManager.rotateSelectedItem();
   }
 
   public clearSelectedItem() {
@@ -349,9 +351,22 @@ export class WorldJourneyService {
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_BLOCKS_ADDED', subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void;
   subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
-  subscribe(eventName: 'SELECTED_UNIT_UPDATED', subscriber: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void;
-  subscribe(eventName: 'DRAGGED_UNIT_UPDATED', subscriber: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void;
-  subscribe(eventName: 'SELECTED_ITEM_UPDATED', subscriber: EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>): () => void;
+  subscribe(eventName: 'SELECTED_UNIT_ADDED', subscriber: EventHandlerSubscriber<UnitModel>): () => void;
+  subscribe(eventName: 'SELECTED_UNIT_REMOVED', subscriber: EventHandlerSubscriber<void>): () => void;
+  subscribe(eventName: 'DRAGGED_UNIT_ADDED', subscriber: EventHandlerSubscriber<UnitModel>): () => void;
+  subscribe(eventName: 'DRAGGED_UNIT_REMOVED', subscriber: EventHandlerSubscriber<void>): () => void;
+  subscribe(
+    eventName: 'SELECTED_ITEM_ADDED',
+    subscriber: EventHandlerSubscriber<{ item: ItemModel; position: PositionVo; direction: DirectionVo }>
+  ): () => void;
+  subscribe(
+    eventName: 'SELECTED_ITEM_UPDATED',
+    subscriber: EventHandlerSubscriber<
+      [{ item: ItemModel; position: PositionVo; direction: DirectionVo }, { item: ItemModel; position: PositionVo; direction: DirectionVo }]
+    >
+  ): () => void;
+  subscribe(eventName: 'SELECTED_ITEM_REMOVED', subscriber: EventHandlerSubscriber<void>): () => void;
+  subscribe(eventName: 'HOVERED_POSITION_UPDATED', subscriber: EventHandlerSubscriber<PositionVo>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -367,9 +382,14 @@ export class WorldJourneyService {
       | 'PLAYER_REMOVED'
       | 'PLACEHOLDER_BLOCKS_ADDED'
       | 'UNITS_UPDATED'
-      | 'SELECTED_UNIT_UPDATED'
-      | 'DRAGGED_UNIT_UPDATED'
-      | 'SELECTED_ITEM_UPDATED',
+      | 'SELECTED_UNIT_ADDED'
+      | 'SELECTED_UNIT_REMOVED'
+      | 'DRAGGED_UNIT_ADDED'
+      | 'DRAGGED_UNIT_REMOVED'
+      | 'SELECTED_ITEM_ADDED'
+      | 'SELECTED_ITEM_UPDATED'
+      | 'SELECTED_ITEM_REMOVED'
+      | 'HOVERED_POSITION_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<PositionVo>
@@ -382,9 +402,17 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<PortalUnitModel>
       | EventHandlerSubscriber<BlockIdVo[]>
       | EventHandlerSubscriber<BlockModel[]>
-      | EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>
-      | EventHandlerSubscriber<BoundVo | null>
-      | EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>
+      | EventHandlerSubscriber<UnitModel>
+      | EventHandlerSubscriber<void>
+      | EventHandlerSubscriber<{ item: ItemModel; position: PositionVo; direction: DirectionVo }>
+      | EventHandlerSubscriber<
+          [
+            { item: ItemModel; position: PositionVo; direction: DirectionVo },
+            { item: ItemModel; position: PositionVo; direction: DirectionVo }
+          ]
+        >
+      | EventHandlerSubscriber<void>
+      | EventHandlerSubscriber<PositionVo>
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
@@ -412,12 +440,31 @@ export class WorldJourneyService {
       return this.unitManager.subscribePlaceholderBlockIdsAddedEvent(subscriber as EventHandlerSubscriber<BlockIdVo[]>);
     } else if (eventName === 'BLOCKS_UPDATED') {
       return this.unitManager.subscribeBlocksUpdatedEvent(subscriber as EventHandlerSubscriber<BlockModel[]>);
-    } else if (eventName === 'SELECTED_UNIT_UPDATED') {
-      return this.selectionManager.subscribeSelectedUnitUpdated(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
-    } else if (eventName === 'DRAGGED_UNIT_UPDATED') {
-      return this.selectionManager.subscribeDraggedUnitUpdated(subscriber as EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>);
+    } else if (eventName === 'SELECTED_UNIT_ADDED') {
+      return this.selectionManager.subscribeSelectedUnitAdded(subscriber as EventHandlerSubscriber<UnitModel>);
+    } else if (eventName === 'SELECTED_UNIT_REMOVED') {
+      return this.selectionManager.subscribeSelectedUnitRemoved(subscriber as EventHandlerSubscriber<void>);
+    } else if (eventName === 'DRAGGED_UNIT_ADDED') {
+      return this.selectionManager.subscribeDraggedUnitAdded(subscriber as EventHandlerSubscriber<UnitModel>);
+    } else if (eventName === 'DRAGGED_UNIT_REMOVED') {
+      return this.selectionManager.subscribeDraggedUnitRemoved(subscriber as EventHandlerSubscriber<void>);
+    } else if (eventName === 'SELECTED_ITEM_ADDED') {
+      return this.selectionManager.subscribeSelectedItemAdded(
+        subscriber as EventHandlerSubscriber<{ item: ItemModel; direction: DirectionVo }>
+      );
     } else if (eventName === 'SELECTED_ITEM_UPDATED') {
-      return this.selectionManager.subscribeSelectedItemUpdated(subscriber as EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>);
+      return this.selectionManager.subscribeSelectedItemUpdated(
+        subscriber as EventHandlerSubscriber<
+          [
+            { item: ItemModel; position: PositionVo; direction: DirectionVo },
+            { item: ItemModel; position: PositionVo; direction: DirectionVo }
+          ]
+        >
+      );
+    } else if (eventName === 'SELECTED_ITEM_REMOVED') {
+      return this.selectionManager.subscribeSelectedItemRemoved(subscriber as EventHandlerSubscriber<void>);
+    } else if (eventName === 'HOVERED_POSITION_UPDATED') {
+      return this.selectionManager.subscribeHoveredPositionUpdated(subscriber as EventHandlerSubscriber<PositionVo>);
     } else {
       return () => {};
     }

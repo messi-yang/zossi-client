@@ -52,10 +52,10 @@ type ContextValue = {
   makePlayerWalk: (direction: DirectionVo) => void;
   sendPlayerIntoPortal: (unitId: string) => void;
   engageUnit: (unitId: string) => void;
-  createUnit: () => void;
-  createEmbedUnit: (itemId: string, label: string, embedCode: string) => void;
-  createLinkUnit: (itemId: string, label: string, url: string) => void;
-  createSignUnit: (itemId: string, label: string) => void;
+  createUnit: (position: PositionVo, item: ItemModel, direction: DirectionVo) => void;
+  createEmbedUnit: (position: PositionVo, direction: DirectionVo, itemId: string, label: string, embedCode: string) => void;
+  createLinkUnit: (position: PositionVo, direction: DirectionVo, itemId: string, label: string, url: string) => void;
+  createSignUnit: (position: PositionVo, direction: DirectionVo, itemId: string, label: string) => void;
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
   replayCommands: (duration: number, speed: number) => void;
   removeUnit: (unitId: string) => void;
@@ -166,18 +166,36 @@ export function Provider({ children }: Props) {
 
     setSelectedUnit(worldJourneyService.getSelectedUnit());
 
-    return worldJourneyService.subscribe('SELECTED_UNIT_UPDATED', ([, newSelectedUnit]) => {
+    const selectedUnitAddedUnsubscribe = worldJourneyService.subscribe('SELECTED_UNIT_ADDED', (newSelectedUnit) => {
       setSelectedUnit(newSelectedUnit);
     });
+
+    const selectedUnitRemovedUnsubscribe = worldJourneyService.subscribe('SELECTED_UNIT_REMOVED', () => {
+      setSelectedUnit(null);
+    });
+
+    return () => {
+      selectedUnitAddedUnsubscribe();
+      selectedUnitRemovedUnsubscribe();
+    };
   }, [worldJourneyService]);
 
   const [selectedItem, setSelectedItem] = useState<ItemModel | null>(null);
   useEffect(() => {
     if (!worldJourneyService) return () => {};
 
-    return worldJourneyService.subscribe('SELECTED_ITEM_UPDATED', ([, newSelectedItem]) => {
-      setSelectedItem(newSelectedItem);
+    const selectedItemAddedUnsubscribe = worldJourneyService.subscribe('SELECTED_ITEM_ADDED', ({ item }) => {
+      setSelectedItem(item);
     });
+
+    const selectedItemRemovedUnsubscribe = worldJourneyService.subscribe('SELECTED_ITEM_REMOVED', () => {
+      setSelectedItem(null);
+    });
+
+    return () => {
+      selectedItemAddedUnsubscribe();
+      selectedItemRemovedUnsubscribe();
+    };
   }, [worldJourneyService]);
 
   const enterWorld = useCallback((worldId: string) => {
@@ -352,70 +370,57 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
-  const createUnit = useCallback(() => {
-    if (!worldJourneyService) return;
-
-    const myPlayerHeldItem = worldJourneyService.getMyPlayerHeldItem();
-    if (!myPlayerHeldItem) return;
-
-    const myPlayer = worldJourneyService.getMyPlayer();
-    const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(myPlayerHeldItem.getDimension());
-    const direction = myPlayer.getDirection().getOppositeDirection();
-
-    const compatibleUnitType = myPlayerHeldItem.getCompatibleUnitType();
-    dipatchUnitType(compatibleUnitType, {
-      static: () => {
-        createStaticUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction);
-      },
-      fence: () => {
-        createFenceUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction);
-      },
-      portal: () => {
-        createPortalUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction);
-      },
-      link: () => {},
-      embed: () => {},
-      color: () => {
-        createColorUnit(myPlayerHeldItem.getId(), desiredNewUnitPos, direction, ColorVo.createRandom());
-      },
-      sign: () => {},
-    });
-  }, [worldJourneyService]);
-
-  const createEmbedUnit = useCallback(
-    (itemId: string, label: string, embedCode: string) => {
+  const createUnit = useCallback(
+    (position: PositionVo, item: ItemModel, direction: DirectionVo) => {
       if (!worldJourneyService) return;
 
-      const response = worldJourneyService.getDesiredNewUnitPositionAndDirection(itemId);
-      if (!response) return;
+      const compatibleUnitType = item.getCompatibleUnitType();
+      dipatchUnitType(compatibleUnitType, {
+        static: () => {
+          createStaticUnit(item.getId(), position, direction);
+        },
+        fence: () => {
+          createFenceUnit(item.getId(), position, direction);
+        },
+        portal: () => {
+          createPortalUnit(item.getId(), position, direction);
+        },
+        link: () => {},
+        embed: () => {},
+        color: () => {
+          createColorUnit(item.getId(), position, direction, ColorVo.createRandom());
+        },
+        sign: () => {},
+      });
+    },
+    [worldJourneyService]
+  );
 
-      const command = CreateEmbedUnitCommand.create(itemId, response.position, response.direction, label, embedCode);
+  const createEmbedUnit = useCallback(
+    (position: PositionVo, direction: DirectionVo, itemId: string, label: string, embedCode: string) => {
+      if (!worldJourneyService) return;
+
+      const command = CreateEmbedUnitCommand.create(itemId, position, direction, label, embedCode);
       worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
 
   const createLinkUnit = useCallback(
-    (itemId: string, label: string, url: string) => {
+    (position: PositionVo, direction: DirectionVo, itemId: string, label: string, url: string) => {
       if (!worldJourneyService) return;
 
-      const response = worldJourneyService.getDesiredNewUnitPositionAndDirection(itemId);
-      if (!response) return;
-
-      const command = CreateLinkUnitCommand.create(itemId, response.position, response.direction, label, url);
+      const command = CreateLinkUnitCommand.create(itemId, position, direction, label, url);
       worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
   );
 
   const createSignUnit = useCallback(
-    (itemId: string, label: string) => {
+    (position: PositionVo, direction: DirectionVo, itemId: string, label: string) => {
       if (!worldJourneyService) return;
 
-      const response = worldJourneyService.getDesiredNewUnitPositionAndDirection(itemId);
-      if (!response) return;
-
-      const command = CreateSignUnitCommand.create(itemId, response.position, response.direction, label);
+      const command = CreateSignUnitCommand.create(itemId, position, direction, label);
       worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
@@ -561,16 +566,13 @@ export function Provider({ children }: Props) {
   const moveUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
-    const currentSelectedUnitId = worldJourneyService.getSelectedUnitId();
-    if (!currentSelectedUnitId) return;
-
     const currentSelectedUnit = worldJourneyService.getSelectedUnit();
     if (!currentSelectedUnit) return;
 
     const myPlayer = worldJourneyService.getMyPlayer();
     const desiredNewUnitPos = myPlayer.getDesiredNewUnitPosition(currentSelectedUnit.getDimension());
 
-    worldJourneyService.moveUnit(currentSelectedUnitId, desiredNewUnitPos);
+    worldJourneyService.moveUnit(currentSelectedUnit.getId(), desiredNewUnitPos);
   }, [worldJourneyService]);
 
   const context = {

@@ -50,7 +50,7 @@ function BottomPanelMenuButton({ active, onClick }: { active: boolean; onClick: 
       onClick={onClick}
       type="button"
     >
-      <Icon icon="iconamoon:arrow-up-2-light" width={24} height={24} />
+      <Icon icon="iconamoon:arrow-up-2-light" width={24} height={24} rotate={90} />
     </button>
   );
 }
@@ -79,16 +79,17 @@ function MenuAnchor({ children, opened, onClick }: { children: React.ReactNode; 
 interface Props {
   selectedItem: ItemModel | null;
   onMoveClick: () => void;
+  onRotateSelectedItemClick: () => void;
   onBuildClick: () => void;
   onCameraClick: () => void;
 }
 
-export function WorldBottomPanel({ selectedItem, onMoveClick, onCameraClick, onBuildClick }: Props) {
+export function WorldBottomPanel({ selectedItem, onMoveClick, onRotateSelectedItemClick, onBuildClick, onCameraClick }: Props) {
   const [isBuildMenuOpen, setIsBuildMenuOpen] = useState(false);
 
-  const handleBuildMenuClick = useCallback(() => {
-    setIsBuildMenuOpen(!isBuildMenuOpen);
-  }, [isBuildMenuOpen]);
+  // const handleBuildMenuClick = useCallback(() => {
+  //   setIsBuildMenuOpen(!isBuildMenuOpen);
+  // }, [isBuildMenuOpen]);
 
   const [wrapperDom, setWrapperDom] = useState<HTMLDivElement | null>(null);
 
@@ -98,7 +99,6 @@ export function WorldBottomPanel({ selectedItem, onMoveClick, onCameraClick, onB
 
   const handleBuildClick = useCallback(() => {
     onBuildClick();
-    setIsBuildMenuOpen(false);
   }, [onBuildClick]);
 
   const isMoveActive = useMemo(() => {
@@ -123,10 +123,10 @@ export function WorldBottomPanel({ selectedItem, onMoveClick, onCameraClick, onB
         {selectedItem && (
           <div
             className={twMerge('w-12', 'h-12', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'bg-blue-600', 'rounded-lg')}
-            onClick={handleBuildClick}
+            onClick={onRotateSelectedItemClick}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                handleBuildClick();
+                onRotateSelectedItemClick();
               }
             }}
             role="button"
@@ -135,7 +135,7 @@ export function WorldBottomPanel({ selectedItem, onMoveClick, onCameraClick, onB
             <Image src={selectedItem.getThumbnailSrc()} alt={selectedItem.getName()} width={36} height={36} />
           </div>
         )}
-        <MenuAnchor opened={isBuildMenuOpen} onClick={handleBuildMenuClick}>
+        <MenuAnchor opened={isBuildMenuOpen} onClick={onBuildClick}>
           <div className={twMerge('flex', 'flex-col', 'gap-1', 'p-2', 'rounded-[10px]')}>
             {Object.values(UnitTypeEnum).map((unitType) => (
               <div

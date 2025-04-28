@@ -3,30 +3,54 @@ import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatch
 import { UnitManager } from '../unit-manager';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { ItemManager } from '../item-manager';
+import { PositionVo } from '@/models/world/common/position-vo';
+import { DirectionVo } from '@/models/world/common/direction-vo';
+import { PlayerManager } from '../player-manager';
 
 export class SelectionManager {
+  private hoveredPosition: PositionVo = PositionVo.create(0, 0, 0);
+
+  private hoveredPositionUpdatedHandler = EventHandler.create<PositionVo>();
+
   private selectedUnitId: string | null = null;
 
-  private selectedUnitUpdatedHandler = EventHandler.create<[UnitModel | null, UnitModel | null]>();
+  private selectedUnitAddedHandler = EventHandler.create<UnitModel>();
+
+  private selectedUnitRemovedHandler = EventHandler.create<void>();
 
   private draggedUnitId: string | null = null;
 
-  private draggedUnitUpdatedHandler = EventHandler.create<[UnitModel | null, UnitModel | null]>();
+  private draggedUnitAddedHandler = EventHandler.create<UnitModel>();
+
+  private draggedUnitRemovedHandler = EventHandler.create<void>();
 
   private selectedItemId: string | null = null;
 
-  private selectedItemUpdatedHandler = EventHandler.create<[ItemModel | null, ItemModel | null]>();
+  private selectedItemDirection = DirectionVo.newDown();
+
+  private selectedItemAddedHandler = EventHandler.create<{ item: ItemModel; position: PositionVo; direction: DirectionVo }>();
+
+  private selectedItemUpdatedHandler =
+    EventHandler.create<
+      [{ item: ItemModel; position: PositionVo; direction: DirectionVo }, { item: ItemModel; position: PositionVo; direction: DirectionVo }]
+    >();
+
+  private selectedItemRemovedHandler = EventHandler.create<void>();
 
   private unitManager: UnitManager;
 
   private itemManager: ItemManager;
 
-  constructor(unitManager: UnitManager, itemManager: ItemManager) {
+  private playerManager: PlayerManager;
+
+  constructor(unitManager: UnitManager, itemManager: ItemManager, playerManager: PlayerManager) {
     this.unitManager = unitManager;
     this.itemManager = itemManager;
+    this.playerManager = playerManager;
 
     this.unitManager.subscribeUnitRemovedEvent((oldUnit) => {
       const oldUnitId = oldUnit.getId();
+
       if (this.selectedUnitId && oldUnitId === this.selectedUnitId) {
         this.clearSelectedUnit();
       }
@@ -36,8 +60,8 @@ export class SelectionManager {
     });
   }
 
-  static create(unitManager: UnitManager, itemManager: ItemManager) {
-    return new SelectionManager(unitManager, itemManager);
+  static create(unitManager: UnitManager, itemManager: ItemManager, playerManager: PlayerManager) {
+    return new SelectionManager(unitManager, itemManager, playerManager);
   }
 
   public resetSelection() {
@@ -46,19 +70,39 @@ export class SelectionManager {
     this.clearSelectedItem();
   }
 
+  public hoverPosition(position: PositionVo) {
+    const oldHoveredPosition = this.hoveredPosition;
+    this.hoveredPosition = position;
+    this.publishHoveredPositionUpdated(position);
+
+    const selectedItem = this.getSelectedItem();
+    if (selectedItem) {
+      this.publishSelectedItemUpdated(
+        { item: selectedItem, position: oldHoveredPosition, direction: this.selectedItemDirection },
+        {
+          item: selectedItem,
+          position: this.hoveredPosition,
+          direction: this.selectedItemDirection,
+        }
+      );
+    }
+  }
+
+  public getHoveredPosition(): PositionVo | null {
+    return this.hoveredPosition;
+  }
+
   public getSelectedUnitId(): string | null {
     return this.selectedUnitId;
   }
 
   public selectUnit(unitId: string) {
-    if (!this.unitManager.hasUnit(unitId)) return;
+    const newUnit = this.unitManager.getUnit(unitId);
+    if (!newUnit) return;
 
-    const oldUnitId = this.selectedUnitId;
     this.selectedUnitId = unitId;
 
-    const oldUnit = oldUnitId ? this.unitManager.getUnit(oldUnitId) : null;
-    const newUnit = this.unitManager.getUnit(unitId);
-    this.publishSelectedUnitUpdated(oldUnit, newUnit);
+    this.publishSelectedUnitAdded(newUnit);
 
     this.clearDraggedUnit();
     this.clearSelectedItem();
@@ -66,30 +110,34 @@ export class SelectionManager {
 
   public clearSelectedUnit() {
     if (!this.selectedUnitId) return;
-    const oldUnitId = this.selectedUnitId;
     this.selectedUnitId = null;
 
-    const oldUnit = oldUnitId ? this.unitManager.getUnit(oldUnitId) : null;
-    this.publishSelectedUnitUpdated(oldUnit, null);
+    this.publishSelectedUnitRemoved();
   }
 
-  public subscribeSelectedUnitUpdated(handler: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void {
-    return this.selectedUnitUpdatedHandler.subscribe(handler);
+  public subscribeSelectedUnitAdded(handler: EventHandlerSubscriber<UnitModel>): () => void {
+    return this.selectedUnitAddedHandler.subscribe(handler);
   }
 
-  private publishSelectedUnitUpdated(oldUnit: UnitModel | null, newUnit: UnitModel | null) {
-    this.selectedUnitUpdatedHandler.publish([oldUnit, newUnit]);
+  private publishSelectedUnitAdded(unit: UnitModel) {
+    this.selectedUnitAddedHandler.publish(unit);
+  }
+
+  public subscribeSelectedUnitRemoved(handler: EventHandlerSubscriber<void>): () => void {
+    return this.selectedUnitRemovedHandler.subscribe(handler);
+  }
+
+  private publishSelectedUnitRemoved() {
+    this.selectedUnitRemovedHandler.publish();
   }
 
   public dragUnit(unitId: string) {
-    if (!this.unitManager.hasUnit(unitId)) return;
+    const newUnit = this.unitManager.getUnit(unitId);
+    if (!newUnit) return;
 
-    const oldUnitId = this.draggedUnitId;
     this.draggedUnitId = unitId;
 
-    const oldUnit = oldUnitId ? this.unitManager.getUnit(oldUnitId) : null;
-    const newUnit = this.unitManager.getUnit(unitId);
-    this.publishDraggedUnitUpdated(oldUnit, newUnit);
+    this.publishDraggedUnitAdded(newUnit);
 
     this.clearSelectedUnit();
     this.clearSelectedItem();
@@ -103,18 +151,32 @@ export class SelectionManager {
   public clearDraggedUnit() {
     if (!this.draggedUnitId) return;
 
-    const oldUnitId = this.draggedUnitId;
     this.draggedUnitId = null;
-    const oldUnit = oldUnitId ? this.unitManager.getUnit(oldUnitId) : null;
-    this.publishDraggedUnitUpdated(oldUnit, null);
+    this.publishDraggedUnitRemoved();
   }
 
-  public subscribeDraggedUnitUpdated(handler: EventHandlerSubscriber<[UnitModel | null, UnitModel | null]>): () => void {
-    return this.draggedUnitUpdatedHandler.subscribe(handler);
+  public subscribeHoveredPositionUpdated(handler: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.hoveredPositionUpdatedHandler.subscribe(handler);
   }
 
-  private publishDraggedUnitUpdated(oldUnit: UnitModel | null, newUnit: UnitModel | null) {
-    this.draggedUnitUpdatedHandler.publish([oldUnit, newUnit]);
+  private publishHoveredPositionUpdated(position: PositionVo) {
+    this.hoveredPositionUpdatedHandler.publish(position);
+  }
+
+  public subscribeDraggedUnitAdded(handler: EventHandlerSubscriber<UnitModel>): () => void {
+    return this.draggedUnitAddedHandler.subscribe(handler);
+  }
+
+  private publishDraggedUnitAdded(unit: UnitModel) {
+    this.draggedUnitAddedHandler.publish(unit);
+  }
+
+  public subscribeDraggedUnitRemoved(handler: EventHandlerSubscriber<void>): () => void {
+    return this.draggedUnitRemovedHandler.subscribe(handler);
+  }
+
+  private publishDraggedUnitRemoved() {
+    this.draggedUnitRemovedHandler.publish();
   }
 
   public getSelectedItem(): ItemModel | null {
@@ -122,30 +184,72 @@ export class SelectionManager {
     return this.itemManager.getItem(this.selectedItemId);
   }
 
+  public getSelectedItemDirection(): DirectionVo {
+    return this.selectedItemDirection;
+  }
+
   public selectItem(itemId: string) {
-    const oldItemId = this.selectedItemId;
-    this.selectedItemId = itemId;
-    const oldItem = oldItemId ? this.itemManager.getItem(oldItemId) : null;
     const newItem = this.itemManager.getItem(itemId);
-    this.publishSelectedItemUpdated(oldItem, newItem);
+    if (!newItem) return;
+
+    this.selectedItemId = itemId;
+    this.selectedItemDirection = DirectionVo.newDown();
+
+    this.publishSelectedItemAdded(newItem, this.hoveredPosition, this.selectedItemDirection);
 
     this.clearDraggedUnit();
     this.clearSelectedUnit();
   }
 
-  public clearSelectedItem() {
-    if (!this.selectedItemId) return;
-    const oldItemId = this.selectedItemId;
-    this.selectedItemId = null;
-    const oldItem = oldItemId ? this.itemManager.getItem(oldItemId) : null;
-    this.publishSelectedItemUpdated(oldItem, null);
+  public rotateSelectedItem() {
+    const selectedItem = this.getSelectedItem();
+    if (!selectedItem) return;
+
+    const oldDirection = this.selectedItemDirection;
+    this.selectedItemDirection = this.selectedItemDirection.rotate();
+    this.publishSelectedItemUpdated(
+      { item: selectedItem, position: this.hoveredPosition, direction: oldDirection },
+      { item: selectedItem, position: this.hoveredPosition, direction: this.selectedItemDirection }
+    );
   }
 
-  public subscribeSelectedItemUpdated(handler: EventHandlerSubscriber<[ItemModel | null, ItemModel | null]>): () => void {
+  public clearSelectedItem() {
+    if (!this.selectedItemId) return;
+    this.selectedItemId = null;
+
+    this.publishSelectedItemRemoved();
+  }
+
+  public subscribeSelectedItemAdded(
+    handler: EventHandlerSubscriber<{ item: ItemModel; position: PositionVo; direction: DirectionVo }>
+  ): () => void {
+    return this.selectedItemAddedHandler.subscribe(handler);
+  }
+
+  private publishSelectedItemAdded(item: ItemModel, position: PositionVo, direction: DirectionVo) {
+    this.selectedItemAddedHandler.publish({ item, position, direction });
+  }
+
+  public subscribeSelectedItemUpdated(
+    handler: EventHandlerSubscriber<
+      [{ item: ItemModel; position: PositionVo; direction: DirectionVo }, { item: ItemModel; position: PositionVo; direction: DirectionVo }]
+    >
+  ): () => void {
     return this.selectedItemUpdatedHandler.subscribe(handler);
   }
 
-  private publishSelectedItemUpdated(oldItem: ItemModel | null, newItem: ItemModel | null) {
-    this.selectedItemUpdatedHandler.publish([oldItem, newItem]);
+  private publishSelectedItemUpdated(
+    oldParams: { item: ItemModel; position: PositionVo; direction: DirectionVo },
+    newParams: { item: ItemModel; position: PositionVo; direction: DirectionVo }
+  ) {
+    this.selectedItemUpdatedHandler.publish([oldParams, newParams]);
+  }
+
+  public subscribeSelectedItemRemoved(handler: EventHandlerSubscriber<void>): () => void {
+    return this.selectedItemRemovedHandler.subscribe(handler);
+  }
+
+  private publishSelectedItemRemoved() {
+    this.selectedItemRemovedHandler.publish();
   }
 }

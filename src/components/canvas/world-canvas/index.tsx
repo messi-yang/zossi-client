@@ -9,9 +9,21 @@ import { PositionVo } from '@/models/world/common/position-vo';
 
 type Props = {
   worldJourneyService: WorldJourneyService;
+  onPositionClick: (position: PositionVo) => void;
+  onPositionHover: (position: PositionVo) => void;
+  onPositionDragStart: (position: PositionVo) => void;
+  onPositionDragEnd: (position: PositionVo) => void;
+  onPositionDragCancel: () => void;
 };
 
-export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
+export function WorldCanvas({
+  worldJourneyService,
+  onPositionClick,
+  onPositionHover,
+  onPositionDragStart,
+  onPositionDragEnd,
+  onPositionDragCancel,
+}: Props): React.ReactNode {
   const [wrapperDom, setWrapperDom] = useState<HTMLDivElement | null>(null);
   const wrapperDomRect = useDomRect(wrapperDom);
   const worldRenderer = useMemo(() => WorldRenderer.create(), [worldJourneyService]);
@@ -167,79 +179,97 @@ export function WorldCanvas({ worldJourneyService }: Props): React.ReactNode {
   }, [worldRenderer, worldJourneyService]);
 
   useEffect(() => {
-    return worldJourneyService.subscribe('SELECTED_UNIT_UPDATED', ([, newUnit]) => {
-      worldRenderer.updateSelectedBound(newUnit ? newUnit.getOccupiedBound() : null);
+    const selectedUnitAddedUnsubscribe = worldJourneyService.subscribe('SELECTED_UNIT_ADDED', (newUnit) => {
+      worldRenderer.updateSelectedBound(newUnit.getOccupiedBound());
     });
+
+    const selectedUnitRemovedUnsubscribe = worldJourneyService.subscribe('SELECTED_UNIT_REMOVED', () => {
+      worldRenderer.updateSelectedBound(null);
+    });
+
+    return () => {
+      selectedUnitAddedUnsubscribe();
+      selectedUnitRemovedUnsubscribe();
+    };
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
     return worldRenderer.subscribePositionClickEvent((position) => {
-      const unitAtPos = worldJourneyService.getUnitByPos(position);
-      if (unitAtPos) {
-        if (unitAtPos.getId() === worldJourneyService.getSelectedUnitId()) {
-          worldJourneyService.clearSelectedUnit();
-        } else {
-          worldJourneyService.selectUnit(unitAtPos.getId());
-        }
-      } else {
-        worldJourneyService.clearSelectedUnit();
-      }
+      onPositionClick(position);
     });
-  }, [worldRenderer]);
+  }, [worldRenderer, onPositionClick]);
+
+  useEffect(() => {
+    return worldRenderer.subscribePositionHoverEvent((position) => {
+      onPositionHover(position);
+    });
+  }, [worldRenderer, onPositionHover]);
 
   useEffect(() => {
     return worldRenderer.subscribePositionDragStartEvent((position) => {
-      const unitAtPos = worldJourneyService.getUnitByPos(position);
-      if (unitAtPos) {
-        const item = worldJourneyService.getItem(unitAtPos.getItemId());
-        if (!item) return;
-        worldJourneyService.dragUnit(unitAtPos.getId());
-      }
+      onPositionDragStart(position);
     });
-  }, [worldRenderer]);
-
-  useEffect(() => {
-    return worldRenderer.subscribePositionDragEvent((position) => {
-      const draggedUnit = worldJourneyService.getDraggedUnit();
-      if (!draggedUnit) return;
-
-      const item = worldJourneyService.getItem(draggedUnit.getItemId());
-      if (!item) return;
-
-      worldRenderer.updateDraggedItem(position, item.getDimension(), draggedUnit.getDirection());
-    });
-  }, [worldRenderer]);
+  }, [worldRenderer, onPositionDragStart]);
 
   useEffect(() => {
     return worldRenderer.subscribePositionDragEndEvent((position) => {
-      const draggedUnit = worldJourneyService.getDraggedUnit();
-      if (!draggedUnit) return;
-
-      const unitAtPos = worldJourneyService.getUnitByPos(position);
-      if (!unitAtPos) {
-        worldJourneyService.moveUnit(draggedUnit.getId(), position);
-        worldJourneyService.selectUnit(draggedUnit.getId());
-      } else {
-        worldJourneyService.clearDraggedUnit();
-      }
+      onPositionDragEnd(position);
     });
-  }, [worldRenderer]);
+  }, [worldRenderer, onPositionDragEnd]);
 
   useEffect(() => {
     return worldRenderer.subscribePositionDragCancelEvent(() => {
-      worldJourneyService.clearDraggedUnit();
+      onPositionDragCancel();
     });
-  }, [worldRenderer]);
+  }, [worldRenderer, onPositionDragCancel]);
 
   useEffect(() => {
-    return worldJourneyService.subscribe('DRAGGED_UNIT_UPDATED', ([, newDraggedUnit]) => {
+    const draggedUnitAddedUnsubscribe = worldJourneyService.subscribe('DRAGGED_UNIT_ADDED', (newDraggedUnit) => {
       if (newDraggedUnit) {
         const item = worldJourneyService.getItem(newDraggedUnit.getItemId());
         if (!item) return;
         worldRenderer.addDraggedItem(item);
-      } else {
-        worldJourneyService.clearDraggedUnit();
-        worldRenderer.removeDraggedItem();
+      }
+    });
+
+    const draggedUnitRemovedUnsubscribe = worldJourneyService.subscribe('DRAGGED_UNIT_REMOVED', () => {
+      worldRenderer.removeDraggedItem();
+    });
+
+    return () => {
+      draggedUnitAddedUnsubscribe();
+      draggedUnitRemovedUnsubscribe();
+    };
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    const selectedItemAddedUnsubscribe = worldJourneyService.subscribe('SELECTED_ITEM_ADDED', ({ item, position, direction }) => {
+      worldRenderer.addSelectedItem(item, position, direction);
+    });
+
+    const selectedItemUpdatedUnsubscribe = worldJourneyService.subscribe('SELECTED_ITEM_UPDATED', ([, { item, position, direction }]) => {
+      worldRenderer.updateSelectedItem(item, position, direction);
+    });
+
+    const selectedItemRemovedUnsubscribe = worldJourneyService.subscribe('SELECTED_ITEM_REMOVED', () => {
+      worldRenderer.removeSelectedItem();
+    });
+
+    return () => {
+      selectedItemAddedUnsubscribe();
+      selectedItemUpdatedUnsubscribe();
+      selectedItemRemovedUnsubscribe();
+    };
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
+    return worldJourneyService.subscribe('HOVERED_POSITION_UPDATED', (position) => {
+      const draggedUnit = worldJourneyService.getDraggedUnit();
+
+      if (draggedUnit) {
+        const item = worldJourneyService.getItem(draggedUnit.getItemId());
+        if (!item) return;
+        worldRenderer.updateDraggedItem(position, item.getDimension(), draggedUnit.getDirection());
       }
     });
   }, [worldJourneyService, worldRenderer]);

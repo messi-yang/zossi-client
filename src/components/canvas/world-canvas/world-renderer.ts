@@ -72,9 +72,9 @@ export class WorldRenderer {
 
   private draggedPosition: PositionVo | null = null;
 
-  private positionDragStartEventHandler = EventHandler.create<PositionVo>();
+  private selectedItemModel: THREE.Group | null = null;
 
-  private positionDragEventHandler = EventHandler.create<PositionVo>();
+  private positionDragStartEventHandler = EventHandler.create<PositionVo>();
 
   private positionDragEndEventHandler = EventHandler.create<PositionVo>();
 
@@ -82,11 +82,9 @@ export class WorldRenderer {
 
   private positionClickEventHandler = EventHandler.create<PositionVo>();
 
-  private mouseOverPositionIndicator: THREE.Mesh;
+  private positionHoverEventHandler = EventHandler.create<PositionVo>();
 
-  private positionMouseMoveEventHandler = EventHandler.create<PositionVo>();
-
-  private positionMouseDragEventHandler = EventHandler.create<PositionVo>();
+  private positionHoverIndicator: THREE.Mesh;
 
   constructor() {
     this.scene = this.createScene();
@@ -110,12 +108,12 @@ export class WorldRenderer {
     this.selectedBoundIndicator.position.set(0, -100, 0);
     this.scene.add(this.selectedBoundIndicator);
 
-    this.mouseOverPositionIndicator = new THREE.Mesh(
+    this.positionHoverIndicator = new THREE.Mesh(
       new THREE.BoxGeometry(1, 0.1, 1),
       new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.3, transparent: true })
     );
-    this.mouseOverPositionIndicator.position.set(0, -100, 0);
-    this.scene.add(this.mouseOverPositionIndicator);
+    this.positionHoverIndicator.position.set(0, -100, 0);
+    this.scene.add(this.positionHoverIndicator);
 
     this.touchPanel = new THREE.Mesh(
       new THREE.BoxGeometry(100, 1, 100),
@@ -140,7 +138,6 @@ export class WorldRenderer {
     element.addEventListener('mousedown', this.handlePositionMouseDown.bind(this));
     window.addEventListener('mouseup', this.handlePositionMouseUp.bind(this));
     window.addEventListener('mousemove', this.handlePositionMouseMove.bind(this));
-    window.addEventListener('mousemove', this.handlePositionMouseDrag.bind(this));
   }
 
   public destroy(element: HTMLElement) {
@@ -159,7 +156,6 @@ export class WorldRenderer {
     element.removeEventListener('mousedown', this.handlePositionMouseDown.bind(this));
     window.removeEventListener('mouseup', this.handlePositionMouseUp.bind(this));
     window.removeEventListener('mousemove', this.handlePositionMouseMove.bind(this));
-    window.removeEventListener('mousemove', this.handlePositionMouseDrag.bind(this));
     element.removeChild(this.renderer.domElement);
   }
 
@@ -210,30 +206,13 @@ export class WorldRenderer {
   private handlePositionMouseMove(event: MouseEvent) {
     const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
     if (position) {
-      this.mouseOverPositionIndicator.position.set(position.getX(), 0, position.getZ());
-      this.positionMouseMoveEventHandler.publish(position);
-
-      if (this.draggedPosition) {
-        this.positionDragEventHandler.publish(position);
-      }
-    }
-  }
-
-  private handlePositionMouseDrag(event: MouseEvent) {
-    if (!this.draggedPosition) return;
-
-    const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
-    if (position) {
-      this.positionMouseDragEventHandler.publish(position);
+      this.positionHoverIndicator.position.set(position.getX(), 0, position.getZ());
+      this.positionHoverEventHandler.publish(position);
     }
   }
 
   public subscribePositionDragStartEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
     return this.positionDragStartEventHandler.subscribe(subscriber);
-  }
-
-  public subscribePositionDragEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
-    return this.positionDragEventHandler.subscribe(subscriber);
   }
 
   public subscribePositionDragEndEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
@@ -242,6 +221,10 @@ export class WorldRenderer {
 
   public subscribePositionDragCancelEvent(subscriber: EventHandlerSubscriber<void>): () => void {
     return this.positionDragCancelEventHandler.subscribe(subscriber);
+  }
+
+  public subscribePositionHoverEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.positionHoverEventHandler.subscribe(subscriber);
   }
 
   public subscribePositionClickEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
@@ -779,5 +762,36 @@ export class WorldRenderer {
 
     this.scene.remove(this.draggedItemModel);
     this.draggedItemModel = null;
+  }
+
+  public addSelectedItem(item: ItemModel, position: PositionVo, direction: DirectionVo) {
+    const selectedItemModels = this.itemModelsMap[item.getId()];
+    if (!selectedItemModels) return;
+
+    const [selectedItemModel] = selectedItemModels;
+    if (!selectedItemModel) return;
+
+    const bound = calculateExpectedUnitBound(position, item.getDimension(), direction);
+    const boundCenter = bound.getCenterPrecisePosition();
+    this.selectedItemModel = selectedItemModel.clone();
+    this.selectedItemModel.position.set(boundCenter.getX(), 0, boundCenter.getZ());
+    this.selectedItemModel.rotation.set(0, (direction.toNumber() * Math.PI) / 2, 0);
+    this.scene.add(this.selectedItemModel);
+  }
+
+  public updateSelectedItem(item: ItemModel, position: PositionVo, direction: DirectionVo) {
+    if (!this.selectedItemModel) return;
+
+    const bound = calculateExpectedUnitBound(position, item.getDimension(), direction);
+    const boundCenter = bound.getCenterPrecisePosition();
+    this.selectedItemModel.position.set(boundCenter.getX(), 0, boundCenter.getZ());
+    this.selectedItemModel.rotation.set(0, (direction.toNumber() * Math.PI) / 2, 0);
+  }
+
+  public removeSelectedItem() {
+    if (!this.selectedItemModel) return;
+
+    this.scene.remove(this.selectedItemModel);
+    this.selectedItemModel = null;
   }
 }
