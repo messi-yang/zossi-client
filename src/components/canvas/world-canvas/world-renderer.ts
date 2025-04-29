@@ -61,6 +61,8 @@ export class WorldRenderer {
 
   private playerModelDownloadedEventSubscribers = EventHandler.create<void>();
 
+  private mouseClientPosition: { x: number; y: number } = { x: 0, y: 0 };
+
   private selectedBoundIndicator: THREE.Mesh;
 
   /**
@@ -204,7 +206,9 @@ export class WorldRenderer {
   }
 
   private handlePositionMouseMove(event: MouseEvent) {
-    const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
+    this.mouseClientPosition = { x: event.clientX, y: event.clientY };
+
+    const position = this.getMousePosition(this.mouseClientPosition);
     if (position) {
       this.positionHoverEventHandler.publish(position);
     }
@@ -330,6 +334,11 @@ export class WorldRenderer {
   public updateCameraPosition(cameraPosition: PrecisePositionVo, targetPrecisePos: PrecisePositionVo) {
     this.camera.position.set(cameraPosition.getX(), cameraPosition.getY(), cameraPosition.getZ());
     this.camera.lookAt(targetPrecisePos.getX(), 0, targetPrecisePos.getZ());
+
+    const position = this.getMousePosition(this.mouseClientPosition);
+    if (position) {
+      this.positionHoverEventHandler.publish(position);
+    }
   }
 
   private createScene() {
