@@ -10,6 +10,8 @@ import { PlayerManager } from '../player-manager';
 export class SelectionManager {
   private hoveredPosition: PositionVo = PositionVo.create(0, 0, 0);
 
+  private hoveredPositionUpdatedHandler = EventHandler.create<PositionVo>();
+
   private selectedUnitId: string | null = null;
 
   private selectedUnitAddedHandler = EventHandler.create<UnitModel>();
@@ -76,6 +78,7 @@ export class SelectionManager {
     this.hoveredPosition = position;
 
     const selectedItem = this.getSelectedItem();
+    const draggedUnit = this.getDraggedUnit();
     if (selectedItem) {
       this.publishSelectedItemUpdated(
         { item: selectedItem, position: oldHoveredPosition, direction: this.selectedItemDirection },
@@ -85,15 +88,22 @@ export class SelectionManager {
           direction: this.selectedItemDirection,
         }
       );
-    }
-
-    const draggedUnit = this.getDraggedUnit();
-    if (draggedUnit) {
+    } else if (draggedUnit) {
       this.publishDraggedUnitPositionUpdated(
         { unit: draggedUnit, position: oldHoveredPosition },
         { unit: draggedUnit, position: this.hoveredPosition }
       );
+    } else {
+      this.publishHoveredPositionUpdated(this.hoveredPosition);
     }
+  }
+
+  public subscribeHoveredPositionUpdated(handler: EventHandlerSubscriber<PositionVo>): () => void {
+    return this.hoveredPositionUpdatedHandler.subscribe(handler);
+  }
+
+  private publishHoveredPositionUpdated(position: PositionVo) {
+    this.hoveredPositionUpdatedHandler.publish(position);
   }
 
   public getHoveredPosition(): PositionVo | null {

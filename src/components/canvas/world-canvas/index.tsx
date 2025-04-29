@@ -269,6 +269,12 @@ export function WorldCanvas({
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
+    return worldJourneyService.subscribe('HOVERED_POSITION_UPDATED', (position) => {
+      worldRenderer.updateHoveredPosition(position);
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
     if (!hasDownloadedPlayerModel || !hasDownloadedFont) return;
 
     const players = worldJourneyService.getPlayers();

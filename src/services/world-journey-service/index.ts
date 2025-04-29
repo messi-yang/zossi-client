@@ -370,6 +370,7 @@ export class WorldJourneyService {
     >
   ): () => void;
   subscribe(eventName: 'SELECTED_ITEM_REMOVED', subscriber: EventHandlerSubscriber<void>): () => void;
+  subscribe(eventName: 'HOVERED_POSITION_UPDATED', subscriber: EventHandlerSubscriber<PositionVo>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -392,7 +393,8 @@ export class WorldJourneyService {
       | 'DRAGGED_UNIT_REMOVED'
       | 'SELECTED_ITEM_ADDED'
       | 'SELECTED_ITEM_UPDATED'
-      | 'SELECTED_ITEM_REMOVED',
+      | 'SELECTED_ITEM_REMOVED'
+      | 'HOVERED_POSITION_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<PositionVo>
@@ -473,6 +475,8 @@ export class WorldJourneyService {
       );
     } else if (eventName === 'SELECTED_ITEM_REMOVED') {
       return this.selectionManager.subscribeSelectedItemRemoved(subscriber as EventHandlerSubscriber<void>);
+    } else if (eventName === 'HOVERED_POSITION_UPDATED') {
+      return this.selectionManager.subscribeHoveredPositionUpdated(subscriber as EventHandlerSubscriber<PositionVo>);
     } else {
       return () => {};
     }

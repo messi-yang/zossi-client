@@ -206,9 +206,13 @@ export class WorldRenderer {
   private handlePositionMouseMove(event: MouseEvent) {
     const position = this.getMousePosition({ x: event.clientX, y: event.clientY });
     if (position) {
-      this.positionHoverIndicator.position.set(position.getX(), 0, position.getZ());
       this.positionHoverEventHandler.publish(position);
     }
+  }
+
+  public updateHoveredPosition(position: PositionVo) {
+    this.positionHoverIndicator.position.set(position.getX(), 0, position.getZ());
+    this.positionHoverIndicator.scale.set(1, 1, 1);
   }
 
   public subscribePositionDragStartEvent(subscriber: EventHandlerSubscriber<PositionVo>): () => void {
@@ -755,6 +759,10 @@ export class WorldRenderer {
     const boundCenter = bound.getCenterPrecisePosition();
     this.draggedItemModel.position.set(boundCenter.getX(), 0, boundCenter.getZ());
     this.draggedItemModel.rotation.set(0, (direction.toNumber() * Math.PI) / 2, 0);
+
+    this.positionHoverIndicator.position.set(boundCenter.getX(), 0, boundCenter.getZ());
+    this.positionHoverIndicator.rotation.set(0, (direction.toNumber() * Math.PI) / 2, 0);
+    this.positionHoverIndicator.scale.set(dimension.getWidth(), 1, dimension.getDepth());
   }
 
   public removeDraggedItem() {
@@ -782,10 +790,15 @@ export class WorldRenderer {
   public updateSelectedItem(item: ItemModel, position: PositionVo, direction: DirectionVo) {
     if (!this.selectedItemModel) return;
 
-    const bound = calculateExpectedUnitBound(position, item.getDimension(), direction);
+    const itemDimension = item.getDimension();
+    const bound = calculateExpectedUnitBound(position, itemDimension, direction);
     const boundCenter = bound.getCenterPrecisePosition();
     this.selectedItemModel.position.set(boundCenter.getX(), 0, boundCenter.getZ());
     this.selectedItemModel.rotation.set(0, (direction.toNumber() * Math.PI) / 2, 0);
+
+    this.positionHoverIndicator.position.set(boundCenter.getX(), 0, boundCenter.getZ());
+    this.positionHoverIndicator.rotation.set(0, (direction.toNumber() * Math.PI) / 2, 0);
+    this.positionHoverIndicator.scale.set(itemDimension.getWidth(), 1, itemDimension.getDepth());
   }
 
   public removeSelectedItem() {
