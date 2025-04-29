@@ -213,7 +213,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
         createUnit(position, currentSelectedItem, currentSelectedItemDirection);
       }
     },
-    [worldJourneyService]
+    [worldJourneyService, createUnit]
   );
 
   const handleRemoveClick = useCallback(() => {

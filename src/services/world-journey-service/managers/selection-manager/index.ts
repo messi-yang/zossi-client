@@ -105,6 +105,10 @@ export class SelectionManager {
   }
 
   public selectUnit(unitId: string) {
+    if (this.selectedUnitId) {
+      this.clearSelectedUnit();
+    }
+
     const newUnit = this.unitManager.getUnit(unitId);
     if (!newUnit) return;
 
@@ -140,6 +144,10 @@ export class SelectionManager {
   }
 
   public dragUnit(unitId: string) {
+    if (this.draggedUnitId) {
+      this.clearDraggedUnit();
+    }
+
     const newUnit = this.unitManager.getUnit(unitId);
     if (!newUnit) return;
 
@@ -202,6 +210,10 @@ export class SelectionManager {
   }
 
   public selectItem(itemId: string) {
+    if (this.selectedItemId) {
+      this.clearSelectedItem();
+    }
+
     const newItem = this.itemManager.getItem(itemId);
     if (!newItem) return;
 
