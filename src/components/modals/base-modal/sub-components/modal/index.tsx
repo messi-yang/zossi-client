@@ -19,8 +19,8 @@ export function Modal({ width, height, onCrossClick, children }: ModalProps) {
       }}
     >
       {onCrossClick && (
-        <div className="absolute top-2 right-2 z-10">
-          <IconButton icon="cross" onClick={onCrossClick} />
+        <div className="absolute top-4 right-4 z-10">
+          <IconButton iconName="material-symbols:close-rounded" onClick={onCrossClick} />
         </div>
       )}
       {children}

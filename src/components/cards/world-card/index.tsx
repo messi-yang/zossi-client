@@ -32,7 +32,7 @@ export function WorldCard({ world, deleting = false, onDeleteClick = () => {} }:
       }}
     >
       <div className={classnames('absolute', 'top-2', 'right-2', 'inline-flex')}>
-        <IconButton icon="cross" onClick={onDeleteClick} />
+        <IconButton iconName="material-symbols:close-rounded" onClick={onDeleteClick} />
       </div>
       <div className={classnames('flex', 'flex-col', 'p-3', 'bg-white', 'bg-opacity-30', 'rounded-xl')}>
         <Text color="text-stone-800" size="text-lg" weight="font-bold">

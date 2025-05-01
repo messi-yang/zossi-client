@@ -1,21 +1,20 @@
 import { render, RenderResult, screen, fireEvent } from '@testing-library/react';
 import { dataTestids } from './data-test-ids';
 import { IconButton } from '.';
-import type { Icon } from '.';
 
 type RenderButtonProps = {
-  icon?: Icon;
+  iconName?: string;
   onClick?: () => void;
 };
 
-function renderButton({ icon = 'cross', onClick = () => {} }: RenderButtonProps): RenderResult {
-  return render(<IconButton icon={icon} onClick={onClick} />);
+function renderButton({ iconName = 'material-symbols:close-rounded', onClick = () => {} }: RenderButtonProps): RenderResult {
+  return render(<IconButton iconName={iconName} onClick={onClick} />);
 }
 
 describe('IconButton', () => {
   it('Should render component successfully.', () => {
     try {
-      renderButton({ icon: 'cross' });
+      renderButton({ iconName: 'material-symbols:close-rounded' });
       const wrapper = screen.getByTestId(dataTestids.root);
       expect(wrapper).toBeInTheDocument();
     } catch (e) {

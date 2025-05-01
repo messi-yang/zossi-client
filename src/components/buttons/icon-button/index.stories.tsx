@@ -20,5 +20,5 @@ const Template: StoryFn<typeof IconButton> = function Template(args) {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  icon: 'cross',
+  iconName: 'material-symbols:close-rounded',
 };

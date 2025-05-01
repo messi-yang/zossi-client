@@ -1,26 +1,15 @@
-import { KeyboardEventHandler, MouseEventHandler, useState } from 'react';
+import { KeyboardEventHandler, MouseEventHandler } from 'react';
 import classnames from 'classnames';
+import { Icon } from '@iconify/react';
 
 import { dataTestids } from './data-test-ids';
-import { CrossIcon } from '@/components/icons/cross-icon';
-
-export type Icon = 'cross';
-
-function getIconComponent(icon: Icon, highlighted: boolean) {
-  if (icon === 'cross') {
-    return <CrossIcon width={24} highlighted={highlighted} />;
-  }
-  return null;
-}
 
 type Props = {
-  icon: Icon;
+  iconName: string;
   onClick: () => void;
 };
 
-export function IconButton({ icon, onClick = () => {} }: Props) {
-  const [hovered, setHovered] = useState<boolean>(false);
-
+export function IconButton({ iconName, onClick = () => {} }: Props) {
   const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -33,20 +22,10 @@ export function IconButton({ icon, onClick = () => {} }: Props) {
     onClick();
   };
 
-  const handleMouseEnter = () => {
-    setHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setHovered(false);
-  };
-
   return (
     <button
       data-testid={dataTestids.root}
       className={classnames(
-        'w-8',
-        'h-8',
         'inline-flex',
         'justify-center',
         'items-center',
@@ -54,18 +33,18 @@ export function IconButton({ icon, onClick = () => {} }: Props) {
         'outline-none',
         'bg-none',
         'p-0',
-        'hover:bg-stone-200',
-        'hover:bg-opacity-50',
-        'rounded-full'
+        'rounded-lg',
+        'text-white',
+        'hover:text-blue-500',
+        'hover:bg-blue-500',
+        'hover:bg-opacity-20'
       )}
       type="button"
       aria-label="icon button"
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
-      {getIconComponent(icon, hovered)}
+      <Icon icon={iconName} width={24} height={24} />
     </button>
   );
 }
