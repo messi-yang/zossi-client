@@ -9,19 +9,13 @@ import { PlayerActionVo } from '@/models/world/player/player-action-vo';
 import { ChangePlayerActionCommand } from '@/services/world-journey-service/managers/command-manager/commands/change-player-action-command';
 import { CreateStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-static-unit-command';
 import { CreatePortalUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-portal-unit-command';
-import { RemoveStaticUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-static-unit-command';
-import { RemovePortalUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-portal-unit-command';
-import { RotateUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/rotate-unit-command';
 import { CreateFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-fence-unit-command';
-import { RemoveFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-fence-unit-command';
 import { CreateLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-link-unit-command';
-import { RemoveLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-link-unit-command';
 import { dipatchUnitType } from '@/models/world/unit/utils';
 import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { LinkUnitApi } from '@/adapters/apis/link-unit-api';
 import { NotificationEventDispatcher } from '@/event-dispatchers/notification-event-dispatcher';
 import { CreateEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-embed-unit-command';
-import { RemoveEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-embed-unit-command';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EmbedUnitApi } from '@/adapters/apis/embed-unit-api';
 import { BoundVo } from '@/models/world/common/bound-vo';
@@ -33,8 +27,6 @@ import { PortalUnitApi } from '@/adapters/apis/portal-unit-api';
 import { TeleportPlayerCommand } from '@/services/world-journey-service/managers/command-manager/commands/teleport-player-command';
 import { ColorVo } from '@/models/world/common/color-vo';
 import { CreateColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-color-unit-command';
-import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
-import { RemoveSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-sign-unit-command';
 import { CreateSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-sign-unit-command';
 import { UnitModel } from '@/models/world/unit/unit-model';
 
@@ -58,8 +50,6 @@ type ContextValue = {
   createSignUnit: (position: PositionVo, direction: DirectionVo, itemId: string, label: string) => void;
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
   replayCommands: (duration: number, speed: number) => void;
-  removeUnit: (unitId: string) => void;
-  rotateUnit: (unitId: string) => void;
   removeUnitsInBound: (bound: BoundVo) => void;
   moveUnit: () => void;
   leaveWorld: () => void;
@@ -85,8 +75,6 @@ const Context = createContext<ContextValue>({
   createSignUnit: () => {},
   buildMaze: () => {},
   replayCommands: () => {},
-  removeUnit: () => {},
-  rotateUnit: () => {},
   removeUnitsInBound: () => {},
   moveUnit: () => {},
   leaveWorld: () => {},
@@ -468,87 +456,6 @@ export function Provider({ children }: Props) {
     [worldJourneyService]
   );
 
-  /**
-   * If a unit is removed, return true
-   */
-  const removeUnitByType = useCallback(
-    (unitId: string): boolean => {
-      if (!worldJourneyService) return false;
-      const unit = worldJourneyService.getUnit(unitId);
-      if (!unit) return false;
-
-      dipatchUnitType(unit.getType(), {
-        static: () => {
-          if (!worldJourneyApi.current) return;
-
-          const command = RemoveStaticUnitCommand.create(unitId);
-          worldJourneyService.executeLocalCommand(command);
-        },
-        fence: () => {
-          if (!worldJourneyApi.current) return;
-
-          const command = RemoveFenceUnitCommand.create(unitId);
-          worldJourneyService.executeLocalCommand(command);
-        },
-        portal: () => {
-          if (!worldJourneyApi.current) return;
-
-          const command = RemovePortalUnitCommand.create(unitId);
-          worldJourneyService.executeLocalCommand(command);
-        },
-        link: () => {
-          if (!worldJourneyApi.current) return;
-
-          const command = RemoveLinkUnitCommand.create(unitId);
-          worldJourneyService.executeLocalCommand(command);
-        },
-        embed: () => {
-          if (!worldJourneyApi.current) return;
-
-          const command = RemoveEmbedUnitCommand.create(unitId);
-          worldJourneyService.executeLocalCommand(command);
-        },
-        color: () => {
-          if (!worldJourneyApi.current) return;
-
-          const command = RemoveColorUnitCommand.create(unitId);
-          worldJourneyService.executeLocalCommand(command);
-        },
-        sign: () => {
-          if (!worldJourneyApi.current) return;
-
-          const command = RemoveSignUnitCommand.create(unitId);
-          worldJourneyService.executeLocalCommand(command);
-        },
-      });
-
-      return true;
-    },
-    [worldJourneyService]
-  );
-
-  const removeUnit = useCallback(
-    (unitId: string) => {
-      if (!worldJourneyService) return;
-
-      removeUnitByType(unitId);
-    },
-    [worldJourneyService]
-  );
-
-  const rotateUnit = useCallback(
-    (unitId: string) => {
-      if (!worldJourneyService) return;
-
-      const unit = worldJourneyService.getUnit(unitId);
-      if (!unit) return;
-
-      const command = RotateUnitCommand.create(unitId);
-      worldJourneyService.executeLocalCommand(command);
-    },
-    [worldJourneyService]
-  );
-
   const removeUnitsInBound = useCallback(
     (bound: BoundVo) => {
       if (!worldJourneyService) return;
@@ -556,8 +463,7 @@ export function Provider({ children }: Props) {
         const unitAtPos = worldJourneyService.getUnitByPos(position);
         if (!unitAtPos) return;
 
-        const removed = removeUnitByType(unitAtPos.getId());
-        if (removed) await sleep(10);
+        worldJourneyService.removeUnit(unitAtPos.getId());
       });
     },
     [worldJourneyService]
@@ -594,8 +500,6 @@ export function Provider({ children }: Props) {
     createSignUnit,
     buildMaze,
     replayCommands,
-    removeUnit,
-    rotateUnit,
     removeUnitsInBound,
     moveUnit,
     displayedEmbedCode,

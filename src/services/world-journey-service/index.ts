@@ -19,6 +19,15 @@ import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { MoveUnitCommand } from './managers/command-manager/commands/move-unit-command';
 import { ChangePlayerHeldItemCommand } from './managers/command-manager/commands/change-player-held-item-command';
 import { DirectionVo } from '@/models/world/common/direction-vo';
+import { RemovePortalUnitCommand } from './managers/command-manager/commands/remove-portal-unit-command';
+import { dipatchUnitType } from '@/models/world/unit/utils';
+import { RemoveFenceUnitCommand } from './managers/command-manager/commands/remove-fence-unit-command';
+import { RemoveEmbedUnitCommand } from './managers/command-manager/commands/remove-embed-unit-command';
+import { RemoveLinkUnitCommand } from './managers/command-manager/commands/remove-link-unit-command';
+import { RemoveStaticUnitCommand } from './managers/command-manager/commands/remove-static-unit-command';
+import { RemoveColorUnitCommand } from './managers/command-manager/commands/remove-color-unit-command';
+import { RemoveSignUnitCommand } from './managers/command-manager/commands/remove-sign-unit-command';
+import { RotateUnitCommand } from './managers/command-manager/commands/rotate-unit-command';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -319,6 +328,50 @@ export class WorldJourneyService {
 
   public clearSelectedItem() {
     this.selectionManager.clearSelectedItem();
+  }
+
+  public rotateUnit(unitId: string) {
+    const unit = this.unitManager.getUnit(unitId);
+    if (!unit) return;
+
+    const command = RotateUnitCommand.create(unitId);
+    this.commandManager.executeLocalCommand(command);
+  }
+
+  public removeUnit(unitId: string) {
+    const unit = this.unitManager.getUnit(unitId);
+    if (!unit) return;
+
+    dipatchUnitType(unit.getType(), {
+      static: () => {
+        const command = RemoveStaticUnitCommand.create(unitId);
+        this.commandManager.executeLocalCommand(command);
+      },
+      fence: () => {
+        const command = RemoveFenceUnitCommand.create(unitId);
+        this.commandManager.executeLocalCommand(command);
+      },
+      portal: () => {
+        const command = RemovePortalUnitCommand.create(unitId);
+        this.commandManager.executeLocalCommand(command);
+      },
+      link: () => {
+        const command = RemoveLinkUnitCommand.create(unitId);
+        this.commandManager.executeLocalCommand(command);
+      },
+      embed: () => {
+        const command = RemoveEmbedUnitCommand.create(unitId);
+        this.commandManager.executeLocalCommand(command);
+      },
+      color: () => {
+        const command = RemoveColorUnitCommand.create(unitId);
+        this.commandManager.executeLocalCommand(command);
+      },
+      sign: () => {
+        const command = RemoveSignUnitCommand.create(unitId);
+        this.commandManager.executeLocalCommand(command);
+      },
+    });
   }
 
   public moveUnit(unitId: string, position: PositionVo) {

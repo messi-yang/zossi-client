@@ -76,7 +76,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     worldJourneyService,
     connectionStatus,
     items,
-    selectedUnit,
     selectedItem,
     enterWorld,
     updateCameraPosition,
@@ -91,8 +90,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     createSignUnit,
     buildMaze,
     replayCommands,
-    removeUnit,
-    rotateUnit,
     removeUnitsInBound,
     moveUnit,
     displayedEmbedCode,
@@ -216,20 +213,28 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     [worldJourneyService, createUnit]
   );
 
-  const handleRemoveClick = useCallback(() => {
-    if (!selectedUnit) return;
-    removeUnit(selectedUnit.getId());
-  }, [removeUnit, selectedUnit]);
+  const handleRemoveClick = useCallback(
+    (unitId: string) => {
+      if (!worldJourneyService) return;
+      worldJourneyService.removeUnit(unitId);
+    },
+    [worldJourneyService]
+  );
 
-  const handleRotateUnitClick = useCallback(() => {
-    if (!selectedUnit) return;
-    rotateUnit(selectedUnit.getId());
-  }, [rotateUnit, selectedUnit]);
+  const handleRotateUnitClick = useCallback(
+    (unitId: string) => {
+      if (!worldJourneyService) return;
+      worldJourneyService.rotateUnit(unitId);
+    },
+    [worldJourneyService]
+  );
 
-  const handleEngageUnitClick = useCallback(() => {
-    if (!selectedUnit) return;
-    engageUnit(selectedUnit.getId());
-  }, [engageUnit, selectedUnit]);
+  const handleEngageUnitClick = useCallback(
+    (unitId: string) => {
+      engageUnit(unitId);
+    },
+    [engageUnit]
+  );
 
   useHotKeys(['KeyM'], {
     onPressedKeysChange: (keys) => {
@@ -529,13 +534,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
           <Text size="text-xl">{myPlayerPosText}</Text>
         </div>
       </div>
-      {selectedUnit && (
-        <div className="absolute top-16 right-2 z-10 flex flex-col items-end gap-2">
-          <Button text="Remove" onClick={handleRemoveClick} />
-          <Button text="Rotate" onClick={handleRotateUnitClick} />
-          <Button text="Engage" onClick={handleEngageUnitClick} />
-        </div>
-      )}
       <section className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
         <SelectItemModal
           opened={isSelectItemModalVisible}
@@ -571,6 +569,9 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
               onPositionDragStart={handlePositionDragStart}
               onPositionDragEnd={handlePositionDragEnd}
               onPositionDragCancel={handlePositionDragCancel}
+              onRotateUnitClick={handleRotateUnitClick}
+              onEngageUnitClick={handleEngageUnitClick}
+              onRemoveUnitClick={handleRemoveClick}
             />
           )}
         </section>

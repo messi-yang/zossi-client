@@ -22,6 +22,7 @@ const HEMI_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const PLAYER_NAME_HEIGHT = 2;
+const PIXEL_RATIO = 2;
 const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
 const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_sans_regular.typeface.json';
 const CHARACTER_MODEL_SRC = '/characters/a-chiong.gltf';
@@ -323,7 +324,7 @@ export class WorldRenderer {
 
   private updateRendererSize(width: number, height: number) {
     this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(2);
+    this.renderer.setPixelRatio(PIXEL_RATIO);
   }
 
   public updateCanvasSize(width: number, height: number) {
@@ -736,6 +737,21 @@ export class WorldRenderer {
     const [playerCharacterInstance, playerNameInstance] = playerInstances;
     this.scene.remove(playerCharacterInstance);
     this.scene.remove(playerNameInstance);
+  }
+
+  public getCanvasPosition(position: PrecisePositionVo | PositionVo) {
+    this.camera.updateProjectionMatrix();
+    const vector = new THREE.Vector3(position.getX(), position.getY(), position.getZ());
+    vector.project(this.camera);
+
+    // Remember to divide by the pixel ratio
+    const canvasWidth = this.renderer.domElement.width / PIXEL_RATIO;
+    const canvasHeight = this.renderer.domElement.height / PIXEL_RATIO;
+
+    const x = ((vector.x + 1) * canvasWidth) / 2;
+    const y = -((vector.y - 1) * canvasHeight) / 2;
+
+    return { x, y };
   }
 
   public updateSelectedBound(newSelectedBound: BoundVo | null) {

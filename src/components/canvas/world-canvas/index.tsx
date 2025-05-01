@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useCallback, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import { useDomRect } from '@/hooks/use-dom-rect';
 
@@ -6,6 +7,8 @@ import { dataTestids } from './data-test-ids';
 import { WorldJourneyService } from '@/services/world-journey-service';
 import { WorldRenderer } from './world-renderer';
 import { PositionVo } from '@/models/world/common/position-vo';
+import { ControlUnitPanel } from '@/components/panels/control-unit-panel';
+import { UnitModel } from '@/models/world/unit/unit-model';
 
 type Props = {
   worldJourneyService: WorldJourneyService;
@@ -14,6 +17,9 @@ type Props = {
   onPositionDragStart: (position: PositionVo) => void;
   onPositionDragEnd: (position: PositionVo) => void;
   onPositionDragCancel: () => void;
+  onRotateUnitClick: (unitId: string) => void;
+  onEngageUnitClick: (unitId: string) => void;
+  onRemoveUnitClick: (unitId: string) => void;
 };
 
 export function WorldCanvas({
@@ -23,6 +29,9 @@ export function WorldCanvas({
   onPositionDragStart,
   onPositionDragEnd,
   onPositionDragCancel,
+  onRotateUnitClick,
+  onEngageUnitClick,
+  onRemoveUnitClick,
 }: Props): React.ReactNode {
   const [wrapperDom, setWrapperDom] = useState<HTMLDivElement | null>(null);
   const wrapperDomRect = useDomRect(wrapperDom);
@@ -178,20 +187,44 @@ export function WorldCanvas({
     });
   }, [worldRenderer, worldJourneyService]);
 
+  const [unitControlPanelCanvasPosition, setUnitControlPanelCanvasPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const selectedUnit = worldJourneyService.getSelectedUnit();
+      if (!selectedUnit) return;
+      const position = worldRenderer.getCanvasPosition(selectedUnit.getCenterPrecisePosition());
+      setUnitControlPanelCanvasPosition(position);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [worldJourneyService, worldRenderer]);
+
+  const [selectedUnit, setSelectedUnit] = useState<UnitModel | null>(null);
   useEffect(() => {
     const selectedUnitAddedUnsubscribe = worldJourneyService.subscribe('SELECTED_UNIT_ADDED', (newUnit) => {
+      setSelectedUnit(newUnit);
       worldRenderer.updateSelectedBound(newUnit.getOccupiedBound());
+      setUnitControlPanelCanvasPosition(worldRenderer.getCanvasPosition(newUnit.getOccupiedBound().getCenterPrecisePosition()));
+    });
+
+    const playerUpdatedUnsubscribe = worldJourneyService.subscribe('PLAYER_UPDATED', () => {
+      if (!selectedUnit) return;
+      setUnitControlPanelCanvasPosition(worldRenderer.getCanvasPosition(selectedUnit.getOccupiedBound().getCenterPrecisePosition()));
     });
 
     const selectedUnitRemovedUnsubscribe = worldJourneyService.subscribe('SELECTED_UNIT_REMOVED', () => {
+      setSelectedUnit(null);
       worldRenderer.updateSelectedBound(null);
     });
 
     return () => {
       selectedUnitAddedUnsubscribe();
+      playerUpdatedUnsubscribe();
       selectedUnitRemovedUnsubscribe();
     };
-  }, [worldJourneyService, worldRenderer]);
+  }, [worldJourneyService, worldRenderer, selectedUnit]);
 
   useEffect(() => {
     return worldRenderer.subscribePositionClickEvent((position) => {
@@ -284,12 +317,26 @@ export function WorldCanvas({
   }, [hasDownloadedPlayerModel, hasDownloadedFont, worldJourneyService, worldRenderer]);
 
   return (
-    <div
-      data-testid={dataTestids.root}
-      ref={(ref) => {
-        setWrapperDom(ref);
-      }}
-      className="relative w-full h-full flex"
-    />
+    <div className="relative w-full h-full flex">
+      <div
+        data-testid={dataTestids.root}
+        ref={(ref) => {
+          setWrapperDom(ref);
+        }}
+        className="relative w-full h-full flex"
+      />
+      {selectedUnit && (
+        <div
+          className={twMerge('fixed', 'z-10', '-translate-x-1/2')}
+          style={{ left: unitControlPanelCanvasPosition.x, top: unitControlPanelCanvasPosition.y - 100 }}
+        >
+          <ControlUnitPanel
+            onEngageClick={() => onEngageUnitClick(selectedUnit.getId())}
+            onRotateClick={() => onRotateUnitClick(selectedUnit.getId())}
+            onRemoveClick={() => onRemoveUnitClick(selectedUnit.getId())}
+          />
+        </div>
+      )}
+    </div>
   );
 }
