@@ -344,7 +344,7 @@ export class WorldRenderer {
 
   private createScene() {
     const newScene = new THREE.Scene();
-    newScene.background = new THREE.Color(0x87ceeb);
+    newScene.background = new THREE.Color(0x4682b4);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);
     hemiLight.position.set(0, HEMI_LIGHT_HEIGHT, 0);
