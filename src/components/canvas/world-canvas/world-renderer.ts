@@ -16,6 +16,7 @@ import { BoundVo } from '@/models/world/common/bound-vo';
 import { EventHandler, EventHandlerSubscriber } from '@/event-dispatchers/common/event-handler';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { calculateExpectedUnitBound } from '@/models/world/common/utils';
+import { ColorVo } from '@/models/world/common/color-vo';
 
 const CAMERA_FOV = 50;
 const HEMI_LIGHT_HEIGHT = 20;
@@ -23,6 +24,9 @@ const DIR_LIGHT_HEIGHT = 20;
 const DIR_LIGHT_Z_OFFSET = 20;
 const PLAYER_NAME_HEIGHT = 2;
 const PIXEL_RATIO = 2;
+const SKY_COLOR = 0x4682b4;
+const GRID_COLOR = 0x90ee90;
+const GROUND_COLOR = ColorVo.create(135, 225, 245);
 const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
 const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_sans_regular.typeface.json';
 const CHARACTER_MODEL_SRC = '/characters/a-chiong.gltf';
@@ -66,9 +70,6 @@ export class WorldRenderer {
 
   private selectedBoundIndicator: THREE.Mesh;
 
-  /**
-   * @description a panel for selecting items or a bound
-   */
   private touchPanel: THREE.Mesh;
 
   private draggedItemModel: THREE.Group | null = null;
@@ -344,7 +345,7 @@ export class WorldRenderer {
 
   private createScene() {
     const newScene = new THREE.Scene();
-    newScene.background = new THREE.Color(0x4682b4);
+    newScene.background = new THREE.Color(SKY_COLOR);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);
     hemiLight.position.set(0, HEMI_LIGHT_HEIGHT, 0);
@@ -360,7 +361,7 @@ export class WorldRenderer {
   public async updateBase(blocks: BlockModel[]) {
     const baseModel = await this.downloadModel(BASE_MODEL_SRC);
 
-    const grassInstanceStates: { x: number; y: number; z: number; rotate: number }[] = [];
+    const grassInstanceStates: { x: number; y: number; z: number; rotate: number; color: ColorVo }[] = [];
     blocks.forEach((block) => {
       block.iterate((position) => {
         grassInstanceStates.push({
@@ -368,6 +369,7 @@ export class WorldRenderer {
           y: 0,
           z: position.getZ(),
           rotate: 0,
+          color: GROUND_COLOR,
         });
       });
     });
@@ -378,7 +380,7 @@ export class WorldRenderer {
   public updateGrid(blocks: BlockModel[]) {
     this.gridCleaner();
 
-    const material = new THREE.LineBasicMaterial({ color: 0xdddddd, opacity: 0.2, transparent: true });
+    const material = new THREE.LineBasicMaterial({ color: GRID_COLOR, opacity: 0.3, transparent: true });
 
     const grids: THREE.Group<THREE.Object3DEventMap>[] = [];
 
@@ -395,7 +397,10 @@ export class WorldRenderer {
           new THREE.Vector3(x + offsetX, 0, offsetZ + boundHeight),
         ];
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        grid.add(new THREE.Line(geometry, material));
+        const line = new THREE.Line(geometry, material);
+        line.receiveShadow = false;
+        line.castShadow = false;
+        grid.add(line);
       }
       for (let z = 0; z <= boundHeight; z += 1) {
         const points: THREE.Vector3[] = [
@@ -403,9 +408,12 @@ export class WorldRenderer {
           new THREE.Vector3(offsetX + boundWidth, 0, z + offsetZ),
         ];
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        grid.add(new THREE.Line(geometry, material));
+        const line = new THREE.Line(geometry, material);
+        line.receiveShadow = false;
+        line.castShadow = false;
+        grid.add(line);
       }
-      grid.position.set(0, 0.1, 0);
+      grid.position.set(0, 0.01, 0);
       grids.push(grid);
     });
 
