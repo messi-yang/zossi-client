@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react';
 import { dataTestids } from './data-test-ids';
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { Text } from '@/components/texts/text';
-import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
+// import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { ItemModel } from '@/models/world/item/item-model';
 
 const BG_COLOR_CLASS = 'bg-[rgba(34,34,34,0.8)]';
@@ -76,17 +76,58 @@ function MenuAnchor({ children, opened, onClick }: { children: React.ReactNode; 
   );
 }
 
+function AnchorDropdown({ options, onSelect }: { options: { label: string; value: number }[]; onSelect: (value: number) => void }) {
+  return (
+    <div className={twMerge('flex', 'flex-col', 'gap-1', 'p-2', 'rounded-[10px]')}>
+      {options.map((option) => (
+        <div
+          key={option.value}
+          className={twMerge(
+            'flex',
+            'items-center',
+            'justify-center',
+            'w-full',
+            'hover:bg-blue-600',
+            'rounded-lg',
+            'cursor-pointer',
+            'px-2',
+            'py-0.5'
+          )}
+          onClick={() => onSelect(option.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onSelect(option.value);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+        >
+          <Text size="text-lg">{option.label}</Text>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface Props {
   selectedItem: ItemModel | null;
   onMoveClick: () => void;
   onRotateSelectedItemClick: () => void;
   onBuildClick: () => void;
   onCameraClick: () => void;
+  onReplayClick: (duration: number) => void;
 }
 
-export function WorldBottomPanel({ selectedItem, onMoveClick, onRotateSelectedItemClick, onBuildClick, onCameraClick }: Props) {
+export function WorldBottomPanel({
+  selectedItem,
+  onMoveClick,
+  onRotateSelectedItemClick,
+  onBuildClick,
+  onCameraClick,
+  onReplayClick,
+}: Props) {
   const [isBuildMenuOpen, setIsBuildMenuOpen] = useState(false);
-
+  const [isReplayMenuOpen, setIsReplayMenuOpen] = useState(false);
   // const handleBuildMenuClick = useCallback(() => {
   //   setIsBuildMenuOpen(!isBuildMenuOpen);
   // }, [isBuildMenuOpen]);
@@ -95,6 +136,7 @@ export function WorldBottomPanel({ selectedItem, onMoveClick, onRotateSelectedIt
 
   useClickOutside(wrapperDom, () => {
     setIsBuildMenuOpen(false);
+    setIsReplayMenuOpen(false);
   });
 
   const handleBuildClick = useCallback(() => {
@@ -108,6 +150,23 @@ export function WorldBottomPanel({ selectedItem, onMoveClick, onRotateSelectedIt
   const isBuildActive = useMemo(() => {
     return !!selectedItem;
   }, [selectedItem]);
+
+  const replayDurationOptions = useMemo(() => {
+    return [
+      { label: '5s', value: 5000 },
+      { label: '10s', value: 10000 },
+      { label: '20s', value: 20000 },
+      { label: '30s', value: 30000 },
+    ];
+  }, []);
+
+  const handleReplayClick = useCallback(
+    (duration: number) => {
+      onReplayClick(duration);
+      setIsReplayMenuOpen(false);
+    },
+    [onReplayClick]
+  );
 
   return (
     <div
@@ -136,37 +195,20 @@ export function WorldBottomPanel({ selectedItem, onMoveClick, onRotateSelectedIt
           </div>
         )}
         <MenuAnchor opened={isBuildMenuOpen} onClick={onBuildClick}>
-          <div className={twMerge('flex', 'flex-col', 'gap-1', 'p-2', 'rounded-[10px]')}>
-            {Object.values(UnitTypeEnum).map((unitType) => (
-              <div
-                key={unitType}
-                className={twMerge(
-                  'flex',
-                  'items-center',
-                  'justify-center',
-                  'w-full',
-                  'hover:bg-blue-600',
-                  'rounded-lg',
-                  'cursor-pointer',
-                  'px-2',
-                  'py-0.5'
-                )}
-                onClick={handleBuildClick}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleBuildClick();
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-              >
-                <Text size="text-lg">{unitType.charAt(0).toUpperCase() + unitType.slice(1)}</Text>
-              </div>
-            ))}
-          </div>
+          <AnchorDropdown options={[]} onSelect={handleBuildClick} />
         </MenuAnchor>
       </div>
       <BottomPanelButton icon="ant-design:video-camera-outlined" active={false} onClick={onCameraClick} />
+      <div className={twMerge('flex', 'items-center', 'flex-row')}>
+        <BottomPanelButton
+          icon="fluent:replay-24-regular"
+          active={false}
+          onClick={() => handleReplayClick(replayDurationOptions[0].value)}
+        />
+        <MenuAnchor opened={isReplayMenuOpen} onClick={() => setIsReplayMenuOpen(!isReplayMenuOpen)}>
+          <AnchorDropdown options={replayDurationOptions} onSelect={handleReplayClick} />
+        </MenuAnchor>
+      </div>
     </div>
   );
 }

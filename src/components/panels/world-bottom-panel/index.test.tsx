@@ -10,6 +10,7 @@ function renderWorldBottomPanel(): RenderResult {
       onCameraClick={() => {}}
       onRotateSelectedItemClick={() => {}}
       onBuildClick={() => {}}
+      onReplayClick={() => {}}
     />
   );
 }

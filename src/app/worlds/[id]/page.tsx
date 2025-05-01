@@ -23,7 +23,6 @@ import { PositionVo } from '@/models/world/common/position-vo';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { BuildMazeModal } from '@/components/modals/build-maze-modal';
-import { ReplayCommandsModal } from '@/components/modals/replay-commands-modal';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { CreateEmbedUnitModal } from '@/components/modals/create-embed-unit-modal';
@@ -89,7 +88,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     createLinkUnit,
     createSignUnit,
     buildMaze,
-    replayCommands,
     removeUnitsInBound,
     moveUnit,
     displayedEmbedCode,
@@ -301,17 +299,12 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     setIsRemoveUnitsModalVisible(true);
   }, []);
 
-  const [isReplayCommandsModalVisible, setIsReplayCommandsModalVisible] = useState(false);
-  const handleReplayClick = useCallback(() => {
-    setIsReplayCommandsModalVisible(true);
-  }, []);
-
-  const handleReplayConfirm = useCallback(
-    (duration: number, speed: number) => {
-      replayCommands(duration, speed);
-      setIsReplayCommandsModalVisible(false);
+  const handleReplayClick = useCallback(
+    (duration: number) => {
+      if (!worldJourneyService) return;
+      worldJourneyService.replayCommands(duration, 5);
     },
-    [replayCommands]
+    [worldJourneyService]
   );
 
   const handleRemoveUnitsConfirm = useCallback(
@@ -511,13 +504,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
           }}
         />
       )}
-      <ReplayCommandsModal
-        opened={isReplayCommandsModalVisible}
-        onComfirm={handleReplayConfirm}
-        onCancel={() => {
-          setIsReplayCommandsModalVisible(false);
-        }}
-      />
       <RemoveUnitsModal
         opened={isRemoveUnitsModalVisible}
         onComfirm={handleRemoveUnitsConfirm}
@@ -526,7 +512,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
         }}
       />
       <div className="absolute top-2 right-3 z-10 flex items-center gap-2">
-        <Button text="Replay" onClick={handleReplayClick} />
         <Button text="Build Maze" onClick={handleBuildMazeClick} />
         <Button text="Remove Units" onClick={handleRemoveUnitsClick} />
         <Button text="Share" onClick={handleShareClick} />
@@ -548,6 +533,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
           onCameraClick={handleUpdateCameraClick}
           onBuildClick={handleBuildClick}
           onRotateSelectedItemClick={handleRotateSelectedItemClick}
+          onReplayClick={handleReplayClick}
         />
       </section>
       <section
