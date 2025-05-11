@@ -18,7 +18,6 @@ import { NotificationEventDispatcher } from '@/event-dispatchers/notification-ev
 import { CreateEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-embed-unit-command';
 import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EmbedUnitApi } from '@/adapters/apis/embed-unit-api';
-import { BoundVo } from '@/models/world/common/bound-vo';
 import { sleep } from '@/utils/general';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { MazeVo } from '@/models/global/maze-vo';
@@ -29,6 +28,7 @@ import { ColorVo } from '@/models/world/common/color-vo';
 import { CreateColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-color-unit-command';
 import { CreateSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-sign-unit-command';
 import { UnitModel } from '@/models/world/unit/unit-model';
+import { InteractionMode } from '@/services/world-journey-service/managers/selection-manager/interaction-mode-enum';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -38,6 +38,7 @@ type ContextValue = {
   items: ItemModel[] | null;
   selectedUnit: UnitModel | null;
   selectedItem: ItemModel | null;
+  interactionMode: InteractionMode;
   enterWorld: (worldId: string) => void;
   updateCameraPosition: () => void;
   makePlayerStand: () => void;
@@ -49,7 +50,6 @@ type ContextValue = {
   createLinkUnit: (position: PositionVo, direction: DirectionVo, itemId: string, label: string, url: string) => void;
   createSignUnit: (position: PositionVo, direction: DirectionVo, itemId: string, label: string) => void;
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
-  removeUnitsInBound: (bound: BoundVo) => void;
   moveUnit: () => void;
   leaveWorld: () => void;
   displayedEmbedCode: string | null;
@@ -62,6 +62,7 @@ const Context = createContext<ContextValue>({
   items: null,
   selectedUnit: null,
   selectedItem: null,
+  interactionMode: InteractionMode.SELECT,
   enterWorld: () => {},
   updateCameraPosition: () => {},
   makePlayerStand: () => {},
@@ -73,7 +74,6 @@ const Context = createContext<ContextValue>({
   createLinkUnit: () => {},
   createSignUnit: () => {},
   buildMaze: () => {},
-  removeUnitsInBound: () => {},
   moveUnit: () => {},
   leaveWorld: () => {},
   displayedEmbedCode: null,
@@ -182,6 +182,15 @@ export function Provider({ children }: Props) {
       selectedItemAddedUnsubscribe();
       selectedItemRemovedUnsubscribe();
     };
+  }, [worldJourneyService]);
+
+  const [interactionMode, setInteractionMode] = useState<InteractionMode>(InteractionMode.SELECT);
+  useEffect(() => {
+    if (!worldJourneyService) return () => {};
+
+    return worldJourneyService.subscribe('INTERACTION_MODE_UPDATED', (mode) => {
+      setInteractionMode(mode);
+    });
   }, [worldJourneyService]);
 
   const enterWorld = useCallback((worldId: string) => {
@@ -445,19 +454,6 @@ export function Provider({ children }: Props) {
     [worldJourneyService, createFenceUnit]
   );
 
-  const removeUnitsInBound = useCallback(
-    (bound: BoundVo) => {
-      if (!worldJourneyService) return;
-      bound.iterateSync(async (position) => {
-        const unitAtPos = worldJourneyService.getUnitByPos(position);
-        if (!unitAtPos) return;
-
-        worldJourneyService.removeUnit(unitAtPos.getId());
-      });
-    },
-    [worldJourneyService]
-  );
-
   const moveUnit = useCallback(() => {
     if (!worldJourneyService) return;
 
@@ -476,6 +472,7 @@ export function Provider({ children }: Props) {
     items,
     selectedUnit,
     selectedItem,
+    interactionMode,
     enterWorld,
     updateCameraPosition,
     makePlayerStand,
@@ -488,7 +485,6 @@ export function Provider({ children }: Props) {
     createLinkUnit,
     createSignUnit,
     buildMaze,
-    removeUnitsInBound,
     moveUnit,
     displayedEmbedCode,
     cleanDisplayedEmbedCode,

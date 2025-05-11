@@ -302,8 +302,14 @@ export function WorldCanvas({
   }, [worldJourneyService, worldRenderer]);
 
   useEffect(() => {
+    return worldJourneyService.subscribe('INTERACTION_MODE_UPDATED', (mode) => {
+      worldRenderer.updateHoverIndicatorColor(mode === 'destroy' ? 'red' : 'green');
+    });
+  }, [worldJourneyService, worldRenderer]);
+
+  useEffect(() => {
     return worldJourneyService.subscribe('HOVERED_POSITION_UPDATED', (position) => {
-      worldRenderer.updateHoveredPosition(position);
+      worldRenderer.updateHoverIndicatorPosition(position);
     });
   }, [worldJourneyService, worldRenderer]);
 

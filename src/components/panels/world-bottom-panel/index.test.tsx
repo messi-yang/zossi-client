@@ -6,11 +6,13 @@ function renderWorldBottomPanel(): RenderResult {
   return render(
     <WorldBottomPanel
       selectedItem={null}
+      activeTab={null}
       onMoveClick={() => {}}
       onCameraClick={() => {}}
       onRotateSelectedItemClick={() => {}}
       onBuildClick={() => {}}
       onReplayClick={() => {}}
+      onDestroyClick={() => {}}
     />
   );
 }

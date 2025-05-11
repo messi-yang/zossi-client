@@ -6,11 +6,16 @@ import { ItemManager } from '../item-manager';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PlayerManager } from '../player-manager';
+import { InteractionMode } from './interaction-mode-enum';
 
 export class SelectionManager {
   private hoveredPosition: PositionVo = PositionVo.create(0, 0, 0);
 
   private hoveredPositionUpdatedHandler = EventHandler.create<PositionVo>();
+
+  private interactionMode: InteractionMode = InteractionMode.SELECT;
+
+  private interactionModeUpdatedHandler = EventHandler.create<InteractionMode>();
 
   private selectedUnitId: string | null = null;
 
@@ -68,6 +73,7 @@ export class SelectionManager {
   }
 
   public resetSelection() {
+    this.updateInteractionMode(InteractionMode.SELECT);
     this.clearSelectedUnit();
     this.clearDraggedUnit();
     this.clearSelectedItem();
@@ -119,6 +125,8 @@ export class SelectionManager {
       this.clearSelectedUnit();
     }
 
+    this.updateInteractionMode(InteractionMode.SELECT);
+
     const newUnit = this.unitManager.getUnit(unitId);
     if (!newUnit) return;
 
@@ -133,6 +141,7 @@ export class SelectionManager {
   public clearSelectedUnit() {
     if (!this.selectedUnitId) return;
     this.selectedUnitId = null;
+    this.updateInteractionMode(InteractionMode.SELECT);
 
     this.publishSelectedUnitRemoved();
   }
@@ -154,9 +163,15 @@ export class SelectionManager {
   }
 
   public dragUnit(unitId: string) {
+    if (this.interactionMode !== InteractionMode.SELECT) {
+      return;
+    }
+
     if (this.draggedUnitId) {
       this.clearDraggedUnit();
     }
+
+    this.updateInteractionMode(InteractionMode.DRAG);
 
     const newUnit = this.unitManager.getUnit(unitId);
     if (!newUnit) return;
@@ -178,6 +193,8 @@ export class SelectionManager {
     if (!this.draggedUnitId) return;
 
     this.draggedUnitId = null;
+    this.updateInteractionMode(InteractionMode.SELECT);
+
     this.publishDraggedUnitRemoved();
   }
 
@@ -224,6 +241,8 @@ export class SelectionManager {
       this.clearSelectedItem();
     }
 
+    this.updateInteractionMode(InteractionMode.PLACE);
+
     const newItem = this.itemManager.getItem(itemId);
     if (!newItem) return;
 
@@ -251,6 +270,7 @@ export class SelectionManager {
   public clearSelectedItem() {
     if (!this.selectedItemId) return;
     this.selectedItemId = null;
+    this.updateInteractionMode(InteractionMode.SELECT);
 
     this.publishSelectedItemRemoved();
   }
@@ -286,5 +306,34 @@ export class SelectionManager {
 
   private publishSelectedItemRemoved() {
     this.selectedItemRemovedHandler.publish();
+  }
+
+  public getInteractionMode(): InteractionMode {
+    return this.interactionMode;
+  }
+
+  public turnOnDestroyMode() {
+    if (this.interactionMode === InteractionMode.DESTROY) return;
+
+    this.resetSelection();
+    this.updateInteractionMode(InteractionMode.DESTROY);
+  }
+
+  public turnOffDestroyMode() {
+    if (this.interactionMode !== InteractionMode.DESTROY) return;
+    this.updateInteractionMode(InteractionMode.SELECT);
+  }
+
+  private updateInteractionMode(mode: InteractionMode) {
+    this.interactionMode = mode;
+    this.publishInteractionModeUpdated();
+  }
+
+  public subscribeInteractionModeUpdated(handler: EventHandlerSubscriber<InteractionMode>): () => void {
+    return this.interactionModeUpdatedHandler.subscribe(handler);
+  }
+
+  private publishInteractionModeUpdated() {
+    this.interactionModeUpdatedHandler.publish(this.interactionMode);
   }
 }

@@ -25,6 +25,7 @@
     "no-else-return": "off",
     "class-methods-use-this": "off",
     "no-continue": "off",
-    "no-await-in-loop": "off"
+    "no-await-in-loop": "off",
+    "no-lonely-if": "off"
   }
 }

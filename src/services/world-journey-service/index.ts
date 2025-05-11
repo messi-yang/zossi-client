@@ -28,6 +28,7 @@ import { RemoveStaticUnitCommand } from './managers/command-manager/commands/rem
 import { RemoveColorUnitCommand } from './managers/command-manager/commands/remove-color-unit-command';
 import { RemoveSignUnitCommand } from './managers/command-manager/commands/remove-sign-unit-command';
 import { RotateUnitCommand } from './managers/command-manager/commands/rotate-unit-command';
+import { InteractionMode } from './managers/selection-manager/interaction-mode-enum';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -275,6 +276,18 @@ export class WorldJourneyService {
     this.selectionManager.resetSelection();
   }
 
+  public getInteractionMode(): InteractionMode {
+    return this.selectionManager.getInteractionMode();
+  }
+
+  public turnOnDestroyMode() {
+    this.selectionManager.turnOnDestroyMode();
+  }
+
+  public turnOffDestroyMode() {
+    this.selectionManager.turnOffDestroyMode();
+  }
+
   public hoverPosition(position: PositionVo) {
     this.selectionManager.hoverPosition(position);
   }
@@ -424,6 +437,7 @@ export class WorldJourneyService {
   ): () => void;
   subscribe(eventName: 'SELECTED_ITEM_REMOVED', subscriber: EventHandlerSubscriber<void>): () => void;
   subscribe(eventName: 'HOVERED_POSITION_UPDATED', subscriber: EventHandlerSubscriber<PositionVo>): () => void;
+  subscribe(eventName: 'INTERACTION_MODE_UPDATED', subscriber: EventHandlerSubscriber<InteractionMode>): () => void;
   public subscribe(
     eventName:
       | 'LOCAL_COMMAND_EXECUTED'
@@ -447,7 +461,8 @@ export class WorldJourneyService {
       | 'SELECTED_ITEM_ADDED'
       | 'SELECTED_ITEM_UPDATED'
       | 'SELECTED_ITEM_REMOVED'
-      | 'HOVERED_POSITION_UPDATED',
+      | 'HOVERED_POSITION_UPDATED'
+      | 'INTERACTION_MODE_UPDATED',
     subscriber:
       | EventHandlerSubscriber<Command>
       | EventHandlerSubscriber<PositionVo>
@@ -472,6 +487,7 @@ export class WorldJourneyService {
           ]
         >
       | EventHandlerSubscriber<void>
+      | EventHandlerSubscriber<InteractionMode>
   ): () => void {
     if (eventName === 'LOCAL_COMMAND_EXECUTED') {
       return this.commandManager.subscribeLocalCommandExecutedEvent(subscriber as EventHandlerSubscriber<Command>);
@@ -530,6 +546,10 @@ export class WorldJourneyService {
       return this.selectionManager.subscribeSelectedItemRemoved(subscriber as EventHandlerSubscriber<void>);
     } else if (eventName === 'HOVERED_POSITION_UPDATED') {
       return this.selectionManager.subscribeHoveredPositionUpdated(subscriber as EventHandlerSubscriber<PositionVo>);
+    } else if (eventName === 'INTERACTION_MODE_UPDATED') {
+      return this.selectionManager.subscribeInteractionModeUpdated(
+        subscriber as EventHandlerSubscriber<'destroy' | 'place' | 'drag' | 'select'>
+      );
     } else {
       return () => {};
     }

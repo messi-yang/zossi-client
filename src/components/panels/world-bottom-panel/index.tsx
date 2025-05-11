@@ -111,20 +111,24 @@ function AnchorDropdown({ options, onSelect }: { options: { label: string; value
 
 interface Props {
   selectedItem: ItemModel | null;
+  activeTab: 'select' | 'build' | 'destroy' | null;
   onMoveClick: () => void;
   onRotateSelectedItemClick: () => void;
   onBuildClick: () => void;
   onCameraClick: () => void;
   onReplayClick: (duration: number) => void;
+  onDestroyClick: () => void;
 }
 
 export function WorldBottomPanel({
   selectedItem,
+  activeTab,
   onMoveClick,
   onRotateSelectedItemClick,
   onBuildClick,
   onCameraClick,
   onReplayClick,
+  onDestroyClick,
 }: Props) {
   const [isBuildMenuOpen, setIsBuildMenuOpen] = useState(false);
   const [isReplayMenuOpen, setIsReplayMenuOpen] = useState(false);
@@ -142,14 +146,6 @@ export function WorldBottomPanel({
   const handleBuildClick = useCallback(() => {
     onBuildClick();
   }, [onBuildClick]);
-
-  const isMoveActive = useMemo(() => {
-    return !selectedItem;
-  }, [selectedItem]);
-
-  const isBuildActive = useMemo(() => {
-    return !!selectedItem;
-  }, [selectedItem]);
 
   const replayDurationOptions = useMemo(() => {
     return [
@@ -176,9 +172,11 @@ export function WorldBottomPanel({
       }}
       className={twMerge('inline-flex', 'h-16', 'p-2', 'gap-2', BG_COLOR_CLASS, 'rounded-[10px]')}
     >
-      <BottomPanelButton icon="mage:mouse-pointer" active={isMoveActive} onClick={onMoveClick} />
+      <BottomPanelButton icon="mage:mouse-pointer" active={activeTab === 'select'} onClick={onMoveClick} />
       <div className={twMerge('flex', 'items-center', 'flex-row')}>
-        {!selectedItem && <BottomPanelButton icon="icon-park-outline:hammer-and-anvil" active={isBuildActive} onClick={handleBuildClick} />}
+        {!selectedItem && (
+          <BottomPanelButton icon="icon-park-outline:hammer-and-anvil" active={activeTab === 'build'} onClick={handleBuildClick} />
+        )}
         {selectedItem && (
           <div
             className={twMerge('w-12', 'h-12', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'bg-blue-600', 'rounded-lg')}
@@ -209,6 +207,7 @@ export function WorldBottomPanel({
           <AnchorDropdown options={replayDurationOptions} onSelect={handleReplayClick} />
         </MenuAnchor>
       </div>
+      <BottomPanelButton icon="material-symbols:delete-outline" active={activeTab === 'destroy'} onClick={onDestroyClick} />
     </div>
   );
 }

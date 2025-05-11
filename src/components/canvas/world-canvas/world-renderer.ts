@@ -30,6 +30,8 @@ const GROUND_COLOR = ColorVo.create(135, 225, 245);
 const BASE_MODEL_SRC = '/assets/3d/scene/lawn.gltf';
 const DEFAULT_FONT_SRC = 'https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_sans_regular.typeface.json';
 const CHARACTER_MODEL_SRC = '/characters/a-chiong.gltf';
+const HOVER_INDICATOR_COLOR_GREEN = 0x00ff00;
+const HOVER_INDICATOR_COLOR_RED = 0xff0000;
 
 export class WorldRenderer {
   private readonly scene: THREE.Scene;
@@ -114,7 +116,7 @@ export class WorldRenderer {
 
     this.positionHoverIndicator = new THREE.Mesh(
       new THREE.BoxGeometry(1, 0.1, 1),
-      new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.3, transparent: true })
+      new THREE.MeshBasicMaterial({ color: HOVER_INDICATOR_COLOR_GREEN, opacity: 0.5, transparent: true })
     );
     this.positionHoverIndicator.position.set(0, -100, 0);
     this.scene.add(this.positionHoverIndicator);
@@ -216,7 +218,13 @@ export class WorldRenderer {
     }
   }
 
-  public updateHoveredPosition(position: PositionVo) {
+  public updateHoverIndicatorColor(color: 'green' | 'red') {
+    if (this.positionHoverIndicator.material instanceof THREE.MeshBasicMaterial) {
+      this.positionHoverIndicator.material.color.set(color === 'green' ? HOVER_INDICATOR_COLOR_GREEN : HOVER_INDICATOR_COLOR_RED);
+    }
+  }
+
+  public updateHoverIndicatorPosition(position: PositionVo) {
     this.positionHoverIndicator.position.set(position.getX(), 0, position.getZ());
     this.positionHoverIndicator.scale.set(1, 1, 1);
   }

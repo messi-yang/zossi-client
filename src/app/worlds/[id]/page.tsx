@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback, useRef, KeyboardEventHandler, useContext, useState, use } from 'react';
+import { useEffect, useCallback, useRef, KeyboardEventHandler, useContext, useState, use, useMemo } from 'react';
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -18,10 +18,8 @@ import { ShareWorldModal } from '@/components/modals/share-world-modal';
 import { ItemModel } from '@/models/world/item/item-model';
 import { EmbedModal } from '@/components/modals/embed-modal';
 import { WorldJourneyServiceLoadTestContext } from '@/contexts/world-journey-load-test-context';
-import { RemoveUnitsModal } from '@/components/modals/remove-units-modal';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
-import { BoundVo } from '@/models/world/common/bound-vo';
 import { BuildMazeModal } from '@/components/modals/build-maze-modal';
 import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
@@ -31,6 +29,7 @@ import { CreateLinkUnitModal } from '@/components/modals/create-link-unit-modal'
 import { CreateSignUnitModal } from '@/components/modals/create-sign-unit-modal';
 import { WorldBottomPanel } from '@/components/panels/world-bottom-panel';
 import { SelectItemModal } from '@/components/modals/select-item-modal';
+import { InteractionMode } from '@/services/world-journey-service/managers/selection-manager/interaction-mode-enum';
 
 const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -76,6 +75,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     connectionStatus,
     items,
     selectedItem,
+    interactionMode,
     enterWorld,
     updateCameraPosition,
     makePlayerStand,
@@ -88,7 +88,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     createLinkUnit,
     createSignUnit,
     buildMaze,
-    removeUnitsInBound,
     moveUnit,
     displayedEmbedCode,
     cleanDisplayedEmbedCode,
@@ -294,11 +293,6 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     }
   }, [enterWorld, worldId]);
 
-  const [isRemoveUnitsModalVisible, setIsRemoveUnitsModalVisible] = useState(false);
-  const handleRemoveUnitsClick = useCallback(() => {
-    setIsRemoveUnitsModalVisible(true);
-  }, []);
-
   const handleReplayClick = useCallback(
     (duration: number) => {
       if (!worldJourneyService) return;
@@ -307,17 +301,15 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     [worldJourneyService]
   );
 
-  const handleRemoveUnitsConfirm = useCallback(
-    (origin: PositionVo, dimension: DimensionVo) => {
-      const from = origin;
-      const to = from.shift(PositionVo.create(dimension.getWidth(), dimension.getDepth()));
+  const handleDestroyClick = useCallback(() => {
+    if (!worldJourneyService) return;
 
-      const bound = BoundVo.create(from, to);
-      removeUnitsInBound(bound);
-      setIsRemoveUnitsModalVisible(false);
-    },
-    [removeUnitsInBound]
-  );
+    if (interactionMode === InteractionMode.DESTROY) {
+      worldJourneyService.turnOffDestroyMode();
+    } else {
+      worldJourneyService.turnOnDestroyMode();
+    }
+  }, [worldJourneyService, interactionMode]);
 
   const [isBuildMazeModalVisible, setIsBuildMazeModalVisible] = useState(false);
   const handleBuildMazeClick = useCallback(() => {
@@ -372,6 +364,18 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     worldJourneyService.rotateSelectedItem();
   }, [worldJourneyService]);
 
+  const bottomPanelMode = useMemo(() => {
+    if (interactionMode === InteractionMode.SELECT || interactionMode === InteractionMode.DRAG) {
+      return 'select';
+    } else if (interactionMode === InteractionMode.PLACE) {
+      return 'build';
+    } else if (interactionMode === InteractionMode.DESTROY) {
+      return 'destroy';
+    } else {
+      return null;
+    }
+  }, [interactionMode]);
+
   const handleMoveClick = useCallback(() => {
     if (!worldJourneyService) return;
 
@@ -387,10 +391,14 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
 
       const unitAtPos = worldJourneyService.getUnitByPos(position);
       if (unitAtPos) {
-        if (currentSelectedUnit && unitAtPos.getId() === currentSelectedUnit.getId()) {
-          worldJourneyService.clearSelectedUnit();
+        if (interactionMode === InteractionMode.DESTROY) {
+          worldJourneyService.removeUnit(unitAtPos.getId());
         } else {
-          worldJourneyService.selectUnit(unitAtPos.getId());
+          if (currentSelectedUnit && unitAtPos.getId() === currentSelectedUnit.getId()) {
+            worldJourneyService.clearSelectedUnit();
+          } else {
+            worldJourneyService.selectUnit(unitAtPos.getId());
+          }
         }
       } else if (currentSelectedUnit) {
         worldJourneyService.clearSelectedUnit();
@@ -398,7 +406,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
         handleUnitCreate(position);
       }
     },
-    [worldJourneyService, handleUnitCreate]
+    [worldJourneyService, handleUnitCreate, interactionMode]
   );
 
   const handlePositionHover = useCallback(
@@ -504,16 +512,8 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
           }}
         />
       )}
-      <RemoveUnitsModal
-        opened={isRemoveUnitsModalVisible}
-        onComfirm={handleRemoveUnitsConfirm}
-        onCancel={() => {
-          setIsRemoveUnitsModalVisible(false);
-        }}
-      />
       <div className="absolute top-2 right-3 z-10 flex items-center gap-2">
         <Button text="Build Maze" onClick={handleBuildMazeClick} />
-        <Button text="Remove Units" onClick={handleRemoveUnitsClick} />
         <Button text="Share" onClick={handleShareClick} />
         <div className="min-w-24 flex justify-center">
           <Text size="text-xl">{myPlayerPosText}</Text>
@@ -529,11 +529,13 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
         />
         <WorldBottomPanel
           selectedItem={selectedItem}
+          activeTab={bottomPanelMode}
           onMoveClick={handleMoveClick}
           onCameraClick={handleUpdateCameraClick}
           onBuildClick={handleBuildClick}
           onRotateSelectedItemClick={handleRotateSelectedItemClick}
           onReplayClick={handleReplayClick}
+          onDestroyClick={handleDestroyClick}
         />
       </section>
       <section
