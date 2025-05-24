@@ -81,6 +81,10 @@ export class SelectionManager {
 
   public hoverPosition(position: PositionVo) {
     const oldHoveredPosition = this.hoveredPosition;
+    if (oldHoveredPosition.isEqual(position)) {
+      return;
+    }
+
     this.hoveredPosition = position;
 
     const selectedItem = this.getSelectedItem();
