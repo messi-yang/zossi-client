@@ -2,18 +2,11 @@ import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { PositionDto } from './position-dto';
-import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
-import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionEnum } from '@/models/world/common/direction-enum';
-import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
-import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
-import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { DimensionDto } from './dimension-dto';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
-import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
 import { ColorVo } from '@/models/world/common/color-vo';
-import { SignUnitModel } from '@/models/world/unit/sign-unit-model';
 
 type UnitDtoBase = {
   id: string;
@@ -66,25 +59,9 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
   const position = PositionVo.create(unitDto.position.x, unitDto.position.z);
   const direction = DirectionVo.create(unitDto.direction);
   const dimension = DimensionVo.create(unitDto.dimension.width, unitDto.dimension.depth);
+  const color = unitDto.color ? ColorVo.parse(unitDto.color) : null;
 
-  if (unitDto.type === UnitTypeEnum.Static) {
-    return StaticUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension);
-  } else if (unitDto.type === UnitTypeEnum.Fence) {
-    return FenceUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension);
-  } else if (unitDto.type === UnitTypeEnum.Portal) {
-    return PortalUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension);
-  } else if (unitDto.type === UnitTypeEnum.Link) {
-    return LinkUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
-  } else if (unitDto.type === UnitTypeEnum.Embed) {
-    return EmbedUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
-  } else if (unitDto.type === UnitTypeEnum.Color) {
-    return ColorUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label, ColorVo.parse(unitDto.color));
-  } else if (unitDto.type === UnitTypeEnum.Sign) {
-    return SignUnitModel.create(unitDto.id, unitDto.itemId, position, direction, dimension, unitDto.label);
-  }
-
-  // @ts-expect-error
-  throw new Error(`invalid unit type: ${unitDto.type}`);
+  return UnitModel.create(unitDto.id, unitDto.type, unitDto.itemId, position, direction, dimension, unitDto.label, color);
 }
 
 export type { UnitDto };

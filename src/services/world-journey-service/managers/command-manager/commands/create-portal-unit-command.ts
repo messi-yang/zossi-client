@@ -3,10 +3,10 @@ import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
-import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 import { CommandNameEnum } from '../command-name-enum';
+import { UnitModel } from '@/models/world/unit/unit-model';
 
 export class CreatePortalUnitCommand extends Command {
   constructor(
@@ -39,7 +39,16 @@ export class CreatePortalUnitCommand extends Command {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Portal)) return;
 
-    const newUnit = PortalUnitModel.create(this.unitId, this.itemId, this.position, this.direction, item.getDimension());
+    const newUnit = UnitModel.create(
+      this.unitId,
+      UnitTypeEnum.Portal,
+      this.itemId,
+      this.position,
+      this.direction,
+      item.getDimension(),
+      null,
+      null
+    );
 
     const occupiedPositions = newUnit.getOccupiedPositions();
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {

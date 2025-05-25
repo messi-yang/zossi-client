@@ -11,7 +11,6 @@ import { InstanceState, createInstancesInScene, createTextMesh } from './tjs-uti
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { BlockModel } from '@/models/world/block/block-model';
-import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
 import { BoundVo } from '@/models/world/common/bound-vo';
 import { EventHandler, EventHandlerSubscriber } from '@/event-dispatchers/common/event-handler';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
@@ -615,7 +614,7 @@ export class WorldRenderer {
     const itemUnitInstanceStates: InstanceState[] = [];
 
     units.forEach((unit) => {
-      if (!(unit instanceof ColorUnitModel)) return;
+      if (unit.getType() !== UnitTypeEnum.Color) return;
 
       itemUnitInstanceStates.push({
         x: unit.getCenterPrecisePosition().getX(),

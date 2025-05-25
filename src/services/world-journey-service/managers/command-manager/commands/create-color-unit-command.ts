@@ -7,7 +7,7 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 import { CommandNameEnum } from '../command-name-enum';
 import { ColorVo } from '@/models/world/common/color-vo';
-import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
+import { UnitModel } from '@/models/world/unit/unit-model';
 
 export class CreateColorUnitCommand extends Command {
   constructor(
@@ -49,7 +49,16 @@ export class CreateColorUnitCommand extends Command {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Color)) return;
 
-    const newUnit = ColorUnitModel.create(this.unitId, this.itemId, this.position, this.direction, item.getDimension(), null, this.color);
+    const newUnit = UnitModel.create(
+      this.unitId,
+      UnitTypeEnum.Color,
+      this.itemId,
+      this.position,
+      this.direction,
+      item.getDimension(),
+      null,
+      this.color
+    );
 
     const occupiedPositions = newUnit.getOccupiedPositions();
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {

@@ -21,7 +21,6 @@ import { WorldJourneyServiceLoadTestContext } from '@/contexts/world-journey-loa
 import { PositionVo } from '@/models/world/common/position-vo';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { BuildMazeModal } from '@/components/modals/build-maze-modal';
-import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { CreateEmbedUnitModal } from '@/components/modals/create-embed-unit-modal';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
@@ -30,6 +29,7 @@ import { CreateSignUnitModal } from '@/components/modals/create-sign-unit-modal'
 import { WorldBottomPanel } from '@/components/panels/world-bottom-panel';
 import { SelectItemModal } from '@/components/modals/select-item-modal';
 import { InteractionMode } from '@/services/world-journey-service/managers/selection-manager/interaction-mode-enum';
+import { UnitModel } from '@/models/world/unit/unit-model';
 
 const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -324,7 +324,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     [buildMaze]
   );
 
-  const [myPlayerEnteredPortalUnit, setMyPlayerEnteredPortalUnit] = useState<PortalUnitModel | null>(null);
+  const [myPlayerEnteredPortalUnit, setMyPlayerEnteredPortalUnit] = useState<UnitModel | null>(null);
   const [showSendPlayerIntoPortalConfirmModal, setShowSendPlayerIntoPortalConfirmModal] = useState(false);
   useEffect(() => {
     if (!worldJourneyService) return () => {};

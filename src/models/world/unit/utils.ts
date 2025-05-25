@@ -1,14 +1,3 @@
-import { ColorVo } from '../common/color-vo';
-import { DimensionVo } from '../common/dimension-vo';
-import { DirectionVo } from '../common/direction-vo';
-import { PositionVo } from '../common/position-vo';
-import { ColorUnitModel } from './color-unit-model';
-import { EmbedUnitModel } from './embed-unit-model';
-import { FenceUnitModel } from './fence-unit-model';
-import { LinkUnitModel } from './link-unit-model';
-import { PortalUnitModel } from './portal-unit-model';
-import { SignUnitModel } from './sign-unit-model';
-import { StaticUnitModel } from './static-unit-model';
 import { UnitModel } from './unit-model';
 import { UnitTypeEnum } from './unit-type-enum';
 
@@ -18,28 +7,28 @@ import { UnitTypeEnum } from './unit-type-enum';
 export const dispatchUnit = <T>(
   unit: UnitModel,
   mapper: {
-    [UnitTypeEnum.Static]: (_unit: StaticUnitModel) => T;
-    [UnitTypeEnum.Fence]: (_unit: FenceUnitModel) => T;
-    [UnitTypeEnum.Portal]: (_unit: PortalUnitModel) => T;
-    [UnitTypeEnum.Link]: (_unit: LinkUnitModel) => T;
-    [UnitTypeEnum.Embed]: (_unit: EmbedUnitModel) => T;
-    [UnitTypeEnum.Color]: (_unit: ColorUnitModel) => T;
-    [UnitTypeEnum.Sign]: (_unit: SignUnitModel) => T;
+    [UnitTypeEnum.Static]: (_unit: UnitModel) => T;
+    [UnitTypeEnum.Fence]: (_unit: UnitModel) => T;
+    [UnitTypeEnum.Portal]: (_unit: UnitModel) => T;
+    [UnitTypeEnum.Link]: (_unit: UnitModel) => T;
+    [UnitTypeEnum.Embed]: (_unit: UnitModel) => T;
+    [UnitTypeEnum.Color]: (_unit: UnitModel) => T;
+    [UnitTypeEnum.Sign]: (_unit: UnitModel) => T;
   }
 ): T => {
-  if (unit instanceof StaticUnitModel) {
+  if (unit.getType() === UnitTypeEnum.Static) {
     return mapper[UnitTypeEnum.Static](unit);
-  } else if (unit instanceof FenceUnitModel) {
+  } else if (unit.getType() === UnitTypeEnum.Fence) {
     return mapper[UnitTypeEnum.Fence](unit);
-  } else if (unit instanceof PortalUnitModel) {
+  } else if (unit.getType() === UnitTypeEnum.Portal) {
     return mapper[UnitTypeEnum.Portal](unit);
-  } else if (unit instanceof LinkUnitModel) {
+  } else if (unit.getType() === UnitTypeEnum.Link) {
     return mapper[UnitTypeEnum.Link](unit);
-  } else if (unit instanceof EmbedUnitModel) {
+  } else if (unit.getType() === UnitTypeEnum.Embed) {
     return mapper[UnitTypeEnum.Embed](unit);
-  } else if (unit instanceof ColorUnitModel) {
+  } else if (unit.getType() === UnitTypeEnum.Color) {
     return mapper[UnitTypeEnum.Color](unit);
-  } else if (unit instanceof SignUnitModel) {
+  } else if (unit.getType() === UnitTypeEnum.Sign) {
     return mapper[UnitTypeEnum.Sign](unit);
   }
   throw new Error(`The unit type ${unit.getType()} is not handled here`);
@@ -76,30 +65,4 @@ export const dipatchUnitType = <T>(
     return mapper[UnitTypeEnum.Sign]();
   }
   throw new Error(`The unit type ${unitType} is not handled here`);
-};
-
-export const createUnitModel = (
-  unitId: string,
-  unitType: UnitTypeEnum,
-  itemId: string,
-  position: PositionVo,
-  direction: DirectionVo,
-  dimension: DimensionVo,
-  label: string | null,
-  color: ColorVo | null
-): UnitModel => {
-  return dipatchUnitType(unitType, {
-    [UnitTypeEnum.Static]: () => StaticUnitModel.create(unitId, itemId, position, direction, dimension),
-    [UnitTypeEnum.Fence]: () => FenceUnitModel.create(unitId, itemId, position, direction, dimension),
-    [UnitTypeEnum.Portal]: () => PortalUnitModel.create(unitId, itemId, position, direction, dimension),
-    [UnitTypeEnum.Link]: () => LinkUnitModel.create(unitId, itemId, position, direction, dimension, label),
-    [UnitTypeEnum.Embed]: () => EmbedUnitModel.create(unitId, itemId, position, direction, dimension, label),
-    [UnitTypeEnum.Color]: () => ColorUnitModel.create(unitId, itemId, position, direction, dimension, label, color),
-    [UnitTypeEnum.Sign]: () => {
-      if (label === null) {
-        throw new Error('Label is required for SignUnitModel');
-      }
-      return SignUnitModel.create(unitId, itemId, position, direction, dimension, label);
-    },
-  });
 };

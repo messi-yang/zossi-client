@@ -3,10 +3,10 @@ import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
-import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { CommandNameEnum } from '../command-name-enum';
+import { UnitModel } from '@/models/world/unit/unit-model';
 
 export class CreateLinkUnitCommand extends Command {
   constructor(
@@ -50,7 +50,16 @@ export class CreateLinkUnitCommand extends Command {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Link)) return;
 
-    const newUnit = LinkUnitModel.create(this.unitId, this.itemId, this.position, this.direction, item.getDimension(), this.label);
+    const newUnit = UnitModel.create(
+      this.unitId,
+      UnitTypeEnum.Link,
+      this.itemId,
+      this.position,
+      this.direction,
+      item.getDimension(),
+      this.label,
+      null
+    );
 
     const occupiedPositions = newUnit.getOccupiedPositions();
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {

@@ -2,11 +2,11 @@ import { Command } from '../command';
 import { CommandParams } from '../command-params';
 import { DateVo } from '@/models/global/date-vo';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
-import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
 import { generateUuidV4 } from '@/utils/uuid';
 import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { CommandNameEnum } from '../command-name-enum';
+import { UnitModel } from '@/models/world/unit/unit-model';
 
 export class CreateFenceUnitCommand extends Command {
   constructor(
@@ -39,7 +39,16 @@ export class CreateFenceUnitCommand extends Command {
 
     if (!(item.getCompatibleUnitType() === UnitTypeEnum.Fence)) return;
 
-    const newUnit = FenceUnitModel.create(this.unitId, this.itemId, this.position, this.direction, item.getDimension());
+    const newUnit = UnitModel.create(
+      this.unitId,
+      UnitTypeEnum.Fence,
+      this.itemId,
+      this.position,
+      this.direction,
+      item.getDimension(),
+      null,
+      null
+    );
 
     const occupiedPositions = newUnit.getOccupiedPositions();
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {

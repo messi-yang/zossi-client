@@ -2,17 +2,9 @@ import { uniq } from 'lodash';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
-import { StaticUnitModel } from '@/models/world/unit/static-unit-model';
-import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
-import { FenceUnitModel } from '@/models/world/unit/fence-unit-model';
-import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
-import { dispatchUnit } from '@/models/world/unit/utils';
-import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatchers/common/event-handler';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
-import { ColorUnitModel } from '@/models/world/unit/color-unit-model';
-import { SignUnitModel } from '@/models/world/unit/sign-unit-model';
 
 export class UnitManager {
   private blocks: Record<string, BlockModel | undefined>;
@@ -39,13 +31,13 @@ export class UnitManager {
   private unitRemovedEventHandler = EventHandler.create<UnitModel>();
 
   private unitMapByType: {
-    [UnitTypeEnum.Static]: StaticUnitModel[];
-    [UnitTypeEnum.Fence]: FenceUnitModel[];
-    [UnitTypeEnum.Portal]: PortalUnitModel[];
-    [UnitTypeEnum.Link]: LinkUnitModel[];
-    [UnitTypeEnum.Embed]: EmbedUnitModel[];
-    [UnitTypeEnum.Color]: ColorUnitModel[];
-    [UnitTypeEnum.Sign]: SignUnitModel[];
+    [UnitTypeEnum.Static]: UnitModel[];
+    [UnitTypeEnum.Fence]: UnitModel[];
+    [UnitTypeEnum.Portal]: UnitModel[];
+    [UnitTypeEnum.Link]: UnitModel[];
+    [UnitTypeEnum.Embed]: UnitModel[];
+    [UnitTypeEnum.Color]: UnitModel[];
+    [UnitTypeEnum.Sign]: UnitModel[];
   } = { static: [], fence: [], portal: [], link: [], embed: [], color: [], sign: [] };
 
   constructor(blocks: BlockModel[], units: UnitModel[]) {
@@ -189,29 +181,7 @@ export class UnitManager {
   }
 
   private addUnitToUnitMapByType(unit: UnitModel) {
-    dispatchUnit(unit, {
-      static: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Static].push(_unit);
-      },
-      fence: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Fence].push(_unit);
-      },
-      portal: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Portal].push(_unit);
-      },
-      link: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Link].push(_unit);
-      },
-      embed: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Embed].push(_unit);
-      },
-      color: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Color].push(_unit);
-      },
-      sign: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Sign].push(_unit);
-      },
-    });
+    this.unitMapByType[unit.getType()].push(unit);
   }
 
   private updateUnitFromUnitMapByType(oldUnit: UnitModel, unit: UnitModel) {
@@ -219,44 +189,8 @@ export class UnitManager {
     this.addUnitToUnitMapByType(unit);
   }
 
-  private removeUnitFromUnitMapByType(oldUnit: UnitModel) {
-    dispatchUnit(oldUnit, {
-      static: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Static] = this.unitMapByType[UnitTypeEnum.Static].filter(
-          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
-        );
-      },
-      fence: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Fence] = this.unitMapByType[UnitTypeEnum.Fence].filter(
-          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
-        );
-      },
-      portal: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Portal] = this.unitMapByType[UnitTypeEnum.Portal].filter(
-          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
-        );
-      },
-      link: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Link] = this.unitMapByType[UnitTypeEnum.Link].filter(
-          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
-        );
-      },
-      embed: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Embed] = this.unitMapByType[UnitTypeEnum.Embed].filter(
-          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
-        );
-      },
-      color: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Color] = this.unitMapByType[UnitTypeEnum.Color].filter(
-          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
-        );
-      },
-      sign: (_unit) => {
-        this.unitMapByType[UnitTypeEnum.Sign] = this.unitMapByType[UnitTypeEnum.Sign].filter(
-          (unit) => !unit.getPosition().isEqual(_unit.getPosition())
-        );
-      },
-    });
+  private removeUnitFromUnitMapByType(unit: UnitModel) {
+    this.unitMapByType[unit.getType()] = this.unitMapByType[unit.getType()].filter((_unit) => unit.getId() !== _unit.getId());
   }
 
   /**

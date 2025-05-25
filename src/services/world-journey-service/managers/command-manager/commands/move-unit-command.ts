@@ -7,8 +7,8 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 import { CommandNameEnum } from '../command-name-enum';
 import { ColorVo } from '@/models/world/common/color-vo';
-import { createUnitModel } from '@/models/world/unit/utils';
 import { isPositionsOccupied } from './utils';
+import { UnitModel } from '@/models/world/unit/unit-model';
 
 export class MoveUnitCommand extends Command {
   constructor(
@@ -79,7 +79,7 @@ export class MoveUnitCommand extends Command {
         }
       });
     } else {
-      const newUnit = createUnitModel(
+      const newUnit = UnitModel.create(
         this.unitId,
         this.unitType,
         this.itemId,

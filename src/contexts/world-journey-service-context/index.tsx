@@ -12,11 +12,9 @@ import { CreatePortalUnitCommand } from '@/services/world-journey-service/manage
 import { CreateFenceUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-fence-unit-command';
 import { CreateLinkUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-link-unit-command';
 import { dipatchUnitType } from '@/models/world/unit/utils';
-import { LinkUnitModel } from '@/models/world/unit/link-unit-model';
 import { LinkUnitApi } from '@/adapters/apis/link-unit-api';
 import { NotificationEventDispatcher } from '@/event-dispatchers/notification-event-dispatcher';
 import { CreateEmbedUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-embed-unit-command';
-import { EmbedUnitModel } from '@/models/world/unit/embed-unit-model';
 import { EmbedUnitApi } from '@/adapters/apis/embed-unit-api';
 import { sleep } from '@/utils/general';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
@@ -29,6 +27,7 @@ import { CreateColorUnitCommand } from '@/services/world-journey-service/manager
 import { CreateSignUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/create-sign-unit-command';
 import { UnitModel } from '@/models/world/unit/unit-model';
 import { InteractionMode } from '@/services/world-journey-service/managers/selection-manager/interaction-mode-enum';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 type ConnectionStatus = 'WAITING' | 'CONNECTING' | 'OPEN' | 'DISCONNECTED';
 
@@ -428,10 +427,10 @@ export function Provider({ children }: Props) {
       const unit = worldJourneyService.getUnit(unitId);
       if (!unit) return;
 
-      if (unit instanceof LinkUnitModel) {
+      if (unit.getType() === UnitTypeEnum.Link) {
         const linkUnitUrl = await linkUnitApi.getLinkUnitUrl(unit.getId());
         window.open(linkUnitUrl);
-      } else if (unit instanceof EmbedUnitModel) {
+      } else if (unit.getType() === UnitTypeEnum.Embed) {
         const embedUnitUrl = await embedUnitApi.getEmbedUnitEmbedCode(unit.getId());
         setDisplayedEmbedCode(embedUnitUrl);
       }

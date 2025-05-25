@@ -1,10 +1,10 @@
 import { Command } from '../command';
 import { DateVo } from '@/models/global/date-vo';
 import { CommandParams } from '../command-params';
-import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { generateUuidV4 } from '@/utils/uuid';
 import { CommandNameEnum } from '../command-name-enum';
 import { PlayerActionVo } from '@/models/world/player/player-action-vo';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 export class SendPlayerIntoPortalCommand extends Command {
   constructor(id: string, createdAt: DateVo, isRemote: boolean, private playerId: string, private unitId: string) {
@@ -25,7 +25,7 @@ export class SendPlayerIntoPortalCommand extends Command {
 
   public execute({ unitManager, playerManager }: CommandParams): void {
     const portalUnit = unitManager.getUnit(this.unitId);
-    if (!portalUnit || !(portalUnit instanceof PortalUnitModel)) return;
+    if (!portalUnit || portalUnit.getType() !== UnitTypeEnum.Portal) return;
 
     const currentPlayer = playerManager.getPlayer(this.playerId);
     if (!currentPlayer) return;

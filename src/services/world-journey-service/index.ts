@@ -15,7 +15,6 @@ import { ChangePlayerPrecisePositionCommand } from './managers/command-manager/c
 import { EventHandlerSubscriber, EventHandler } from '../../event-dispatchers/common/event-handler';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
-import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 import { MoveUnitCommand } from './managers/command-manager/commands/move-unit-command';
 import { ChangePlayerHeldItemCommand } from './managers/command-manager/commands/change-player-held-item-command';
 import { DirectionVo } from '@/models/world/common/direction-vo';
@@ -29,6 +28,7 @@ import { RemoveColorUnitCommand } from './managers/command-manager/commands/remo
 import { RemoveSignUnitCommand } from './managers/command-manager/commands/remove-sign-unit-command';
 import { RotateUnitCommand } from './managers/command-manager/commands/rotate-unit-command';
 import { InteractionMode } from './managers/selection-manager/interaction-mode-enum';
+import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -51,7 +51,7 @@ export class WorldJourneyService {
 
   private updatePlayerPositionTickCount;
 
-  private myPlayerEnteredPortalUnitEventHandler = EventHandler.create<PortalUnitModel>();
+  private myPlayerEnteredPortalUnitEventHandler = EventHandler.create<UnitModel>();
 
   constructor(world: WorldModel, players: PlayerModel[], myPlayerId: string, blocks: BlockModel[], units: UnitModel[]) {
     this.world = world;
@@ -208,9 +208,9 @@ export class WorldJourneyService {
       const unitAtNewPlayerPos = this.unitManager.getUnitByPos(newPlayerPos);
       if (!unitAtNewPlayerPos) return;
 
-      if (unitAtNewPlayerPos instanceof PortalUnitModel) {
+      if (unitAtNewPlayerPos.getType() === UnitTypeEnum.Portal) {
         const unitAtOldPlayerPos = this.unitManager.getUnitByPos(oldPlayerPos);
-        if (unitAtOldPlayerPos instanceof PortalUnitModel) return;
+        if (unitAtOldPlayerPos && unitAtOldPlayerPos.getType() === UnitTypeEnum.Portal) return;
 
         // To prevent infinite teleporting loop, we need to check if we just came from another portal
         const myPlayer = this.playerManager.getMyPlayer();
@@ -413,7 +413,7 @@ export class WorldJourneyService {
   subscribe(eventName: 'PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'MY_PLAYER_UPDATED', subscriber: EventHandlerSubscriber<[PlayerModel, PlayerModel]>): () => void;
   subscribe(eventName: 'MY_PLAYER_POSITION_UPDATED', subscriber: EventHandlerSubscriber<[PositionVo, PositionVo]>): () => void;
-  subscribe(eventName: 'MY_PLAYER_ENTERED_PORTAL_UNIT', subscriber: EventHandlerSubscriber<PortalUnitModel>): () => void;
+  subscribe(eventName: 'MY_PLAYER_ENTERED_PORTAL_UNIT', subscriber: EventHandlerSubscriber<UnitModel>): () => void;
   subscribe(eventName: 'PLAYER_REMOVED', subscriber: EventHandlerSubscriber<PlayerModel>): () => void;
   subscribe(eventName: 'PLACEHOLDER_BLOCKS_ADDED', subscriber: EventHandlerSubscriber<BlockIdVo[]>): () => void;
   subscribe(eventName: 'UNITS_UPDATED', subscriber: EventHandlerSubscriber<[itemId: string, units: UnitModel[]]>): () => void;
@@ -472,7 +472,7 @@ export class WorldJourneyService {
       | EventHandlerSubscriber<PlayerModel>
       | EventHandlerSubscriber<[PlayerModel, PlayerModel]>
       | EventHandlerSubscriber<[PositionVo, PositionVo]>
-      | EventHandlerSubscriber<PortalUnitModel>
+      | EventHandlerSubscriber<UnitModel>
       | EventHandlerSubscriber<BlockIdVo[]>
       | EventHandlerSubscriber<BlockModel[]>
       | EventHandlerSubscriber<UnitModel>
@@ -508,7 +508,7 @@ export class WorldJourneyService {
     } else if (eventName === 'MY_PLAYER_POSITION_UPDATED') {
       return this.playerManager.subscribeMyPlayerPositionUpdatedEvent(subscriber as EventHandlerSubscriber<[PositionVo, PositionVo]>);
     } else if (eventName === 'MY_PLAYER_ENTERED_PORTAL_UNIT') {
-      return this.myPlayerEnteredPortalUnitEventHandler.subscribe(subscriber as EventHandlerSubscriber<PortalUnitModel>);
+      return this.myPlayerEnteredPortalUnitEventHandler.subscribe(subscriber as EventHandlerSubscriber<UnitModel>);
     } else if (eventName === 'PLAYER_REMOVED') {
       return this.playerManager.subscribePlayerRemovedEvent(subscriber as EventHandlerSubscriber<PlayerModel>);
     } else if (eventName === 'PLACEHOLDER_BLOCKS_ADDED') {
