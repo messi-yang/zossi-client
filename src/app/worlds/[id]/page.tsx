@@ -386,11 +386,13 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     (position: PositionVo) => {
       if (!worldJourneyService) return;
 
-      const currentSelectedUnit = worldJourneyService.getSelectedUnit();
       const currentSelectedItem = worldJourneyService.getSelectedItem();
+
+      const currentSelectedUnit = worldJourneyService.getSelectedUnit();
 
       const unitAtPos = worldJourneyService.getUnitByPos(position);
       if (unitAtPos) {
+        if (currentSelectedItem) return;
         if (interactionMode === InteractionMode.DESTROY) {
           worldJourneyService.removeUnit(unitAtPos.getId());
         } else {
@@ -421,6 +423,9 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   const handlePositionDragStart = useCallback(
     (position: PositionVo) => {
       if (!worldJourneyService) return;
+
+      const currentSelectedItem = worldJourneyService.getSelectedItem();
+      if (currentSelectedItem) return;
 
       const unitAtPos = worldJourneyService.getUnitByPos(position);
       if (unitAtPos) {
