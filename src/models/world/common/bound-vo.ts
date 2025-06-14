@@ -47,7 +47,7 @@ export class BoundVo {
     }
   }
 
-  public async iterateSync(cb: (position: PositionVo) => Promise<void>): Promise<void> {
+  public async iterateAsync(cb: (position: PositionVo) => Promise<void>): Promise<void> {
     for (let x = this.from.getX(); x <= this.to.getX(); x += 1) {
       for (let z = this.from.getZ(); z <= this.to.getZ(); z += 1) {
         await cb(PositionVo.create(x, z));

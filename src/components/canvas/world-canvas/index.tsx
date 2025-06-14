@@ -9,6 +9,7 @@ import { WorldRenderer } from './world-renderer';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { ControlUnitPanel } from '@/components/panels/control-unit-panel';
 import { UnitModel } from '@/models/world/unit/unit-model';
+import { calculateExpectedUnitBound } from '@/models/world/common/utils';
 
 type Props = {
   worldJourneyService: WorldJourneyService;
@@ -267,6 +268,14 @@ export function WorldCanvas({
       const item = worldJourneyService.getItem(newParams.unit.getItemId());
       if (!item) return;
 
+      const bound = calculateExpectedUnitBound(newParams.position, item.getDimension(), newParams.unit.getDirection());
+      const hasUnits = worldJourneyService.hasUnitsInBound(bound);
+
+      if (hasUnits) {
+        worldRenderer.updateHoverIndicatorColor('red');
+      } else {
+        worldRenderer.updateHoverIndicatorColor('green');
+      }
       worldRenderer.updateDraggedItem(newParams.position, item.getDimension(), newParams.unit.getDirection());
     });
 

@@ -5,6 +5,7 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { EventHandler, EventHandlerSubscriber } from '../../../../event-dispatchers/common/event-handler';
 import { BlockModel } from '@/models/world/block/block-model';
 import { BlockIdVo } from '@/models/world/block/block-id-vo';
+import { BoundVo } from '@/models/world/common/bound-vo';
 
 export class UnitManager {
   private blocks: Record<string, BlockModel | undefined>;
@@ -97,6 +98,18 @@ export class UnitManager {
 
   public hasUnit(id: string): boolean {
     return !!this.unitMapById[id];
+  }
+
+  public hasUnitsInBound(bound: BoundVo): boolean {
+    let hasUnits = false;
+    bound.iterate(async (pos) => {
+      const unit = this.getUnitByPos(pos);
+      if (unit) {
+        hasUnits = true;
+      }
+    });
+
+    return hasUnits;
   }
 
   public getUnitByPos(pos: PositionVo): UnitModel | null {

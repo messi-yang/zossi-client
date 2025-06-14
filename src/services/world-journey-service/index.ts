@@ -29,6 +29,7 @@ import { RemoveSignUnitCommand } from './managers/command-manager/commands/remov
 import { RotateUnitCommand } from './managers/command-manager/commands/rotate-unit-command';
 import { InteractionMode } from './managers/selection-manager/interaction-mode-enum';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
+import { BoundVo } from '@/models/world/common/bound-vo';
 
 export class WorldJourneyService {
   private world: WorldModel;
@@ -165,6 +166,10 @@ export class WorldJourneyService {
 
   public getUnit(unitId: string): UnitModel | null {
     return this.unitManager.getUnit(unitId);
+  }
+
+  public hasUnitsInBound(bound: BoundVo): boolean {
+    return this.unitManager.hasUnitsInBound(bound);
   }
 
   public getUnitByPos(position: PositionVo) {
