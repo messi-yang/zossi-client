@@ -296,6 +296,14 @@ export function WorldCanvas({
     });
 
     const selectedItemUpdatedUnsubscribe = worldJourneyService.subscribe('SELECTED_ITEM_UPDATED', ([, { item, position, direction }]) => {
+      const bound = calculateExpectedUnitBound(position, item.getDimension(), direction);
+      const hasUnits = worldJourneyService.hasUnitsInBound(bound);
+
+      if (hasUnits) {
+        worldRenderer.updateHoverIndicatorColor('red');
+      } else {
+        worldRenderer.updateHoverIndicatorColor('green');
+      }
       worldRenderer.updateSelectedItem(item, position, direction);
     });
 
