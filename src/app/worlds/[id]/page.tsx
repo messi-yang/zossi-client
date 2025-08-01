@@ -142,7 +142,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
       const currentSelectedItemDirection = worldJourneyService.getSelectedItemDirection();
       if (!currentSelectedItemDirection) return;
 
-      createEmbedUnit(newUnitPosition, currentSelectedItemDirection, item.getId(), label, embedCode);
+      createEmbedUnit(item, newUnitPosition, currentSelectedItemDirection, label, embedCode);
       setIsCreateEmbedUnitModalVisible(false);
     },
     [worldJourneyService, newUnitPosition]
@@ -159,7 +159,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
       const currentSelectedItemDirection = worldJourneyService.getSelectedItemDirection();
       if (!currentSelectedItemDirection) return;
 
-      createLinkUnit(newUnitPosition, currentSelectedItemDirection, item.getId(), label, url);
+      createLinkUnit(item, newUnitPosition, currentSelectedItemDirection, label, url);
       setIsCreateLinkUnitModalVisible(false);
     },
     [worldJourneyService, newUnitPosition]
@@ -176,7 +176,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
       const currentSelectedItemDirection = worldJourneyService.getSelectedItemDirection();
       if (!currentSelectedItemDirection) return;
 
-      createSignUnit(newUnitPosition, currentSelectedItemDirection, item.getId(), label);
+      createSignUnit(item, newUnitPosition, currentSelectedItemDirection, label);
       setIsCreateSignUnitModalVisible(false);
     },
     [worldJourneyService, newUnitPosition]

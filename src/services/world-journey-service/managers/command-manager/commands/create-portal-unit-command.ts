@@ -7,6 +7,7 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 import { CommandNameEnum } from '../command-name-enum';
 import { UnitModel } from '@/models/world/unit/unit-model';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
 
 export class CreatePortalUnitCommand extends Command {
   constructor(
@@ -15,37 +16,71 @@ export class CreatePortalUnitCommand extends Command {
     isRemote: boolean,
     private unitId: string,
     private itemId: string,
-    private position: PositionVo,
-    private direction: DirectionVo
+    private itemCompatibleUnitType: UnitTypeEnum,
+    private itemDimension: DimensionVo,
+    private unitPosition: PositionVo,
+    private unitDirection: DirectionVo
   ) {
     super(CommandNameEnum.CreatePortalUnit, id, createdAt, isRemote);
   }
 
-  static create(itemId: string, position: PositionVo, direction: DirectionVo) {
-    return new CreatePortalUnitCommand(generateUuidV4(), DateVo.now(), false, generateUuidV4(), itemId, position, direction);
+  static create(
+    itemId: string,
+    itemCompatibleUnitType: UnitTypeEnum,
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo
+  ) {
+    return new CreatePortalUnitCommand(
+      generateUuidV4(),
+      DateVo.now(),
+      false,
+      generateUuidV4(),
+      itemId,
+      itemCompatibleUnitType,
+      itemDimension,
+      unitPosition,
+      unitDirection
+    );
   }
 
-  static createRemote(id: string, createdAt: DateVo, unitId: string, itemId: string, position: PositionVo, direction: DirectionVo) {
-    return new CreatePortalUnitCommand(id, createdAt, true, unitId, itemId, position, direction);
+  static createRemote(
+    id: string,
+    createdAt: DateVo,
+    unitId: string,
+    itemId: string,
+    itemCompatibleUnitType: UnitTypeEnum,
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo
+  ) {
+    return new CreatePortalUnitCommand(
+      id,
+      createdAt,
+      true,
+      unitId,
+      itemId,
+      itemCompatibleUnitType,
+      itemDimension,
+      unitPosition,
+      unitDirection
+    );
   }
 
   public getIsClientOnly = () => false;
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
-    const item = itemManager.getItem(this.itemId);
-    if (!item) return;
-
-    if (!(item.getCompatibleUnitType() === UnitTypeEnum.Portal)) return;
+  public execute({ unitManager, playerManager }: CommandParams): void {
+    if (this.itemCompatibleUnitType !== UnitTypeEnum.Portal) return;
 
     const newUnit = UnitModel.create(
       this.unitId,
       UnitTypeEnum.Portal,
       this.itemId,
-      this.position,
-      this.direction,
-      item.getDimension(),
+      this.unitPosition,
+      this.unitDirection,
+      this.itemDimension,
       null,
       null
     );
@@ -77,11 +112,19 @@ export class CreatePortalUnitCommand extends Command {
     return this.itemId;
   }
 
-  public getPosition() {
-    return this.position;
+  public getItemCompatibleUnitType() {
+    return this.itemCompatibleUnitType;
   }
 
-  public getDirection() {
-    return this.direction;
+  public getItemDimension() {
+    return this.itemDimension;
+  }
+
+  public getUnitPosition() {
+    return this.unitPosition;
+  }
+
+  public getUnitDirection() {
+    return this.unitDirection;
   }
 }

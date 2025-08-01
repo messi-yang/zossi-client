@@ -7,6 +7,7 @@ import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { CommandNameEnum } from '../command-name-enum';
 import { UnitModel } from '@/models/world/unit/unit-model';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
 
 export class CreateSignUnitCommand extends Command {
   constructor(
@@ -15,15 +16,35 @@ export class CreateSignUnitCommand extends Command {
     isRemote: boolean,
     private unitId: string,
     private itemId: string,
-    private position: PositionVo,
-    private direction: DirectionVo,
-    private label: string
+    private itemCompatibleUnitType: UnitTypeEnum,
+    private itemDimension: DimensionVo,
+    private unitPosition: PositionVo,
+    private unitDirection: DirectionVo,
+    private unitLabel: string
   ) {
     super(CommandNameEnum.CreateSignUnit, id, createdAt, isRemote);
   }
 
-  static create(itemId: string, position: PositionVo, direction: DirectionVo, label: string) {
-    return new CreateSignUnitCommand(generateUuidV4(), DateVo.now(), false, generateUuidV4(), itemId, position, direction, label);
+  static create(
+    itemId: string,
+    itemCompatibleUnitType: UnitTypeEnum,
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo,
+    unitLabel: string
+  ) {
+    return new CreateSignUnitCommand(
+      generateUuidV4(),
+      DateVo.now(),
+      false,
+      generateUuidV4(),
+      itemId,
+      itemCompatibleUnitType,
+      itemDimension,
+      unitPosition,
+      unitDirection,
+      unitLabel
+    );
   }
 
   static createRemote(
@@ -31,31 +52,41 @@ export class CreateSignUnitCommand extends Command {
     createdAt: DateVo,
     unitId: string,
     itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    label: string
+    itemCompatibleUnitType: UnitTypeEnum,
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo,
+    unitLabel: string
   ) {
-    return new CreateSignUnitCommand(id, createdAt, true, unitId, itemId, position, direction, label);
+    return new CreateSignUnitCommand(
+      id,
+      createdAt,
+      true,
+      unitId,
+      itemId,
+      itemCompatibleUnitType,
+      itemDimension,
+      unitPosition,
+      unitDirection,
+      unitLabel
+    );
   }
 
   public getIsClientOnly = () => false;
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
-    const item = itemManager.getItem(this.itemId);
-    if (!item) return;
-
-    if (!(item.getCompatibleUnitType() === UnitTypeEnum.Sign)) return;
+  public execute({ unitManager, playerManager }: CommandParams): void {
+    if (this.itemCompatibleUnitType !== UnitTypeEnum.Sign) return;
 
     const newUnit = UnitModel.create(
       this.unitId,
       UnitTypeEnum.Sign,
       this.itemId,
-      this.position,
-      this.direction,
-      item.getDimension(),
-      this.label,
+      this.unitPosition,
+      this.unitDirection,
+      this.itemDimension,
+      this.unitLabel,
       null
     );
 
@@ -86,15 +117,23 @@ export class CreateSignUnitCommand extends Command {
     return this.itemId;
   }
 
-  public getPosition() {
-    return this.position;
+  public getItemCompatibleUnitType() {
+    return this.itemCompatibleUnitType;
   }
 
-  public getDirection() {
-    return this.direction;
+  public getItemDimension() {
+    return this.itemDimension;
   }
 
-  public getLabel() {
-    return this.label;
+  public getUnitPosition() {
+    return this.unitPosition;
+  }
+
+  public getUnitDirection() {
+    return this.unitDirection;
+  }
+
+  public getUnitLabel() {
+    return this.unitLabel;
   }
 }

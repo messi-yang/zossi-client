@@ -42,7 +42,7 @@ export abstract class Command {
   public abstract getIsClientOnly(): boolean;
 
   /**
-   * Get required item id for executing this command
+   * Check if this command requires an item, so we can ask client to download it.
    */
   public abstract getRequiredItemId(): string | null;
 

@@ -400,6 +400,7 @@ export class WorldJourneyService {
       unitId,
       unit.getType(),
       unit.getItemId(),
+      unit.getDimension(),
       position,
       unit.getDirection(),
       unit.getLabel(),

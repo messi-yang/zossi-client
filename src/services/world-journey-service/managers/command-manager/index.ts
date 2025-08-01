@@ -20,17 +20,8 @@ export class CommandManager {
     private failedCommandMap: Record<string, true | undefined> = {},
     private isReplayingCommands = false,
     private bufferedCommandsFromReplaying: Command[] = [],
-    private commandExecutedEventHandler: EventHandler<Command> = EventHandler.create<Command>(),
-    /**
-     * Some commands require item to be loaded prior to execution, so we buffer them when those items
-     * are not loaded yet when getting executed.
-     */
-    private bufferedCommandsByRequiredItem: Map<string, Command[]> = new Map()
-  ) {
-    this.itemManager.subscribeItemAddedEvent((item) => {
-      this.executeBufferedCommandsOfRequiredItem(item.getId());
-    });
-  }
+    private commandExecutedEventHandler: EventHandler<Command> = EventHandler.create<Command>()
+  ) {}
 
   static create(
     world: WorldModel,
@@ -169,14 +160,7 @@ export class CommandManager {
 
     const requiredItemId = command.getRequiredItemId();
     if (requiredItemId) {
-      const requiredItem = this.itemManager.getItem(requiredItemId);
-      // If required item is not yet loaded
-      if (!requiredItem) {
-        this.itemManager.addPlaceholderItemId(requiredItemId);
-        const bufferedCommands = this.bufferedCommandsByRequiredItem.get(requiredItemId);
-        this.bufferedCommandsByRequiredItem.set(requiredItemId, bufferedCommands ? [...bufferedCommands, command] : [command]);
-        return false;
-      }
+      this.itemManager.addPlaceholderItemId(requiredItemId);
     }
 
     command.execute({
@@ -189,17 +173,6 @@ export class CommandManager {
     this.addExecutedCommand(command);
 
     return true;
-  }
-
-  private executeBufferedCommandsOfRequiredItem(itemId: string): void {
-    const bufferedCommands = this.bufferedCommandsByRequiredItem.get(itemId);
-    if (!bufferedCommands) return;
-
-    bufferedCommands.forEach((command) => {
-      this.executeCommand(command);
-    });
-
-    this.bufferedCommandsByRequiredItem.delete(itemId);
   }
 
   public subscribeLocalCommandExecutedEvent(subscriber: EventHandlerSubscriber<Command>): () => void {

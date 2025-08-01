@@ -7,6 +7,7 @@ import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { generateUuidV4 } from '@/utils/uuid';
 import { CommandNameEnum } from '../command-name-enum';
 import { UnitModel } from '@/models/world/unit/unit-model';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
 
 export class CreateEmbedUnitCommand extends Command {
   constructor(
@@ -15,25 +16,37 @@ export class CreateEmbedUnitCommand extends Command {
     isRemote: boolean,
     private unitId: string,
     private itemId: string,
-    private position: PositionVo,
-    private direction: DirectionVo,
-    private label: string | null,
-    private embedCode: string
+    private itemCompatibleUnitType: UnitTypeEnum,
+    private itemDimension: DimensionVo,
+    private unitPosition: PositionVo,
+    private unitDirection: DirectionVo,
+    private unitLabel: string | null,
+    private unitEmbedCode: string
   ) {
     super(CommandNameEnum.CreateEmbedUnit, id, createdAt, isRemote);
   }
 
-  static create(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, embedCode: string) {
+  static create(
+    itemId: string,
+    itemCompatibleUnitType: UnitTypeEnum,
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo,
+    unitLabel: string | null,
+    unitEmbedCode: string
+  ) {
     return new CreateEmbedUnitCommand(
       generateUuidV4(),
       DateVo.now(),
       false,
       generateUuidV4(),
       itemId,
-      position,
-      direction,
-      label,
-      embedCode
+      itemCompatibleUnitType,
+      itemDimension,
+      unitPosition,
+      unitDirection,
+      unitLabel,
+      unitEmbedCode
     );
   }
 
@@ -42,32 +55,43 @@ export class CreateEmbedUnitCommand extends Command {
     createdAt: DateVo,
     unitId: string,
     itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    label: string | null,
-    embedCode: string
+    itemCompatibleUnitType: UnitTypeEnum,
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo,
+    unitLabel: string | null,
+    unitEmbedCode: string
   ) {
-    return new CreateEmbedUnitCommand(id, createdAt, true, unitId, itemId, position, direction, label, embedCode);
+    return new CreateEmbedUnitCommand(
+      id,
+      createdAt,
+      true,
+      unitId,
+      itemId,
+      itemCompatibleUnitType,
+      itemDimension,
+      unitPosition,
+      unitDirection,
+      unitLabel,
+      unitEmbedCode
+    );
   }
 
   public getIsClientOnly = () => false;
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
-    const item = itemManager.getItem(this.itemId);
-    if (!item) return;
-
-    if (!(item.getCompatibleUnitType() === UnitTypeEnum.Embed)) return;
+  public execute({ unitManager, playerManager }: CommandParams): void {
+    if (this.itemCompatibleUnitType !== UnitTypeEnum.Embed) return;
 
     const newUnit = UnitModel.create(
       this.unitId,
       UnitTypeEnum.Embed,
       this.itemId,
-      this.position,
-      this.direction,
-      item.getDimension(),
-      this.label,
+      this.unitPosition,
+      this.unitDirection,
+      this.itemDimension,
+      this.unitLabel,
       null
     );
 
@@ -98,19 +122,27 @@ export class CreateEmbedUnitCommand extends Command {
     return this.itemId;
   }
 
-  public getPosition() {
-    return this.position;
+  public getItemCompatibleUnitType() {
+    return this.itemCompatibleUnitType;
   }
 
-  public getDirection() {
-    return this.direction;
+  public getItemDimension() {
+    return this.itemDimension;
   }
 
-  public getLabel() {
-    return this.label;
+  public getUnitPosition() {
+    return this.unitPosition;
   }
 
-  public getEmbedCode() {
-    return this.embedCode;
+  public getUnitDirection() {
+    return this.unitDirection;
+  }
+
+  public getUnitLabel() {
+    return this.unitLabel;
+  }
+
+  public getUnitEmbedCode() {
+    return this.unitEmbedCode;
   }
 }

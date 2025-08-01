@@ -9,6 +9,7 @@ import { CommandNameEnum } from '../command-name-enum';
 import { ColorVo } from '@/models/world/common/color-vo';
 import { isPositionsOccupied } from './utils';
 import { UnitModel } from '@/models/world/unit/unit-model';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
 
 export class MoveUnitCommand extends Command {
   constructor(
@@ -18,10 +19,11 @@ export class MoveUnitCommand extends Command {
     private unitId: string,
     private unitType: UnitTypeEnum,
     private itemId: string,
-    private position: PositionVo,
-    private direction: DirectionVo,
-    private label: string | null,
-    private color: ColorVo | null
+    private itemDimension: DimensionVo,
+    private unitPosition: PositionVo,
+    private unitDirection: DirectionVo,
+    private unitLabel: string | null,
+    private unitColor: ColorVo | null
   ) {
     super(CommandNameEnum.MoveUnit, id, createdAt, isRemote);
   }
@@ -30,12 +32,25 @@ export class MoveUnitCommand extends Command {
     unitId: string,
     unitType: UnitTypeEnum,
     itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    label: string | null,
-    color: ColorVo | null
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo,
+    unitLabel: string | null,
+    unitColor: ColorVo | null
   ) {
-    return new MoveUnitCommand(generateUuidV4(), DateVo.now(), false, unitId, unitType, itemId, position, direction, label, color);
+    return new MoveUnitCommand(
+      generateUuidV4(),
+      DateVo.now(),
+      false,
+      unitId,
+      unitType,
+      itemId,
+      itemDimension,
+      unitPosition,
+      unitDirection,
+      unitLabel,
+      unitColor
+    );
   }
 
   static createRemote(
@@ -44,28 +59,38 @@ export class MoveUnitCommand extends Command {
     unitId: string,
     unitType: UnitTypeEnum,
     itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    label: string | null,
-    color: ColorVo | null
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo,
+    unitLabel: string | null,
+    unitColor: ColorVo | null
   ) {
-    return new MoveUnitCommand(id, createdAt, true, unitId, unitType, itemId, position, direction, label, color);
+    return new MoveUnitCommand(
+      id,
+      createdAt,
+      true,
+      unitId,
+      unitType,
+      itemId,
+      itemDimension,
+      unitPosition,
+      unitDirection,
+      unitLabel,
+      unitColor
+    );
   }
 
   public getIsClientOnly = () => false;
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
-    const item = itemManager.getItem(this.itemId);
-    if (!item) return;
-
+  public execute({ unitManager, playerManager }: CommandParams): void {
     const existingUnit = unitManager.getUnit(this.unitId);
 
     if (existingUnit) {
       let isExistingUnitUpdated = false;
       const clonedExistingUnit = existingUnit.clone();
-      clonedExistingUnit.move(this.position);
+      clonedExistingUnit.move(this.unitPosition);
 
       if (isPositionsOccupied(clonedExistingUnit.getOccupiedPositions(), unitManager, playerManager)) {
         return;
@@ -83,11 +108,11 @@ export class MoveUnitCommand extends Command {
         this.unitId,
         this.unitType,
         this.itemId,
-        this.position,
-        this.direction,
-        item.getDimension(),
-        this.label,
-        this.color
+        this.unitPosition,
+        this.unitDirection,
+        this.itemDimension,
+        this.unitLabel,
+        this.unitColor
       );
 
       if (isPositionsOccupied(newUnit.getOccupiedPositions(), unitManager, playerManager)) {
@@ -115,19 +140,23 @@ export class MoveUnitCommand extends Command {
     return this.itemId;
   }
 
-  public getPosition() {
-    return this.position;
+  public getItemDimension() {
+    return this.itemDimension;
   }
 
-  public getDirection() {
-    return this.direction;
+  public getUnitPosition() {
+    return this.unitPosition;
   }
 
-  public getLabel() {
-    return this.label;
+  public getUnitDirection() {
+    return this.unitDirection;
   }
 
-  public getColor() {
-    return this.color;
+  public getUnitLabel() {
+    return this.unitLabel;
+  }
+
+  public getUnitColor() {
+    return this.unitColor;
   }
 }

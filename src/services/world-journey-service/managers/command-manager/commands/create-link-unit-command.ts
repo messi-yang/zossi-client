@@ -7,6 +7,7 @@ import { DirectionVo } from '@/models/world/common/direction-vo';
 import { PositionVo } from '@/models/world/common/position-vo';
 import { CommandNameEnum } from '../command-name-enum';
 import { UnitModel } from '@/models/world/unit/unit-model';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
 
 export class CreateLinkUnitCommand extends Command {
   constructor(
@@ -15,16 +16,38 @@ export class CreateLinkUnitCommand extends Command {
     isRemote: boolean,
     private unitId: string,
     private itemId: string,
-    private position: PositionVo,
-    private direction: DirectionVo,
-    private label: string | null,
-    private url: string
+    private itemCompatibleUnitType: UnitTypeEnum,
+    private itemDimension: DimensionVo,
+    private unitPosition: PositionVo,
+    private unitDirection: DirectionVo,
+    private unitLabel: string | null,
+    private unitUrl: string
   ) {
     super(CommandNameEnum.CreateLinkUnit, id, createdAt, isRemote);
   }
 
-  static create(itemId: string, position: PositionVo, direction: DirectionVo, label: string | null, url: string) {
-    return new CreateLinkUnitCommand(generateUuidV4(), DateVo.now(), false, generateUuidV4(), itemId, position, direction, label, url);
+  static create(
+    itemId: string,
+    itemCompatibleUnitType: UnitTypeEnum,
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo,
+    unitLabel: string | null,
+    unitUrl: string
+  ) {
+    return new CreateLinkUnitCommand(
+      generateUuidV4(),
+      DateVo.now(),
+      false,
+      generateUuidV4(),
+      itemId,
+      itemCompatibleUnitType,
+      itemDimension,
+      unitPosition,
+      unitDirection,
+      unitLabel,
+      unitUrl
+    );
   }
 
   static createRemote(
@@ -32,32 +55,43 @@ export class CreateLinkUnitCommand extends Command {
     createdAt: DateVo,
     unitId: string,
     itemId: string,
-    position: PositionVo,
-    direction: DirectionVo,
-    label: string | null,
-    url: string
+    itemCompatibleUnitType: UnitTypeEnum,
+    itemDimension: DimensionVo,
+    unitPosition: PositionVo,
+    unitDirection: DirectionVo,
+    unitLabel: string | null,
+    unitUrl: string
   ) {
-    return new CreateLinkUnitCommand(id, createdAt, true, unitId, itemId, position, direction, label, url);
+    return new CreateLinkUnitCommand(
+      id,
+      createdAt,
+      true,
+      unitId,
+      itemId,
+      itemCompatibleUnitType,
+      itemDimension,
+      unitPosition,
+      unitDirection,
+      unitLabel,
+      unitUrl
+    );
   }
 
   public getIsClientOnly = () => false;
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ unitManager, playerManager, itemManager }: CommandParams): void {
-    const item = itemManager.getItem(this.itemId);
-    if (!item) return;
-
-    if (!(item.getCompatibleUnitType() === UnitTypeEnum.Link)) return;
+  public execute({ unitManager, playerManager }: CommandParams): void {
+    if (this.itemCompatibleUnitType !== UnitTypeEnum.Link) return;
 
     const newUnit = UnitModel.create(
       this.unitId,
       UnitTypeEnum.Link,
       this.itemId,
-      this.position,
-      this.direction,
-      item.getDimension(),
-      this.label,
+      this.unitPosition,
+      this.unitDirection,
+      this.itemDimension,
+      this.unitLabel,
       null
     );
 
@@ -88,19 +122,27 @@ export class CreateLinkUnitCommand extends Command {
     return this.itemId;
   }
 
-  public getPosition() {
-    return this.position;
+  public getItemCompatibleUnitType() {
+    return this.itemCompatibleUnitType;
   }
 
-  public getDirection() {
-    return this.direction;
+  public getItemDimension() {
+    return this.itemDimension;
   }
 
-  public getLabel() {
-    return this.label;
+  public getUnitPosition() {
+    return this.unitPosition;
   }
 
-  public getUrl() {
-    return this.url;
+  public getUnitDirection() {
+    return this.unitDirection;
+  }
+
+  public getUnitLabel() {
+    return this.unitLabel;
+  }
+
+  public getUnitUrl() {
+    return this.unitUrl;
   }
 }

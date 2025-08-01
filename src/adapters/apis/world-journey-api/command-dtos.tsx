@@ -31,6 +31,8 @@ import { ColorVo } from '@/models/world/common/color-vo';
 import { RemoveColorUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/remove-color-unit-command';
 import { UnitTypeEnum } from '@/models/world/unit/unit-type-enum';
 import { MoveUnitCommand } from '@/services/world-journey-service/managers/command-manager/commands/move-unit-command';
+import { DimensionDto, newDimensionDto } from '../dtos/dimension-dto';
+import { DimensionVo } from '@/models/world/common/dimension-vo';
 
 type ChangePlayerActionCommandDto = {
   id: string;
@@ -89,6 +91,8 @@ type CreateStaticUnitCommandDto = {
   payload: {
     unitId: string;
     itemId: string;
+    itemCompatibleUnitType: UnitTypeEnum;
+    itemDimension: DimensionDto;
     unitPosition: PositionDto;
     unitDirection: number;
   };
@@ -110,6 +114,8 @@ type CreateFenceUnitCommandDto = {
   payload: {
     unitId: string;
     itemId: string;
+    itemCompatibleUnitType: UnitTypeEnum;
+    itemDimension: DimensionDto;
     unitPosition: PositionDto;
     unitDirection: number;
   };
@@ -133,6 +139,8 @@ type CreatePortalUnitCommandDto = {
   payload: {
     unitId: string;
     itemId: string;
+    itemCompatibleUnitType: UnitTypeEnum;
+    itemDimension: DimensionDto;
     unitPosition: PositionDto;
     unitDirection: number;
   };
@@ -154,6 +162,8 @@ type CreateLinkUnitCommandDto = {
   payload: {
     unitId: string;
     itemId: string;
+    itemCompatibleUnitType: UnitTypeEnum;
+    itemDimension: DimensionDto;
     unitPosition: PositionDto;
     unitDirection: number;
     unitLabel: string | null;
@@ -177,6 +187,8 @@ type CreateEmbedUnitCommandDto = {
   payload: {
     unitId: string;
     itemId: string;
+    itemCompatibleUnitType: UnitTypeEnum;
+    itemDimension: DimensionDto;
     unitPosition: PositionDto;
     unitDirection: number;
     unitLabel: string | null;
@@ -200,6 +212,8 @@ type CreateColorUnitCommandDto = {
   payload: {
     unitId: string;
     itemId: string;
+    itemCompatibleUnitType: UnitTypeEnum;
+    itemDimension: DimensionDto;
     unitPosition: PositionDto;
     unitDirection: number;
     unitLabel: null;
@@ -223,6 +237,8 @@ type CreateSignUnitCommandDto = {
   payload: {
     unitId: string;
     itemId: string;
+    itemCompatibleUnitType: UnitTypeEnum;
+    itemDimension: DimensionDto;
     unitPosition: PositionDto;
     unitDirection: number;
     unitLabel: string;
@@ -255,6 +271,7 @@ type MoveUnitCommandDto = {
     unitId: string;
     unitType: UnitTypeEnum;
     itemId: string;
+    itemDimension: DimensionDto;
     unitPosition: PositionDto;
     unitDirection: number;
     unitLabel: string | null;
@@ -268,6 +285,8 @@ function parseCreateStaticCommand(command: CreateStaticUnitCommandDto): CreateSt
     DateVo.fromTimestamp(command.timestamp),
     command.payload.unitId,
     command.payload.itemId,
+    command.payload.itemCompatibleUnitType,
+    DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection)
   );
@@ -283,6 +302,8 @@ function parseCreateFenceCommand(command: CreateFenceUnitCommandDto): CreateFenc
     DateVo.fromTimestamp(command.timestamp),
     command.payload.unitId,
     command.payload.itemId,
+    command.payload.itemCompatibleUnitType,
+    DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection)
   );
@@ -298,6 +319,8 @@ function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): Crea
     DateVo.fromTimestamp(command.timestamp),
     command.payload.unitId,
     command.payload.itemId,
+    command.payload.itemCompatibleUnitType,
+    DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection)
   );
@@ -313,6 +336,8 @@ function parseCreateLinkUnitCommand(command: CreateLinkUnitCommandDto): CreateLi
     DateVo.fromTimestamp(command.timestamp),
     command.payload.unitId,
     command.payload.itemId,
+    command.payload.itemCompatibleUnitType,
+    DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection),
     command.payload.unitLabel,
@@ -330,6 +355,8 @@ function parseCreateEmbedUnitCommand(command: CreateEmbedUnitCommandDto): Create
     DateVo.fromTimestamp(command.timestamp),
     command.payload.unitId,
     command.payload.itemId,
+    command.payload.itemCompatibleUnitType,
+    DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection),
     command.payload.unitLabel,
@@ -347,6 +374,8 @@ function parseCreateColorUnitCommand(command: CreateColorUnitCommandDto): Create
     DateVo.fromTimestamp(command.timestamp),
     command.payload.unitId,
     command.payload.itemId,
+    command.payload.itemCompatibleUnitType,
+    DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection),
     ColorVo.parse(command.payload.unitColor)
@@ -363,6 +392,8 @@ function parseCreateSignUnitCommand(command: CreateSignUnitCommandDto): CreateSi
     DateVo.fromTimestamp(command.timestamp),
     command.payload.unitId,
     command.payload.itemId,
+    command.payload.itemCompatibleUnitType,
+    DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection),
     command.payload.unitLabel
@@ -384,6 +415,7 @@ function parseMoveUnitCommand(command: MoveUnitCommandDto): MoveUnitCommand {
     command.payload.unitId,
     command.payload.unitType,
     command.payload.itemId,
+    DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection),
     command.payload.unitLabel,
@@ -492,8 +524,10 @@ export const toCommandDto = (sourceCommand: Command) => {
       payload: {
         unitId: command.getUnitId(),
         itemId: command.getItemId(),
-        unitPosition: newPositionDto(command.getPosition()),
-        unitDirection: command.getDirection().toNumber(),
+        itemCompatibleUnitType: command.getItemCompatibleUnitType(),
+        itemDimension: newDimensionDto(command.getItemDimension()),
+        unitPosition: newPositionDto(command.getUnitPosition()),
+        unitDirection: command.getUnitDirection().toNumber(),
       },
     }),
     [CommandNameEnum.RemoveStaticUnit]: (command) => ({
@@ -511,8 +545,10 @@ export const toCommandDto = (sourceCommand: Command) => {
       payload: {
         unitId: command.getUnitId(),
         itemId: command.getItemId(),
-        unitPosition: newPositionDto(command.getPosition()),
-        unitDirection: command.getDirection().toNumber(),
+        itemCompatibleUnitType: command.getItemCompatibleUnitType(),
+        itemDimension: newDimensionDto(command.getItemDimension()),
+        unitPosition: newPositionDto(command.getUnitPosition()),
+        unitDirection: command.getUnitDirection().toNumber(),
       },
     }),
     [CommandNameEnum.RemoveFenceUnit]: (command) => ({
@@ -530,8 +566,10 @@ export const toCommandDto = (sourceCommand: Command) => {
       payload: {
         unitId: command.getUnitId(),
         itemId: command.getItemId(),
-        unitPosition: newPositionDto(command.getPosition()),
-        unitDirection: command.getDirection().toNumber(),
+        itemCompatibleUnitType: command.getItemCompatibleUnitType(),
+        itemDimension: newDimensionDto(command.getItemDimension()),
+        unitPosition: newPositionDto(command.getUnitPosition()),
+        unitDirection: command.getUnitDirection().toNumber(),
       },
     }),
     [CommandNameEnum.RemovePortalUnit]: (command) => ({
@@ -549,10 +587,12 @@ export const toCommandDto = (sourceCommand: Command) => {
       payload: {
         unitId: command.getUnitId(),
         itemId: command.getItemId(),
-        unitPosition: newPositionDto(command.getPosition()),
-        unitDirection: command.getDirection().toNumber(),
-        unitLabel: command.getLabel(),
-        unitUrl: command.getUrl(),
+        itemCompatibleUnitType: command.getItemCompatibleUnitType(),
+        itemDimension: newDimensionDto(command.getItemDimension()),
+        unitPosition: newPositionDto(command.getUnitPosition()),
+        unitDirection: command.getUnitDirection().toNumber(),
+        unitLabel: command.getUnitLabel(),
+        unitUrl: command.getUnitUrl(),
       },
     }),
     [CommandNameEnum.RemoveLinkUnit]: (command) => ({
@@ -570,10 +610,12 @@ export const toCommandDto = (sourceCommand: Command) => {
       payload: {
         unitId: command.getUnitId(),
         itemId: command.getItemId(),
-        unitPosition: newPositionDto(command.getPosition()),
-        unitDirection: command.getDirection().toNumber(),
-        unitLabel: command.getLabel(),
-        unitEmbedCode: command.getEmbedCode(),
+        itemCompatibleUnitType: command.getItemCompatibleUnitType(),
+        itemDimension: newDimensionDto(command.getItemDimension()),
+        unitPosition: newPositionDto(command.getUnitPosition()),
+        unitDirection: command.getUnitDirection().toNumber(),
+        unitLabel: command.getUnitLabel(),
+        unitEmbedCode: command.getUnitEmbedCode(),
       },
     }),
     [CommandNameEnum.RemoveEmbedUnit]: (command) => ({
@@ -591,10 +633,12 @@ export const toCommandDto = (sourceCommand: Command) => {
       payload: {
         unitId: command.getUnitId(),
         itemId: command.getItemId(),
-        unitPosition: newPositionDto(command.getPosition()),
-        unitDirection: command.getDirection().toNumber(),
+        itemCompatibleUnitType: command.getItemCompatibleUnitType(),
+        itemDimension: newDimensionDto(command.getItemDimension()),
+        unitPosition: newPositionDto(command.getUnitPosition()),
+        unitDirection: command.getUnitDirection().toNumber(),
         unitLabel: null,
-        unitColor: command.getColor().toHex(),
+        unitColor: command.getUnitColor().toHex(),
       },
     }),
     [CommandNameEnum.RemoveColorUnit]: (command) => ({
@@ -612,9 +656,11 @@ export const toCommandDto = (sourceCommand: Command) => {
       payload: {
         unitId: command.getUnitId(),
         itemId: command.getItemId(),
-        unitPosition: newPositionDto(command.getPosition()),
-        unitDirection: command.getDirection().toNumber(),
-        unitLabel: command.getLabel(),
+        itemCompatibleUnitType: command.getItemCompatibleUnitType(),
+        itemDimension: newDimensionDto(command.getItemDimension()),
+        unitPosition: newPositionDto(command.getUnitPosition()),
+        unitDirection: command.getUnitDirection().toNumber(),
+        unitLabel: command.getUnitLabel(),
       },
     }),
     [CommandNameEnum.RemoveSignUnit]: (command) => ({
@@ -641,10 +687,11 @@ export const toCommandDto = (sourceCommand: Command) => {
         unitId: command.getUnitId(),
         unitType: command.getUnitType(),
         itemId: command.getItemId(),
-        unitPosition: newPositionDto(command.getPosition()),
-        unitDirection: command.getDirection().toNumber(),
-        unitLabel: command.getLabel(),
-        unitColor: command.getColor()?.toHex() ?? null,
+        itemDimension: newDimensionDto(command.getItemDimension()),
+        unitPosition: newPositionDto(command.getUnitPosition()),
+        unitDirection: command.getUnitDirection().toNumber(),
+        unitLabel: command.getUnitLabel(),
+        unitColor: command.getUnitColor()?.toHex() ?? null,
       },
     }),
     [CommandNameEnum.ChangePlayerAction]: (command) => ({
