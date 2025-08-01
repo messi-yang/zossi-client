@@ -20,14 +20,14 @@ export class AddPlayerCommand extends Command {
 
   public getRequiredItemId = () => this.player.getHeldItemId();
 
-  public execute({ playerManager }: CommandParams): void {
+  public execute({ playerManager }: CommandParams): boolean {
     const isPlayerAdded = playerManager.addPlayer(this.player);
+    if (!isPlayerAdded) return false;
 
     this.setUndoAction(() => {
-      if (isPlayerAdded) {
-        playerManager.removePlayer(this.player.getId());
-      }
+      playerManager.removePlayer(this.player.getId());
     });
+    return true;
   }
 
   public getPlayer() {

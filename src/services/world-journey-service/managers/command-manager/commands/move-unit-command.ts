@@ -84,7 +84,7 @@ export class MoveUnitCommand extends Command {
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ unitManager, playerManager }: CommandParams): void {
+  public execute({ unitManager, playerManager }: CommandParams): boolean {
     const existingUnit = unitManager.getUnit(this.unitId);
 
     if (existingUnit) {
@@ -93,7 +93,7 @@ export class MoveUnitCommand extends Command {
       clonedExistingUnit.move(this.unitPosition);
 
       if (isPositionsOccupied(clonedExistingUnit.getOccupiedPositions(), unitManager, playerManager)) {
-        return;
+        return false;
       }
 
       isExistingUnitUpdated = unitManager.updateUnit(clonedExistingUnit);
@@ -116,16 +116,18 @@ export class MoveUnitCommand extends Command {
       );
 
       if (isPositionsOccupied(newUnit.getOccupiedPositions(), unitManager, playerManager)) {
-        return;
+        return false;
       }
 
       const newUnitAdded = unitManager.addUnit(newUnit);
+      if (!newUnitAdded) return false;
+
       this.setUndoAction(() => {
-        if (newUnitAdded) {
-          unitManager.removeUnit(newUnit.getId());
-        }
+        unitManager.removeUnit(newUnit.getId());
       });
     }
+
+    return true;
   }
 
   public getUnitId() {

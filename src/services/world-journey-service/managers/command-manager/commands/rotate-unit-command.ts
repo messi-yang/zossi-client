@@ -24,20 +24,21 @@ export class RotateUnitCommand extends Command {
 
   public getRequiredItemId = () => null;
 
-  public execute({ unitManager }: CommandParams): void {
+  public execute({ unitManager }: CommandParams): boolean {
     const unit = unitManager.getUnit(this.unitId);
-    if (!unit) return;
+    if (!unit) return false;
 
     const clonedUnit = unit.clone();
     clonedUnit.rotate();
 
     const isUnitUpdated = unitManager.updateUnit(clonedUnit);
+    if (!isUnitUpdated) return false;
 
     this.setUndoAction(() => {
-      if (isUnitUpdated) {
-        unitManager.updateUnit(unit);
-      }
+      unitManager.updateUnit(unit);
     });
+
+    return true;
   }
 
   public getUnitId() {

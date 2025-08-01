@@ -163,15 +163,17 @@ export class CommandManager {
       this.itemManager.addPlaceholderItemId(requiredItemId);
     }
 
-    command.execute({
+    const doesCommandMakeChanges = command.execute({
       world: this.world,
       playerManager: this.playerManager,
       itemManager: this.itemManager,
       perspectiveManager: this.perspectiveManager,
       unitManager: this.unitManager,
     });
-    this.addExecutedCommand(command);
 
+    if (!doesCommandMakeChanges) return false;
+
+    this.addExecutedCommand(command);
     return true;
   }
 

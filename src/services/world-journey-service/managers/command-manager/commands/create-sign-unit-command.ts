@@ -76,8 +76,8 @@ export class CreateSignUnitCommand extends Command {
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ unitManager, playerManager }: CommandParams): void {
-    if (this.itemCompatibleUnitType !== UnitTypeEnum.Sign) return;
+  public execute({ unitManager, playerManager }: CommandParams): boolean {
+    if (this.itemCompatibleUnitType !== UnitTypeEnum.Sign) return false;
 
     const newUnit = UnitModel.create(
       this.unitId,
@@ -94,19 +94,20 @@ export class CreateSignUnitCommand extends Command {
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {
       const occupiedPosition = occupiedPositions[occupiedPositionIdx];
       const unitAtPos = unitManager.getUnitByPos(occupiedPosition);
-      if (unitAtPos) return;
+      if (unitAtPos) return false;
 
       const playersAtPos = playerManager.getPlayersAtPos(occupiedPosition);
-      if (playersAtPos) return;
+      if (playersAtPos) return false;
     }
 
     const newUnitAdded = unitManager.addUnit(newUnit);
+    if (!newUnitAdded) return false;
 
     this.setUndoAction(() => {
-      if (newUnitAdded) {
-        unitManager.removeUnit(newUnit.getId());
-      }
+      unitManager.removeUnit(newUnit.getId());
     });
+
+    return true;
   }
 
   public getUnitId() {

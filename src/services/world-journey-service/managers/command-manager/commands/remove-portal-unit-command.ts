@@ -24,17 +24,18 @@ export class RemovePortalUnitCommand extends Command {
 
   public getRequiredItemId = () => null;
 
-  public execute({ unitManager }: CommandParams): void {
+  public execute({ unitManager }: CommandParams): boolean {
     const portalUnit = unitManager.getUnit(this.unitId);
-    if (!portalUnit) return;
+    if (!portalUnit) return false;
 
-    const hasRemovedUnit = unitManager.removeUnit(this.unitId);
+    const isUnitRemoved = unitManager.removeUnit(this.unitId);
+    if (!isUnitRemoved) return false;
 
     this.setUndoAction(() => {
-      if (hasRemovedUnit) {
-        unitManager.addUnit(portalUnit);
-      }
+      unitManager.addUnit(portalUnit);
     });
+
+    return true;
   }
 
   public getUnitId() {

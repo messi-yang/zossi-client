@@ -23,24 +23,25 @@ export class SendPlayerIntoPortalCommand extends Command {
 
   public getRequiredItemId = () => null;
 
-  public execute({ unitManager, playerManager }: CommandParams): void {
+  public execute({ unitManager, playerManager }: CommandParams): boolean {
     const portalUnit = unitManager.getUnit(this.unitId);
-    if (!portalUnit || portalUnit.getType() !== UnitTypeEnum.Portal) return;
+    if (!portalUnit || portalUnit.getType() !== UnitTypeEnum.Portal) return false;
 
     const currentPlayer = playerManager.getPlayer(this.playerId);
-    if (!currentPlayer) return;
+    if (!currentPlayer) return false;
 
     const clonedPlayer = currentPlayer.clone();
     clonedPlayer.updateAction(PlayerActionVo.newTeleport(clonedPlayer.getDirection()));
     clonedPlayer.freeze();
 
     const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);
+    if (!isPlayerUpdated) return false;
 
     this.setUndoAction(() => {
-      if (isPlayerUpdated) {
-        playerManager.updatePlayer(currentPlayer);
-      }
+      playerManager.updatePlayer(currentPlayer);
     });
+
+    return true;
   }
 
   public getPlayerId() {

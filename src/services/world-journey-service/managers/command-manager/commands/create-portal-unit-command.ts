@@ -71,8 +71,8 @@ export class CreatePortalUnitCommand extends Command {
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ unitManager, playerManager }: CommandParams): void {
-    if (this.itemCompatibleUnitType !== UnitTypeEnum.Portal) return;
+  public execute({ unitManager, playerManager }: CommandParams): boolean {
+    if (this.itemCompatibleUnitType !== UnitTypeEnum.Portal) return false;
 
     const newUnit = UnitModel.create(
       this.unitId,
@@ -89,19 +89,20 @@ export class CreatePortalUnitCommand extends Command {
     for (let occupiedPositionIdx = 0; occupiedPositionIdx < occupiedPositions.length; occupiedPositionIdx += 1) {
       const occupiedPosition = occupiedPositions[occupiedPositionIdx];
       const unitAtPos = unitManager.getUnitByPos(occupiedPosition);
-      if (unitAtPos) return;
+      if (unitAtPos) return false;
 
       const playersAtPos = playerManager.getPlayersAtPos(occupiedPosition);
-      if (playersAtPos) return;
+      if (playersAtPos) return false;
     }
 
     const isUnitAdded = unitManager.addUnit(newUnit);
+    if (!isUnitAdded) return false;
 
     this.setUndoAction(() => {
-      if (isUnitAdded) {
-        unitManager.removeUnit(newUnit.getId());
-      }
+      unitManager.removeUnit(newUnit.getId());
     });
+
+    return true;
   }
 
   public getUnitId() {

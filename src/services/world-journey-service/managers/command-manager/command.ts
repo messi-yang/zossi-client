@@ -46,7 +46,11 @@ export abstract class Command {
    */
   public abstract getRequiredItemId(): string | null;
 
-  public abstract execute(params: CommandParams): void;
+  /**
+   * Execute the command.
+   * @returns true if the command isn't making any changes to the world.
+   */
+  public abstract execute(params: CommandParams): boolean;
 
   protected setUndoAction(newUndoAction: () => void) {
     this.undoAction = newUndoAction;

@@ -27,21 +27,22 @@ export class ChangePlayerHeldItemCommand extends Command {
 
   public getRequiredItemId = () => this.itemId;
 
-  public execute({ playerManager }: CommandParams): void {
+  public execute({ playerManager }: CommandParams): boolean {
     const player = playerManager.getPlayer(this.playerId);
-    if (!player) return;
+    if (!player) return false;
 
     const clonedPlayer = player.clone();
 
     clonedPlayer.changeHeldItemId(this.itemId);
 
     const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);
+    if (!isPlayerUpdated) return false;
 
     this.setUndoAction(() => {
-      if (isPlayerUpdated) {
-        playerManager.updatePlayer(player);
-      }
+      playerManager.updatePlayer(player);
     });
+
+    return true;
   }
 
   public getPlayerId() {

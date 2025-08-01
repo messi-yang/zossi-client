@@ -19,17 +19,18 @@ export class RemovePlayerCommand extends Command {
 
   public getRequiredItemId = () => null;
 
-  public execute({ playerManager }: CommandParams): void {
+  public execute({ playerManager }: CommandParams): boolean {
     const currentPlayer = playerManager.getPlayer(this.playerId);
-    if (!currentPlayer) return;
+    if (!currentPlayer) return false;
 
     const isPlayerRemoved = playerManager.removePlayer(this.playerId);
+    if (!isPlayerRemoved) return false;
 
     this.setUndoAction(() => {
-      if (isPlayerRemoved) {
-        playerManager.addPlayer(currentPlayer);
-      }
+      playerManager.addPlayer(currentPlayer);
     });
+
+    return true;
   }
 
   public getPlayerId() {

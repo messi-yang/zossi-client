@@ -24,9 +24,9 @@ export class TeleportPlayerCommand extends Command {
 
   public getRequiredItemId = () => null;
 
-  public execute({ playerManager }: CommandParams): void {
+  public execute({ playerManager }: CommandParams): boolean {
     const currentPlayer = playerManager.getPlayer(this.playerId);
-    if (!currentPlayer) return;
+    if (!currentPlayer) return false;
 
     const clonedPlayer = currentPlayer.clone();
     clonedPlayer.unfreeze();
@@ -34,12 +34,13 @@ export class TeleportPlayerCommand extends Command {
     clonedPlayer.updatePrecisePosition(PrecisePositionVo.create(this.position.getX(), this.position.getZ()));
 
     const isPlayerUpdated = playerManager.updatePlayer(clonedPlayer);
+    if (!isPlayerUpdated) return false;
 
     this.setUndoAction(() => {
-      if (isPlayerUpdated) {
-        playerManager.updatePlayer(currentPlayer);
-      }
+      playerManager.updatePlayer(currentPlayer);
     });
+
+    return true;
   }
 
   public getPlayerId() {

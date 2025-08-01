@@ -24,17 +24,18 @@ export class RemoveColorUnitCommand extends Command {
 
   public getRequiredItemId = () => null;
 
-  public execute({ unitManager }: CommandParams): void {
+  public execute({ unitManager }: CommandParams): boolean {
     const currentUnit = unitManager.getUnit(this.unitId);
-    if (!currentUnit) return;
+    if (!currentUnit) return false;
 
-    const hasRemovedUnit = unitManager.removeUnit(this.unitId);
+    const isUnitRemoved = unitManager.removeUnit(this.unitId);
+    if (!isUnitRemoved) return false;
 
     this.setUndoAction(() => {
-      if (hasRemovedUnit) {
-        unitManager.addUnit(currentUnit);
-      }
+      unitManager.addUnit(currentUnit);
     });
+
+    return true;
   }
 
   public getUnitId() {
