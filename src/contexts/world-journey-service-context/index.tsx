@@ -345,10 +345,17 @@ export function Provider({ children }: Props) {
   );
 
   const createPortalUnit = useCallback(
-    (item: ItemModel, position: PositionVo, direction: DirectionVo) => {
+    (item: ItemModel, position: PositionVo, direction: DirectionVo, label: string) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
-      const command = CreatePortalUnitCommand.create(item.getId(), item.getCompatibleUnitType(), item.getDimension(), position, direction);
+      const command = CreatePortalUnitCommand.create(
+        item.getId(),
+        item.getCompatibleUnitType(),
+        item.getDimension(),
+        position,
+        direction,
+        label
+      );
       worldJourneyService.executeLocalCommand(command);
     },
     [worldJourneyService]
@@ -384,7 +391,7 @@ export function Provider({ children }: Props) {
           createFenceUnit(item, position, direction);
         },
         portal: () => {
-          createPortalUnit(item, position, direction);
+          createPortalUnit(item, position, direction, 'hello');
         },
         link: () => {},
         embed: () => {},

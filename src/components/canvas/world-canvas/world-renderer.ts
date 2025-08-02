@@ -220,7 +220,6 @@ export class WorldRenderer {
     const isPositionChanged = lastPosition && !position.isEqual(lastPosition);
     if (!isPositionChanged) return;
 
-    console.log('position changed', position, lastPosition);
     this.positionHoverEventHandler.publish(position);
   }
 
@@ -638,6 +637,43 @@ export class WorldRenderer {
     };
   }
 
+  private updatePortalUnits(item: ItemModel, units: UnitModel[], font: Font) {
+    const itemId = item.getId();
+
+    const itemModels = this.itemModelsMap[itemId];
+    if (!itemModels) return;
+
+    this.itemModelInstancesCleanerMap[itemId]?.();
+
+    const itemUnitInstanceStates = units.map((unit) => ({
+      x: unit.getCenterPrecisePosition().getX(),
+      y: 0,
+      z: unit.getCenterPrecisePosition().getZ(),
+      rotate: (Math.PI / 2) * unit.getDirection().toNumber(),
+    }));
+
+    const unitLabels = units.map((unit) => {
+      const textMesh = createTextMesh(
+        font,
+        unit.getLabel() ?? 'Link',
+        unit.getCenterPrecisePosition().getX(),
+        1.5,
+        unit.getCenterPrecisePosition().getZ()
+      );
+      this.scene.add(textMesh);
+
+      return textMesh;
+    });
+
+    const removeInstancesFromScene = createInstancesInScene(this.scene, itemModels[0], itemUnitInstanceStates);
+    this.itemModelInstancesCleanerMap[itemId] = () => {
+      unitLabels.forEach((unitLabel) => {
+        this.scene.remove(unitLabel);
+      });
+      removeInstancesFromScene();
+    };
+  }
+
   private updateSignUnits(item: ItemModel, units: UnitModel[], font: Font) {
     const itemId = item.getId();
 
@@ -708,6 +744,8 @@ export class WorldRenderer {
       this.updateColorUnits(item, units);
     } else if (itemCompatibleUnitType === UnitTypeEnum.Sign) {
       this.updateSignUnits(item, units, font);
+    } else if (itemCompatibleUnitType === UnitTypeEnum.Portal) {
+      this.updatePortalUnits(item, units, font);
     } else {
       this.updateOtherUnits(item, units);
     }
@@ -786,7 +824,7 @@ export class WorldRenderer {
     }
   }
 
-  public addDraggedItem(item: ItemModel) {
+  public addDraggedItem(unit: UnitModel, item: ItemModel) {
     const draggedItemModels = this.itemModelsMap[item.getId()];
     if (!draggedItemModels) return;
 

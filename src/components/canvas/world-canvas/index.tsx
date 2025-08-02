@@ -261,7 +261,7 @@ export function WorldCanvas({
     const draggedUnitAddedUnsubscribe = worldJourneyService.subscribe('DRAGGED_UNIT_ADDED', ({ unit }) => {
       const item = worldJourneyService.getItem(unit.getItemId());
       if (!item) return;
-      worldRenderer.addDraggedItem(item);
+      worldRenderer.addDraggedItem(unit, item);
     });
 
     const draggedUnitPositionUpdatedUnsubscribe = worldJourneyService.subscribe('DRAGGED_UNIT_POSITION_UPDATED', ([, newParams]) => {
