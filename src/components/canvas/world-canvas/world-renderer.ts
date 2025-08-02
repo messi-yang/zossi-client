@@ -209,12 +209,19 @@ export class WorldRenderer {
   }
 
   private handlePositionMouseMove(event: MouseEvent) {
+    const lastMouseClientPosition = this.mouseClientPosition;
     this.mouseClientPosition = { x: event.clientX, y: event.clientY };
 
     const position = this.getMousePosition(this.mouseClientPosition);
-    if (position) {
-      this.positionHoverEventHandler.publish(position);
-    }
+    if (!position) return;
+
+    const lastPosition = this.getMousePosition(lastMouseClientPosition);
+
+    const isPositionChanged = lastPosition && !position.isEqual(lastPosition);
+    if (!isPositionChanged) return;
+
+    console.log('position changed', position, lastPosition);
+    this.positionHoverEventHandler.publish(position);
   }
 
   public updateHoverIndicatorColor(color: 'green' | 'red') {
