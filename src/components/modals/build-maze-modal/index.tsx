@@ -58,10 +58,7 @@ export function BuildMazeModal({ opened, items, onComfirm = () => {}, onCancel }
 
   return (
     <BaseModal width={500} opened={opened} onCrossClick={onCancel}>
-      <section
-        data-testid={dataTestids.root}
-        className="relative p-6 w-full h-full flex flex-col gap-4 items-center border-4 border-solid border-white bg-[#121212]"
-      >
+      <section data-testid={dataTestids.root} className="relative w-full h-full flex flex-col gap-4 items-center">
         <Text>Build Maze</Text>
         <Field label="Item">
           <ItemSelect selectedItemId={item?.getId() || null} items={availableItems} onSelect={setItem} />

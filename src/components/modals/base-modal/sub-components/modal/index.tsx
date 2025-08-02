@@ -3,19 +3,21 @@ import { IconButton } from '@/components/buttons/icon-button';
 type ModalProps = {
   width?: string | number;
   height?: string | number;
+  padding: string | number;
   onCrossClick?: () => void;
   children: React.ReactNode;
 };
 
-export function Modal({ width, height, onCrossClick, children }: ModalProps) {
+export function Modal({ width, height, padding, onCrossClick, children }: ModalProps) {
   return (
     <section
-      className="relative overflow-hidden"
+      className="relative overflow-hidden bg-stone-800 rounded-lg"
       style={{
         width,
         height,
         maxWidth: 'calc(100vw - 40px)',
         maxHeight: 'calc(100vh - 40px)',
+        padding,
       }}
     >
       {onCrossClick && (

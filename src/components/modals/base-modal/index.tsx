@@ -9,13 +9,14 @@ import { Modal } from './sub-components/modal';
 type BaseModalProps = {
   width?: string | number;
   height?: string | number;
+  padding?: string | number;
   opened: boolean;
   children: React.ReactNode;
   onBackgroundClick?: () => void;
   onCrossClick?: () => void;
 };
 
-export function BaseModal({ opened, width, height, children, onBackgroundClick, onCrossClick }: BaseModalProps) {
+export function BaseModal({ opened, width, height, padding = 16, children, onBackgroundClick, onCrossClick }: BaseModalProps) {
   const portalRoot = useMemo(() => {
     if (!('document' in globalThis)) {
       return null;
@@ -27,7 +28,7 @@ export function BaseModal({ opened, width, height, children, onBackgroundClick, 
     ? createPortal(
         <Wrapper visible={opened}>
           <Background onClick={onBackgroundClick} />
-          <Modal width={width} height={height} onCrossClick={onCrossClick}>
+          <Modal width={width} height={height} padding={padding} onCrossClick={onCrossClick}>
             {children}
           </Modal>
         </Wrapper>,

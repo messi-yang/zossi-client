@@ -13,10 +13,7 @@ type Props = {
 export function ConfirmModal({ opened, message, onComfirm = () => {}, onCancel = () => {} }: Props) {
   return (
     <BaseModal width={300} opened={opened}>
-      <section
-        data-testid={dataTestids.root}
-        className="relative p-6 w-full h-full flex flex-col items-center border-4 border-solid border-white bg-[#121212]"
-      >
+      <section data-testid={dataTestids.root} className="relative w-full h-full flex flex-col items-center">
         <Text size="text-lg">{message}</Text>
         <section className="mt-9 flex flex-row justify-center items-center">
           <Button text="Confirm" onClick={onComfirm} />

@@ -56,7 +56,7 @@ export function EmbedModal({ opened, embedCode, onClose }: Props) {
   }, [iframeWidth, iframeHeight]);
 
   return (
-    <BaseModal width={iframeWidth} height={iframeHeight} opened={opened} onBackgroundClick={onClose}>
+    <BaseModal width={iframeWidth} height={iframeHeight} padding={0} opened={opened} onBackgroundClick={onClose} onCrossClick={onClose}>
       <section data-testid={dataTestids.root} dangerouslySetInnerHTML={{ __html: embedCodeWithSize }} />
     </BaseModal>
   );

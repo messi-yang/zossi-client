@@ -24,7 +24,7 @@ export function SelectItemModal({ opened, items, selectedItemId, onItemSelect, o
 
   return (
     <BaseModal width={596} height={600} opened={opened} onBackgroundClick={onClose} onCrossClick={onClose}>
-      <div data-testid={dataTestids.root} className="h-full flex flex-col gap-2 bg-stone-800 p-4 rounded-lg">
+      <div data-testid={dataTestids.root} className="h-full flex flex-col gap-2">
         <div className="flex flex-row gap-5 justify-center">
           <Text size="text-2xl" color="text-white" weight="font-bold">
             Select an item

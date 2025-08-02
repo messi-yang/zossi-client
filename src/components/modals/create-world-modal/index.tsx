@@ -28,10 +28,7 @@ export function CreateWorldModal({ opened, onConfirm = () => {}, onCancel = () =
 
   return (
     <BaseModal width={400} opened={opened}>
-      <section
-        data-testid={dataTestids.root}
-        className="relative p-6 w-full h-full flex flex-col items-center border-4 border-solid border-white bg-[#121212]"
-      >
+      <section data-testid={dataTestids.root} className="relative w-full h-full flex flex-col items-center">
         <Text size="text-lg">Create new world</Text>
         <div className="mt-5 w-full">
           <Field label="Name">

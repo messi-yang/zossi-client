@@ -22,10 +22,7 @@ export function ShareWorldModal({ opened, world, worldMembes, onClose }: Props) 
 
   return (
     <BaseModal width={400} opened={opened} onBackgroundClick={onClose} onCrossClick={onClose}>
-      <section
-        data-testid={dataTestids.root}
-        className="relative p-6 w-full h-full flex flex-col items-center border-4 border-solid border-white bg-[#121212]"
-      >
+      <section data-testid={dataTestids.root} className="">
         <div>
           <Text>Share World</Text>
         </div>
