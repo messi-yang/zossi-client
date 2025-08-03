@@ -7,6 +7,7 @@ import { DirectionEnum } from '@/models/world/common/direction-enum';
 import { DimensionDto } from './dimension-dto';
 import { DimensionVo } from '@/models/world/common/dimension-vo';
 import { ColorVo } from '@/models/world/common/color-vo';
+import { PortalUnitModel } from '@/models/world/unit/portal-unit-model';
 
 type UnitDtoBase = {
   id: string;
@@ -20,40 +21,13 @@ type UnitDtoBase = {
   info: Object | null;
 };
 
-interface StaticUnitDto extends UnitDtoBase {
-  type: UnitTypeEnum.Static;
-  info: null;
-}
-
-interface FenceUnitDto extends UnitDtoBase {
-  type: UnitTypeEnum.Fence;
-  info: null;
-}
-
 interface PortalUnitDto extends UnitDtoBase {
   type: UnitTypeEnum.Portal;
-  info: null;
-}
-
-interface LinkUnitDto extends UnitDtoBase {
-  type: UnitTypeEnum.Link;
-}
-
-interface EmbedUnitDto extends UnitDtoBase {
-  type: UnitTypeEnum.Embed;
-}
-
-interface ColorUnitDto extends UnitDtoBase {
-  type: UnitTypeEnum.Color;
-  color: string;
-}
-
-interface SignUnitDto extends UnitDtoBase {
-  type: UnitTypeEnum.Sign;
   label: string;
+  targetUnitId: string;
 }
 
-type UnitDto = StaticUnitDto | PortalUnitDto | FenceUnitDto | LinkUnitDto | EmbedUnitDto | ColorUnitDto | SignUnitDto;
+interface UnitDto extends UnitDtoBase {}
 
 function parseUnitDto(unitDto: UnitDto): UnitModel {
   const position = PositionVo.create(unitDto.position.x, unitDto.position.z);
@@ -64,5 +38,21 @@ function parseUnitDto(unitDto: UnitDto): UnitModel {
   return UnitModel.create(unitDto.id, unitDto.type, unitDto.itemId, position, direction, dimension, unitDto.label, color);
 }
 
-export type { UnitDto };
-export { parseUnitDto };
+function parsePortalUnitDto(portalUnitDto: PortalUnitDto): PortalUnitModel {
+  const position = PositionVo.create(portalUnitDto.position.x, portalUnitDto.position.z);
+  const direction = DirectionVo.create(portalUnitDto.direction);
+  const dimension = DimensionVo.create(portalUnitDto.dimension.width, portalUnitDto.dimension.depth);
+  return PortalUnitModel.create(
+    portalUnitDto.id,
+    portalUnitDto.type,
+    portalUnitDto.itemId,
+    position,
+    direction,
+    dimension,
+    portalUnitDto.label,
+    portalUnitDto.targetUnitId
+  );
+}
+
+export type { UnitDto, PortalUnitDto };
+export { parseUnitDto, parsePortalUnitDto };

@@ -144,6 +144,7 @@ type CreatePortalUnitCommandDto = {
     unitPosition: PositionDto;
     unitDirection: number;
     unitLabel: string;
+    targetUnitId: string | null;
   };
 };
 
@@ -324,7 +325,8 @@ function parseCreatePortalUnitCommand(command: CreatePortalUnitCommandDto): Crea
     DimensionVo.create(command.payload.itemDimension.width, command.payload.itemDimension.depth),
     PositionVo.create(command.payload.unitPosition.x, command.payload.unitPosition.z),
     DirectionVo.create(command.payload.unitDirection),
-    command.payload.unitLabel
+    command.payload.unitLabel,
+    command.payload.targetUnitId
   );
 }
 
@@ -573,6 +575,7 @@ export const toCommandDto = (sourceCommand: Command) => {
         unitPosition: newPositionDto(command.getUnitPosition()),
         unitDirection: command.getUnitDirection().toNumber(),
         unitLabel: command.getUnitLabel(),
+        targetUnitId: command.getTargetUnitId(),
       },
     }),
     [CommandNameEnum.RemovePortalUnit]: (command) => ({

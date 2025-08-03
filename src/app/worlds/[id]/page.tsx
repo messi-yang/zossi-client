@@ -30,6 +30,7 @@ import { WorldBottomPanel } from '@/components/panels/world-bottom-panel';
 import { SelectItemModal } from '@/components/modals/select-item-modal';
 import { InteractionMode } from '@/services/world-journey-service/managers/selection-manager/interaction-mode-enum';
 import { UnitModel } from '@/models/world/unit/unit-model';
+import { CreatePortalUnitModal } from '@/components/modals/create-portal-unit-modal';
 
 const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -87,6 +88,7 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     createEmbedUnit,
     createLinkUnit,
     createSignUnit,
+    createPortalUnit,
     buildMaze,
     moveUnit,
     displayedEmbedCode,
@@ -182,6 +184,23 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
     [worldJourneyService, newUnitPosition]
   );
 
+  const [isCreatePortalUnitModalVisible, setIsCreatePortalUnitModalVisible] = useState(false);
+  const handleCreatePortalUnitConfirm = useCallback(
+    (label: string, targetUnitId: string | null) => {
+      if (!worldJourneyService || !newUnitPosition) return;
+
+      const item = worldJourneyService.getSelectedItem();
+      if (!item) return;
+
+      const currentSelectedItemDirection = worldJourneyService.getSelectedItemDirection();
+      if (!currentSelectedItemDirection) return;
+
+      createPortalUnit(item, newUnitPosition, currentSelectedItemDirection, label, targetUnitId);
+      setIsCreatePortalUnitModalVisible(false);
+    },
+    [worldJourneyService, newUnitPosition, createPortalUnit]
+  );
+
   const handleUnitCreate = useCallback(
     (position: PositionVo) => {
       if (!worldJourneyService) return;
@@ -203,6 +222,9 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
       } else if (compatibleUnitType === UnitTypeEnum.Sign) {
         setNewUnitPosition(position);
         setIsCreateSignUnitModalVisible(true);
+      } else if (compatibleUnitType === UnitTypeEnum.Portal) {
+        setNewUnitPosition(position);
+        setIsCreatePortalUnitModalVisible(true);
       } else {
         createUnit(position, currentSelectedItem, currentSelectedItemDirection);
       }
@@ -475,6 +497,14 @@ const Page = function Page({ params }: { params: Promise<{ id: string }> }) {
           opened={isCreateLinkUnitModalVisible}
           onCancel={() => setIsCreateLinkUnitModalVisible(false)}
           onConfirm={handleCreateLinkUnitConfirm}
+        />
+      )}
+      {isCreatePortalUnitModalVisible && (
+        <CreatePortalUnitModal
+          worldId={worldId}
+          opened={isCreatePortalUnitModalVisible}
+          onCancel={() => setIsCreatePortalUnitModalVisible(false)}
+          onConfirm={handleCreatePortalUnitConfirm}
         />
       )}
       {isCreateSignUnitModalVisible && (

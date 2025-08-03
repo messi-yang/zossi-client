@@ -48,6 +48,7 @@ type ContextValue = {
   createEmbedUnit: (item: ItemModel, position: PositionVo, direction: DirectionVo, label: string, embedCode: string) => void;
   createLinkUnit: (item: ItemModel, position: PositionVo, direction: DirectionVo, label: string, url: string) => void;
   createSignUnit: (item: ItemModel, position: PositionVo, direction: DirectionVo, label: string) => void;
+  createPortalUnit: (item: ItemModel, position: PositionVo, direction: DirectionVo, label: string, targetUnitId: string | null) => void;
   buildMaze: (item: ItemModel, origin: PositionVo, dimension: DimensionVo) => void;
   moveUnit: () => void;
   leaveWorld: () => void;
@@ -72,6 +73,7 @@ const Context = createContext<ContextValue>({
   createEmbedUnit: () => {},
   createLinkUnit: () => {},
   createSignUnit: () => {},
+  createPortalUnit: () => {},
   buildMaze: () => {},
   moveUnit: () => {},
   leaveWorld: () => {},
@@ -345,7 +347,7 @@ export function Provider({ children }: Props) {
   );
 
   const createPortalUnit = useCallback(
-    (item: ItemModel, position: PositionVo, direction: DirectionVo, label: string) => {
+    (item: ItemModel, position: PositionVo, direction: DirectionVo, label: string, targetUnitId: string | null) => {
       if (!worldJourneyService || !worldJourneyApi.current) return;
 
       const command = CreatePortalUnitCommand.create(
@@ -354,7 +356,8 @@ export function Provider({ children }: Props) {
         item.getDimension(),
         position,
         direction,
-        label
+        label,
+        targetUnitId
       );
       worldJourneyService.executeLocalCommand(command);
     },
@@ -390,9 +393,7 @@ export function Provider({ children }: Props) {
         fence: () => {
           createFenceUnit(item, position, direction);
         },
-        portal: () => {
-          createPortalUnit(item, position, direction, 'hello');
-        },
+        portal: () => {},
         link: () => {},
         embed: () => {},
         color: () => {
@@ -520,6 +521,7 @@ export function Provider({ children }: Props) {
     createEmbedUnit,
     createLinkUnit,
     createSignUnit,
+    createPortalUnit,
     buildMaze,
     moveUnit,
     displayedEmbedCode,

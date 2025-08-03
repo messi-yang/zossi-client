@@ -20,7 +20,8 @@ export class CreatePortalUnitCommand extends Command {
     private itemDimension: DimensionVo,
     private unitPosition: PositionVo,
     private unitDirection: DirectionVo,
-    private unitLabel: string
+    private unitLabel: string,
+    private targetUnitId: string | null
   ) {
     super(CommandNameEnum.CreatePortalUnit, id, createdAt, isRemote);
   }
@@ -31,7 +32,8 @@ export class CreatePortalUnitCommand extends Command {
     itemDimension: DimensionVo,
     unitPosition: PositionVo,
     unitDirection: DirectionVo,
-    unitLabel: string
+    unitLabel: string,
+    targetUnitId: string | null
   ) {
     return new CreatePortalUnitCommand(
       generateUuidV4(),
@@ -43,7 +45,8 @@ export class CreatePortalUnitCommand extends Command {
       itemDimension,
       unitPosition,
       unitDirection,
-      unitLabel
+      unitLabel,
+      targetUnitId
     );
   }
 
@@ -56,7 +59,8 @@ export class CreatePortalUnitCommand extends Command {
     itemDimension: DimensionVo,
     unitPosition: PositionVo,
     unitDirection: DirectionVo,
-    unitLabel: string
+    unitLabel: string,
+    targetUnitId: string | null
   ) {
     return new CreatePortalUnitCommand(
       id,
@@ -68,7 +72,8 @@ export class CreatePortalUnitCommand extends Command {
       itemDimension,
       unitPosition,
       unitDirection,
-      unitLabel
+      unitLabel,
+      targetUnitId
     );
   }
 
@@ -136,5 +141,9 @@ export class CreatePortalUnitCommand extends Command {
 
   public getUnitLabel() {
     return this.unitLabel;
+  }
+
+  public getTargetUnitId() {
+    return this.targetUnitId;
   }
 }
