@@ -17,8 +17,9 @@ export class PortalUnitApi {
   }
 
   async getPortalUnitTargetPosition(id: string): Promise<PositionVo | null> {
-    const { data } = await this.axios.get<{ position: PositionDto | null }>(`/${id}/target-unit`);
-    return data.position ? PositionVo.create(data.position.x, data.position.z) : null;
+    const { data } = await this.axios.get<{ position: PositionDto } | null>(`/${id}/target-unit`);
+    if (!data) return null;
+    return PositionVo.create(data.position.x, data.position.z);
   }
 
   async query({

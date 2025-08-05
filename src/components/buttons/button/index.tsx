@@ -33,7 +33,7 @@ export function Button({ text, fullWidth = false, rightChild, loading = false, o
   const handleClick = useCallback(() => {
     if (loading) return;
     onClick();
-  }, [onClick]);
+  }, [onClick, loading]);
 
   return (
     <button
